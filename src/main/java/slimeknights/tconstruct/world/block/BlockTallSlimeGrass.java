@@ -114,35 +114,11 @@ public class BlockTallSlimeGrass extends BlockBush implements IShearable {
   /**
    * Get the OffsetType for this Block. Determines if the model is rendered slightly offset.
    */
+  @Override
   @SideOnly(Side.CLIENT)
   public Block.EnumOffsetType getOffsetType()
   {
     return Block.EnumOffsetType.XYZ;
-  }
-
-  // 1.9
-  //@Override
-  public int getBlockColor() {
-    return SlimeColorizer.colorBlue;
-  }
-
-  // Used for the item
-  @SideOnly(Side.CLIENT)
-  //@Override
-  public int getRenderColor(IBlockState state) {
-    FoliageType foliageType = state.getValue(FOLIAGE);
-    return SlimeColorizer.getColorStatic(foliageType);
-  }
-
-  // Used for the block in world
-  @SideOnly(Side.CLIENT)
-  //@Override
-  public int colorMultiplier(IBlockAccess worldIn, BlockPos pos, int renderPass) {
-    IBlockState state = worldIn.getBlockState(pos);
-    if(state.getBlock() != this) return getBlockColor();
-
-    FoliageType foliageType = state.getValue(FOLIAGE);
-    return SlimeColorizer.getColorForPos(pos, foliageType);
   }
 
   /* Forge/MC callbacks */

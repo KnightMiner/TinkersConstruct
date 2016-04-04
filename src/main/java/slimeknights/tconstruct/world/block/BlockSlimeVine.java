@@ -29,14 +29,7 @@ public class BlockSlimeVine extends BlockVine {
     this.foliage = foliage;
     this.nextStage = nextStage;
   }
-/*
-  @Override
-  public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
-    if(this == TinkerWorld.slimeVinePurple1 || this == TinkerWorld.slimeVineBlue1) {
-      list.add(new ItemStack(this, 1, 0));
-    }
-  }
-*/
+
   private Boolean canAttachTo(IBlockAccess world, BlockPos pos) {
     IBlockState state = world.getBlockState(pos);
     Block block = state.getBlock();
@@ -48,6 +41,7 @@ public class BlockSlimeVine extends BlockVine {
    * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
    * IBlockstate
    */
+  @Override
   public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
   {
     IBlockState iblockstate = this.getDefaultState();
@@ -120,30 +114,4 @@ public class BlockSlimeVine extends BlockVine {
       worldIn.setBlockState(below, state);
     }
   }
-
-  // 1.9
-  /*
-  @Override
-  @SideOnly(Side.CLIENT)
-  public int getBlockColor ()
-  {
-    return 0xffffff;
-  }
-
-  // Used for the item
-  @SideOnly(Side.CLIENT)
-  @Override
-  public int getRenderColor(IBlockState state) {
-    return SlimeColorizer.getColorStatic(foliage);
-  }
-
-  // Used for the block in world
-  @SideOnly(Side.CLIENT)
-  @Override
-  public int colorMultiplier(IBlockAccess worldIn, BlockPos pos, int renderPass) {
-    IBlockState state = worldIn.getBlockState(pos);
-    if(state.getBlock() != this) return getBlockColor();
-
-    return SlimeColorizer.getColorForPos(pos.add(SlimeColorizer.loop/2, 0, SlimeColorizer.loop/2), foliage);
-  }*/
 }

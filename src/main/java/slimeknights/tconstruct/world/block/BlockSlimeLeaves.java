@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.IBlockAccess;
@@ -63,6 +64,14 @@ public class BlockSlimeLeaves extends BlockLeaves {
   }
 
   @Override
+  public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    // isOpaqueCube returns !leavesFancy to us. We have to fix the variable before calling super
+    this.leavesFancy = !Blocks.leaves.isOpaqueCube(blockState);
+
+    return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+  }
+
+  @Override
   protected int getSaplingDropChance(IBlockState state) {
     return 25;
   }
@@ -102,6 +111,7 @@ public class BlockSlimeLeaves extends BlockLeaves {
   }
 
   // item dropped on silktouching
+  @Override
   protected ItemStack createStackedBlock(IBlockState state)
   {
     return new ItemStack(Item.getItemFromBlock(this), 1, (state.getValue(BlockSlimeGrass.FOLIAGE)).ordinal() & 3);
@@ -112,9 +122,7 @@ public class BlockSlimeLeaves extends BlockLeaves {
     return new BlockStateContainer(this, BlockSlimeGrass.FOLIAGE, CHECK_DECAY, DECAYABLE);
   }
 
-  /**
-   * Convert the given metadata into a BlockState for this Block
-   */
+  @Override
   public IBlockState getStateFromMeta(int meta)
   {
     int type = meta % 4;
@@ -128,9 +136,7 @@ public class BlockSlimeLeaves extends BlockLeaves {
                .withProperty(CHECK_DECAY, (meta & 8) > 0);
   }
 
-  /**
-   * Convert the BlockState into the correct metadata value
-   */
+  @Override
   public int getMetaFromState(IBlockState state)
   {
 
@@ -149,34 +155,6 @@ public class BlockSlimeLeaves extends BlockLeaves {
     return meta;
   }
 
-  // 1.9
-  /*
-  @Override
-  @SideOnly(Side.CLIENT)
-  public int getBlockColor ()
-  {
-    return 0xffffff;
-  }
-
-  // Used for the item
-  @SideOnly(Side.CLIENT)
-  @Override
-  public int getRenderColor(IBlockState state) {
-    FoliageType foliageType = state.getValue(BlockSlimeGrass.FOLIAGE);
-    return SlimeColorizer.getColorStatic(foliageType);
-  }
-
-  // Used for the block in world
-  @SideOnly(Side.CLIENT)
-  @Override
-  public int colorMultiplier(IBlockAccess worldIn, BlockPos pos, int renderPass) {
-    IBlockState state = worldIn.getBlockState(pos);
-    if(state.getBlock() != this) return getBlockColor();
-
-    FoliageType foliageType = state.getValue(BlockSlimeGrass.FOLIAGE);
-    return SlimeColorizer.getColorForPos(pos.add(SlimeColorizer.loop/2, 0, SlimeColorizer.loop/2), foliageType);
-  }
-*/
   @Override
   public BlockPlanks.EnumType getWoodType(int meta) {
     throw new NotImplementedException(); // unused by our code.
