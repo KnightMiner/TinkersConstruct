@@ -45,11 +45,8 @@ import slimeknights.tconstruct.library.smeltery.MeltingRecipe;
 import slimeknights.tconstruct.library.tinkering.PartMaterialType;
 import slimeknights.tconstruct.library.tools.IPattern;
 import slimeknights.tconstruct.library.tools.IToolPart;
-import slimeknights.tconstruct.library.tools.Pattern;
 import slimeknights.tconstruct.library.tools.Shard;
 import slimeknights.tconstruct.library.tools.ToolCore;
-import slimeknights.tconstruct.library.tools.ToolPart;
-import slimeknights.tconstruct.library.traits.AbstractTraitLeveled;
 import slimeknights.tconstruct.library.traits.ITrait;
 
 public final class TinkerRegistry {
@@ -630,6 +627,84 @@ public final class TinkerRegistry {
   public static FluidStack getMeltingForEntity(Entity entity) {
     String name = EntityList.getEntityString(entity);
     return entityMeltingRegistry.get(name);
+  }
+
+
+  /*---------------------------------------------------------------------------
+  | Drying Rack                                                               |
+  ---------------------------------------------------------------------------*/
+  private static List<DryingRecipe> dryingRegistry = Lists.newLinkedList();
+  
+
+  /**
+   * @return The list of all drying rack recipes
+   */
+  public static List<DryingRecipe> getAllDryingRackRecipes() {
+	  return dryingRegistry;
+  }
+  
+  // TODO: should this be divided into multiple methods? it would end up with 9 different methods for all combinations
+  /**
+   * Adds a new drying recipe
+   * @param input Input item, must be either a Block, an Item, or an ItemStack
+   * @param time Recipe time in ticks
+   * @param output Output item, must be either a Block, an Item, or an ItemStack
+   */
+  public static void registerDryingRecipe (Object input, int time, Object output) {
+	  ItemStack inputItem = null;
+      ItemStack outputItem = null;
+
+      if (input instanceof ItemStack)
+          inputItem = (ItemStack) input;
+      else if (input instanceof Item)
+          inputItem = new ItemStack((Item) input, 1, 0);
+      else if (input instanceof Block)
+          inputItem = new ItemStack((Block) input, 1, 0);
+      else
+          throw new RuntimeException("Drying recipe input is invalid!");
+
+      if (output instanceof ItemStack)
+          outputItem = (ItemStack) output;
+      else if (output instanceof Item)
+          outputItem = new ItemStack((Item) output, 1, 0);
+      else if (output instanceof Block)
+          outputItem = new ItemStack((Block) output, 1, 0);
+      else
+          throw new RuntimeException("Drying recipe output is invalid!");
+
+      dryingRegistry.add(new DryingRecipe(inputItem, time, outputItem));
+  }
+  
+  /**
+   * Gets the drying time for a drying recipe
+   * @param input Input item stack
+   * @return Output drying time
+   */
+  public static int getDryingTime (ItemStack input)
+  {
+      for (DryingRecipe r : dryingRegistry)
+      {
+          if (r.matches(input))
+              return r.time;
+      }
+
+      return -1;
+  }
+  
+  /**
+   * Gets the result for a drying recipe
+   * @param input Input item stack
+   * @return Output item stack
+   */  
+  public static ItemStack getDryingResult (ItemStack input)
+  {
+      for (DryingRecipe r : dryingRegistry)
+      {
+          if (r.matches(input))
+              return r.getResult();
+      }
+
+      return null;
   }
 
   /*---------------------------------------------------------------------------

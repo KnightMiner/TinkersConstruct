@@ -110,6 +110,10 @@ tile.tconstruct.stone_torch.name=Stone Torch
 tile.tconstruct.stone_ladder.name=Stone Ladder
 tile.tconstruct.wood_rail.name=Wooden Rail
 tile.tconstruct.punji.name=Punji Sticks
+tile.tconstruct.rack.item.name=Item Rack
+tile.tconstruct.rack.item.tooltip=Better for decoration
+tile.tconstruct.rack.drying.name=Drying Rack
+tile.tconstruct.rack.drying.tooltip=Used to peform drying recipes
 
 
 ################

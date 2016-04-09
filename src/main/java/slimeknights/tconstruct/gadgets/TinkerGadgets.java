@@ -24,14 +24,18 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.CommonProxy;
 import slimeknights.tconstruct.common.EntityIDs;
 import slimeknights.tconstruct.common.TinkerPulse;
+import slimeknights.tconstruct.gadgets.block.BlockRack;
 import slimeknights.tconstruct.gadgets.block.BlockPunji;
 import slimeknights.tconstruct.gadgets.block.BlockStoneLadder;
 import slimeknights.tconstruct.gadgets.block.BlockStoneTorch;
 import slimeknights.tconstruct.gadgets.block.BlockWoodRail;
 import slimeknights.tconstruct.gadgets.entity.EntityFancyItemFrame;
+import slimeknights.tconstruct.gadgets.item.ItemBlockRack;
 import slimeknights.tconstruct.gadgets.item.ItemFancyItemFrame;
 import slimeknights.tconstruct.gadgets.item.ItemSlimeBoots;
 import slimeknights.tconstruct.gadgets.item.ItemSlimeSling;
+import slimeknights.tconstruct.gadgets.tileentity.TileDryingRack;
+import slimeknights.tconstruct.gadgets.tileentity.TileItemRack;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
@@ -49,6 +53,7 @@ public class TinkerGadgets extends TinkerPulse {
   public static Block stoneLadder;
   public static Block woodRail;
   public static Block punji;
+  public static Block rack;
 
   public static ItemSlimeSling slimeSling;
   public static ItemSlimeBoots slimeBoots;
@@ -63,6 +68,10 @@ public class TinkerGadgets extends TinkerPulse {
     stoneLadder = registerBlock(new BlockStoneLadder(), "stone_ladder");
     woodRail = registerBlock(new BlockWoodRail(), "wood_rail");
     punji = registerBlock(new BlockPunji(), "punji");
+    rack = registerBlock(new BlockRack(), ItemBlockRack.class, "rack");
+    
+    registerTE(TileItemRack.class, "item_rack");
+    registerTE(TileDryingRack.class, "drying_rack");
 
     slimeSling = registerItem(new ItemSlimeSling(), "slimesling");
     slimeBoots = registerItem(new ItemSlimeBoots(), "slime_boots");
@@ -114,7 +123,14 @@ public class TinkerGadgets extends TinkerPulse {
 
     // Punji Sticks
     GameRegistry.addRecipe(new ItemStack(punji, 3, 0), "b b", " b ", "b b", 'b', new ItemStack(Items.reeds));
+    
+    // Item Rack, a bit cheaper to encourage it for decoration
+    GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rack, 1, 0), "ww", 'w', "slabWood"));
+    // Drying Rack
+    GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rack, 1, 1), "www", 'w', "slabWood"));
 
+    // TODO: temporary recipe until actual ones are added
+    TinkerRegistry.registerDryingRecipe(Items.rotten_flesh, 100, Items.leather);
 
     // fancy item frames
     ItemStack frame = new ItemStack(TinkerGadgets.fancyFrame, 1, EntityFancyItemFrame.FrameType.GOLD.ordinal());
