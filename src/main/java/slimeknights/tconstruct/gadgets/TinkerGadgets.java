@@ -128,9 +128,9 @@ public class TinkerGadgets extends TinkerPulse {
     GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rack, 1, 0), "ww", 'w', "slabWood"));
     // Drying Rack
     GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rack, 1, 1), "www", 'w', "slabWood"));
-
-    // TODO: temporary recipe until actual ones are added
-    TinkerRegistry.registerDryingRecipe(Items.rotten_flesh, 100, Items.leather);
+    
+    // Drying Rack recipes temp location
+    TinkerRegistry.registerDryingRecipe(new ItemStack(Blocks.sponge, 1, 1), new ItemStack(Blocks.sponge, 1, 0), 20 * 60 * 5);
 
     // fancy item frames
     ItemStack frame = new ItemStack(TinkerGadgets.fancyFrame, 1, EntityFancyItemFrame.FrameType.GOLD.ordinal());

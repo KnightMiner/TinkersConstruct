@@ -643,36 +643,35 @@ public final class TinkerRegistry {
 	  return dryingRegistry;
   }
   
-  // TODO: should this be divided into multiple methods? it would end up with 9 different methods for all combinations
   /**
    * Adds a new drying recipe
-   * @param input Input item, must be either a Block, an Item, or an ItemStack
+   * @param output Output ItemStack
+   * @param input Input ItemStack
    * @param time Recipe time in ticks
-   * @param output Output item, must be either a Block, an Item, or an ItemStack
    */
-  public static void registerDryingRecipe (Object input, int time, Object output) {
-	  ItemStack inputItem = null;
-      ItemStack outputItem = null;
-
-      if (input instanceof ItemStack)
-          inputItem = (ItemStack) input;
-      else if (input instanceof Item)
-          inputItem = new ItemStack((Item) input, 1, 0);
-      else if (input instanceof Block)
-          inputItem = new ItemStack((Block) input, 1, 0);
-      else
-          throw new RuntimeException("Drying recipe input is invalid!");
-
-      if (output instanceof ItemStack)
-          outputItem = (ItemStack) output;
-      else if (output instanceof Item)
-          outputItem = new ItemStack((Item) output, 1, 0);
-      else if (output instanceof Block)
-          outputItem = new ItemStack((Block) output, 1, 0);
-      else
-          throw new RuntimeException("Drying recipe output is invalid!");
-
-      dryingRegistry.add(new DryingRecipe(inputItem, time, outputItem));
+  public static void registerDryingRecipe (ItemStack input, ItemStack output, int time) {
+	  if ( output == null || input == null )
+		  return;
+      dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(input, 1), output, time));
+  }
+  
+  public static void registerDryingRecipe (Item output, Item input, int time) {
+	  if ( output == null || input == null )
+		  return;
+	  ItemStack stack = new ItemStack(input, 1, OreDictionary.WILDCARD_VALUE);
+      dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(stack, 1), new ItemStack(output), time));
+  }  
+  public static void registerDryingRecipe (Block output, Block input, int time) {
+	  if ( output == null || input == null )
+		  return;
+	  ItemStack stack = new ItemStack(input, 1, OreDictionary.WILDCARD_VALUE);
+      dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(stack, 1), new ItemStack(output), time));
+  }
+  
+  public static void registerDryingRecipe (String oredict, ItemStack output, int time) {
+	  if ( output == null || oredict == null )
+		  return;
+      dryingRegistry.add(new DryingRecipe(new RecipeMatch.Oredict(oredict, 1), output, time));
   }
   
   /**

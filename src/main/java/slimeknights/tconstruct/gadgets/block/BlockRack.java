@@ -2,6 +2,8 @@ package slimeknights.tconstruct.gadgets.block;
 
 import java.util.List;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockLever.EnumOrientation;
 import net.minecraft.block.SoundType;
@@ -132,7 +134,7 @@ public class BlockRack extends BlockInventory {
         IBlockState state = this.getDefaultState();
         
         // playing a drying rack instead of an item rack
-        if ( ( meta & 8 ) > 0 )
+        if ( ( meta & 1 ) == 1 )
         	state = state.withProperty(DRYING, Boolean.valueOf(true));
         
         IBlockState placedOn = world.getBlockState(pos.offset(facing.getOpposite()));
@@ -153,8 +155,8 @@ public class BlockRack extends BlockInventory {
     public IBlockState getStateFromMeta(int meta)
     {
         return this.getDefaultState()
-        	.withProperty(FACING, BlockLever.EnumOrientation.byMetadata(meta & 7))
-        	.withProperty(DRYING, Boolean.valueOf((meta & 8) > 0));
+        	.withProperty(FACING, BlockLever.EnumOrientation.byMetadata(meta >> 1))
+        	.withProperty(DRYING, Boolean.valueOf((meta & 1) == 1));
     }
 
     /**
@@ -163,11 +165,11 @@ public class BlockRack extends BlockInventory {
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumOrientation)state.getValue(FACING)).getMetadata();
+        i = i | ((EnumOrientation)state.getValue(FACING)).getMetadata() << 1;
 
         if (((Boolean)state.getValue(DRYING)).booleanValue())
         {
-            i |= 8;
+            i |= 1;
         }
 
         return i;
@@ -256,64 +258,30 @@ public class BlockRack extends BlockInventory {
     }
     
     /* Bounding boxes */
+
+    
+    private static final ImmutableMap<EnumOrientation, AxisAlignedBB> BOUNDS;
+    static {
+    	ImmutableMap.Builder<EnumOrientation, AxisAlignedBB> builder = ImmutableMap.builder();
+    	builder.put(EnumOrientation.DOWN_X, new AxisAlignedBB(0.375, 0,    0,     0.625, 0.25, 1    ));
+    	builder.put(EnumOrientation.DOWN_Z, new AxisAlignedBB(0,     0,    0.375, 1,     0.25, 0.625));
+    	builder.put(EnumOrientation.UP_X,   new AxisAlignedBB(0.375, 0.75, 0,     0.625, 1,    1    ));
+    	builder.put(EnumOrientation.UP_Z,   new AxisAlignedBB(0,     0.75, 0.375, 1,     1,    0.625));
+    	builder.put(EnumOrientation.NORTH,  new AxisAlignedBB(0,     0.75, 0,     1,     1,    0.25 ));
+    	builder.put(EnumOrientation.SOUTH,  new AxisAlignedBB(0,     0.75, 0.75,  1,     1,    1    ));
+    	builder.put(EnumOrientation.EAST,   new AxisAlignedBB(0.75,  0.75, 0,     1,     1,    1    ));
+    	builder.put(EnumOrientation.WEST,   new AxisAlignedBB(0,     0.75, 0,     0.25,  1,    1    ));
+    	BOUNDS = builder.build();
+    }
     
     public AxisAlignedBB getCollisionBoundingBox(IBlockState state, World worldIn, BlockPos pos)
     {
-        return getBoundingBox(state);
+        return BOUNDS.get(state.getValue(FACING));
     }
     
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return getBoundingBox(state);
-    }
-    
-    private static AxisAlignedBB getBoundingBox(IBlockState state)
-    {
-    	float xMin = 0F;
-        float yMin = 0F;
-        float zMin = 0F;
-        float xMax = 1F;
-        float yMax = 1F;
-        float zMax = 1F;
-        switch (state.getValue(FACING)) {
-        case DOWN_X:
-            xMin = 0.375F;
-            yMax = 0.25F;
-            xMax = 0.625F;
-            break;
-        case DOWN_Z:
-            zMin = 0.375F;
-            yMax = 0.25F;
-            zMax = 0.625F;
-            break;
-        case UP_X:
-            xMin = 0.375F;
-            yMin = 0.75F;
-            xMax = 0.625F;
-            break;
-        case UP_Z:
-            zMin = 0.375F;
-            yMin = 0.75F;
-            zMax = 0.625F;
-            break;
-        case EAST:
-            xMin = 0.75F;
-            yMin = 0.75F;
-            break;
-        case WEST:
-            xMax = 0.25F;
-            yMin = 0.75F;
-            break;
-        case SOUTH:
-            zMin = 0.75F;
-            yMin = 0.75F;
-            break;
-        case NORTH:
-            zMax = 0.25F;
-            yMin = 0.75F;
-            break;
-        }
-        return new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
+        return BOUNDS.get(state.getValue(FACING));
     }
 	
     @Override

@@ -1,34 +1,39 @@
 package slimeknights.tconstruct.library;
 
 import net.minecraft.item.ItemStack;
+import slimeknights.mantle.util.RecipeMatch;
 
 public class DryingRecipe {
     public final int time;
-    public final ItemStack input;
-    public final ItemStack result;
+    public final RecipeMatch input;
+    public final ItemStack output;
 
-    DryingRecipe(ItemStack input, int time, ItemStack result)
+    DryingRecipe(RecipeMatch input, ItemStack output, int time )
     {
         this.time = time;
         this.input = input;
-        this.result = result;
+        this.output = output;
     }
 
     public boolean matches (ItemStack input)
     {
         // makes all drying rack recipes compatible with stuff killed by a frying pan
-    	// TODO: is this tag still used for the achievement?
+    	/*
         if(input.hasTagCompound()) {
             input = input.copy();
             input.getTagCompound().removeTag("frypanKill");
             if(input.getTagCompound().hasNoTags())
                 input.setTagCompound(null);
         }
-        return ItemStack.areItemStacksEqual(this.input, input);
+        */
+    	if ( this.input != null )
+    		return this.input.matches(new ItemStack[]{input}) != null;
+    	
+        return false;
     }
 
     public ItemStack getResult ()
     {
-        return result.copy();
+        return output.copy();
     }
 }

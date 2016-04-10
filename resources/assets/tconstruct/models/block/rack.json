@@ -1,19 +1,28 @@
 {
+	"__comment": "The model is in the center, top of the block. The model is translated instead of rotated when possible, to keep the top texture as a beam while lining up with planks",
+	"parent": "block/block",
+	"display": {
+	    "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "translation": [ 0, -3, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        }
+	},
     "textures": {
         "texture": "blocks/planks_oak",
 		"particle": "blocks/planks_oak"
     },
     "elements": [
         {
-            "from": [ 0, 12, 12 ], 
-            "to": [ 16, 16, 16 ], 
+            "from": [ 0, 12, 6 ], 
+            "to": [ 16, 16, 10 ], 
             "faces": {
-                "north": { "texture": "#texture", "uv": [ 0, 0, 16, 4 ] },
-                "east": { "texture": "#texture", "uv": [ 0, 0, 4, 4 ] },
-                "south": { "texture": "#texture", "uv": [ 0, 0, 16, 4 ] },
-                "west": { "texture": "#texture", "uv": [ 12, 0, 16, 4 ] },
-                "up": { "texture": "#texture", "uv": [ 0, 12, 16, 16 ] },
-                "down": { "texture": "#texture", "uv": [ 0, 0, 16, 4 ] }
+                "north": { "texture": "#texture", "uv": [  0,  0, 16,  4 ] },
+                "east":  { "texture": "#texture", "uv": [  0,  0,  4,  4 ] },
+                "south": { "texture": "#texture", "uv": [  0,  0, 16,  4 ] },
+                "west":  { "texture": "#texture", "uv": [ 12,  0, 16,  4 ] },
+                "up":    { "texture": "#texture", "uv": [  0, 12, 16, 16 ] },
+                "down":  { "texture": "#texture", "uv": [  0,  0, 16,  4 ] }
             }
         }
     ]

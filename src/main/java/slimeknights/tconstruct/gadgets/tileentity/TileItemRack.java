@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.world.WorldServer;
 import slimeknights.mantle.tileentity.TileInventory;
@@ -47,9 +46,8 @@ public class TileItemRack extends TileInventory {
     }
     
     /* Packets */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-    public Packet getDescriptionPacket ()
+    public SPacketUpdateTileEntity getDescriptionPacket ()
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);

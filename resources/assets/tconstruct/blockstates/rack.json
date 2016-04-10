@@ -1,21 +1,22 @@
 {
+	"forge_marker": 1,
+	"defaults": {
+		"model": "tconstruct:rack"
+	},
     "variants": {
-		"drying=false,facing=down_z": { "model": "tconstruct:rack_center", "uvlock": true, "x": 180, "y": 180 },
-		"drying=false,facing=down_x": { "model": "tconstruct:rack_center", "uvlock": true, "x": 180, "y": 90 },
-		"drying=false,facing=up_z":   { "model": "tconstruct:rack_center", "uvlock": true },
-		"drying=false,facing=up_x":   { "model": "tconstruct:rack_center", "uvlock": true, "y": 270 },
-		"drying=false,facing=east":   { "model": "tconstruct:rack", "uvlock": true, "y": 270 },
-		"drying=false,facing=west":   { "model": "tconstruct:rack", "uvlock": true, "y": 90 },
-		"drying=false,facing=south":  { "model": "tconstruct:rack", "uvlock": true },
-		"drying=false,facing=north":  { "model": "tconstruct:rack", "uvlock": true, "y": 180 },
-		
-		"drying=true,facing=down_z": { "model": "tconstruct:rack_center", "uvlock": true, "x": 180, "y": 180 },
-		"drying=true,facing=down_x": { "model": "tconstruct:rack_center", "uvlock": true, "x": 180, "y": 90 },
-		"drying=true,facing=up_z":   { "model": "tconstruct:rack_center", "uvlock": true },
-		"drying=true,facing=up_x":   { "model": "tconstruct:rack_center", "uvlock": true, "y": 270 },
-		"drying=true,facing=east":   { "model": "tconstruct:rack", "uvlock": true, "y": 270 },
-		"drying=true,facing=west":   { "model": "tconstruct:rack", "uvlock": true, "y": 90 },
-		"drying=true,facing=south":  { "model": "tconstruct:rack", "uvlock": true },
-		"drying=true,facing=north":  { "model": "tconstruct:rack", "uvlock": true, "y": 180 }
+    	"facing": {
+			"down_z": { "transform": { "translation": [ 0, -0.75, 0 ] } },
+			"down_x": { "transform": { "rotation": { "y": 270 }, "translation": [ 0, -0.75, 0 ] } },
+			"up_z":   {},
+			"up_x":   { "y": 90 },
+			"north":  { "transform": { "translation": [  0, 0, -0.375 ] } },
+			"south":  { "transform": { "translation": [  0, 0,  0.375 ] } },
+			"east":   { "transform": { "rotation": { "y": 270 }, "translation": [  0.375, 0, 0 ] } },
+			"west":   { "transform": { "rotation": { "y": 270 }, "translation": [ -0.375, 0, 0 ] } }
+		},
+		"drying": {
+			"true": {},
+			"false": {}
+		}
     }
 }
