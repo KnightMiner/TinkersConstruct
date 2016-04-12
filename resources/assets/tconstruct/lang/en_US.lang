@@ -115,7 +115,7 @@ tile.tconstruct.rack.item.tooltip=Better for decoration
 tile.tconstruct.rack.drying.name=Drying Rack
 tile.tconstruct.rack.drying.tooltip=Used to peform drying recipes
 tile.tconstruct.dried_clay.clay.name=Dried Clay
-tile.tconstruct.dried_clay.bricks.name=Dried Bricks
+tile.tconstruct.dried_clay.brick.name=Dried Bricks
 
 
 ################
