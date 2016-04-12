@@ -5,15 +5,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Locale;
 
 import slimeknights.mantle.block.EnumBlock;
 import slimeknights.mantle.item.ItemBlockMeta;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.Util;
-import slimeknights.tconstruct.library.tools.ToolPart;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.world.TinkerWorld;
@@ -38,6 +37,10 @@ public abstract class TinkerPulse {
 
   protected static boolean isWorldLoaded() {
     return TConstruct.pulseManager.isPulseLoaded(TinkerWorld.PulseId);
+  }
+
+  protected static boolean isGadgetsLoaded() {
+    return TConstruct.pulseManager.isPulseLoaded(TinkerGadgets.PulseId);
   }
 
   /**

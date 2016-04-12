@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockLever.EnumOrientation;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -89,36 +88,15 @@ public class BlockRack extends BlockInventory {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        return activateRack(world, pos, player, stack);
-    }
-
-    // TODO: this was separate from the former method in the original, does it still need to be?
-    boolean activateRack (World world, BlockPos pos, EntityPlayer player, ItemStack stack)
-    {
-        if (!world.isRemote)
-        {
-            TileItemRack tile = (TileItemRack) world.getTileEntity(pos);
-
-            // empty rack behavior
-            if (!tile.isStackInSlot(0)) {
-                if (stack != null)
-                {
-                    stack = player.inventory.decrStackSize(player.inventory.currentItem, 1);
-                    tile.setInventorySlotContents(0, stack);
-                }
-            
-            // filled rack behavior
-        	} else {
-                ItemStack decrStack = tile.decrStackSize(0, 1);
-                if (decrStack != null)
-                    PlayerHelper.spawnItemAtPlayer(player, decrStack);
-            }
-
+    	if (!world.isRemote)
+    	{
+            ((TileItemRack) world.getTileEntity(pos)).interact(player);
             world.scheduleUpdate(pos, this, 0);
-        }
+    	}
+    	
         return true;
     }
-	
+    
 	/* Block state */
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -155,7 +133,7 @@ public class BlockRack extends BlockInventory {
     public IBlockState getStateFromMeta(int meta)
     {
         return this.getDefaultState()
-        	.withProperty(FACING, BlockLever.EnumOrientation.byMetadata(meta >> 1))
+        	.withProperty(FACING, EnumOrientation.byMetadata(meta >> 1))
         	.withProperty(DRYING, Boolean.valueOf((meta & 1) == 1));
     }
 
@@ -165,9 +143,9 @@ public class BlockRack extends BlockInventory {
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumOrientation)state.getValue(FACING)).getMetadata() << 1;
+        i = i | state.getValue(FACING).getMetadata() << 1;
 
-        if (((Boolean)state.getValue(DRYING)).booleanValue())
+        if (state.getValue(DRYING).booleanValue())
         {
             i |= 1;
         }
@@ -185,62 +163,62 @@ public class BlockRack extends BlockInventory {
         {
             case CLOCKWISE_180:
 
-                switch ((EnumOrientation)state.getValue(FACING))
+                switch (state.getValue(FACING))
                 {
                     case EAST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.WEST);
+                        return state.withProperty(FACING, EnumOrientation.WEST);
                     case WEST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.EAST);
+                        return state.withProperty(FACING, EnumOrientation.EAST);
                     case SOUTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.NORTH);
+                        return state.withProperty(FACING, EnumOrientation.NORTH);
                     case NORTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.SOUTH);
+                        return state.withProperty(FACING, EnumOrientation.SOUTH);
                     default:
                         return state;
                 }
 
             case COUNTERCLOCKWISE_90:
 
-                switch ((EnumOrientation)state.getValue(FACING))
+                switch (state.getValue(FACING))
                 {
                     case EAST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.NORTH);
+                        return state.withProperty(FACING, EnumOrientation.NORTH);
                     case WEST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.SOUTH);
+                        return state.withProperty(FACING, EnumOrientation.SOUTH);
                     case SOUTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.EAST);
+                        return state.withProperty(FACING, EnumOrientation.EAST);
                     case NORTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.WEST);
+                        return state.withProperty(FACING, EnumOrientation.WEST);
                     case UP_Z:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.UP_X);
+                        return state.withProperty(FACING, EnumOrientation.UP_X);
                     case UP_X:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.UP_Z);
+                        return state.withProperty(FACING, EnumOrientation.UP_Z);
                     case DOWN_X:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.DOWN_Z);
+                        return state.withProperty(FACING, EnumOrientation.DOWN_Z);
                     case DOWN_Z:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.DOWN_X);
+                        return state.withProperty(FACING, EnumOrientation.DOWN_X);
                 }
 
             case CLOCKWISE_90:
 
-                switch ((EnumOrientation)state.getValue(FACING))
+                switch (state.getValue(FACING))
                 {
                     case EAST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.SOUTH);
+                        return state.withProperty(FACING, EnumOrientation.SOUTH);
                     case WEST:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.NORTH);
+                        return state.withProperty(FACING, EnumOrientation.NORTH);
                     case SOUTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.WEST);
+                        return state.withProperty(FACING, EnumOrientation.WEST);
                     case NORTH:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.EAST);
+                        return state.withProperty(FACING, EnumOrientation.EAST);
                     case UP_Z:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.UP_X);
+                        return state.withProperty(FACING, EnumOrientation.UP_X);
                     case UP_X:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.UP_Z);
+                        return state.withProperty(FACING, EnumOrientation.UP_Z);
                     case DOWN_X:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.DOWN_Z);
+                        return state.withProperty(FACING, EnumOrientation.DOWN_Z);
                     case DOWN_Z:
-                        return state.withProperty(FACING, BlockLever.EnumOrientation.DOWN_X);
+                        return state.withProperty(FACING, EnumOrientation.DOWN_X);
                 }
 
             default:
@@ -254,7 +232,7 @@ public class BlockRack extends BlockInventory {
      */
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
-        return state.withRotation(mirrorIn.toRotation(((BlockLever.EnumOrientation)state.getValue(FACING)).getFacing()));
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING).getFacing()));
     }
     
     /* Bounding boxes */

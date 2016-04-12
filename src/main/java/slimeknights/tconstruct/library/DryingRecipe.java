@@ -36,4 +36,9 @@ public class DryingRecipe {
     {
         return output.copy();
     }
+
+    public int getTime ()
+    {
+        return time;
+    }
 }

@@ -20,10 +20,8 @@ import slimeknights.tconstruct.library.client.RenderUtil;
 public class DryingRackRenderer extends TileEntitySpecialRenderer<TileItemRack> {
 
 	@Override
-	public void renderTileEntityAt(TileItemRack te, double x, double y, double z, float partialTicks, int destroyStage) {
-		ItemStack stack = te.getStackInSlot(0);
-		
-		if ( stack != null ) {
+	public void renderTileEntityAt(TileItemRack te, double x, double y, double z, float partialTicks, int destroyStage) {	
+		if ( te.isStackInSlot(0) || te.isStackInSlot(1) ) {
 			IBlockState state = te.getWorld().getBlockState(te.getPos());
 	
 			if ( !( state.getBlock() instanceof BlockRack ) )
@@ -34,7 +32,6 @@ public class DryingRackRenderer extends TileEntitySpecialRenderer<TileItemRack> 
 
 		    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		    RenderHelper.enableStandardItemLighting();
-		    
 		    
 		    int brightness = te.getWorld().getCombinedLight(te.getPos(), 0);
 		    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(brightness % 0x10000) / 1f,
@@ -72,20 +69,23 @@ public class DryingRackRenderer extends TileEntitySpecialRenderer<TileItemRack> 
 				default: break;
 		    }
 		    
-		    // And shrink the model slightly if it is a block
-		    if (stack.getItem() instanceof ItemBlock)
+		    // drying racks have two slots
+		    for(int i = 0; i < te.getSizeInventory(); i++)
 		    {
-			    //GlStateManager.scale(0.5F, 0.5F, 0.5F);
-		    	GlStateManager.translate(0F, 0.1875F, 0F);
-		    } else
-		    {
-			    //GlStateManager.scale(0.9F, 0.9F, 0.9F);
+		    	if ( !te.isStackInSlot(i) )
+		    		continue;
+		    	
+		    	ItemStack stack = te.getStackInSlot(i);
+		    	
+			    // move the model slightly if it is a block
+			    if (stack.getItem() instanceof ItemBlock)
+			    	GlStateManager.translate(0F, 0.1875F, 0F);
+			      
+			    IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, te.getWorld(), null);
+			    model = ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.FIXED, false);
+			    Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
 		    }
-		      
-		    IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, te.getWorld(), null);
-		    model = ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.FIXED, false);
-		    Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
-		    
+			    
 		    RenderUtil.post();    
 		}
 	}

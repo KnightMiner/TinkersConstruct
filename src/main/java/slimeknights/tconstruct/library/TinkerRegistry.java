@@ -639,7 +639,7 @@ public final class TinkerRegistry {
   /**
    * @return The list of all drying rack recipes
    */
-  public static List<DryingRecipe> getAllDryingRackRecipes() {
+  public static List<DryingRecipe> getAllDryingRecipes() {
 	  return dryingRegistry;
   }
   
@@ -655,13 +655,20 @@ public final class TinkerRegistry {
       dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(input, 1), output, time));
   }
   
-  public static void registerDryingRecipe (Item output, Item input, int time) {
+  public static void registerDryingRecipe (Item input, ItemStack output, int time) {
+	  if ( output == null || input == null )
+		  return;
+	  ItemStack stack = new ItemStack(input, 1, OreDictionary.WILDCARD_VALUE);
+      dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(stack, 1), output, time));
+  }
+  
+  public static void registerDryingRecipe (Item input, Item output, int time) {
 	  if ( output == null || input == null )
 		  return;
 	  ItemStack stack = new ItemStack(input, 1, OreDictionary.WILDCARD_VALUE);
       dryingRegistry.add(new DryingRecipe(new RecipeMatch.Item(stack, 1), new ItemStack(output), time));
-  }  
-  public static void registerDryingRecipe (Block output, Block input, int time) {
+  }
+  public static void registerDryingRecipe (Block input, Block output, int time) {
 	  if ( output == null || input == null )
 		  return;
 	  ItemStack stack = new ItemStack(input, 1, OreDictionary.WILDCARD_VALUE);
@@ -684,7 +691,7 @@ public final class TinkerRegistry {
       for (DryingRecipe r : dryingRegistry)
       {
           if (r.matches(input))
-              return r.time;
+              return r.getTime();
       }
 
       return -1;

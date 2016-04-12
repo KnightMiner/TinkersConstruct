@@ -1,37 +1,47 @@
 package slimeknights.tconstruct.gadgets.tileentity;
 
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.tconstruct.library.TinkerRegistry;
 
-public class TileDryingRack extends TileItemRack implements ITickable {
+public class TileDryingRack extends TileItemRack implements ITickable, ISidedInventory {
     int currentTime;
     int maxTime;
     
-	public TileDryingRack() {
-		super("dryingrack");
-	}
-	
-	@Override
-	public void update() {
+    public TileDryingRack() {
+        super("dryingrack", 2); // two slots, an input and an output. Should never both have something, as it is just for the sake of item ducts
+    }
+    
+    @Override
+    public void update() {
+      //only run on the server side and if a recipe is available
       if (!worldObj.isRemote && maxTime > 0 && currentTime < maxTime) {
-      	currentTime++;
-      	if (currentTime >= maxTime) {
-      	  setInventorySlotContents(0, TinkerRegistry.getDryingResult(getStackInSlot(0)));
-          updateDryingTime();
-        }
+          currentTime++;
+          if (currentTime >= maxTime) {
+        	  // add the result to slot 1 and remove the original from slot 0
+	          setInventorySlotContents(1, TinkerRegistry.getDryingResult(getStackInSlot(0)));
+	          setInventorySlotContents(0, null);
+	          //updateDryingTime(); drying time updated in setInventorySlotContents
+          }
       }
-	}
-	
+    }
+    
     @Override
     public void setInventorySlotContents (int slot, ItemStack itemstack)
     {
+    	// if there is no drying recipe, just place the item directly into the output slot for item output and tick efficiency
+    	if ( slot == 0 && itemstack != null && TinkerRegistry.getDryingResult(itemstack) == null )
+    		slot = 1;
+    		
         super.setInventorySlotContents(slot, itemstack);
-        updateDryingTime();
+        if ( slot == 0 )
+            updateDryingTime();
     }
     
     @Override
@@ -50,7 +60,7 @@ public class TileDryingRack extends TileItemRack implements ITickable {
         if (stack != null)
             maxTime = TinkerRegistry.getDryingTime(stack);
         else
-            maxTime = 0;
+            maxTime = -1;
         //worldObj.scheduleUpdate(pos, blockType, 0);
     }
     
@@ -76,5 +86,21 @@ public class TileDryingRack extends TileItemRack implements ITickable {
     {
         AxisAlignedBB cbb = new AxisAlignedBB(pos.getX(), pos.getY() - 1, pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
         return cbb;
+    }
+    
+    @Override
+    public int[] getSlotsForFace(EnumFacing side) {
+      return new int[] {0, 1};
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+      // Only allow inserting if there is no stack in the result slot
+      return !isStackInSlot(1) && index == 0;
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+      return index == 1;
     }
 }
