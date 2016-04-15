@@ -4,15 +4,12 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import slimeknights.tconstruct.common.ClientProxy;
-import slimeknights.tconstruct.gadgets.client.DryingRackRenderer;
 import slimeknights.tconstruct.gadgets.client.RenderFancyItemFrame;
 import slimeknights.tconstruct.gadgets.entity.EntityFancyItemFrame;
-import slimeknights.tconstruct.gadgets.tileentity.TileDryingRack;
-import slimeknights.tconstruct.gadgets.tileentity.TileItemRack;
 import slimeknights.tconstruct.library.Util;
 
 public class GadgetClientProxy extends ClientProxy {
@@ -38,10 +35,6 @@ public class GadgetClientProxy extends ClientProxy {
     
     // Entity
     RenderingRegistry.registerEntityRenderingHandler(EntityFancyItemFrame.class, RenderFancyItemFrame.FACTORY);
-
-    // Tile Entity
-    ClientRegistry.bindTileEntitySpecialRenderer(TileItemRack.class, new DryingRackRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(TileDryingRack.class, new DryingRackRenderer());
     
     for(EntityFancyItemFrame.FrameType type : EntityFancyItemFrame.FrameType.values()) {
       ModelResourceLocation loc = Util.getModelResource("fancy_frame", type.toString());
@@ -54,6 +47,6 @@ public class GadgetClientProxy extends ClientProxy {
   public void postInit() {
     super.postInit();
 
-    //MinecraftForge.EVENT_BUS.register(new GadgetClientEvents());
+    MinecraftForge.EVENT_BUS.register(new GadgetClientEvents());
   }
 }

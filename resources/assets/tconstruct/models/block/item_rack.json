@@ -1,0 +1,6 @@
+{
+    "parent": "tconstruct:block/rack",
+	"textures": {
+		"bottom": "blocks/planks_oak"
+    }
+}

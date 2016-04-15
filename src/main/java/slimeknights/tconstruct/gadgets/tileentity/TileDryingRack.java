@@ -15,7 +15,7 @@ public class TileDryingRack extends TileItemRack implements ITickable, ISidedInv
     int maxTime;
     
     public TileDryingRack() {
-        super("dryingrack", 2); // two slots, an input and an output. Should never both have something, as it is just for the sake of item ducts
+        super("dryingrack", 2); // two slots, an input and an output. Should never both have something, output is just to stop item tranfer
     }
     
     @Override
@@ -69,7 +69,7 @@ public class TileDryingRack extends TileItemRack implements ITickable, ISidedInv
     {
         currentTime = tags.getInteger("Time");
         maxTime = tags.getInteger("MaxTime");
-        readCustomNBT(tags);
+        super.readFromNBT(tags);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TileDryingRack extends TileItemRack implements ITickable, ISidedInv
     {
         tags.setInteger("Time", currentTime);
         tags.setInteger("MaxTime", maxTime);
-        writeCustomNBT(tags);
+        super.writeToNBT(tags);
     }
     
     @Override
