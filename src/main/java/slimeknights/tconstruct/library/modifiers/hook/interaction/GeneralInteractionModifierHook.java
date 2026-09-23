@@ -135,14 +135,8 @@ public interface GeneralInteractionModifierHook {
     return drawtime;
   }
 
-  /** @deprecated use {@link #startDrawing(IToolStackView, LivingEntity, float)} */
-  @Deprecated(forRemoval = true)
-  static void startDrawtime(IToolStackView tool, LivingEntity living, float speedFactor) {
-    startDrawing(tool, living, speedFactor);
-  }
-
   /**
-   * Combination of {@link #startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)} and {@link #startDrawtime(IToolStackView, LivingEntity, float)} ensuring they are added in the proper order.
+   * Combination of {@link #startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)} and {@link #startDrawing(IToolStackView, LivingEntity, float)} ensuring they are added in the proper order.
    * @param tool         Tool being used
    * @param modifier     Modifier to call for later hooks, must be on the tool
    * @param living       Entity using the tool, used for the vanilla hook

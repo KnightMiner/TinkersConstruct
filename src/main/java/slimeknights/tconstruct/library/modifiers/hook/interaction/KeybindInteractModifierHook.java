@@ -27,17 +27,6 @@ public interface KeybindInteractModifierHook {
 
   /**
    * Called when the helmet keybinding is released to interact with this modifier
-   * @param tool     Tool instance
-   * @param modifier Entry calling this hook
-   * @param player   Player wearing the helmet
-   * @param slot     Slot containing the tool
-   * @deprecated use {@link #stopInteract(IToolStackView, ModifierEntry, Player, EquipmentSlot, int, ModifierEntry)}. Overriding is okay.
-   */
-  @Deprecated
-  default void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot) {}
-
-  /**
-   * Called when the helmet keybinding is released to interact with this modifier
    * @param tool           Tool instance
    * @param modifier       Entry calling this hook
    * @param player         Player wearing the helmet
@@ -45,9 +34,7 @@ public interface KeybindInteractModifierHook {
    * @param chargeTime     Duration the button was held
    * @param activeModifier Modifier that returned true in {@link #startInteract(IToolStackView, ModifierEntry, Player, EquipmentSlot, TooltipKey)}.
    */
-  default void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
-    stopInteract(tool, modifier, player, slot);
-  }
+  default void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {}
 
 
   /** Merger that uses the first on start interact, but runs all on stop */
@@ -60,13 +47,6 @@ public interface KeybindInteractModifierHook {
         }
       }
       return false;
-    }
-
-    @Override
-    public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot) {
-      for (KeybindInteractModifierHook module : modules) {
-        module.stopInteract(tool, modifier, player, slot);
-      }
     }
 
     @Override

@@ -41,7 +41,7 @@ public class SelfDestructiveModifier extends SingleLevelModifier implements Keyb
   }
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot) {
+  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     player.removeEffect(TinkerEffects.selfDestructing.get());
   }
 

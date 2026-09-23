@@ -196,7 +196,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot) {
+  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     tool.getPersistentData().remove(modifier.getId());
   }
 

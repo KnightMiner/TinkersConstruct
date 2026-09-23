@@ -142,7 +142,7 @@ public enum ZoomModule implements ModifierModule, GeneralInteractionModifierHook
   /* Stop zooming */
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot) {
+  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     player.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     if (player.level().isClientSide) {
       stopZoom(modifier, player);
