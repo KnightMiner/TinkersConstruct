@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material;
 
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.data.BookData;
@@ -20,10 +20,7 @@ import java.util.List;
 
 import static slimeknights.tconstruct.TConstruct.getResource;
 
-/**
- * Content page for melee/harvest materials, showing head, handle, and binding.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
+/** Content page for melee/harvest materials, showing head, handle, and binding. */
 public class MeleeHarvestMaterialContent extends AbstractMaterialContent {
   /** Page ID for using this index directly */
   public static final ResourceLocation ID = getResource("melee_harvest_material");

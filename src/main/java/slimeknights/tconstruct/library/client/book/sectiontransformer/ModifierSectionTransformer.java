@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.client.book.sectiontransformer;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.transformer.ContentGroupingSectionTransformer;
-import slimeknights.tconstruct.library.client.book.content.ContentModifier;
+import slimeknights.tconstruct.library.client.book.content.ModifierContent;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 
 /** Section transformer to generate an index with modifier names */
@@ -21,7 +21,7 @@ public class ModifierSectionTransformer extends ContentGroupingSectionTransforme
   @Override
   protected boolean processPage(BookData book, GroupingBuilder builder, PageData page) {
     // modifiers add including their name
-    if (page.content instanceof ContentModifier modifierContent) {
+    if (page.content instanceof ModifierContent modifierContent) {
       if (modifierContent.getModifier() != ModifierManager.INSTANCE.getDefaultValue()) {
         builder.addPage(page.getTitle(), page);
         return true;

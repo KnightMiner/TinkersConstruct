@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -8,20 +8,15 @@ import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
-import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-/**
- * Material content for ammo, showing heads, shafts, and fletching.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
+/** Material content for ammo, showing heads, shafts, and fletching. */
 public class AmmoMaterialContent extends AbstractMaterialContent {
   /** Page ID for using this index directly */
   public static final ResourceLocation ID = TConstruct.getResource("ammo_material");
@@ -49,18 +44,6 @@ public class AmmoMaterialContent extends AbstractMaterialContent {
   @Override
   protected String translationSuffix() {
     return "ammo";
-  }
-
-  @Override
-  protected String getTextKey(MaterialId material) {
-    // TODO 1.21: drop legacy key
-    if (detailed) {
-      String legacyKey = "material." + material.toLanguageKey() + ".ammo";
-      if (Util.canTranslate(legacyKey)) {
-        return legacyKey;
-      }
-    }
-    return super.getTextKey(material);
   }
 
   @Override

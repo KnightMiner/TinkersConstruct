@@ -2,7 +2,6 @@ package slimeknights.tconstruct.library.client.book.content.material;
 
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.util.html.HtmlSerializable;
-import slimeknights.tconstruct.library.client.book.content.AbstractMaterialContent;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 

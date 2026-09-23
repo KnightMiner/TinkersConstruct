@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContentListingCentered extends PageContent {
+public class CenteredListingContent extends PageContent {
 
   @Getter
   private String title;

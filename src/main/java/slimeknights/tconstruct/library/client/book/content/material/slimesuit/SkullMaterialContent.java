@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material.slimesuit;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -12,7 +12,6 @@ import slimeknights.mantle.recipe.helper.RecipeHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.content.material.SingleMaterialStatContent;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
@@ -20,7 +19,6 @@ import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.display.CustomMaterialName;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
-import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.stats.SkullStats;
@@ -28,11 +26,8 @@ import slimeknights.tconstruct.tools.stats.SkullStats;
 import javax.annotation.Nullable;
 import java.util.List;
 
-/**
- * Extension of the material page to display skull stats for the slimeskull
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
-public class ContentMaterialSkull extends SingleMaterialStatContent {
+/** Extension of the material page to display skull stats for the slimeskull. */
+public class SkullMaterialContent extends SingleMaterialStatContent {
   /** Translation key for skull recipe */
   private static final Component SKULL_CRAFTING = TConstruct.makeTranslation("book", "material.skull");
   /** Translation key for skull recipe */
@@ -47,7 +42,7 @@ public class ContentMaterialSkull extends SingleMaterialStatContent {
   /** List of skull items as inputs */
   protected transient List<ItemStack> skullStacks = null;
 
-  public ContentMaterialSkull(MaterialVariantId material, boolean detailed) {
+  public SkullMaterialContent(MaterialVariantId material, boolean detailed) {
     super(material, detailed);
   }
 
@@ -69,16 +64,6 @@ public class ContentMaterialSkull extends SingleMaterialStatContent {
   @Override
   protected String translationSuffix() {
     return "skull";
-  }
-
-  @Override
-  protected String getTextKey(MaterialId material) {
-    // TOOD 1.21: drop legacy key
-    String legacyKey = "material." + material.toLanguageKey() + (detailed ? ".skull_encyclopedia" : ".skull_flavor");
-    if (Util.canTranslate(legacyKey)) {
-      return legacyKey;
-    }
-    return super.getTextKey(material);
   }
 
   /** Gets the recipe to cast this skull */

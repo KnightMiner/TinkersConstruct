@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.sectiontransformer.materials;
+package slimeknights.tconstruct.library.client.book.sectiontransformer;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
@@ -25,7 +25,7 @@ import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.client.book.content.AbstractMaterialContent;
+import slimeknights.tconstruct.library.client.book.content.material.AbstractMaterialContent;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
@@ -53,7 +53,7 @@ import java.util.stream.Stream;
 /**
  * Section transformer to show a range of materials tiers in the book
  */
-public class TierRangeMaterialSectionTransformer extends BookTransformer {
+public class MaterialSectionTransformer extends BookTransformer {
   /** JSON key triggering this transformer */
   private static final ResourceLocation KEY = TConstruct.getResource("material_tier");
   /** Range of valid material tiers */
@@ -63,7 +63,7 @@ public class TierRangeMaterialSectionTransformer extends BookTransformer {
   /** Map of registered material types */
   private static final Map<ResourceLocation,MaterialType> MATERIAL_TYPES = new HashMap<>();
   /** Transformer instance added to books */
-  public static final TierRangeMaterialSectionTransformer INSTANCE = new TierRangeMaterialSectionTransformer();
+  public static final MaterialSectionTransformer INSTANCE = new MaterialSectionTransformer();
 
   /** Internal record from the registry */
   private record MaterialType(BiFunction<MaterialVariantId,Boolean,AbstractMaterialContent> pageConstructor, Set<MaterialStatsId> visibleStats, @Nullable Comparator<IMaterial> sortComparator) {

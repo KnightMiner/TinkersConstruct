@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.client.book.content.ContentModifier;
+import slimeknights.tconstruct.library.client.book.content.ModifierContent;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 
@@ -15,7 +15,7 @@ public class ModifierTagInjectorTransformer extends AbstractTagInjectingTransfor
   public static final ModifierTagInjectorTransformer INSTANCE = new ModifierTagInjectorTransformer();
 
   private ModifierTagInjectorTransformer() {
-    super(ModifierManager.REGISTRY_KEY, TConstruct.getResource("load_modifiers"), ContentModifier.ID);
+    super(ModifierManager.REGISTRY_KEY, TConstruct.getResource("load_modifiers"), ModifierContent.ID);
   }
 
   @Override
@@ -30,6 +30,6 @@ public class ModifierTagInjectorTransformer extends AbstractTagInjectingTransfor
 
   @Override
   protected PageContent createFallback(Modifier modifier) {
-    return new ContentModifier(modifier);
+    return new ModifierContent(modifier);
   }
 }

@@ -47,7 +47,6 @@ import slimeknights.tconstruct.library.tools.part.IToolPart;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,18 +56,18 @@ public class ContentTool extends PageContent {
   private static final String KEY_PROPERTIES = TConstruct.makeTranslationKey("book", "tool.properties");
 
   /* Slot backgrounds */
-  private static final ImageData IMG_SLOT_1x1 = ContentModifier.IMG_SLOT_1;
-  private static final ImageData IMG_SLOT_1x2 = new ImageData(ContentModifier.BOOK_MODIFY, 40, 75, 22, 40, ContentModifier.TEX_SIZE, ContentModifier.TEX_SIZE);
-  private static final ImageData IMG_SLOT_1x3 = new ImageData(ContentModifier.BOOK_MODIFY, 62, 75, 22, 58, ContentModifier.TEX_SIZE, ContentModifier.TEX_SIZE);
-  private static final ImageData IMG_SLOT_2x1 = ContentModifier.IMG_SLOT_2;
-  private static final ImageData IMG_SLOT_2x2 = ContentModifier.IMG_SLOT_4;
-  private static final ImageData IMG_SLOT_2x3 = new ImageData(ContentModifier.BOOK_MODIFY, 84, 75, 40, 58, ContentModifier.TEX_SIZE, ContentModifier.TEX_SIZE);
-  private static final ImageData IMG_SLOT_3x1 = ContentModifier.IMG_SLOT_3;
-  private static final ImageData IMG_SLOT_3x2 = new ImageData(ContentModifier.BOOK_MODIFY, 58, 133, 58, 40, ContentModifier.TEX_SIZE, ContentModifier.TEX_SIZE);
-  private static final ImageData IMG_SLOT_3x3 = new ImageData(ContentModifier.BOOK_MODIFY, 58, 173, 58, 58, ContentModifier.TEX_SIZE, ContentModifier.TEX_SIZE);
+  private static final ImageData IMG_SLOT_1x1 = ModifierContent.IMG_SLOT_1;
+  private static final ImageData IMG_SLOT_1x2 = new ImageData(ModifierContent.BOOK_MODIFY, 40, 75, 22, 40, ModifierContent.TEX_SIZE, ModifierContent.TEX_SIZE);
+  private static final ImageData IMG_SLOT_1x3 = new ImageData(ModifierContent.BOOK_MODIFY, 62, 75, 22, 58, ModifierContent.TEX_SIZE, ModifierContent.TEX_SIZE);
+  private static final ImageData IMG_SLOT_2x1 = ModifierContent.IMG_SLOT_2;
+  private static final ImageData IMG_SLOT_2x2 = ModifierContent.IMG_SLOT_4;
+  private static final ImageData IMG_SLOT_2x3 = new ImageData(ModifierContent.BOOK_MODIFY, 84, 75, 40, 58, ModifierContent.TEX_SIZE, ModifierContent.TEX_SIZE);
+  private static final ImageData IMG_SLOT_3x1 = ModifierContent.IMG_SLOT_3;
+  private static final ImageData IMG_SLOT_3x2 = new ImageData(ModifierContent.BOOK_MODIFY, 58, 133, 58, 40, ModifierContent.TEX_SIZE, ModifierContent.TEX_SIZE);
+  private static final ImageData IMG_SLOT_3x3 = new ImageData(ModifierContent.BOOK_MODIFY, 58, 173, 58, 58, ModifierContent.TEX_SIZE, ModifierContent.TEX_SIZE);
   private static final ImageData[] IMG_SLOTS_SHAPELESS = {
     IMG_SLOT_1x1, IMG_SLOT_2x1, IMG_SLOT_3x1,
-    IMG_SLOT_2x2, ContentModifier.IMG_SLOT_5, IMG_SLOT_3x2,
+    IMG_SLOT_2x2, ModifierContent.IMG_SLOT_5, IMG_SLOT_3x2,
     IMG_SLOT_3x3, IMG_SLOT_3x3, IMG_SLOT_3x3
   };
   private static final ImageData[][] IMG_SLOTS_SHAPED = {
@@ -249,7 +248,7 @@ public class ContentTool extends PageContent {
       list.add(new TextElement(padding, 44 + h, BookScreen.PAGE_WIDTH / 2 + 5, BookScreen.PAGE_HEIGHT - h - 20, effectData));
     }
 
-    list.add(new ImageElement(imgX + (imgWidth - ContentModifier.IMG_TABLE.width) / 2, imgY + 28, -1, -1, ContentModifier.IMG_TABLE));
+    list.add(new ImageElement(imgX + (imgWidth - ModifierContent.IMG_TABLE.width) / 2, imgY + 28, -1, -1, ModifierContent.IMG_TABLE));
     if (imgSlots != null) {
       list.add(new ImageElement(imgX, imgY, -1, -1, imgSlots, book.appearance.slotColor));
     }

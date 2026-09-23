@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material;
 
 import com.google.common.collect.Lists;
 import joptsimple.internal.Strings;
@@ -51,10 +51,7 @@ import static slimeknights.tconstruct.tools.stats.PlatingMaterialStats.HELMET;
 import static slimeknights.tconstruct.tools.stats.PlatingMaterialStats.LEGGINGS;
 import static slimeknights.tconstruct.tools.stats.PlatingMaterialStats.SHIELD;
 
-/**
- * Content page for armor materials, showing all plating types, maille, and curiass.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
+/** Content page for armor materials, showing all plating types, maille, and curiass. */
 public class ArmorMaterialContent extends AbstractMaterialContent {
   /** Page ID for using this index directly */
   public static final ResourceLocation ID = TConstruct.getResource("armor_material");
@@ -94,18 +91,6 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
   @Override
   protected String translationSuffix() {
     return "armor";
-  }
-
-  @Override
-  protected String getTextKey(MaterialId material) {
-    // TODO 1.21: drop legacy key
-    if (detailed) {
-      String legacyKey = "material." + material.toLanguageKey() + ".armor";
-      if (Util.canTranslate(legacyKey)) {
-        return legacyKey;
-      }
-    }
-    return super.getTextKey(material);
   }
 
   @Override

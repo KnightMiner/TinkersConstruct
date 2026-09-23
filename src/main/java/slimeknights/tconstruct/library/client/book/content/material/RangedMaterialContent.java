@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material;
 
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.data.BookData;
@@ -11,7 +11,6 @@ import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
-import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.stats.GripMaterialStats;
 import slimeknights.tconstruct.tools.stats.LimbMaterialStats;
@@ -22,10 +21,7 @@ import java.util.List;
 
 import static slimeknights.tconstruct.TConstruct.getResource;
 
-/**
- * Content page for ranged materials, showing limb, grip, and bowstrings.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
+/** Content page for ranged materials, showing limb, grip, and bowstrings. */
 public class RangedMaterialContent extends AbstractMaterialContent {
   /** Page ID for using this index directly */
   public static final ResourceLocation ID = TConstruct.getResource("ranged_material");
@@ -53,18 +49,6 @@ public class RangedMaterialContent extends AbstractMaterialContent {
   @Override
   protected String translationSuffix() {
     return "ranged";
-  }
-
-  @Override
-  protected String getTextKey(MaterialId material) {
-    // TODO 1.21: drop legacy key
-    if (detailed) {
-      String legacyKey = "material." + material.toLanguageKey() + ".ranged";
-      if (Util.canTranslate(legacyKey)) {
-        return legacyKey;
-      }
-    }
-    return super.getTextKey(material);
   }
 
   @Override

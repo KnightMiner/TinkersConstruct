@@ -45,7 +45,7 @@ import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.client.armor.AbstractArmorModel;
 import slimeknights.tconstruct.library.client.armor.ArmorModelManager;
 import slimeknights.tconstruct.library.client.armor.texture.TrimArmorTextureSupplier;
-import slimeknights.tconstruct.library.client.book.content.AbstractMaterialContent;
+import slimeknights.tconstruct.library.client.book.content.material.AbstractMaterialContent;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.client.model.DynamicTextureLoader;
 import slimeknights.tconstruct.library.client.model.TinkerItemProperties;

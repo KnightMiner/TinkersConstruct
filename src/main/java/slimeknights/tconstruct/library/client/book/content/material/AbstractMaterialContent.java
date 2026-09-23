@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.book.content;
+package slimeknights.tconstruct.library.client.book.content.material;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
@@ -72,10 +72,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * Base class for material content pages.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.client.book.content.material}.
- */
+/** Base class for material content pages. */
 public abstract class AbstractMaterialContent extends PageContent {
   /** List of fallback items for the icon if no material recipes. */
   private static final List<Supplier<? extends IMaterialItem>> FALLBACKS = new ArrayList<>();

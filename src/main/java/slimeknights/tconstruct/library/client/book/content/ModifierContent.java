@@ -38,11 +38,10 @@ import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierR
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ContentModifier extends PageContent {
+public class ModifierContent extends PageContent {
   public static final ResourceLocation ID = TConstruct.getResource("modifier");
   public static final int TEX_SIZE = 256;
   public static final ResourceLocation BOOK_MODIFY = TConstruct.getResource("textures/gui/book/modify.png");
@@ -85,10 +84,10 @@ public class ContentModifier extends PageContent {
   public ResourceLocation toolFilter = null;
 
   /** Default constructor for page loader */
-  public ContentModifier() {}
+  public ModifierContent() {}
 
   /** Creates a new page using the given modifier description */
-  public ContentModifier(Modifier modifier) {
+  public ModifierContent(Modifier modifier) {
     this.modifier = modifier;
     this.modifierID = modifier.getId().toString();
     this.text = new TextData[] {new TextData(ForgeI18n.getPattern(modifier.getTranslationKey() + ".description"))};
