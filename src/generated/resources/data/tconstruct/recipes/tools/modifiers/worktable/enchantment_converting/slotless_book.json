@@ -12,7 +12,7 @@
       "tconstruct:slot_type",
       {
         "type": "mantle:inverted",
-        "inverted_type": "tconstruct:tag",
+        "inverted_type": "mantle:tag",
         "tag": "tconstruct:extract_blacklist/slotless"
       }
     ]

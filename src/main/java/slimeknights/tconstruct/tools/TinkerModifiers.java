@@ -35,7 +35,6 @@ import slimeknights.tconstruct.common.data.tags.ModifierTagProvider;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.SingleModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.SlotTypeModifierPredicate;
-import slimeknights.tconstruct.library.json.predicate.modifier.TagModifierPredicate;
 import slimeknights.tconstruct.library.json.variable.block.BlockVariable;
 import slimeknights.tconstruct.library.json.variable.block.ConditionalBlockVariable;
 import slimeknights.tconstruct.library.json.variable.block.StatePropertyVariable;
@@ -771,7 +770,6 @@ public final class TinkerModifiers extends TinkerModule {
 
       // modifier predicates
       ModifierPredicate.LOADER.register(getResource("single"), SingleModifierPredicate.LOADER);
-      ModifierPredicate.LOADER.register(getResource("tag"), TagModifierPredicate.LOADER);
       ModifierPredicate.LOADER.register(getResource("slot_type"), SlotTypeModifierPredicate.LOADER);
 
 

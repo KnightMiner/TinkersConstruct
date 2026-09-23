@@ -10,7 +10,7 @@
   ],
   "modifier_predicate": {
     "type": "mantle:inverted",
-    "inverted_type": "tconstruct:tag",
+    "inverted_type": "mantle:tag",
     "tag": "tconstruct:remove_blacklist"
   },
   "name": "modifiers",

@@ -22,7 +22,7 @@
       ],
       "percent": false,
       "sling": {
-        "type": "tconstruct:tag",
+        "type": "mantle:tag",
         "tag": "tconstruct:knockback_slings"
       }
     }

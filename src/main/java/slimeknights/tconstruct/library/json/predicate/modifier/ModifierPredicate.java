@@ -4,9 +4,11 @@ import net.minecraft.tags.TagKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.data.predicate.PredicateRegistry;
+import slimeknights.mantle.data.predicate.TagPredicateRegistry;
+import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.modifiers.ModifierManager;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -18,7 +20,7 @@ public interface ModifierPredicate extends IJsonPredicate<ModifierId> {
   /** Instance that always returns false */
   ModifierPredicate NONE = simple(modifier -> false);
   /** Loader for modifier predicates */
-  PredicateRegistry<ModifierId> LOADER = new PredicateRegistry<>("Modifier Predicate", ANY, NONE);
+  TagPredicateRegistry<Modifier,ModifierId> LOADER = new TagPredicateRegistry<>("Modifier Predicate", ANY, NONE, TinkerLoadables.MODIFIER_TAGS, (tag, modifier) -> ModifierManager.isInTag(modifier, tag));
 
   /** Gets an inverted condition */
   @Override
@@ -48,9 +50,8 @@ public interface ModifierPredicate extends IJsonPredicate<ModifierId> {
   }
 
   /** Creates a tag predicate */
-  @SuppressWarnings({"removal", "deprecation"})
   static IJsonPredicate<ModifierId> tag(TagKey<Modifier> tag) {
-    return new TagModifierPredicate(tag);
+    return LOADER.tag(tag);
   }
 
   /** Creates an and predicate */

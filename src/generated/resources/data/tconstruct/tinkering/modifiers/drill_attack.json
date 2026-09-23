@@ -13,7 +13,7 @@
         "type": "tconstruct:has_modifier",
         "check": "all",
         "modifier": {
-          "type": "tconstruct:tag",
+          "type": "mantle:tag",
           "tag": "tconstruct:drill_attacks"
         }
       },

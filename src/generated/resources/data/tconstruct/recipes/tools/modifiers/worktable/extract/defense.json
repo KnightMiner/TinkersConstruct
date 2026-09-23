@@ -16,7 +16,7 @@
     "predicates": [
       {
         "type": "mantle:inverted",
-        "inverted_type": "tconstruct:tag",
+        "inverted_type": "mantle:tag",
         "tag": "tconstruct:extract_blacklist/tools"
       },
       {

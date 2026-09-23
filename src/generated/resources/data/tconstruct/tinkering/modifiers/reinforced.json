@@ -5,7 +5,7 @@
       "type": "tconstruct:reduce_tool_damage",
       "cause": {
         "type": "mantle:inverted",
-        "inverted_type": "tconstruct:tag",
+        "inverted_type": "mantle:tag",
         "tag": "tconstruct:durability/bypass_reinforced"
       },
       "formula": [
@@ -34,7 +34,7 @@
       "type": "tconstruct:reduce_tool_damage",
       "cause": {
         "type": "mantle:inverted",
-        "inverted_type": "tconstruct:tag",
+        "inverted_type": "mantle:tag",
         "tag": "tconstruct:durability/bypass_reinforced"
       },
       "each_level": 0.05,

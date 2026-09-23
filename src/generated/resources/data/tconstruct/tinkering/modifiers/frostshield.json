@@ -10,7 +10,7 @@
       "type": "tconstruct:durability_shield",
       "cause": {
         "type": "mantle:inverted",
-        "inverted_type": "tconstruct:tag",
+        "inverted_type": "mantle:tag",
         "tag": "tconstruct:durability/bypass_frostshield"
       },
       "color": "AAFFFF"
