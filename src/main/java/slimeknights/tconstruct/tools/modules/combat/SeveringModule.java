@@ -8,7 +8,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraftforge.common.Tags;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
-import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.ProcessLootModifierHook;
@@ -58,9 +57,8 @@ public enum SeveringModule implements ModifierModule, ProcessLootModifierHook {
           float level = modifier.getEffectiveLevel();
           float looting = context.getLootingModifier();
           // deprecated method of doubling chances
-          float chanceMultiplier = entity.getType().is(TinkerTags.EntityTypes.RARE_MOBS) ? 2 : 1;
           for (SeveringRecipe recipe : recipes) {
-            if (world.random.nextFloat() < recipe.getChance(level, looting) * chanceMultiplier) {
+            if (world.random.nextFloat() < recipe.getChance(level, looting)) {
               ItemStack result = recipe.getOutput(entity);
               if (!result.isEmpty()) {
                 // if count is not 1, it's a random range from 1 to count

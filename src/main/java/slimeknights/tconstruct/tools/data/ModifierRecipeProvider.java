@@ -28,7 +28,6 @@ import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
-import slimeknights.mantle.registration.object.WoodBlockObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.data.BaseRecipeProvider;
@@ -39,7 +38,6 @@ import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.gadgets.entity.FrameType;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.SlotTypeModifierPredicate;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
@@ -78,7 +76,6 @@ import slimeknights.tconstruct.tools.recipe.ToggleInteractionWorktableRecipeBuil
 import slimeknights.tconstruct.tools.recipe.severing.SpecialSeveringRecipeBuilder;
 import slimeknights.tconstruct.world.TinkerHeadType;
 import slimeknights.tconstruct.world.TinkerWorld;
-import slimeknights.tconstruct.world.block.FoliageType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -842,17 +839,6 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
                          .setMaxLevel(1)
                          .saveSalvage(consumer, prefix(ModifierIds.knockbackResistance, defenseSalvage))
                          .save(consumer, prefix(ModifierIds.knockbackResistance, defenseFolder));
-    //noinspection removal
-    ModifierRecipeBuilder.modifier(TinkerModifiers.golden)
-                         .addInput(Tags.Items.INGOTS_GOLD)
-                         .addInput(Tags.Items.INGOTS_GOLD)
-                         .addInput(Tags.Items.INGOTS_GOLD)
-                         .setSlots(SlotType.DEFENSE, 1)
-                         .setMaxLevel(1).checkTraitLevel()
-                         .setTools(TinkerTags.Items.WORN_ARMOR) // allow salvage on all worn armor
-                         .saveSalvage(consumer, prefix(TinkerModifiers.golden, defenseSalvage))
-                         .setTools(TinkerTags.Items.GOLDEN_ARMOR)
-                         .save(withCondition(consumer, new TagFilledCondition<>(TinkerTags.Items.GOLDEN_ARMOR)), prefix(TinkerModifiers.golden, defenseFolder));
     IncrementalModifierRecipeBuilder.modifier(ModifierIds.turtleShell)
                                     .setInput(Items.SCUTE, 1, 5)
                                     .setSlots(SlotType.DEFENSE, 1)
@@ -1919,35 +1905,6 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     consumer.accept(new SimpleFinishedRecipe(location(folder + "dyeing"), TinkerModifiers.armorDyeingSerializer.get()));
     consumer.accept(new SimpleFinishedRecipe(location(folder + "trim"), TinkerModifiers.armorTrimSerializer.get()));
     LoadableFinishedRecipe.save(consumer, BannerModifierRecipe.LOADER, new BannerModifierRecipe(location(folder + "banner"), Ingredient.of(TinkerFluids.slimeBottle.get(SlimeType.SKY))));
-
-    // slimesuit //
-    Consumer<FinishedRecipe> slimeEmbellishmentConsumer = withCondition(consumer, new TagFilledCondition<>(TinkerTags.Items.EMBELLISHMENT_SLIME));
-    // basic slime
-    slimeTexture(slimeEmbellishmentConsumer, MaterialIds.earthslime, SlimeType.EARTH, folder);
-    slimeTexture(slimeEmbellishmentConsumer, MaterialIds.skyslime,   SlimeType.SKY, folder);
-    slimeTexture(slimeEmbellishmentConsumer, MaterialIds.ichor,      SlimeType.ICHOR, folder);
-    slimeTexture(slimeEmbellishmentConsumer, MaterialIds.enderslime, SlimeType.ENDER, folder);
-    // slimy planks
-    slimyWoodTexture(slimeEmbellishmentConsumer, MaterialIds.earthslime, TinkerWorld.greenheart,  FoliageType.EARTH, folder);
-    slimyWoodTexture(slimeEmbellishmentConsumer, MaterialIds.skyslime,   TinkerWorld.skyroot,     FoliageType.SKY,   folder);
-    slimyWoodTexture(slimeEmbellishmentConsumer, MaterialIds.blood,      TinkerWorld.bloodshroom, FoliageType.BLOOD, folder);
-    slimyWoodTexture(slimeEmbellishmentConsumer, MaterialIds.enderslime, TinkerWorld.enderbark,   FoliageType.ENDER, folder);
-    // weird slime
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, MaterialIds.clay.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
-                                  .setTools(TinkerTags.Items.EMBELLISHMENT_SLIME)
-                                  .addInput(Blocks.CLAY).addInput(Items.CLAY_BALL).addInput(Blocks.CLAY)
-                                  .save(slimeEmbellishmentConsumer, wrap(TinkerModifiers.embellishment, folder, "/slime/clay"));
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, MaterialIds.magma.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
-                                  .setTools(TinkerTags.Items.EMBELLISHMENT_SLIME)
-                                  .addInput(Blocks.MAGMA_BLOCK).addInput(Items.MAGMA_CREAM).addInput(Blocks.MAGMA_BLOCK)
-                                  .save(slimeEmbellishmentConsumer, wrap(TinkerModifiers.embellishment, folder, "/slime/magma"));
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, MaterialIds.honey.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
-                                  .setTools(TinkerTags.Items.EMBELLISHMENT_SLIME)
-                                  .addInput(Blocks.HONEY_BLOCK).addInput(Items.HONEY_BOTTLE).addInput(Blocks.HONEY_BLOCK)
-                                  .save(slimeEmbellishmentConsumer, wrap(TinkerModifiers.embellishment, folder, "/slime/honey"));
   }
 
   private void addHeadRecipes(Consumer<FinishedRecipe> consumer) {
@@ -2040,26 +1997,6 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
                                   .setTools(TinkerTags.Items.EMBELLISHMENT_WOOD)
                                   .addInput(planks).addInput(TinkerTables.pattern).addInput(planks)
                                   .save(consumer, wrap(TinkerModifiers.embellishment, folder, "/wood/" + material.getLocation('_').getPath()));
-  }
-
-  /** Adds recipes for a slime armor texture */
-  private void slimeTexture(Consumer<FinishedRecipe> consumer, MaterialId material, SlimeType slime, String folder) {
-    ItemLike congealed = TinkerWorld.congealedSlime.get(slime);
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, material.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
-                                  .setTools(TinkerTags.Items.EMBELLISHMENT_SLIME)
-                                  .addInput(congealed).addInput(TinkerCommons.slimeball.get(slime)).addInput(congealed)
-                                  .save(consumer, wrap(TinkerModifiers.embellishment, folder, "/slime/" + slime.getSerializedName()));
-  }
-
-  /** Adds recipes for a slime armor texture */
-  private void slimyWoodTexture(Consumer<FinishedRecipe> consumer, MaterialId material, WoodBlockObject wood, FoliageType foliage, String folder) {
-    ItemLike planks = wood.get();
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, material.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
-                                  .setTools(TinkerTags.Items.EMBELLISHMENT_SLIME)
-                                  .addInput(planks).addInput(TinkerWorld.slimeSapling.get(foliage)).addInput(planks)
-                                  .save(consumer, wrap(TinkerModifiers.embellishment, folder, "/slime/" + wood.getWoodType().name().split(":", 2)[1]));
   }
 
   /** Adds haste like recipes using redstone */

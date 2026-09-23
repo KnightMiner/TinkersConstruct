@@ -42,10 +42,6 @@
     "tconstruct:slime_wings",
     "tconstruct:slime_helmet",
     "tconstruct:travelers_shield",
-    "tconstruct:plate_shield",
-    {
-      "id": "#tconstruct:modifiable/multipart/single",
-      "required": false
-    }
+    "tconstruct:plate_shield"
   ]
 }

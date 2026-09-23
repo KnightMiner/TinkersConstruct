@@ -23,7 +23,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -359,9 +358,6 @@ public class TinkerTags {
 
     /** Stones that can be used for stoneshield */
     public static final TagKey<Item> STONESHIELDS = local("stoneshields");
-    /** @deprecated Modifier using this tag is planned for removal. See {@link slimeknights.tconstruct.tools.modules.interaction.FireballModule} for replacement. */
-    @Deprecated
-    public static final TagKey<Item> FIREBALLS = local("fireballs");
     /** Items that can be consumed for a blaze slimeskull to shoot a fireball */
     public static final TagKey<Item> SLIMEBALL_AMMO = local("slimeball_ammo");
     /** Items in this tag cannot be placed inside tool inventories */
@@ -394,9 +390,6 @@ public class TinkerTags {
 
     /** Modifiable items that contain multiple parts. TODO 1.21: rename to modifiable/parts? */
     public static final TagKey<Item> MULTIPART_TOOL = local("modifiable/multipart");
-    /** @deprecated use {@link #MULTIPART_TOOL} or use {@link slimeknights.tconstruct.library.recipe.display.FilteredItemRecipe}. If you need filtered support on a recipe type it's not provided, request it on GitHub. */
-    @Deprecated
-    public static final TagKey<Item> SINGLEPART_TOOL = local("modifiable/multipart/single");
     /** Modifiable items that can have range increased */
     public static final TagKey<Item> AOE = local("modifiable/aoe");
     /** Tools that use durability and can be repaired. Items in this tag support the {@link ToolStats#DURABILITY} stat. */
@@ -468,9 +461,6 @@ public class TinkerTags {
     public static final TagKey<Item> HELD_ARMOR = local("modifiable/armor/held");
     /** Modifiable items that have innate shielding behavior */
     public static final TagKey<Item> SHIELDS = local("modifiable/shields");
-    /** @deprecated After migrating travelers to have a material, doing away with golden armor on slimesuit. If you still want this on your armor, we recommend adding a new recipe */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Item> GOLDEN_ARMOR = local("modifiable/armor/golden");
     /** Items in this tag use an alternative recipe for recapitated to prevent conflict with skull part swapping. */
     public static final TagKey<Item> SKULLS = local("modifiable/skulls");
     /** Items that support skull based part swapping on index 0, and thus disallow rebalanced using just a skull. */
@@ -531,12 +521,6 @@ public class TinkerTags {
 
     /** Tools that can receive wood based embellishments */
     public static final TagKey<Item> EMBELLISHMENT_WOOD = local("modifiable/embellishment/wood");
-    /**
-     * Tools that can receive slime based embellishments.
-     * @deprecated Will be removed in 1.21 due to slimesuit rework. Plan to reimplement if needed.
-     */
-    @Deprecated
-    public static final TagKey<Item> EMBELLISHMENT_SLIME = local("modifiable/embellishment/slime");
     /** Tools that can be dyed */
     public static final TagKey<Item> DYEABLE = local("modifiable/dyeable");
     /** Tools that can have a banner applied */
@@ -559,21 +543,10 @@ public class TinkerTags {
     /** Tag so mods like thermal know our scyhtes can harvest */
     public static final TagKey<Item> SCYTHES = common("tools/scythe");
 
-    /** @deprecated use {@link MantleTags.Items#SPLASH_BOTTLE} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Item> SPLASH_BOTTLE = MantleTags.Items.SPLASH_BOTTLE;
-    /** @deprecated use {@link MantleTags.Items#LINGERING_BOTTLE} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Item> LINGERING_BOTTLE = MantleTags.Items.LINGERING_BOTTLE;
-
-
     /** Items in this tag will render the arm when held. */
     public static final TagKey<Item> SHOW_HAND = local("show_hand");
 
     // compat tags
-    /** @deprecated necronium bones now show based on {@link slimeknights.tconstruct.tools.data.material.MaterialIds#necronium} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Item> URANIUM_INGOTS = common("ingots/uranium");
     /** Tag of trophies from bosses, to grant an additional upgrade slot to tools. Meant for Twilight Forest boss trophies, but suppose you can add other bosses that are not easily farmed. */
     public static final TagKey<Item> BOSS_TROPHIES = local("boss_trophies");
     /** Create tree attachments */
@@ -611,30 +584,11 @@ public class TinkerTags {
     public static final TagKey<Fluid> SMALL_GEM_TOOLTIPS = local("tooltips/gem_small");
     /** Causes the fluid to be formatted like glass in tooltips */
     public static final TagKey<Fluid> GLASS_TOOLTIPS = local("tooltips/glass");
-    /** @deprecated use {@link slimeknights.mantle.datagen.MantleTags.Fluids#SOUP} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> SOUP_TOOLTIPS = local("tooltips/soup");
 
     /** Fluids found in swashers the hands of drowned */
     public static final TagKey<Fluid> DROWNED_SWASHER = local("swasher/drowned");
     /** Fluids found in swashers the hands of wither skeletons */
     public static final TagKey<Fluid> WITHER_SKELETON_SWASHER = local("swasher/wither_skeleton");
-
-    /** @deprecated Fluids have all been given unique effects, use {@link slimeknights.tconstruct.library.data.tinkering.AbstractFluidEffectProvider} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> CLAY_SPILLING = local("spilling/clay");
-    /** @deprecated Fluids have all been given unique effects, use {@link slimeknights.tconstruct.library.data.tinkering.AbstractFluidEffectProvider} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> GLASS_SPILLING = local("spilling/glass");
-    /** @deprecated Fluids have all been given unique effects, use {@link slimeknights.tconstruct.library.data.tinkering.AbstractFluidEffectProvider} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> CHEAP_METAL_SPILLING = local("spilling/metal/cheap");
-    /** @deprecated Fluids have all been given unique effects, use {@link slimeknights.tconstruct.library.data.tinkering.AbstractFluidEffectProvider} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> AVERAGE_METAL_SPILLING = local("spilling/metal/average");
-    /** @deprecated Fluids have all been given unique effects, use {@link slimeknights.tconstruct.library.data.tinkering.AbstractFluidEffectProvider} */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<Fluid> EXPENSIVE_METAL_SPILLING = local("spilling/metal/expensive");
 
     /** Fluids in this tag won't show in the creative filled tanks */
     public static final TagKey<Fluid> HIDE_IN_CREATIVE_TANKS = local("hide_in_creative_tanks");
@@ -723,9 +677,6 @@ public class TinkerTags {
     public static final TagKey<EntityType<?>> MELTABLE_MAGMA = local("meltable/magma");
 
 
-    /** @deprecated use the chance fields on the severing recipe to adjust rates. */
-    @Deprecated(forRemoval = true)
-    public static final TagKey<EntityType<?>> RARE_MOBS = local("rare_mobs");
     /** Common tag of fishing bobbers. Note we don't use this so we don't bother adding vanilla to it. */
     public static final TagKey<EntityType<?>> BOBBERS = common("bobber");
 

@@ -15,15 +15,10 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayTinkerStationRecipe;
-import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
 import slimeknights.tconstruct.plugin.jei.util.RecipeSlotWrapper;
 import slimeknights.tconstruct.plugin.jei.util.RecipeSlotsWrapper;
@@ -33,10 +28,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /** Common logic between {@link ModifierRecipeCategory} and {@link ToolTinkeringCategory} */
@@ -62,7 +53,6 @@ public abstract class AbstractTinkerStationCategory<T extends IDisplayTinkerStat
       slotIcons[i] = helper.createDrawable(BACKGROUND_LOC, 128 + i * 16, 0, 16, 16);
     }
     errorArrow = helper.createDrawable(BACKGROUND_LOC, 144, 33, 22, 17);
-    clearLookupCache();
   }
 
   @Nullable
@@ -152,12 +142,6 @@ public abstract class AbstractTinkerStationCategory<T extends IDisplayTinkerStat
         } else if (focusUpdate.hasError()) {
           toolWithoutModifier = List.of(toolStack);
           toolWithModifier = List.of();
-        } else if (toolStack.is(TinkerTags.Items.SINGLEPART_TOOL)) {
-          // on pass, just filter the items to only show the focus tool
-          Item item = toolStack.getItem();
-          Predicate<ItemStack> filter = stack -> stack.is(item);
-          toolWithoutModifier = toolWithoutModifier.stream().filter(filter).toList();
-          toolWithModifier = toolWithModifier.stream().filter(filter).toList();
         }
       }
 
@@ -168,15 +152,6 @@ public abstract class AbstractTinkerStationCategory<T extends IDisplayTinkerStat
       }
 
       return new RecipeLayout(toolWithoutModifier, toolWithModifier, inputs);
-    }
-
-    /** Adds hidden ingredients for singlepart tools. */
-    public void handleSinglepart(IRecipeLayoutBuilder builder, RecipeIngredientRole role) {
-      for (ItemStack stack : toolWithoutModifier) {
-        if (stack.is(TinkerTags.Items.SINGLEPART_TOOL) && stack.getItem() instanceof IModifiable modifiable) {
-          builder.addInvisibleIngredients(role).addItemStacks(getLookupTools(modifiable));
-        }
-      }
     }
   }
 
@@ -211,7 +186,6 @@ public abstract class AbstractTinkerStationCategory<T extends IDisplayTinkerStat
     // hack: if a single part tool is in the recipe, add variants of it as invisible ingredients
     boolean isCatalyst = isToolCatalyst(recipe);
     RecipeIngredientRole withoutModifierRole = isCatalyst ? RecipeIngredientRole.CATALYST : RecipeIngredientRole.INPUT;
-    layout.handleSinglepart(builder, withoutModifierRole);
 
     // add tool slots
     List<ItemStack> toolWithoutModifier = layout.toolWithoutModifier;
@@ -252,27 +226,5 @@ public abstract class AbstractTinkerStationCategory<T extends IDisplayTinkerStat
         RecipeSlotWrapper.createItem(recipeSlots, RESULT_TOOL_SLOT)
       );
     }
-  }
-
-  /* Single part tools hack */
-  /** Cache of each list of lookup items for each tool */
-  private static final Map<IModifiable,List<ItemStack>> LOOKUP_CACHE = new ConcurrentHashMap<>();
-  /** Function to compute lookup items for each tool */
-  private static final Function<IModifiable,List<ItemStack>> LOOKUP_GETTER = modifiable -> {
-    List<ItemStack> variants = new ArrayList<>();
-    // TODO: for double part tools (e.g. travelers), this does leave out a lot of materials. But the size of options will quicky explode. Worth fixing?
-    ToolBuildHandler.addVariants(variants::add, modifiable, "");
-    return variants;
-  };
-
-  /** Gets the tools for lookup for single part tools */
-  private static List<ItemStack> getLookupTools(IModifiable modifiable) {
-    return LOOKUP_CACHE.computeIfAbsent(modifiable, LOOKUP_GETTER);
-  }
-
-  /** TODO 1.21: rename to be more appropiate */
-  @Internal
-  protected static void clearLookupCache() {
-    LOOKUP_CACHE.clear();
   }
 }

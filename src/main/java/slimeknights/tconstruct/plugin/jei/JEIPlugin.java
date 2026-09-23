@@ -523,7 +523,7 @@ public class JEIPlugin implements IModPlugin {
     // tools
     for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.MULTIPART_TOOL)) {
       Item item = holder.value();
-      registry.registerSubtypeInterpreter(item, holder.is(TinkerTags.Items.SINGLEPART_TOOL) ? ToolSubtypeInterpreter.FIRST : ToolSubtypeInterpreter.INGREDIENT);
+      registry.registerSubtypeInterpreter(item, ToolSubtypeInterpreter.INGREDIENT);
     }
 
     // fluid containers have types based on fluid, don't bother with different sizes

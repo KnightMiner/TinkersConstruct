@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -132,12 +131,5 @@ public class ModifierRecipeCategory extends AbstractTinkerStationCategory<IDispl
 
     // result slots is determined based on the volatile data hook. Its a bit of a heuristic, but is good enough for our usecases
     builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(TConstructJEIConstants.SLOT_TYPE, recipe.getResultSlots());
-  }
-
-  /** @deprecated never needed to be called by an addon */
-  @Deprecated(forRemoval = true)
-  @Internal
-  public static void clearSlimeskullCache() {
-    AbstractTinkerStationCategory.clearLookupCache();
   }
 }

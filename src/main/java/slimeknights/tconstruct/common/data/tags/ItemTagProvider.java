@@ -101,7 +101,6 @@ import static slimeknights.tconstruct.common.TinkerTags.Items.RANGED_BOUNCE;
 import static slimeknights.tconstruct.common.TinkerTags.Items.RANGED_POWER;
 import static slimeknights.tconstruct.common.TinkerTags.Items.RANGED_QUICK_CHARGE;
 import static slimeknights.tconstruct.common.TinkerTags.Items.SHIELDS;
-import static slimeknights.tconstruct.common.TinkerTags.Items.SINGLEPART_TOOL;
 import static slimeknights.tconstruct.common.TinkerTags.Items.SINGLE_USE;
 import static slimeknights.tconstruct.common.TinkerTags.Items.SKULLS;
 import static slimeknights.tconstruct.common.TinkerTags.Items.SMALL_RANGED;
@@ -450,7 +449,6 @@ public class ItemTagProvider extends ItemTagsProvider {
     this.tag(ItemTags.create(new ResourceLocation("headlight", "headlight_helmets"))).addTag(HELMETS);
 
     // general
-    this.tag(MULTIPART_TOOL).addOptionalTag(SINGLEPART_TOOL);
     this.tag(MODIFIABLE).addTags(MULTIPART_TOOL, DURABILITY, MELEE, HARVEST, RANGED, AMMO, AOE, HELD, BONUS_SLOTS);
     // disable parry mod on our items, we have our own modifier for that
     this.tag(TagKey.create(Registries.ITEM, new ResourceLocation("parry", "excluded_shields"))).addTag(HELD);
@@ -505,7 +503,6 @@ public class ItemTagProvider extends ItemTagsProvider {
         .addTag(Tags.Items.END_STONES)
         .addTag(Tags.Items.GRAVEL) // for shovels and axes to use
         .add(Items.NETHERRACK, Items.BASALT, Items.POLISHED_BASALT, Items.BLACKSTONE, Items.POLISHED_BLACKSTONE);
-    this.tag(TinkerTags.Items.FIREBALLS).add(Items.FIRE_CHARGE);
     this.tag(TinkerTags.Items.TOOL_INVENTORY_BLACKLIST)
         .add(Items.BUNDLE, Items.SHULKER_BOX,
              Items.WHITE_SHULKER_BOX, Items.ORANGE_SHULKER_BOX, Items.MAGENTA_SHULKER_BOX, Items.LIGHT_BLUE_SHULKER_BOX,

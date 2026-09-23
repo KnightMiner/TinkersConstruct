@@ -76,9 +76,6 @@ public class ToolTinkeringExtension implements ICraftingCategoryExtension {
     IRecipeSlotBuilder outputSlot = builder.addSlot(recipe.isToolCatalyst() ? RecipeIngredientRole.RENDER_ONLY : RecipeIngredientRole.OUTPUT, 95, 19)
       .setOutputSlotBackground().addItemStacks(toolWithModifier).setSlotName(RESULT_TOOL_SLOT);
 
-    // handle singlepart tool focuses
-    layout.handleSinglepart(builder, RecipeIngredientRole.INPUT);
-
     // apply focus links
     int toolSize = toolWithModifier.size();
     if (toolSize > 1) {
