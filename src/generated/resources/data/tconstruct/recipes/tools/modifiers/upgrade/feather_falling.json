@@ -27,7 +27,7 @@
     }
   ],
   "needed_per_level": 12,
-  "result": "tconstruct:feather_fall",
+  "result": "tconstruct:feather_falling",
   "tools": {
     "tag": "tconstruct:modifiable/armor/boots"
   }

@@ -200,12 +200,7 @@ import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryMenuModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventorySlotMenuModule;
-import slimeknights.tconstruct.shared.TinkerEffects;
-import slimeknights.tconstruct.shared.effect.BleedingEffect;
-import slimeknights.tconstruct.shared.effect.HelmetChargingEffect;
-import slimeknights.tconstruct.shared.effect.MagneticEffect;
 import slimeknights.tconstruct.shared.effect.NoMilkEffect;
-import slimeknights.tconstruct.shared.effect.RepulsiveEffect;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.data.EnchantmentToModifierProvider;
 import slimeknights.tconstruct.tools.data.FluidEffectProvider;
@@ -216,6 +211,7 @@ import slimeknights.tconstruct.tools.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.tools.item.CreativeSlotItem;
 import slimeknights.tconstruct.tools.item.DragonScaleItem;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
+import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
 import slimeknights.tconstruct.tools.modifiers.EnderportingModifier;
 import slimeknights.tconstruct.tools.modifiers.EnergyHandlerModifier;
 import slimeknights.tconstruct.tools.modifiers.ExchangingModifier;
@@ -451,243 +447,12 @@ public final class TinkerModifiers extends TinkerModule {
   public static final StaticModifier<OverslimeModifier> overslime = MODIFIERS.register("overslime", OverslimeModifier::new);
 
 
-  // modifiers pending removal - reimplement if you need them
-  // slimeskull
-  /** @deprecated zombified piglin's trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#vitalProtectionSkull} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> revenge = MODIFIERS.registerDynamic("revenge");
-
-  // fields that have been relocated to ModifierIds
-  // slotless
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#farsighted} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> farsighted = MODIFIERS.registerDynamic("farsighted");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#nearsighted} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> nearsighted = MODIFIERS.registerDynamic("nearsighted");
-
-  // upgrades
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#magnetic} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> magnetic = MODIFIERS.registerDynamic("magnetic");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#knockback} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier knockback = MODIFIERS.registerDynamic("knockback");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#padded} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier padded = MODIFIERS.registerDynamic("padded");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#zoom} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier zoom = MODIFIERS.registerDynamic("zoom");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#scope} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier scope = MODIFIERS.registerDynamic("scope");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#necrotic} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> necrotic = MODIFIERS.registerDynamic("necrotic");
-
-  // combat upgrades
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#fiery} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier fiery = MODIFIERS.registerDynamic("fiery");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#freezing} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier freezing = MODIFIERS.registerDynamic("freezing");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#punch} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier punch = MODIFIERS.registerDynamic("punch");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#arrowPierce} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier impaling = MODIFIERS.registerDynamic("impaling");
-
-  // armor upgrades
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#thorns} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier thorns = MODIFIERS.registerDynamic("thorns");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#springy} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier springy = MODIFIERS.registerDynamic("springy");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#soulspeed} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> soulspeed = MODIFIERS.registerDynamic("soulspeed");
-
-  // abilities
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#unbreakable} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier unbreakable = MODIFIERS.registerDynamic("unbreakable");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#crystalshot} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier crystalshot = MODIFIERS.registerDynamic("crystalshot");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#multishot} (modifier) or {@link slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook#MULTISHOT} (querying) */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> multishot = MODIFIERS.registerDynamic("multishot");
-
-  // harvest abilities
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#silky} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier silky = MODIFIERS.registerDynamic("silky");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#autosmelt} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> autosmelt = MODIFIERS.registerDynamic("autosmelt");
-
-  // armor abilities
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#doubleJump} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier doubleJump = MODIFIERS.registerDynamic("double_jump");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#bouncy} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier bouncy = MODIFIERS.registerDynamic("bouncy");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#flamewake} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> flamewake = MODIFIERS.registerDynamic("flamewake");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#reflecting} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> reflecting = MODIFIERS.registerDynamic("reflecting");
-
-  // interaction abilities
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#firestarter} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> firestarter = MODIFIERS.registerDynamic("firestarter");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#fireprimer} (modifier), or {@link slimeknights.tconstruct.library.tools.item.IModifiable#EXPANDED} (querying) */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> fireprimer = MODIFIERS.registerDynamic("fireprimer");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#blocking} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> blocking = MODIFIERS.registerDynamic("blocking");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#jagged} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> harvest = MODIFIERS.registerDynamic("harvest");
-
-  // shears
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#shears} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> shears = MODIFIERS.registerDynamic("shears");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#silkyShears} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> silkyShears = MODIFIERS.registerDynamic("silky_shears");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#silkyShears} at level 2 */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> aoeSilkyShears = MODIFIERS.registerDynamic("silky_aoe_shears");
-
-  // slings
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#flinging} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> flinging = MODIFIERS.registerDynamic("flinging");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#springing} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> springing = MODIFIERS.registerDynamic("springing");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#bonking} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> bonking = MODIFIERS.registerDynamic("bonking");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#warping} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> warping = MODIFIERS.registerDynamic("warping");
-
-  // fluid abilities
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#bucketing} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> bucketing = MODIFIERS.registerDynamic("bucketing");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#spilling} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier spilling = MODIFIERS.registerDynamic("spilling");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#splashing} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> splashing = MODIFIERS.registerDynamic("splashing");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#slurping} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> slurping = MODIFIERS.registerDynamic("slurping");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#spitting} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> spitting = MODIFIERS.registerDynamic("spitting");
-
-  // traits - tier 1
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#jagged} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier jagged = MODIFIERS.registerDynamic("jagged");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#stonebound} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier stonebound = MODIFIERS.registerDynamic("stonebound");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#tanned} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> tanned = MODIFIERS.registerDynamic("tanned");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#solarPowered} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> solarPowered = MODIFIERS.registerDynamic("solar_powered");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#frostshield} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier frostshield = MODIFIERS.registerDynamic("frostshield");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#enderference} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> enderference = MODIFIERS.registerDynamic("enderference");
-
-  // traits - tier 2
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#stoneshield} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier stoneshield = MODIFIERS.registerDynamic("stoneshield");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#holy} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier holy = MODIFIERS.registerDynamic("holy");
-
-  // traits - tier 3
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#tasty} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> tasty = MODIFIERS.registerDynamic("tasty");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#temperate} */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier temperate = MODIFIERS.registerDynamic("temperate");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#decay} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> decay = MODIFIERS.registerDynamic("decay");
-
-  // traits - slimeskull
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#boonOfSssss} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> boonOfSssss = MODIFIERS.registerDynamic("boon_of_sssss");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#slowBones} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> frosttouch = MODIFIERS.registerDynamic("frosttouch");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#witheredBones} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> withered = MODIFIERS.registerDynamic("withered");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#enderdodging} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> enderdodging = MODIFIERS.registerDynamic("enderdodging");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#chrysophilite} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> chrysophilite = MODIFIERS.registerDynamic("chrysophilite");
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#goldGuard} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> goldGuard = MODIFIERS.registerDynamic("gold_guard");
-
-
   /*
    * Effects
    */
-  /** @deprecated use {@link TinkerEffects#bleeding} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<BleedingEffect> bleeding = TinkerEffects.bleeding;
-  /** @deprecated use {@link TinkerEffects#magnetic} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<MagneticEffect> magneticEffect = TinkerEffects.magnetic;
-  /** @deprecated use {@link TinkerEffects#repulsive} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<RepulsiveEffect> repulsiveEffect = TinkerEffects.repulsive;
-  /** @deprecated use {@link TinkerEffects#enderference} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<TinkerEffect> enderferenceEffect = TinkerEffects.enderference;
-  /** @deprecated use {@link TinkerEffects#selfDestructing} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<TinkerEffect> selfDestructiveEffect = TinkerEffects.selfDestructing;
-  /** @deprecated use {@link TinkerEffects#pierce} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<TinkerEffect> pierceEffect = TinkerEffects.pierce;
-
   /** Effect for rendering the helmet charging icon in the GUI */
   public static final RegistryObject<HelmetChargingEffect> helmetCharging = MOB_EFFECTS.register("helmet_charging", HelmetChargingEffect::new);
   // cooldown
-  /** @deprecated use {@link TinkerEffects#enderference} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<TinkerEffect> teleportCooldownEffect = MOB_EFFECTS.register("teleport_cooldown", () -> new NoMilkEffect(MobEffectCategory.HARMFUL, 0xCC00FA, true));
   public static final RegistryObject<TinkerEffect> fireballCooldownEffect = MOB_EFFECTS.register("fireball_cooldown", () -> new NoMilkEffect(MobEffectCategory.HARMFUL, 0xFC9600, true));
   // internal
   public static final RegistryObject<TinkerEffect> calcifiedEffect = MOB_EFFECTS.register("calcified", () -> new NoMilkEffect(MobEffectCategory.BENEFICIAL, -1, true));

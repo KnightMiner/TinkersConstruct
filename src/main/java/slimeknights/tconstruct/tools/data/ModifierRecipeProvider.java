@@ -966,7 +966,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .setTools(TinkerTags.Items.BOOTS)
       .setSlots(SlotType.UPGRADE, 1)
       .saveSalvage(consumer, prefix(ModifierIds.featherFalling, upgradeSalvage));
-    MultilevelIncrementalModifierRecipeBuilder.modifier(ModifierIds.featherFall)
+    MultilevelIncrementalModifierRecipeBuilder.modifier(ModifierIds.featherFalling)
       .setTools(TinkerTags.Items.BOOTS)
       .setInput(Items.FEATHER, 1, 12) // 1% per feather
       .addLevel(SlotType.UPGRADE, 1, 1)
@@ -974,8 +974,8 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .addLevel(SlotType.UPGRADE, 1, 3)
       .addLevel(4)
       .checkTraitLevel()
-      .saveSalvage(consumer, prefix(ModifierIds.featherFall, upgradeSalvage))
-      .save(consumer, prefix(ModifierIds.featherFall, upgradeFolder));
+      .saveSalvage(consumer, prefix(ModifierIds.featherFalling, upgradeSalvage))
+      .save(consumer, prefix(ModifierIds.featherFalling, upgradeFolder));
     ModifierRecipeBuilder.modifier(ModifierIds.longFall)
       .setTools(TinkerTags.Items.BOOTS)
       .addInput(Items.PISTON)

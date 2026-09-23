@@ -13,9 +13,6 @@ public class ModifierIds {
   public static final ModifierId recapitated = id("recapitated");
   public static final ModifierId harmonious  = id("harmonious");
   public static final ModifierId forecast = id("forecast");
-  /** @deprecated use {@link #forecast} */
-  @Deprecated
-  public static final ModifierId resurrected = id("resurrected");
   public static final ModifierId embossed    = id("embossed");
   public static final ModifierId rebalanced  = id("rebalanced");
   public static final ModifierId redirected  = id("redirected");
@@ -54,9 +51,6 @@ public class ModifierIds {
   public static final ModifierId knockback = id("knockback");
   public static final ModifierId padded = id("padded");
   public static final ModifierId sweeping = id("sweeping_edge");
-  /** @deprecated no longer used. Make a copy if you need it */
-  @Deprecated(forRemoval = true)
-  public static final ModifierId sticky     = id("sticky");
   // general abilities
   public static final ModifierId reach = id("reach");
   public static final ModifierId glowing = id("glowing");
@@ -155,10 +149,7 @@ public class ModifierIds {
   // boots
   public static final ModifierId depthStrider = id("depth_strider");
   public static final ModifierId soulspeed = id("soulspeed");
-  /** @deprecated use {@link #featherFall}. Migrating to change behavior. */
-  @Deprecated
   public static final ModifierId featherFalling = id("feather_falling");
-  public static final ModifierId featherFall = id("feather_fall");
   public static final ModifierId longFall = id("long_fall");
   public static final ModifierId frostWalker = id("frost_walker");
   public static final ModifierId snowdrift = id("snowdrift");
@@ -249,9 +240,6 @@ public class ModifierIds {
   public static final ModifierId barkskin = id("barkskin");
   public static final ModifierId dense = id("dense");
   public static final ModifierId lustrous = id("lustrous");
-  /** @deprecated use {@link #heavy} */
-  @Deprecated(forRemoval = true)
-  public static final ModifierId sharpweight = id("sharpweight");
   public static final ModifierId heavy = id("heavy");
   public static final ModifierId featherweight = id("featherweight");
   public static final ModifierId consecrated = id("consecrated");
@@ -277,9 +265,6 @@ public class ModifierIds {
   public static final ModifierId maintained = id("maintained");
   public static final ModifierId temperate = id("temperate");
   public static final ModifierId decay = id("decay");
-  /** @deprecated no longer used. Make a copy if you need it */
-  @Deprecated
-  public static final ModifierId invariant = id("invariant");
   public static final ModifierId solid = id("solid");
   public static final ModifierId shock = id("shock");
   public static final ModifierId raging = id("raging");
@@ -327,9 +312,6 @@ public class ModifierIds {
   public static final ModifierId chrysophilite = id("chrysophilite");
   public static final ModifierId fireborn = id("fireborn");
   public static final ModifierId dragonheart = id("dragonheart");
-  /** @deprecated cave spider's trait was switched to {@link #balmOfSssss}. Reimplement if you need this functionality */
-  @Deprecated(forRemoval = true)
-  public static final ModifierId mithridatism = id("mithridatism");
   // traits - slimecage
   public static final ModifierId floaty = id("float");
   public static final ModifierId ramAttack = id("ram_attack");

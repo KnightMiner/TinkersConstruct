@@ -155,7 +155,6 @@ import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.Edib
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleRepresentativeItemModule;
 import slimeknights.tconstruct.library.modifiers.modules.mining.ConditionalMiningSpeedModule;
 import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelModule;
-import slimeknights.tconstruct.library.modifiers.modules.util.BooleanPredicate;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ProjectilePredicate;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
@@ -192,7 +191,6 @@ import slimeknights.tconstruct.tools.entity.ThrownTool;
 import slimeknights.tconstruct.tools.item.CrystalshotItem;
 import slimeknights.tconstruct.tools.logic.ModifierEvents;
 import slimeknights.tconstruct.tools.modules.AutosmeltModule;
-import slimeknights.tconstruct.tools.modules.ClearEffectOnUnequipModule;
 import slimeknights.tconstruct.tools.modules.CraftCountModule;
 import slimeknights.tconstruct.tools.modules.DamageOnUnequipModule;
 import slimeknights.tconstruct.tools.modules.FovModule;
@@ -316,11 +314,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.redirected)
       .showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new SwappableToolTraitsModule(null, "", ToolHooks.REBALANCED_TRAIT));
-    // resurrected replaced with forecast
-    buildModifier(ModifierIds.resurrected)
-      .showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(UPGRADE)
-      // migration: disallow having both resurrected and forecast, as forecast is meant to replace resurrected. Not giving you a free upgrade slot for updating tinkers
-      .addModule(ModifierRequirementsModule.builder().requirement(HasModifierPredicate.hasUpgrade(ModifierIds.forecast, 1).inverted()).modifierKey(ModifierIds.resurrected).build());
 
     // tier upgrades
     // emerald
@@ -565,8 +558,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .constant(2).variable(LEVEL).power() // 2^LEVEL
         .divide().build()); // FORCE / 2^LEVEL
     buildModifier(ModifierIds.sweeping).addModule(new SweepingEdgeModule(LevelingValue.eachLevel(0.25f)));
-    buildModifier(ModifierIds.sticky)
-      .addModule(MobEffectModule.builder(MobEffects.MOVEMENT_SLOWDOWN).level(RandomLevelingValue.perLevel(0, 0.5f)).time(RandomLevelingValue.random(20, 10)).build());
 
     // damage boost
     // vanilla give +1, 1.5, 2, 2.5, 3, but that is low
@@ -801,14 +792,12 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.depthStrider).addModule(EnchantmentModule.builder(Enchantments.DEPTH_STRIDER).constant());
     buildModifier(ModifierIds.soulspeed).addModule(new SoulSpeedModule(LevelingInt.flat(1), ModifierCondition.ANY_TOOL));
     buildModifier(ModifierIds.featherFalling)
-      .showInTooltips(ShowInTooltips.PARTS_ONLY).levelDisplay(new ModifierLevelDisplay.MapLevel(LevelingInt.eachLevel(2)))
-      .addModule(new ModifierTraitModule(ModifierIds.featherFall, 2, false));
-    buildModifier(ModifierIds.featherFall).translationKey(ModifierIds.featherFalling)
       .addModule(ProtectionModule.builder().source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.FALL_PROTECTION))
         .toolContext(HasModifierPredicate.hasModifier(ModifierIds.longFall, 1).inverted()).eachLevel(3));
+    addRedirect(new ModifierId(TConstruct.MOD_ID, "feather_fall"), redirect(ModifierIds.featherFalling));
     buildModifier(ModifierIds.longFall)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
-      .addModule(ModifierRequirementsModule.builder().requirement(HasModifierPredicate.hasModifier(ModifierIds.featherFall, 4)).modifierKey(ModifierIds.longFall).build())
+      .addModule(ModifierRequirementsModule.builder().requirement(HasModifierPredicate.hasModifier(ModifierIds.featherFalling, 4)).modifierKey(ModifierIds.longFall).build())
       .addModule(BlockDamageSourceModule.source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.FALL_PROTECTION)).build());
     buildModifier(ModifierIds.frostWalker)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
@@ -876,7 +865,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.silkyShears).priority(70).levelDisplay(ModifierLevelDisplay.PLUSES)
       .addModule(new ShearsModule(0, 1, 1, silky))
       .addModule(ShowInteractionSourceModule.INSTANCE);
-    buildModifier(TinkerModifiers.aoeSilkyShears.getId()).priority(70).addModule(new ShearsModule(1, 0, 1, silky));
     // slings
     buildModifier(ModifierIds.flinging).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(new SlingLeapModule(new LevelingValue(-2, -2), false, 1.5f, 3, false, LivingEntityPredicate.and(LivingEntityPredicate.ON_GROUND, TinkerPredicate.TARGETING_BLOCK), ModifierCondition.ANY_TOOL));
@@ -1191,7 +1179,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
 
     // traits - tier 2 compat
     buildModifier(ModifierIds.lustrous);
-    addRedirect(id("sharpweight"), redirect(ModifierIds.heavy));
     buildModifier(ModifierIds.heavy)
       .addModule(StatBoostModule.multiplyBase(ToolStats.MINING_SPEED).eachLevel(0.15f))
       .addModule(StatBoostModule.add(ToolStats.ACCURACY).eachLevel(0.10f))
@@ -1427,36 +1414,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .multiply()
         .max() // we calculated two different formulas, take the larger. Effectively does piecewise on level >= 5 vs level < 5
         .build());
-    buildModifier(ModifierIds.invariant)
-      .addModule(ConditionalMeleeDamageModule.builder()
-        .formula()
-        .customVariable("temperature", new EntityMeleeVariable(EntityVariable.BIOME_TEMPERATURE, WhichEntity.ATTACKER, 0.75f))
-        .constant(0.75f).subtract().abs()
-        .constant(1.25f).subtractFlipped() // 1.25 - abs(temperature - 0.75)
-        .variable(LEVEL).multiply() // * level
-        .constant(1.6f / 1.25f).multiply() // * 1.6 / 1.25
-        .variable(MULTIPLIER).multiply() // * multiplier
-        .variable(VALUE).add() // + baseValue
-        .build())
-      .addModule(ConditionalStatModule.stat(ToolStats.ACCURACY)
-        .formula()
-        .customVariable("temperature", new EntityConditionalStatVariable(EntityVariable.BIOME_TEMPERATURE, 0.75f))
-        .constant(0.75f).subtract().abs()
-        .constant(1.25f).subtractFlipped()
-        .variable(LEVEL).multiply()
-        .constant(0.15f / 1.25f).multiply()
-        .variable(MULTIPLIER).multiply()
-        .variable(VALUE).add()
-        .build())
-      .addModule(ProtectionModule.builder()
-        .toolItem(ItemPredicate.tag(TinkerTags.Items.ARMOR))
-        .formula()
-        .customVariable("temperature", new EntityProtectionVariable(EntityVariable.BIOME_TEMPERATURE, EntityProtectionVariable.WhichEntity.TARGET, 0.75f))
-        .constant(0.75f).subtract().abs()
-        .constant(1.25f).subtractFlipped()
-        .variable(LEVEL).multiply()
-        .variable(VALUE).add()
-        .build());
     buildModifier(ModifierIds.solid)
       .addModule(StatBoostModule.multiplyBase(ToolStats.ATTACK_DAMAGE).eachLevel(0.15f))
       .addModule(StatBoostModule.add(ToolStats.PROJECTILE_DAMAGE).eachLevel(0.75f))
@@ -1572,7 +1529,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         ModifierHooks.MODIFY_DAMAGE, ModifierHooks.TOOLTIP);
 
     // traits - slimeskull
-    buildModifier(ModifierIds.mithridatism).addModule(new EffectImmunityModule(MobEffects.POISON)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.boonOfSssss).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       // 15%, +10% per level
       .addModule(AttributeModule.builder(TinkerAttributes.GOOD_EFFECT_DURATION, Operation.MULTIPLY_BASE).amount(0.15f, 0.1f))
@@ -1581,9 +1537,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.balmOfSssss).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       // 10%, +10% per level
       .addModule(AttributeModule.builder(TinkerAttributes.BAD_EFFECT_DURATION, Operation.MULTIPLY_BASE).tooltipStyle(TooltipStyle.PERCENT).amount(-0.1f, -0.1f));
-    buildModifier(TinkerModifiers.revenge.getId()).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
-      .addModule(MobEffectModule.builder(MobEffects.DAMAGE_BOOST).time(RandomLevelingValue.perLevel(0, 200)).chance(LevelingValue.ONE).counterDurabilityUsage(0).targetSelf(true).directDamage(BooleanPredicate.ALWAYS).damageSource(SourceAttackerPredicate.causing(LivingEntityPredicate.ANY)).buildCounter())
-      .addModule(new ClearEffectOnUnequipModule(MobEffects.DAMAGE_BOOST, ModifierCondition.ANY_TOOL));
     buildModifier(ModifierIds.dragonheart).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(AdjustDamageModule.builder()
         .holder(EntityVariableRangePredicate.min(new AttributeEntityVariable(Attributes.MAX_HEALTH), 2, false))
@@ -1723,16 +1676,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new TrimModule())
       .addModule(ModifierSlotModule.slot(SlotType.DEFENSE).toolContext(new HasToolHookPredicate(ToolHooks.TRIM_TRAIT).inverted()).eachLevel(1))
       .addModule(new SwappableToolTraitsModule(null, "", ToolHooks.TRIM_TRAIT));
-
-
-    // TODO 1.21: remove these redirects
-    // iron now gives magnetic. Steel is also just has better than irons old trait
-    addRedirect(id("sturdy"), redirect(ModifierIds.ductile));
-    // merged armor modifiers into standard ones
-    addRedirect(id("path_maker"), redirect(ModifierIds.pathing));
-    addRedirect(id("plowing"), redirect(ModifierIds.tilling));
-    addRedirect(id("lightspeed_armor"), redirect(ModifierIds.lightspeed));
-    addRedirect(TinkerModifiers.frosttouch.getId(), redirect(ModifierIds.slowBones));
   }
 
   /** Creates a modifier that grants 2 levels of another modifier, plus a third on the next level. */
@@ -1748,11 +1691,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
   @Override
   public String getName() {
     return "Tinkers' Construct Modifiers";
-  }
-
-  /** Short helper to get a modifier ID */
-  private static ModifierId id(String name) {
-    return new ModifierId(TConstruct.MOD_ID, name);
   }
 
   /** Short helper to get a modifier ID */

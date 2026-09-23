@@ -13,7 +13,6 @@
     "tconstruct:depth_strider": "tconstruct:item/tool/armor/modifiers/boots/tconstruct_depth_strider",
     "tconstruct:double_jump": "tconstruct:item/tool/armor/modifiers/boots/tconstruct_double_jump",
     "tconstruct:emerald": "tconstruct:item/tool/armor/modifiers/boots/tconstruct_emerald",
-    "tconstruct:feather_fall": "tconstruct:item/tool/armor/modifiers/boots/tconstruct_feather_falling",
     "tconstruct:feather_falling": "tconstruct:item/tool/armor/modifiers/boots/tconstruct_feather_falling",
     "tconstruct:fiery": {
       "luminosity": 10,

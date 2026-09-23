@@ -393,8 +393,7 @@ public class ModifierModelMapProvider extends AbstractModifierModelMapProvider {
     tool("armor/boots").smallFolder("armor/modifiers/boots/").basic(
         ModifierIds.depthStrider, ModifierIds.doubleJump, ModifierIds.featherFalling,
         ModifierIds.longFall, ModifierIds.soulspeed)
-      .luminosity(15, ModifierIds.lightspeed)
-      .basic(ModifierIds.featherFall, "tconstruct_feather_falling");
+      .luminosity(15, ModifierIds.lightspeed);
 
     // plate armor
     for (ArmorItem.Type type : ArmorItem.Type.values()) {
