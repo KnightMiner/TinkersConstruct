@@ -61,12 +61,10 @@ import slimeknights.tconstruct.library.modifiers.hook.armor.ProtectionModifierHo
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.armor.MobDisguiseModule;
-import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorStatModule;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
-import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
@@ -131,7 +129,7 @@ public class ToolEvents {
     }
 
     // next, add in armor haste
-    double armorMultiplier = player.getAttributeValue(TinkerAttributes.MINING_SPEED_MULTIPLIER.get()) + ArmorStatModule.getStat(player, TinkerDataKeys.MINING_SPEED);
+    double armorMultiplier = player.getAttributeValue(TinkerAttributes.MINING_SPEED_MULTIPLIER.get());
     if (armorMultiplier >= 0) {
       event.setNewSpeed((float) (event.getNewSpeed() * armorMultiplier));
     }
@@ -267,7 +265,6 @@ public class ToolEvents {
   private static final ModifierId ARMOR_DAMAGE = new ModifierId(TConstruct.MOD_ID, "protection");
 
   // low priority to minimize conflict as we apply reduction as if we are the final change to damage before vanilla
-  @SuppressWarnings("removal")
   @SubscribeEvent(priority = EventPriority.LOW)
   static void livingHurt(LivingHurtEvent event) {
     LivingEntity entity = event.getEntity();
@@ -315,9 +312,8 @@ public class ToolEvents {
       // run shulking global damage "boost", its a bit hardcoded Java wise to make it softcoded in JSON
       if (attacker.isCrouching()) {
         double crouchMultiplier = living.getAttributeValue(TinkerAttributes.CROUCH_DAMAGE_MULTIPLIER.get());
-        crouchMultiplier += ArmorStatModule.getStat(attacker, TinkerDataKeys.CROUCH_DAMAGE);
         if (crouchMultiplier != 0) {
-          originalDamage *= crouchMultiplier;
+          originalDamage *= (float) crouchMultiplier;
         }
       }
     }
@@ -326,14 +322,14 @@ public class ToolEvents {
     if (source.is(TinkerTags.DamageTypes.FIRE_PROTECTION)) {
       int level = TinkerEffect.getLevel(entity, TinkerEffects.conductive);
       if (level > 0) {
-        originalDamage *= Math.pow(2, level);
+        originalDamage *= (float) Math.pow(2, level);
       }
     }
     // venom - boosts damage from magic
     if (source.is(TinkerTags.DamageTypes.MAGIC_PROTECTION)) {
       int level = TinkerEffect.getLevel(entity, TinkerEffects.venom);
       if (level > 0) {
-        originalDamage *= Math.pow(2, level);
+        originalDamage *= (float) Math.pow(2, level);
       }
     }
     
@@ -378,7 +374,7 @@ public class ToolEvents {
     // that said, don't actually care about cap unless we have some protection, can use vanilla to simplify logic
     float cap = 20f;
     if (modifierValue > 0) {
-      cap = (float) ProtectionModifierHook.getProtectionCap(entity, context.getTinkerData());
+      cap = (float) ProtectionModifierHook.getProtectionCap(entity);
     }
     if (vanillaModifier != modifierValue || (cap > 20 && vanillaModifier > 20) || (cap < 20 && vanillaModifier > cap)) {
       // fetch armor and toughness if blockable, passing in 0 to the logic will skip the armor calculations

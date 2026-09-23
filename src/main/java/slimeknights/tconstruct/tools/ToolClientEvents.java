@@ -65,8 +65,6 @@ import slimeknights.tconstruct.library.client.modifiers.TrimModifierModel;
 import slimeknights.tconstruct.library.client.particle.AttackParticle;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
-import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorStatModule;
-import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.HarvestTiers;
@@ -362,8 +360,8 @@ public class ToolClientEvents extends ClientEventBase {
         ToolStack tool = ToolStack.from(using);
         speed += tool.getStats().get(ToolStats.USE_ITEM_SPEED) - ToolStats.USE_ITEM_SPEED.getDefaultValue();
       }
-      // next, add in deprecated key bonus
-      speed = Mth.clamp(speed + ArmorStatModule.getStat(player, TinkerDataKeys.USE_ITEM_SPEED), 0, 1);
+      // finally, clamp it into usable range
+      speed = Mth.clamp(speed, 0, 1);
       // update speed, note if the armor stat is 0 and the held tool is not tinkers this is a no-op effectively
       Input input = event.getInput();
       // multiply by 5 to cancel out the vanilla 20%

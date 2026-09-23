@@ -167,8 +167,6 @@ import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.Edib
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleRepresentativeItemModule;
 import slimeknights.tconstruct.library.modifiers.modules.mining.ConditionalMiningSpeedModule;
 import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelModule;
-import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorStatModule;
-import slimeknights.tconstruct.library.modifiers.modules.technical.MaxArmorStatModule;
 import slimeknights.tconstruct.library.modifiers.util.DynamicModifier;
 import slimeknights.tconstruct.library.modifiers.util.ModifierDeferredRegister;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
@@ -655,8 +653,6 @@ public final class TinkerModifiers extends TinkerModule {
       ModifierModule.LOADER.register(getResource("melee_capacity"), MeleeCapacityModule.LOADER);
       // technical
       ModifierModule.LOADER.register(getResource("armor_level"), ArmorLevelModule.LOADER);
-      ModifierModule.LOADER.register(getResource("max_armor_stat"), MaxArmorStatModule.LOADER);
-      ModifierModule.LOADER.register(getResource("armor_stat"), ArmorStatModule.LOADER);
       ModifierModule.LOADER.register(getResource("inventory"), InventoryModule.LOADER);
       ModifierModule.LOADER.register(getResource("inventory_menu"), InventoryMenuModule.LOADER);
       ModifierModule.LOADER.register(getResource("inventory_slot_menu"), InventorySlotMenuModule.INSTANCE.getLoader());
