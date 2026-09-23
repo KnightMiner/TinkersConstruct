@@ -27,7 +27,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
-import slimeknights.tconstruct.library.recipe.material.ShapedMaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.ShapedMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.material.ShapelessMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipe;
@@ -154,8 +153,6 @@ public final class TinkerTables extends TinkerModule {
   public static final RegistryObject<RecipeSerializer<MaterialValueSwappingRecipe>> materialValueSwapping = RECIPE_SERIALIZERS.register("material_value_swapping", () -> LoadableRecipeSerializer.of(MaterialValueSwappingRecipe.LOADER));
   public static final RegistryObject<RecipeSerializer<PartSwappingOverrideRecipe>> partSwappingOverride = RECIPE_SERIALIZERS.register("part_swapping_override", () -> LoadableRecipeSerializer.of(PartSwappingOverrideRecipe.LOADER));
   public static final RegistryObject<RecipeSerializer<ToolMaterialSwappingRecipe>> toolMaterialSwapping = RECIPE_SERIALIZERS.register("tool_material_swapping", () -> LoadableRecipeSerializer.of(ToolMaterialSwappingRecipe.LOADER));
-  @Deprecated
-  public static final RegistryObject<RecipeSerializer<ShapedMaterialRecipe>> shapedMaterialRecipeSerializer = RECIPE_SERIALIZERS.register("crafting_shaped_material", ShapedMaterialRecipe.Serializer::new);
   public static final RegistryObject<RecipeSerializer<ShapedMaterialsRecipe>> shapedMaterialsRecipeSerializer = RECIPE_SERIALIZERS.register("crafting_shaped_materials", ShapedMaterialsRecipe.Serializer::new);
   public static final RegistryObject<RecipeSerializer<ShapelessMaterialsRecipe>> shapelessMaterialsRecipeSerializer = RECIPE_SERIALIZERS.register("crafting_shapeless_materials", ShapelessMaterialsRecipe.Serializer::new);
   // part builder

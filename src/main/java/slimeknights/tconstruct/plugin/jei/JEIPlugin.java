@@ -71,7 +71,6 @@ import slimeknights.tconstruct.library.recipe.entitymelting.EntityMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.recipe.material.IDisplayMaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
-import slimeknights.tconstruct.library.recipe.material.ShapedMaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.ShapedMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.material.ShapelessMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.melting.IDisplayableMeltingRecipe;
@@ -221,11 +220,9 @@ public class JEIPlugin implements IModPlugin {
     registration.register(TConstructJEIConstants.SLOT_TYPE, slots, new SlotIngredientHelper(), SlotIngredientRenderer.INGREDIENT);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registry) {
     IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registry.getCraftingCategory();
-    craftingCategory.addCategoryExtension(ShapedMaterialRecipe.class, ShapedMaterialExtension::new);
     craftingCategory.addCategoryExtension(ShapedMaterialsRecipe.class, ShapedMaterialsExtension::create);
     craftingCategory.addCategoryExtension(ShapelessMaterialsRecipe.class, ShapelessMaterialsExtension::shapeless);
     craftingCategory.addCategoryExtension(OverslimeCraftingTableRecipe.class, OverslimeRecipeExtension::new);
