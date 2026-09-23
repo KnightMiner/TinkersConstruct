@@ -40,7 +40,6 @@ import slimeknights.tconstruct.library.modifiers.fluid.block.OffsetBlockFluidEff
 import slimeknights.tconstruct.library.modifiers.fluid.block.PlaceBlockFluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.entity.DamageFluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.entity.DamageFluidEffect.DamageTypePair;
-import slimeknights.tconstruct.library.modifiers.fluid.entity.FireFluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.general.ConditionalFluidEffect;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 
@@ -179,24 +178,6 @@ public abstract class AbstractFluidEffectProvider extends GenericDataProvider {
   }
 
 
-  /* Deprecated */
-
-  /** Use {@link #addMetal(FluidObject)} with {@link Builder#fireDamage(float)}, {@link FireFluidEffect} and {@link Builder#placeFire()} */
-  @Deprecated(forRemoval = true)
-  protected Builder burningFluid(TagKey<Fluid> tag, float damage, int time) {
-    return burningFluid(tag.location().getPath(), tag, FluidValues.NUGGET, damage, time);
-  }
-
-  /** Use {@link #addFluid(TagKey, int)} with {@link Builder#fireDamage(float)}, {@link FireFluidEffect} and {@link Builder#placeFire()} */
-  @Deprecated(forRemoval = true)
-  protected Builder burningFluid(String name, TagKey<Fluid> tag, int amount, float damage, int time) {
-    Builder builder = addFluid(name, tag, amount).fireDamage(damage);
-    if (time > 0) {
-      builder.addEntityEffect(new FireFluidEffect(TimeAction.SET, time)).placeFire();
-    }
-    return builder;
-  }
-
   /** Builder class */
   @RequiredArgsConstructor
   @CanIgnoreReturnValue
@@ -258,12 +239,6 @@ public abstract class AbstractFluidEffectProvider extends GenericDataProvider {
       addBlockEffect(builder.buildCloud());
       addEntityEffects(builder.buildEntity(action));
       return this;
-    }
-
-    /** @deprecated use {@link #addEffect(FluidMobEffect.Builder, TimeAction)}, parameter order was swapped for parity with {@link #addEntityEffects(List)} with {@link FluidMobEffect.Builder#buildEntity(TimeAction)} */
-    @Deprecated(forRemoval = true)
-    public Builder addEffect(TimeAction action, FluidMobEffect.Builder builder) {
-      return addEffect(builder, action);
     }
 
     /** Adds an effect to the given fluid */
