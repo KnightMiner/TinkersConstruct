@@ -145,11 +145,6 @@
   "item.tconstruct.queens_slime_ingot": "皇后史萊姆錠",
   "item.tconstruct.queens_slime_nugget": "皇后史萊姆粒",
 
-  "block.tconstruct.soulsteel_block": "魂鋼方塊",
-  "block.tconstruct.soulsteel_block.tooltip": "可用於建造烽火台基座",
-  "item.tconstruct.soulsteel_ingot": "魂鋼錠",
-  "item.tconstruct.soulsteel_nugget": "魂鋼粒",
-
   "item.tconstruct.netherite_nugget": "獄髓粒",
   "item.tconstruct.debris_nugget": "遺骸碎片",
   "item.tconstruct.debris_nugget.tooltip": "遠古遺骸的細小碎片，似乎可以在高溫下被回收利用",
@@ -614,11 +609,6 @@
   "fluid.tconstruct.molten_queens_slime": "熔融皇后史萊姆",
   "fluid.tconstruct.flowing_molten_queens_slime": "流動的熔融皇后史萊姆",
   "item.tconstruct.molten_queens_slime_bucket": "熔融皇后史萊姆桶",
-
-  "block.tconstruct.molten_soulsteel_fluid": "熔融魂鋼",
-  "fluid.tconstruct.molten_soulsteel": "熔融魂鋼",
-  "fluid.tconstruct.flowing_molten_soulsteel": "流動的熔融魂鋼",
-  "item.tconstruct.molten_soulsteel_bucket": "熔融魂鋼桶",
 
   "block.tconstruct.molten_netherite_fluid": "熔融獄髓",
   "fluid.tconstruct.molten_netherite": "熔融獄髓",

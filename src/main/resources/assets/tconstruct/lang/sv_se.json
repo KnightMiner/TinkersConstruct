@@ -143,11 +143,6 @@
   "item.tconstruct.queens_slime_ingot": "Drottningsslemtacka",
   "item.tconstruct.queens_slime_nugget": "Drottningsslemklimp",
   
-  "block.tconstruct.soulsteel_block": "Själstålsblock",
-  "block.tconstruct.soulsteel_block.tooltip": "Kan användas som grund till en fyr",
-  "item.tconstruct.soulsteel_ingot": "Själstålstacka",
-  "item.tconstruct.soulsteel_nugget": "Själstålklimp",
-  
   "item.tconstruct.netherite_nugget": "Netheritklimp",
   "item.tconstruct.debris_nugget": "Spillrastycke",
   "item.tconstruct.debris_nugget.tooltip": "Liten skärva av uråldrig netherit, som möjligtvis kan smältas ned för att utvinnas",
@@ -555,11 +550,6 @@
   "fluid.tconstruct.molten_queens_slime": "Nedsmält drottningsslem",
   "fluid.tconstruct.flowing_molten_queens_slime": "Flödande nedsmält drottningsslem",
   "item.tconstruct.molten_queens_slime_bucket": "Hink med nedsmält drottningsslem",
-  
-  "block.tconstruct.molten_soulsteel_fluid": "Nedsmält själstål",
-  "fluid.tconstruct.molten_soulsteel": "Nedsmält själstål",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Flödande nedsmält själstål",
-  "item.tconstruct.molten_soulsteel_bucket": "Hink med nedsmält själstål",
   
   "block.tconstruct.molten_netherite_fluid": "Nedsmält netherit",
   "fluid.tconstruct.molten_netherite": "Nedsmält netherit",

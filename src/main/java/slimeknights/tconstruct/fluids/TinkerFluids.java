@@ -171,7 +171,6 @@ public final class TinkerFluids extends TinkerModule {
   public static final FlowingFluidObject<ForgeFlowingFluid> moltenHepatizon   = FLUIDS.registerMetal("molten_hepatizon").type(hot("molten_hepatizon").temperature(1700).lightLevel(8)).block(createBurning(MapColor.TERRACOTTA_BLUE, 8, 10, 7f)).bucket().commonTag().flowing();
   public static final FlowingFluidObject<InvertedFluid>     moltenCinderslime = FLUIDS.registerMetal("molten_cinderslime").invertedType(hot("molten_cinderslime").temperature(1350).lightLevel(10).density(-2000)).burningBlock(MapColor.COLOR_RED, 10, 10, 7f).bucket().invertedFlowing();
   public static final FlowingFluidObject<ForgeFlowingFluid> moltenQueensSlime = FLUIDS.registerMetal("molten_queens_slime").type(hot("molten_queens_slime").temperature(1450).lightLevel(9)).block(createBurning(MapColor.COLOR_GREEN, 9, 10, 6f)).bucket().flowing();
-  public static final FlowingFluidObject<ForgeFlowingFluid> moltenSoulsteel   = FLUIDS.registerMetal("molten_soulsteel").type(hot("molten_soulsteel").temperature(1500).lightLevel(6)).block(createBurning(MapColor.COLOR_BROWN, 6, 10, 7f)).bucket().flowing();
   public static final FlowingFluidObject<ForgeFlowingFluid> moltenNetherite   = FLUIDS.registerMetal("molten_netherite").type(hot("molten_netherite").temperature(1550).lightLevel(14)).block(createBurning(MapColor.COLOR_BLACK, 14, 10, 10f)).bucket().commonTag().flowing();
   public static final FlowingFluidObject<ForgeFlowingFluid> moltenKnightslime = FLUIDS.registerMetal("molten_knightslime").type(hot("molten_knightslime").temperature(1425).lightLevel(12)).block(createBurning(MapColor.COLOR_MAGENTA, 12, 10, 8f)).bucket().flowing();
 
@@ -345,7 +344,6 @@ public final class TinkerFluids extends TinkerModule {
       DispenserBlock.registerBehavior(moltenManyullyn, dispenseBucket);
       DispenserBlock.registerBehavior(moltenHepatizon, dispenseBucket);
       DispenserBlock.registerBehavior(moltenQueensSlime, dispenseBucket);
-      DispenserBlock.registerBehavior(moltenSoulsteel, dispenseBucket);
       DispenserBlock.registerBehavior(moltenNetherite, dispenseBucket);
       DispenserBlock.registerBehavior(moltenKnightslime, dispenseBucket);
       // compat ores
@@ -453,7 +451,6 @@ public final class TinkerFluids extends TinkerModule {
     output.accept(moltenNetherite);
     output.accept(moltenKnightmetal);
     output.accept(moltenKnightslime);
-    // future: soulsteel
 
     // compat ores
     acceptMolten(output, moltenTin);

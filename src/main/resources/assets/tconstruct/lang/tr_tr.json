@@ -145,11 +145,6 @@
   "item.tconstruct.queens_slime_ingot": "Ecenin Balçığı Külçesi",
   "item.tconstruct.queens_slime_nugget": "Ecenin Balçığı Parçası",
 
-  "block.tconstruct.soulsteel_block": "Ruhçeliği Bloğu",
-  "block.tconstruct.soulsteel_block.tooltip": "Fener tabanı olarak kullanılabilir",
-  "item.tconstruct.soulsteel_ingot": "Ruhçeliği Külçesi",
-  "item.tconstruct.soulsteel_nugget": "Ruhçeliği Parçası",
-
   "item.tconstruct.netherite_nugget": "Netherit Parçası",
   "item.tconstruct.debris_nugget": "Kalıntı Hurdası",
   "item.tconstruct.debris_nugget.tooltip": "Küçük antik netherit kırığı, muhtemelen kurtarmak için ergitilebilir",
@@ -614,11 +609,6 @@
   "fluid.tconstruct.molten_queens_slime": "Ergimiş Ecenin Balçığı",
   "fluid.tconstruct.flowing_molten_queens_slime": "Akan Ergimiş Ecenin Balçığı",
   "item.tconstruct.molten_queens_slime_bucket": "Ergimiş Ecenin Balçığı Kovası",
-
-  "block.tconstruct.molten_soulsteel_fluid": "Ergimiş Ruhçeliği",
-  "fluid.tconstruct.molten_soulsteel": "Ergimiş Ruhçeliği",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Akan Ergimiş Ruhçeliği",
-  "item.tconstruct.molten_soulsteel_bucket": "Ergimiş Ruhçeliği Kovası",
 
   "block.tconstruct.molten_netherite_fluid": "Ergimiş Netherit",
   "fluid.tconstruct.molten_netherite": "Ergimiş Netherit",

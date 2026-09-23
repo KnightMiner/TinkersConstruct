@@ -67,7 +67,6 @@ public class FluidTagProvider extends FluidTagsProvider {
     fluidTag(TinkerFluids.moltenHepatizon);
     fluidTag(TinkerFluids.moltenQueensSlime);
     fluidTag(TinkerFluids.moltenCinderslime);
-    fluidTag(TinkerFluids.moltenSoulsteel);
     fluidTag(TinkerFluids.moltenNetherite);
     // end alloys
     fluidTag(TinkerFluids.moltenKnightmetal);
@@ -205,7 +204,7 @@ public class FluidTagProvider extends FluidTagsProvider {
         // base alloys
         TinkerFluids.moltenSlimesteel.getTag(), TinkerFluids.moltenAmethystBronze.getTag(), TinkerFluids.moltenRoseGold.getTag(), TinkerFluids.moltenPigIron.getTag(),
         TinkerFluids.moltenManyullyn.getTag(), TinkerFluids.moltenHepatizon.getTag(), TinkerFluids.moltenQueensSlime.getTag(), TinkerFluids.moltenCinderslime.getTag(),
-        TinkerFluids.moltenNetherite.getTag(), TinkerFluids.moltenSoulsteel.getTag(), TinkerFluids.moltenKnightmetal.getTag(), TinkerFluids.moltenKnightslime.getTag(),
+        TinkerFluids.moltenNetherite.getTag(), TinkerFluids.moltenKnightmetal.getTag(), TinkerFluids.moltenKnightslime.getTag(),
         // compat ores
         TinkerFluids.moltenTin.getTag(), TinkerFluids.moltenAluminum.getTag(), TinkerFluids.moltenLead.getTag(),
         TinkerFluids.moltenSilver.getTag(), TinkerFluids.moltenNickel.getTag(), TinkerFluids.moltenZinc.getTag(),
@@ -228,10 +227,8 @@ public class FluidTagProvider extends FluidTagsProvider {
     this.tag(TinkerTags.Fluids.SMALL_GEM_TOOLTIPS).addTags(TinkerFluids.moltenQuartz.getTag(), TinkerFluids.moltenAmethyst.getTag());
     this.tag(MantleTags.Fluids.SOUP).addTag(TinkerFluids.meatSoup.getTag());
 
-    // hide upcoming fluids
-    tag(TinkerTags.Fluids.HIDDEN_IN_RECIPE_VIEWERS).add(TinkerFluids.moltenSoulsteel.get());
-    // hide upcoming fluids that require NBT. Can expand this list if other mods report problems
-    tag(TinkerTags.Fluids.HIDE_IN_CREATIVE_TANKS).add(TinkerFluids.potion.get()).addTag(TinkerTags.Fluids.HIDDEN_IN_RECIPE_VIEWERS);
+    // hide fluids that require NBT. Can expand this list if other mods report problems
+    tag(TinkerTags.Fluids.HIDE_IN_CREATIVE_TANKS).add(TinkerFluids.potion.get()).addOptionalTag(TinkerTags.HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
   @Override

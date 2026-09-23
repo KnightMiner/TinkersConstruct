@@ -592,8 +592,6 @@ public class TinkerTags {
 
     /** Fluids in this tag won't show in the creative filled tanks */
     public static final TagKey<Fluid> HIDE_IN_CREATIVE_TANKS = local("hide_in_creative_tanks");
-    /** Fluids in this tag won't show in JEI */
-    public static final TagKey<Fluid> HIDDEN_IN_RECIPE_VIEWERS = hiddenFromRecipeViewers(Registries.FLUID);
 
     /** Any fluids in this tag will have block {@link slimeknights.tconstruct.library.modifiers.fluid.FluidEffects} run when fired using the chem thrower */
     public static final TagKey<Fluid> CHEMTHROWER_BLOCK_EFFECTS = local("chemthrower_effects/block");

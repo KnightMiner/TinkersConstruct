@@ -47,11 +47,6 @@
   "item.tconstruct.queens_slime_ingot": "Lingote de Moco de Reina",
   "item.tconstruct.queens_slime_nugget": "Fragmento de Moco de Reina",
 
-  "block.tconstruct.soulsteel_block": "Bloque de Soulsteel",
-  "block.tconstruct.soulsteel_block.tooltip": "Puede usarse como base para un faro",
-  "item.tconstruct.soulsteel_ingot": "Lingote de Soulsteel",
-  "item.tconstruct.soulsteel_nugget": "Fragmento de Soulsteel",
-
   "item.tconstruct.netherite_nugget": "Fragmento de Netherite",
   "item.tconstruct.debris_nugget": "Fragmento de Escombros",
   "item.tconstruct.debris_nugget.tooltip": "Pequeño fragmento de netherite antigua, posiblemente se puede fundir para recuperar",
@@ -563,11 +558,6 @@
   "fluid.tconstruct.molten_queens_slime": "Baba de Reina Fundida",
   "fluid.tconstruct.flowing_molten_queens_slime": "Baba de Reina Fundida Fluyendo",
   "item.tconstruct.molten_queens_slime_bucket": "Cubo de Baba de Reina Fundida",
-
-  "block.tconstruct.molten_soulsteel_fluid": "Acero de Alma Fundido",
-  "fluid.tconstruct.molten_soulsteel": "Acero de Alma Fundido",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Acero de Alma Fundido Fluyendo",
-  "item.tconstruct.molten_soulsteel_bucket": "Cubo de Acero de Alma Fundido",
 
   "block.tconstruct.molten_netherite_fluid": "Netherita Fundida",
   "fluid.tconstruct.molten_netherite": "Netherita Fundida",

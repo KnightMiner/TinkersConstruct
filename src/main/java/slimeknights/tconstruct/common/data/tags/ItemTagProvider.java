@@ -189,7 +189,6 @@ public class ItemTagProvider extends ItemTagsProvider {
     addMetalTags(TinkerMaterials.queensSlime);
     addMetalTags(TinkerMaterials.manyullyn);
     addMetalTags(TinkerMaterials.hepatizon);
-    addMetalTags(TinkerMaterials.soulsteel);
     // tier 5
     addMetalTags(TinkerMaterials.knightmetal);
     addMetalTags(TinkerMaterials.knightslime);
@@ -255,12 +254,8 @@ public class ItemTagProvider extends ItemTagsProvider {
     IntrinsicTagAppender<Item> hidden = tag(HIDDEN_IN_RECIPE_VIEWERS);
     hidden.add(
       // internal item for modifiers
-      TinkerTools.crystalshotItem.asItem(),
-      // unused future fluids
-      TinkerFluids.moltenSoulsteel.asItem()
+      TinkerTools.crystalshotItem.asItem()
     );
-    // unused future material items
-    TinkerMaterials.soulsteel.forEach(item -> hidden.add(item.asItem()));
     // ichor foliage
     hidden.add(
       TinkerWorld.slimeLeaves.get(FoliageType.ICHOR).asItem(),

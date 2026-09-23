@@ -208,7 +208,6 @@ public class MaterialRecipeProvider extends BaseRecipeProvider implements IMater
     metalMaterialRecipe(consumer, MaterialIds.knightslime, folder, "knightslime", false);
     materialRecipe(consumer, MaterialIds.blazewood, Ingredient.of(TinkerMaterials.blazewood), 1, 1, folder + "blazewood");
     materialRecipe(consumer, MaterialIds.blazingBone, Ingredient.of(TinkerMaterials.blazingBone), 1, 1, folder + "blazing_bone");
-    //registerMetalMaterial(consumer, MaterialIds.soulsteel,   "soulsteel",    false);
     // debris has no storage block, just ingots and nuggets
     materialRecipe(consumer, MaterialIds.ancient, Ingredient.of(TinkerTags.Items.INGOTS_NETHERITE_SCRAP), 1, 1, folder + "ancient/ingot");
     materialRecipe(consumer, MaterialIds.ancient, Ingredient.of(TinkerTags.Items.NUGGETS_NETHERITE_SCRAP), 1, 9, folder + "ancient/nugget");

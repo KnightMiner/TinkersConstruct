@@ -162,11 +162,6 @@
   "item.tconstruct.knightmetal_ingot": "Lingote Hecho del Caballero de metal",
   "item.tconstruct.knightmetal_nugget": "Pepita Hecha del Caballero de metal",
 
-  "block.tconstruct.soulsteel_block": "Bloque de Acero de Almas",
-  "block.tconstruct.soulsteel_block.tooltip": "Puede usarse como base para el faro",
-  "item.tconstruct.soulsteel_ingot": "Lingote de Acero de Almas",
-  "item.tconstruct.soulsteel_nugget": "Pepita de Acero de Almas",
-
   "item.tconstruct.netherite_nugget": "Pepita de Netherita",
   "item.tconstruct.debris_nugget": "Placas de escombros ancestrales",
   "item.tconstruct.debris_nugget.tooltip": "Pequeño de fragmento de Netherita, posiblemente se pueda derretir para recuperar material",
@@ -766,11 +761,6 @@
   "fluid.tconstruct.molten_queens_slime": "Slime Reina fundida",
   "fluid.tconstruct.flowing_molten_queens_slime": "Slime Reina fundida fluyendo",
   "item.tconstruct.molten_queens_slime_bucket": "Balde con Slime Reina fundida",
-
-  "block.tconstruct.molten_soulsteel_fluid": "Acero de almas fundido",
-  "fluid.tconstruct.molten_soulsteel": "Acero de almas fundido",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Acero de almas fundido fluyendo",
-  "item.tconstruct.molten_soulsteel_bucket": "Balde con Acero de almas fundido",
 
   "block.tconstruct.molten_netherite_fluid": "Netherita fundida",
   "fluid.tconstruct.molten_netherite": "Netherita fundida",

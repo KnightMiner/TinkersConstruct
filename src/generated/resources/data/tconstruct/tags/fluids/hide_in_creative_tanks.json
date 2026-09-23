@@ -1,6 +1,9 @@
 {
   "values": [
     "tconstruct:potion",
-    "#c:hidden_from_recipe_viewers"
+    {
+      "id": "#c:hidden_from_recipe_viewers",
+      "required": false
+    }
   ]
 }

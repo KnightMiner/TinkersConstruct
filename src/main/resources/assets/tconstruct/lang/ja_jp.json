@@ -164,11 +164,6 @@
   "item.tconstruct.knightslime_ingot": "ナイトスライムインゴット",
   "item.tconstruct.knightslime_nugget": "ナイトスライム塊",
 
-  "block.tconstruct.soulsteel_block": "ソウルスチールブロック",
-  "block.tconstruct.soulsteel_block.tooltip": "ビーコンの土台に使用可能",
-  "item.tconstruct.soulsteel_ingot": "ソウルスチールブロック",
-  "item.tconstruct.soulsteel_nugget": "ソウルスチールブロック",
-
   "item.tconstruct.netherite_nugget": "ネザライト塊",
   "item.tconstruct.debris_nugget": "残骸の破片",
   "item.tconstruct.debris_nugget.tooltip": "古代の残骸の欠片、溶融させれば復元できるかもしれない",
@@ -753,11 +748,6 @@
   "fluid.tconstruct.molten_queens_slime": "溶融したクイーンスライム",
   "fluid.tconstruct.flowing_molten_queens_slime": "流れる溶融したクイーンスライム",
   "item.tconstruct.molten_queens_slime_bucket": "溶融したクイーンスライム入りバケツ",
-
-  "block.tconstruct.molten_soulsteel_fluid": "溶融したソウルスチール",
-  "fluid.tconstruct.molten_soulsteel": "溶融したソウルスチール",
-  "fluid.tconstruct.flowing_molten_soulsteel": "流れる溶融したソウルスチール",
-  "item.tconstruct.molten_soulsteel_bucket": "溶融したソウルスチール入りバケツ",
 
   "block.tconstruct.molten_netherite_fluid": "溶融したネザライト",
   "fluid.tconstruct.molten_netherite": "溶融したネザライト",

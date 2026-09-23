@@ -73,7 +73,6 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
     alloy(TinkerFluids.moltenQueensSlime).fogColor(0x478A33);
     alloy(TinkerFluids.moltenNetherite);
     // alloy - end
-    alloy(TinkerFluids.moltenSoulsteel);
     alloy(TinkerFluids.moltenKnightmetal);
     alloy(TinkerFluids.moltenKnightslime);
 

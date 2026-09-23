@@ -153,11 +153,6 @@
 "item.tconstruct.queens_slime_ingot": "Lingote de Slime da Rainha",
 "item.tconstruct.queens_slime_nugget": "Pepita de Slime da Rainha",
 
-"block.tconstruct.soulsteel_block": "Bloco de Aço-de-Alma",
-"block.tconstruct.soulsteel_block.tooltip": "Pode ser usado como base de sinalizador",
-"item.tconstruct.soulsteel_ingot": "Lingote de Aço-de-Alma",
-"item.tconstruct.soulsteel_nugget": "Pepita de Aço-de-Alma",
-
 "item.tconstruct.netherite_nugget": "Pepita de Netherita",
 "item.tconstruct.debris_nugget": "Fragmento de Detritos",
 "item.tconstruct.debris_nugget.tooltip": "Pequeno fragmento de netherita antiga, possivelmente pode ser derretido para recuperação",
@@ -724,11 +719,6 @@
 "fluid.tconstruct.molten_queens_slime": "Slime da Rainha Derretido",
 "fluid.tconstruct.flowing_molten_queens_slime": "Fluido de Slime da Rainha Derretido",
 "item.tconstruct.molten_queens_slime_bucket": "Balde de Slime da Rainha Derretido",
-
-"block.tconstruct.molten_soulsteel_fluid": "Aço-de-Alma Derretido",
-"fluid.tconstruct.molten_soulsteel": "Aço-de-Alma Derretido",
-"fluid.tconstruct.flowing_molten_soulsteel": "Fluido de Aço-de-Alma Derretido",
-"item.tconstruct.molten_soulsteel_bucket": "Balde de Aço-de-Alma Derretido",
 
 "block.tconstruct.molten_netherite_fluid": "Netherita Derretida",
 "fluid.tconstruct.molten_netherite": "Netherita Derretida",

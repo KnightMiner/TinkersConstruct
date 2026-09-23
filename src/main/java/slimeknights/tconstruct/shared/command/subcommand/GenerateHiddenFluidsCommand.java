@@ -18,7 +18,7 @@ import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.tconstruct.common.TinkerTags.Fluids;
+import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.smeltery.data.SmelteryCompat;
 
 import java.io.BufferedWriter;
@@ -48,7 +48,7 @@ public class GenerateHiddenFluidsCommand {
     GeneratePackHelper.saveMcmeta(pack);
 
     // fetch existing tag, if it exists
-    ResourceLocation tag = Fluids.HIDDEN_IN_RECIPE_VIEWERS.location();
+    ResourceLocation tag = TinkerTags.HIDDEN_FROM_RECIPE_VIEWERS;
     Path tagPath = pack.resolve(PackType.SERVER_DATA.getDirectory() + '/' + tag.getNamespace() + '/' + TagManager.getTagDir(Registries.FLUID) + '/' + tag.getPath() + ".json");
 
     // load in existing tag from the path, not using resource managers as we are just modifying locally

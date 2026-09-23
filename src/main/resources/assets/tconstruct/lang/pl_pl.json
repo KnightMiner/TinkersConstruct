@@ -119,11 +119,6 @@
   "item.tconstruct.queens_slime_ingot": "Sztabka szlamu królowej",
   "item.tconstruct.queens_slime_nugget": "Bryłka szlamu królowej",
 
-  "block.tconstruct.soulsteel_block": "Blok stali dusz",
-  "block.tconstruct.soulsteel_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
-  "item.tconstruct.soulsteel_ingot": "Sztabka stali dusz",
-  "item.tconstruct.soulsteel_nugget": "Bryłka stali dusz",
-
   "item.tconstruct.netherite_nugget": "Bryłka netherytu",
   "item.tconstruct.debris_nugget": "Okruch netherytu",
   "item.tconstruct.debris_nugget.tooltip": "Mały odłamek pradawnego netherytu, prawdopodobnie może zostać stopiony",
@@ -481,11 +476,6 @@
   "fluid.tconstruct.molten_queens_slime": "Stopiony szlam królowej",
   "fluid.tconstruct.flowing_molten_queens_slime": "Płynący stopiony szlam królowej",
   "item.tconstruct.molten_queens_slime_bucket": "Wiadro stopionego szlamu królowej",
-
-  "block.tconstruct.molten_soulsteel_fluid": "Stopiona stal dusz",
-  "fluid.tconstruct.molten_soulsteel": "Stopiona stal dusz",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Płynąca stopiona stal dusz",
-  "item.tconstruct.molten_soulsteel_bucket": "Wiadro stopionej stali dusz",
 
   "block.tconstruct.molten_netherite_fluid": "Stopiony netheryt",
   "fluid.tconstruct.molten_netherite": "Stopiony netheryt",

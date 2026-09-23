@@ -109,7 +109,6 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
     this.dropSelf(TinkerMaterials.cinderslime.get());
     this.dropSelf(TinkerMaterials.queensSlime.get());
     this.dropSelf(TinkerMaterials.knightmetal.get());
-    this.dropSelf(TinkerMaterials.soulsteel.get());
     // tier 5
     this.dropSelf(TinkerMaterials.knightslime.get());
   }

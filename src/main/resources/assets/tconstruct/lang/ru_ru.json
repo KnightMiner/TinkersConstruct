@@ -167,11 +167,6 @@
   "item.tconstruct.knightslime_ingot": "Слиток рыцарской слизи",
   "item.tconstruct.knightslime_nugget": "Кусочек рыцарской слизи",
 
-  "block.tconstruct.soulsteel_block": "Стальной блок душ",
-  "block.tconstruct.soulsteel_block.tooltip": "Может использоваться в качестве основы для маяка.",
-  "item.tconstruct.soulsteel_ingot": "Стальной слиток душ",
-  "item.tconstruct.soulsteel_nugget": "Кусочек стали душ",
-
   "item.tconstruct.netherite_nugget": "Кусочек незерита",
   "item.tconstruct.debris_nugget": "Обломок незеритового лома",
   "item.tconstruct.debris_nugget.tooltip": "Небольшой обломок незеритового лома, возможно, его можно переплавить для повторного использования.",
@@ -764,11 +759,6 @@
   "fluid.tconstruct.molten_queens_slime": "Расплавленная королевская слизь",
   "fluid.tconstruct.flowing_molten_queens_slime": "Текучая расплавленная королевская слизь",
   "item.tconstruct.molten_queens_slime_bucket": "Ведро расплавленной королевской слизи",
-
-  "block.tconstruct.molten_soulsteel_fluid": "Расплавленная сталь душ",
-  "fluid.tconstruct.molten_soulsteel": "Расплавленная сталь душ",
-  "fluid.tconstruct.flowing_molten_soulsteel": "Текучая расплавленная сталь душ",
-  "item.tconstruct.molten_soulsteel_bucket": "Ведро расплавленной стали душ",
 
   "block.tconstruct.molten_netherite_fluid": "Расплавленный незерит",
   "fluid.tconstruct.molten_netherite": "Расплавленный незерит",
