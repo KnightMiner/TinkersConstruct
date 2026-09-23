@@ -55,7 +55,7 @@
       "toughness": 2.0
     },
     "tconstruct:skull": {
-      "durability": 220
+      "repair_amount": 220
     }
   }
 }

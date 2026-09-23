@@ -9,7 +9,6 @@ import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.data.ModifierIds;
 import slimeknights.tconstruct.tools.stats.PlatingMaterialStats;
 import slimeknights.tconstruct.tools.stats.RepairStats;
-import slimeknights.tconstruct.tools.stats.SkullStats;
 import slimeknights.tconstruct.tools.stats.SlimeStats;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
@@ -202,28 +201,29 @@ public class MaterialTraitsDataProvider extends AbstractMaterialTraitDataProvide
     addTraits(MaterialIds.enderPearl, SlimeStats.ID, ModifierIds.enderclearance);
 
     // slimeskull
-    material(MaterialIds.gunpowder).addTraits(SkullStats.ID, TinkerModifiers.selfDestructive.getId(), ModifierIds.creeperDisguise);
+    MaterialStatsId skull = RepairStats.SKULL.getId();
+    material(MaterialIds.gunpowder).addTraits(skull, TinkerModifiers.selfDestructive.getId(), ModifierIds.creeperDisguise);
     // end
-    material(MaterialIds.enderPearl).addTraits(SkullStats.ID, ModifierIds.warping, ModifierIds.endermanDisguise);
-    material(MaterialIds.dragonScale).addTraits(SkullStats.ID, ModifierIds.dragonheart);
+    material(MaterialIds.enderPearl).addTraits(skull, ModifierIds.warping, ModifierIds.endermanDisguise);
+    material(MaterialIds.dragonScale).addTraits(skull, ModifierIds.dragonheart);
     // skeleton
-    material(MaterialIds.bone).addTraits(SkullStats.ID, TinkerModifiers.strongBones.getId(), ModifierIds.skeletonDisguise);
-    material(MaterialIds.ice).addTraits(SkullStats.ID, ModifierIds.slowBones, ModifierIds.strayDisguise);
-    material(MaterialIds.necroticBone).addTraits(SkullStats.ID, ModifierIds.witheredBones, ModifierIds.witherSkeletonDisguise);
+    material(MaterialIds.bone).addTraits(skull, TinkerModifiers.strongBones.getId(), ModifierIds.skeletonDisguise);
+    material(MaterialIds.ice).addTraits(skull, ModifierIds.slowBones, ModifierIds.strayDisguise);
+    material(MaterialIds.necroticBone).addTraits(skull, ModifierIds.witheredBones, ModifierIds.witherSkeletonDisguise);
     // spider
-    material(MaterialIds.string).addTraits(SkullStats.ID, ModifierIds.boonOfSssss, ModifierIds.spiderDisguise);
-    material(MaterialIds.darkthread).addTraits(SkullStats.ID, ModifierIds.balmOfSssss, ModifierIds.caveSpiderDisguise);
+    material(MaterialIds.string).addTraits(skull, ModifierIds.boonOfSssss, ModifierIds.spiderDisguise);
+    material(MaterialIds.darkthread).addTraits(skull, ModifierIds.balmOfSssss, ModifierIds.caveSpiderDisguise);
     // zombie
-    material(MaterialIds.leather).addTraits(SkullStats.ID, ModifierIds.consecratedSkull, ModifierIds.zombieDisguise);
-    material(MaterialIds.iron).addTraits(SkullStats.ID, ModifierIds.rebuff, ModifierIds.huskDisguise);
-    material(MaterialIds.copper).addTraits(SkullStats.ID, ModifierIds.respirationSkull, ModifierIds.drownedDisguise);
+    material(MaterialIds.leather).addTraits(skull, ModifierIds.consecratedSkull, ModifierIds.zombieDisguise);
+    material(MaterialIds.iron).addTraits(skull, ModifierIds.rebuff, ModifierIds.huskDisguise);
+    material(MaterialIds.copper).addTraits(skull, ModifierIds.respirationSkull, ModifierIds.drownedDisguise);
     // nether
-    material(MaterialIds.blaze).addTraits(SkullStats.ID, ModifierIds.fireborn, ModifierIds.blazeDisguise);
-    material(MaterialIds.gold).addTraits(SkullStats.ID, ModifierIds.chrysophilite, ModifierIds.piglinDisguise);
-    material(MaterialIds.roseGold).addTraits(SkullStats.ID, ModifierIds.goldGuard, ModifierIds.piglinBruteDisguise);
-    material(MaterialIds.pigIron).addTraits(SkullStats.ID, ModifierIds.vitalProtectionSkull, ModifierIds.zombifiedPiglinDisguise);
+    material(MaterialIds.blaze).addTraits(skull, ModifierIds.fireborn, ModifierIds.blazeDisguise);
+    material(MaterialIds.gold).addTraits(skull, ModifierIds.chrysophilite, ModifierIds.piglinDisguise);
+    material(MaterialIds.roseGold).addTraits(skull, ModifierIds.goldGuard, ModifierIds.piglinBruteDisguise);
+    material(MaterialIds.pigIron).addTraits(skull, ModifierIds.vitalProtectionSkull, ModifierIds.zombifiedPiglinDisguise);
     // crafted
-    material(MaterialIds.knightmetal).addTraits(SkullStats.ID, ModifierIds.spitting);
+    material(MaterialIds.knightmetal).addTraits(skull, ModifierIds.spitting);
 
     // slimecage
     MaterialStatsId cage = RepairStats.RIBCAGE.getId();

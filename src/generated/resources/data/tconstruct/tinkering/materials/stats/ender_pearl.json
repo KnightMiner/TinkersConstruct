@@ -2,7 +2,7 @@
   "stats": {
     "tconstruct:arrow_head": {},
     "tconstruct:skull": {
-      "durability": 250
+      "repair_amount": 250
     },
     "tconstruct:slime": {
       "durability": 250,

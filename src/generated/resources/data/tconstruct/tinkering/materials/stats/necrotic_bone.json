@@ -30,7 +30,7 @@
     },
     "tconstruct:shield_core": {},
     "tconstruct:skull": {
-      "durability": 125
+      "repair_amount": 125
     }
   }
 }

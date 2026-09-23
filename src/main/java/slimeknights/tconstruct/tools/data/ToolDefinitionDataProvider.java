@@ -70,7 +70,6 @@ import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
 import slimeknights.tconstruct.tools.stats.LimbMaterialStats;
 import slimeknights.tconstruct.tools.stats.PlatingMaterialStats;
 import slimeknights.tconstruct.tools.stats.RepairStats;
-import slimeknights.tconstruct.tools.stats.SkullStats;
 import slimeknights.tconstruct.tools.stats.SlimeStats;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
@@ -737,8 +736,8 @@ public class ToolDefinitionDataProvider extends AbstractToolDefinitionDataProvid
     defineArmor(ArmorDefinitions.SLIMESUIT)
       // materials
       // helmet - slime and skull
-      .module(ArmorItem.Type.HELMET, MaterialStatsModule.stats().stat(SkullStats.ID).stat(SlimeStats.ID, 1.1f).primaryPart(1).build())
-      .module(ArmorItem.Type.HELMET, new MaterialTraitsModule(SkullStats.ID, 0), ToolHooks.TRIM_TRAIT)
+      .module(ArmorItem.Type.HELMET, MaterialStatsModule.stats().stat(RepairStats.SKULL.getId()).stat(SlimeStats.ID, 1.1f).primaryPart(1).build())
+      .module(ArmorItem.Type.HELMET, new MaterialTraitsModule(RepairStats.SKULL.getId(), 0), ToolHooks.TRIM_TRAIT)
       .module(ArmorItem.Type.HELMET, RemappingMaterialsModule.builder()
         .material(anyMaterial, blood).remap()
           .add(MaterialIds.glass, MaterialIds.gunpowder)

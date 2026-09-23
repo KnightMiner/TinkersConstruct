@@ -9,7 +9,6 @@ import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
 import slimeknights.tconstruct.tools.stats.LimbMaterialStats;
 import slimeknights.tconstruct.tools.stats.PlatingMaterialStats;
 import slimeknights.tconstruct.tools.stats.RepairStats;
-import slimeknights.tconstruct.tools.stats.SkullStats;
 import slimeknights.tconstruct.tools.stats.SlimeStats;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
@@ -543,28 +542,28 @@ public class MaterialStatsDataProvider extends AbstractMaterialStatsDataProvider
     addMaterialStats(MaterialIds.enderPearl, new SlimeStats(250, 0));
 
     // slimeskull
-    addMaterialStats(MaterialIds.gunpowder,    new SkullStats( 90));
-    addMaterialStats(MaterialIds.blaze,        new SkullStats(150));
+    addMaterialStats(MaterialIds.gunpowder,    RepairStats.skull( 90));
+    addMaterialStats(MaterialIds.blaze,        RepairStats.skull(150));
     // end
-    addMaterialStats(MaterialIds.enderPearl,   new SkullStats(250));
-    addMaterialStats(MaterialIds.dragonScale,  new SkullStats(120));
+    addMaterialStats(MaterialIds.enderPearl,   RepairStats.skull(250));
+    addMaterialStats(MaterialIds.dragonScale,  RepairStats.skull(120));
     // skeleton
-    addMaterialStats(MaterialIds.bone,         new SkullStats(100));
-    addMaterialStats(MaterialIds.ice,          new SkullStats( 75));
-    addMaterialStats(MaterialIds.necroticBone, new SkullStats(125));
+    addMaterialStats(MaterialIds.bone,         RepairStats.skull(100));
+    addMaterialStats(MaterialIds.ice,          RepairStats.skull( 75));
+    addMaterialStats(MaterialIds.necroticBone, RepairStats.skull(125));
     // spider
-    addMaterialStats(MaterialIds.string,       new SkullStats(140));
-    addMaterialStats(MaterialIds.darkthread,   new SkullStats(200));
+    addMaterialStats(MaterialIds.string,       RepairStats.skull(140));
+    addMaterialStats(MaterialIds.darkthread,   RepairStats.skull(200));
     // zombie
-    addMaterialStats(MaterialIds.leather,      new SkullStats( 97));
-    addMaterialStats(MaterialIds.iron,         new SkullStats(165));
-    addMaterialStats(MaterialIds.copper,       new SkullStats(145));
+    addMaterialStats(MaterialIds.leather,      RepairStats.skull( 97));
+    addMaterialStats(MaterialIds.iron,         RepairStats.skull(165));
+    addMaterialStats(MaterialIds.copper,       RepairStats.skull(145));
     // piglin
-    addMaterialStats(MaterialIds.gold,         new SkullStats(125));
-    addMaterialStats(MaterialIds.roseGold,     new SkullStats(175));
-    addMaterialStats(MaterialIds.pigIron,      new SkullStats(150));
+    addMaterialStats(MaterialIds.gold,         RepairStats.skull(125));
+    addMaterialStats(MaterialIds.roseGold,     RepairStats.skull(175));
+    addMaterialStats(MaterialIds.pigIron,      RepairStats.skull(150));
     // crafted
-    addMaterialStats(MaterialIds.knightmetal,  new SkullStats(220));
+    addMaterialStats(MaterialIds.knightmetal,  RepairStats.skull(220));
 
     // slimecage
     addMaterialStats(MaterialIds.bone,         RepairStats.ribcage(100));

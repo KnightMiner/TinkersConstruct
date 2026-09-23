@@ -4,7 +4,7 @@
     "tconstruct:repair_kit": {},
     "tconstruct:shield_core": {},
     "tconstruct:skull": {
-      "durability": 75
+      "repair_amount": 75
     }
   }
 }

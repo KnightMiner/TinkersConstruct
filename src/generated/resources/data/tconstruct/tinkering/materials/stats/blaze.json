@@ -5,7 +5,7 @@
       "repair_amount": 150
     },
     "tconstruct:skull": {
-      "durability": 150
+      "repair_amount": 150
     }
   }
 }

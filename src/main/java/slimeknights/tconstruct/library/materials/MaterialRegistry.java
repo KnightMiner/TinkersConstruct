@@ -30,7 +30,6 @@ import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
 import slimeknights.tconstruct.tools.stats.LimbMaterialStats;
 import slimeknights.tconstruct.tools.stats.PlatingMaterialStats;
 import slimeknights.tconstruct.tools.stats.RepairStats;
-import slimeknights.tconstruct.tools.stats.SkullStats;
 import slimeknights.tconstruct.tools.stats.SlimeStats;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
@@ -130,7 +129,7 @@ public final class MaterialRegistry {
     registry.registerStatType(StatlessMaterialStats.SHIELD_CORE.getType(), ARMOR);
     // slimesuit
     registry.registerStatType(SlimeStats.TYPE, ARMOR);
-    registry.registerStatType(SkullStats.TYPE, ARMOR);
+    registry.registerStatType(RepairStats.SKULL, ARMOR);
     registry.registerStatType(RepairStats.RIBCAGE); // not registered as armor as we want melee/harvest traits to win out
     registry.registerStatType(RepairStats.SHELL, ARMOR);
     registry.registerStatType(RepairStats.LACES, ARMOR);

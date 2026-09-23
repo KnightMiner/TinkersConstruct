@@ -9,7 +9,7 @@
     "tconstruct:maille": {},
     "tconstruct:repair_kit": {},
     "tconstruct:skull": {
-      "durability": 97
+      "repair_amount": 97
     }
   }
 }

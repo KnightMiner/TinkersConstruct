@@ -35,7 +35,6 @@ import slimeknights.tconstruct.tools.stats.HandleMaterialStats;
 import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
 import slimeknights.tconstruct.tools.stats.LimbMaterialStats;
 import slimeknights.tconstruct.tools.stats.RepairStats;
-import slimeknights.tconstruct.tools.stats.SkullStats;
 import slimeknights.tconstruct.tools.stats.SlimeStats;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
@@ -132,7 +131,7 @@ public class TinkerBook extends BookData {
     // slimesuit
     MaterialSectionTransformer.registerMaterialType(SlimeStats.ID, SlimeMaterialContent::new);
     MaterialSectionTransformer.registerMaterialType(getResource("skull"), SkullMaterialContent::new,
-      Comparator.comparing(MaterialSectionTransformer.tagOrder(TinkerTags.Materials.SLIMESKULL)), SkullStats.ID);
+      Comparator.comparing(MaterialSectionTransformer.tagOrder(TinkerTags.Materials.SLIMESKULL)), RepairStats.SKULL.getId());
     MaterialSectionTransformer.registerMaterialType(RepairStats.RIBCAGE.getId(), RibcageMaterialContent::new);
     MaterialSectionTransformer.registerMaterialType(RepairStats.SHELL.getId(), ShellMaterialContent::new);
     MaterialSectionTransformer.registerMaterialType(RepairStats.LACES.getId(), LacesMaterialContent::new);

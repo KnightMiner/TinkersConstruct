@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 import slimeknights.tconstruct.tools.TinkerTools;
-import slimeknights.tconstruct.tools.stats.SkullStats;
+import slimeknights.tconstruct.tools.stats.RepairStats;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -53,7 +53,7 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
 
   @Override
   protected MaterialStatsId getStatType() {
-    return SkullStats.ID;
+    return RepairStats.SKULL.getId();
   }
 
   @Override

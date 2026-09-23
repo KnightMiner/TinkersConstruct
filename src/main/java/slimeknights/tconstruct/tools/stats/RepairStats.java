@@ -22,6 +22,8 @@ public record RepairStats(MaterialStatType<?> getType, int durability) implement
   private static final RecordLoadable<RepairStats> LOADABLE = RecordLoadable.create(MaterialStatType.CONTEXT_KEY.requiredField(), IntLoadable.FROM_ONE.requiredField("repair_amount", IRepairableMaterialStats::durability), RepairStats::new);
   /* Stat types */
   /** Type for bones on slimeshell */
+  public static final MaterialStatType<RepairStats> SKULL = makeType("skull");
+  /** Type for bones on slimeshell */
   public static final MaterialStatType<RepairStats> RIBCAGE = makeType("ribcage");
   /** Type for shell on slimeshell */
   public static final MaterialStatType<RepairStats> SHELL = makeType("shell");
@@ -55,6 +57,11 @@ public record RepairStats(MaterialStatType<?> getType, int durability) implement
 
 
   /* Constructors */
+
+  /** Creates a new instance of the skull type */
+  public static RepairStats skull(int durability) {
+    return new RepairStats(SKULL, durability);
+  }
 
   /** Creates a new instance of the shell type */
   public static RepairStats ribcage(int durability) {
