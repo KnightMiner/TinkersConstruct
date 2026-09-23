@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.library.data.material;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,7 +20,6 @@ import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
 import slimeknights.tconstruct.library.json.JsonRedirect;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.materials.json.MaterialJson;
@@ -118,127 +119,11 @@ public abstract class AbstractMaterialDataProvider extends GenericDataProvider {
   }
 
 
-  /* Material helpers */
-
-  /** @deprecated use {@link #material(MaterialId)} */
-  @Deprecated
-  protected void addMaterial(IMaterial material, @Nullable ICondition condition, JsonRedirect... redirect) {
-    MaterialId id = material.getIdentifier();
-    if (allMaterials.containsKey(id)) {
-      throw new IllegalArgumentException("Duplicate material with ID: " + material.getIdentifier());
-    }
-    MaterialBuilder builder = material(id)
-      .craftable(material.isCraftable())
-      .hidden(material.isHidden())
-      .tier(material.getTier())
-      .sort(material.getSortOrder());
-    // skip rarity as that method was never designed to set it
-    if (condition != null) {
-      builder.condition(condition);
-    }
-    for (JsonRedirect r : redirect) {
-      builder.redirect(r);
-    }
-  }
-
-  /** @deprecated use {@link #material(MaterialId)} */
-  @Deprecated
-  protected void addMaterial(MaterialId location, int tier, int order, boolean craftable, boolean hidden, @Nullable ICondition condition, JsonRedirect... redirect) {
-    MaterialBuilder builder = material(location).tier(tier).sort(order).craftable(craftable).hidden(hidden);
-    if (condition != null) {
-      builder.condition(condition);
-    }
-    for (JsonRedirect r : redirect) {
-      builder.redirect(r);
-    }
-  }
-
-  /** @deprecated use {@link #material(MaterialId)} */
-  @Deprecated
-  protected void addMaterial(MaterialId location, int tier, int order, boolean craftable) {
-    material(location).tier(tier).sort(order).craftable(craftable);
-  }
-
-  /** @deprecated {@link MaterialBuilder#compat(String...)} */
-  @Deprecated
-  protected void addCompatMaterial(MaterialId location, int tier, int order, boolean craftable, String... tagNames) {
-    ICondition condition = new OrCondition(Stream.concat(
-      Stream.of(ConfigEnabledCondition.FORCE_INTEGRATION_MATERIALS),
-      Arrays.stream(tagNames).map(AbstractMaterialDataProvider::tagExistsCondition)
-    ).toArray(ICondition[]::new));
-    addMaterial(location, tier, order, craftable, false, condition);
-  }
-
-  /** @deprecated {@link MaterialBuilder#compatMetal(String)} or {@link MaterialBuilder#compatAlloy(String...)} */
-  @Deprecated(forRemoval = true)
-  protected void addCompatMetalMaterial(MaterialId location, int tier, int order, String... ingotNames) {
-    addCompatMaterial(location, tier, order, false, Arrays.stream(ingotNames).map(name -> "ingots/" + name).toArray(String[]::new));
-  }
-
-  /** @deprecated use {@link MaterialBuilder#compatMetal()} */
-  @Deprecated
-  protected void addCompatMetalMaterial(MaterialId location, int tier, int order) {
-    addCompatMetalMaterial(location, tier, order, location.getPath());
-  }
-
-  /** @deprecated use {@link MaterialBuilder#compatAlloy(ICondition...)} */
-  @Deprecated
-  protected void addCompatAlloy(MaterialId location, int tier, int order, ICondition... alloyConditions) {
-    ICondition condition = new OrCondition(
-      // if forced
-      ConfigEnabledCondition.FORCE_INTEGRATION_MATERIALS,
-      // or we have the matching alloy ingot
-      tagExistsCondition("ingots/" + location.getPath()),
-      // or we allow ingotless alloys and have all alloy components
-      new AndCondition(Util.prepend(alloyConditions, ConfigEnabledCondition.ALLOW_INGOTLESS_ALLOYS))
-    );
-    addMaterial(location, tier, order, false, false, condition);
-  }
-
-  /** @deprecated use {@link MaterialBuilder#compatAlloy(String...)} */
-  @Deprecated
-  protected void addCompatAlloy(MaterialId location, int tier, int order, String component) {
-    addCompatAlloy(location, tier, order, tagExistsCondition("ingots/" + component));
-  }
-
-
-  /* Redirect helpers */
-
-  /** @deprecated use {@link MaterialBuilder#redirect(ResourceLocation, ICondition...)} */
-  @Deprecated
-  protected void addRedirect(MaterialId id, @Nullable ICondition condition, JsonRedirect... redirect) {
-    MaterialBuilder builder = material(id);
-    if (condition != null) {
-      builder.condition(condition);
-    }
-    for (JsonRedirect r : redirect) {
-      builder.redirect(r);
-    }
-  }
-
-  /** @deprecated use {@link MaterialBuilder#redirect(ResourceLocation, ICondition...)} */
-  @Deprecated
-  protected void addRedirect(MaterialId id, JsonRedirect... redirect) {
-    addRedirect(id, null, redirect);
-  }
-
-  /** @deprecated use {@link MaterialBuilder#redirect(ResourceLocation, ICondition...)} */
-  @Deprecated
-  protected JsonRedirect conditionalRedirect(MaterialId id, @Nullable ICondition condition) {
-    return new JsonRedirect(id, condition);
-  }
-
-  /** @deprecated use {@link MaterialBuilder#redirect(ResourceLocation, ICondition...)} */
-  @Deprecated
-  protected JsonRedirect redirect(MaterialId id) {
-    return conditionalRedirect(id, null);
-  }
-
-
   /* Builder */
 
   @Accessors(fluent = true)
   @Setter
+  @CanIgnoreReturnValue
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   protected static class MaterialBuilder {
     private final List<ICondition> conditions = new ArrayList<>();
@@ -355,6 +240,7 @@ public abstract class AbstractMaterialDataProvider extends GenericDataProvider {
     /* Build */
 
     /** Creates a material JSON */
+    @CheckReturnValue
     private MaterialJson convert() {
       ICondition condition = null;
       int count = conditions.size();
