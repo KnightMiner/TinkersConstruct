@@ -317,7 +317,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean notBlocked) {
+  public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
     // find our fluid and ensure it affects blocks
     Fluid fluid = getFluid(persistentData);
     if (fluid != Fluids.EMPTY) {
@@ -359,7 +359,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public void onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
+  public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
     // find our fluid and ensure it affects blocks
     Fluid fluid = getFluid(persistentData);
     boolean used = false;
@@ -397,6 +397,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
       projectile.playSound(SoundEvents.SPLASH_POTION_BREAK);
       projectile.discard();
     }
+    return false;
   }
 
   @Override

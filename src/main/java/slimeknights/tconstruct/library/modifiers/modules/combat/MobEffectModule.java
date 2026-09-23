@@ -299,7 +299,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
 
     @Deprecated
     @Override
-    public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+    public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
       if (condition.modifierLevel().test(modifier.getLevel()) && TinkerPredicate.matches(holder, attacker) && checkChance(modifier)) {
         effect.applyEffect(target, modifier, projectile.getEffectSource());
       }
@@ -439,15 +439,15 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean notBlocked) {
-      if (notBlocked && isAoe.test(false) && isProjectile.test(true) && condition.modifierLevel().test(modifier.getLevel()) && checkChance(modifier)) {
+    public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+      if (isAoe.test(false) && isProjectile.test(true) && condition.modifierLevel().test(modifier.getLevel()) && checkChance(modifier)) {
         effect.applyEffect(attacker, modifier, null);
       }
       return false;
     }
 
     @Override
-    public boolean onProjectileHitsBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
+    public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
       // calling a miss an AOE
       if (isAoe.test(true) && isProjectile.test(true) && condition.modifierLevel().test(modifier.getLevel()) && checkChance(modifier)) {
         effect.applyEffect(owner, modifier, null);

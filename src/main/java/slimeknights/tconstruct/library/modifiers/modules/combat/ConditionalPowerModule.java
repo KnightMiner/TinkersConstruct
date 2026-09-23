@@ -98,7 +98,7 @@ public record ConditionalPowerModule(IJsonPredicate<LivingEntity> target, IJsonP
 
   @Deprecated
   @Override
-  public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     ResourceLocation key = modifier.getId();
     // if we already boosted power from an entity, don't boost again
     // minimizes issues with projectile bounces and piercing
