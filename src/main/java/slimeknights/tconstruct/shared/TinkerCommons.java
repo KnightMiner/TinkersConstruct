@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -53,16 +52,10 @@ import slimeknights.tconstruct.common.json.BlockOrEntityCondition;
 import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
-import slimeknights.tconstruct.library.json.condition.TagDifferencePresentCondition;
-import slimeknights.tconstruct.library.json.condition.TagIntersectionPresentCondition;
-import slimeknights.tconstruct.library.json.condition.TagNotEmptyCondition;
 import slimeknights.tconstruct.library.json.loot.HasLootContextSetCondition;
-import slimeknights.tconstruct.library.json.loot.TagPreferenceLootEntry;
-import slimeknights.tconstruct.library.json.predicate.BlockAtFeetEntityPredicate;
 import slimeknights.tconstruct.library.json.predicate.BlockVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.EntityVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.HarvestTierPredicate;
-import slimeknights.tconstruct.library.json.predicate.HasMobEffectPredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
 import slimeknights.tconstruct.library.recipe.ingredient.BlockTagIngredient;
 import slimeknights.tconstruct.library.recipe.ingredient.InstrumentIngredient;
@@ -164,14 +157,6 @@ public final class TinkerCommons extends TinkerModule {
   public static final RegistryObject<LootItemConditionType> lootConfig = LOOT_CONDITIONS.register(ConfigEnabledCondition.ID.getPath(), () -> new LootItemConditionType(ConfigEnabledCondition.SERIALIZER));
   public static final RegistryObject<LootItemConditionType> lootBlockOrEntity = LOOT_CONDITIONS.register("block_or_entity", () -> new LootItemConditionType(new BlockOrEntityCondition.ConditionSerializer()));
   public static final RegistryObject<LootItemConditionType> hasLootContextSet = LOOT_CONDITIONS.register("has_context_set", () -> new LootItemConditionType(new HasLootContextSetCondition.Serializer()));
-  /** @deprecated use {@link slimeknights.mantle.loot.MantleLoot#TAG_FILLED} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<LootItemConditionType> lootTagNotEmptyCondition = LOOT_CONDITIONS.register("tag_not_empty", () -> new LootItemConditionType(new TagNotEmptyCondition.ConditionSerializer()));
-  /** @deprecated use {@link slimeknights.mantle.loot.MantleLoot#TAG_PREFERENCE} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static final RegistryObject<LootPoolEntryType> lootTagPreference = LOOT_ENTRIES.register("tag_preference", () -> new LootPoolEntryType(new TagPreferenceLootEntry.Serializer()));
 
   /* Slime Balls are edible, believe it or not */
   public static final EnumObject<SlimeType, Item> slimeball = new EnumObject.Builder<SlimeType, Item>(SlimeType.class)
@@ -191,7 +176,6 @@ public final class TinkerCommons extends TinkerModule {
     SlimeBounceHandler.init();
   }
 
-  @SuppressWarnings("removal")
   @SubscribeEvent
   void registerRecipeSerializers(RegisterEvent event) {
     if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
@@ -201,12 +185,6 @@ public final class TinkerCommons extends TinkerModule {
       CraftingHelper.register(ConfigEnabledCondition.SERIALIZER);
       CriteriaTriggers.register(CONTAINER_OPENED_TRIGGER);
 
-      //noinspection removal
-      CraftingHelper.register(TagIntersectionPresentCondition.SERIALIZER);
-      //noinspection removal
-      CraftingHelper.register(TagDifferencePresentCondition.SERIALIZER);
-      //noinspection removal
-      CraftingHelper.register(new TagNotEmptyCondition.ConditionSerializer());
       // mantle
       DamageSourcePredicate.LOADER.register(getResource("direct"), TinkerPredicate.DIRECT_DAMAGE.getLoader());
       // entity
@@ -214,8 +192,6 @@ public final class TinkerCommons extends TinkerModule {
       LivingEntityPredicate.LOADER.register(getResource("targeting_block"), TinkerPredicate.TARGETING_BLOCK.getLoader());
       LivingEntityPredicate.LOADER.register(getResource("full_health"), TinkerPredicate.FULL_HEALTH.getLoader());
       LivingEntityPredicate.LOADER.register(getResource("variable_range"), EntityVariableRangePredicate.LOADER);
-      LivingEntityPredicate.LOADER.register(getResource("has_effect"), HasMobEffectPredicate.LOADER);
-      LivingEntityPredicate.LOADER.register(getResource("block_at_feet"), BlockAtFeetEntityPredicate.LOADER);
       // item
       ItemPredicate.LOADER.register(getResource("arrow"), TinkerPredicate.ARROW.getLoader());
       ItemPredicate.LOADER.register(getResource("bucket"), TinkerPredicate.BUCKET.getLoader());
@@ -223,8 +199,6 @@ public final class TinkerCommons extends TinkerModule {
       ItemPredicate.LOADER.register(getResource("can_melt"), TinkerPredicate.CAN_MELT_ITEM.getLoader());
       ItemPredicate.LOADER.register(getResource("castable"), TinkerPredicate.CASTABLE.getLoader());
       // block
-      BlockPredicate.LOADER.register(getResource("blocks_motion"), TinkerPredicate.BLOCKS_MOTION.getLoader());
-      BlockPredicate.LOADER.register(getResource("can_be_replaced"), TinkerPredicate.CAN_BE_REPLACED.getLoader());
       BlockPredicate.LOADER.register(getResource("bush"), TinkerPredicate.BUSH.getLoader());
       BlockPredicate.LOADER.register(getResource("can_melt"), TinkerPredicate.CAN_MELT_BLOCK.getLoader());
       BlockPredicate.LOADER.register(getResource("harvest_tier"), HarvestTierPredicate.LOADER);

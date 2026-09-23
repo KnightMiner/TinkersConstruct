@@ -9,7 +9,6 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.BushBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase;
 import net.minecraft.world.phys.HitResult.Type;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
@@ -54,12 +53,6 @@ public class TinkerPredicate {
   /** Predicate matching any items with a remainder after crafting. */
   public static ItemPredicate CASTABLE = ItemPredicate.simple(CastingRecipeLookup::isCastable);
 
-  /** @deprecated use {@link BlockPredicate#BLOCKS_MOTION} */
-  @Deprecated
-  public static BlockPredicate BLOCKS_MOTION = BlockPredicate.simple(BlockStateBase::blocksMotion);
-  /** @deprecated use {@link BlockPredicate#CAN_BE_REPLACED} */
-  @Deprecated
-  public static BlockPredicate CAN_BE_REPLACED = BlockPredicate.simple(BlockStateBase::canBeReplaced);
   /** Predicate matching bush blocks */
   public static BlockPredicate BUSH = BlockPredicate.simple(state -> state.getBlock() instanceof BushBlock);
   /** Predicate matching meltable blocks */
