@@ -55,12 +55,6 @@ public record ToolDamageRangeModule(int min, int max, IJsonPredicate<ModifierId>
     return DEFAULT_HOOKS;
   }
 
-  @Deprecated
-  @Override
-  public int onDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder) {
-    return beforeDamageTool(tool, modifier, amount, holder, null, ModifierId.EMPTY);
-  }
-
   @Override
   public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
     if (condition.matches(tool, modifier) && this.cause.matches(cause) && TinkerPredicate.matches(this.holder, holder)) {

@@ -122,7 +122,7 @@ public class ModifierHooks {
     }
   });
   /** Hook for modifying the damage amount for tools */
-  public static final ModuleHook<ToolDamageModifierHook> TOOL_DAMAGE = register("tool_damage", ToolDamageModifierHook.class, ToolDamageModifierHook.Merger::new, (tool, modifier, amount, holder) -> amount);
+  public static final ModuleHook<ToolDamageModifierHook> TOOL_DAMAGE = register("tool_damage", ToolDamageModifierHook.class, ToolDamageModifierHook.Merger::new, (tool, modifier, amount, holder, stack, cause) -> amount);
   /** Hook for observing durability changed (damage or repair) without altering the amount. */
   public static final ModuleHook<ToolDurabilityChangedHook> DURABILITY_CHANGED = register("durability_changed", ToolDurabilityChangedHook.class, ToolDurabilityChangedHook.Merger::new, new ToolDurabilityChangedHook() {});
 
@@ -131,7 +131,6 @@ public class ModifierHooks {
 
   /** Hook for providing a BlockItem via the {@link slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability}*/
   public static final ModuleHook<BlockItemProviderModifierHook> BLOCK_ITEM_PROVIDER = register("block_item_provider", BlockItemProviderModifierHook.class, new BlockItemProviderModifierHook() {
-    @Nullable
     @Override
     public ItemStack getBlockItemStack(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity) {
       return ItemStack.EMPTY;

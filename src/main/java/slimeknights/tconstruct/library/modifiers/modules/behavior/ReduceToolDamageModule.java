@@ -95,15 +95,6 @@ public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonP
     return dealt;
   }
 
-  @Deprecated
-  @Override
-  public int onDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder) {
-    if (this.condition.matches(tool, modifier)) {
-      return reduceDamage(amount, formula.apply(tool, modifier, holder, 0, 1));
-    }
-    return amount;
-  }
-
   @Override
   public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
     if (this.condition.matches(tool, modifier) && this.cause.matches(cause)) {

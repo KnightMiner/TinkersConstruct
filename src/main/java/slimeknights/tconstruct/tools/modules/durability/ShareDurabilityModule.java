@@ -50,11 +50,6 @@ public record ShareDurabilityModule(LazyModifier shield, LevelingInt grant, Leve
     return DEFAULT_HOOKS;
   }
 
-  @Override
-  public int onDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder) {
-    return onDamageTool(tool, modifier, amount, holder, null);
-  }
-
   /** Checks if the stack may be considered */
   private static boolean canTarget(ItemStack stack) {
     return !stack.isEmpty() && stack.is(TinkerTags.Items.DURABILITY);
@@ -68,7 +63,7 @@ public record ShareDurabilityModule(LazyModifier shield, LevelingInt grant, Leve
   }
 
   @Override
-  public int onDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack) {
+  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
     if (holder != null) {
       // want to randomly select a slot, but skip any that lack tools
       List<ItemStack> options = new ArrayList<>(10);
