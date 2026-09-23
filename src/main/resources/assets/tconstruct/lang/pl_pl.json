@@ -599,15 +599,7 @@
   "item.tconstruct.manyullyn_item_frame": "Manyullynowa ramka na przedmiota",
   "item.tconstruct.netherite_item_frame": "Netherytowa ramka na przedmiota",
 
-  "item.tconstruct.glow_ball": "Świetlista kula",
-  "item.tconstruct.glow_ball.tooltip": "Nie przeznaczona do spożycia.",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "Wybucha! Przydatne przy kopaniu",
-
-  "item.tconstruct.quartz_shuriken": "Kwarcowy shuriken",
-  "item.tconstruct.quartz_shuriken.tooltip": "Rzucana broń z wysokimi obrażeniami",
-  "item.tconstruct.flint_shuriken": "Krzemienny shuriken",
-  "item.tconstruct.flint_shuriken.tooltip": "Rzucana broń z wysokim odrzutem",
 
   "block.tconstruct.earth_cake": "Szlamowe ciasto",
   "block.tconstruct.sky_cake": "Podniebne szlamowe ciasto",

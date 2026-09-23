@@ -1033,19 +1033,7 @@
   "item.tconstruct.netherite_item_frame": "Marco de netherita",
   "entity.tconstruct.item_frame": "Marco elegante",
 
-  "item.tconstruct.glow_ball": "Bola luminosa",
-  "item.tconstruct.glow_ball.tooltip": "No apta para el consumo.",
-  "entity.tconstruct.glow_ball": "Bola luminosa",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "¡Explota! Segura para la minería",
-  "entity.tconstruct.efln_ball": "EFLN",
-
-  "item.tconstruct.quartz_shuriken": "Shuriken de cuarzo",
-  "item.tconstruct.quartz_shuriken.tooltip": "Un arma arrojadiza con daño elevado",
-  "entity.tconstruct.quartz_shuriken": "Shuriken de cuarzo",
-  "item.tconstruct.flint_shuriken": "Shuriken de sílex",
-  "item.tconstruct.flint_shuriken.tooltip": "Un arma arrojadiza con gran empuje",
-  "entity.tconstruct.flint_shuriken": "Shuriken de sílex",
 
   "block.tconstruct.earth_cake": "Pastel de slime de tierra",
   "block.tconstruct.sky_cake":   "Pastel de slime celeste",

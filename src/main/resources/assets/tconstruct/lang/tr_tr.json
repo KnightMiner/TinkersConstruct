@@ -761,15 +761,7 @@
   "item.tconstruct.manyullyn_item_frame": "Menyullen Eşya Çerçevesi",
   "item.tconstruct.netherite_item_frame": "Netherit Eşya Çerçevesi",
 
-  "item.tconstruct.glow_ball": "Işık Topu",
-  "item.tconstruct.glow_ball.tooltip": "Tüketime uygun değildir.",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "Patlar! Madencilik için güvenli",
-
-  "item.tconstruct.quartz_shuriken": "Kuvars Ninja Yıldızı",
-  "item.tconstruct.quartz_shuriken.tooltip": "Daha yüksek hasarlı atılabilir silah",
-  "item.tconstruct.flint_shuriken": "Çakmak Taşı Ninja Yıldızı",
-  "item.tconstruct.flint_shuriken.tooltip": "Yüksek savurmalı atılabilir silah",
 
   "block.tconstruct.earth_cake": "Karabalçığı Keki",
   "block.tconstruct.sky_cake":   "Gökbalçığı Keki",

@@ -1061,19 +1061,7 @@
   "item.tconstruct.necrotic_bone_armor_stand.tooltip": "Always bright armor stand",
   "entity.tconstruct.armor_stand": "Fancy Armor Stand",
 
-  "item.tconstruct.glow_ball": "Glowball",
-  "item.tconstruct.glow_ball.tooltip": "Not suited for consumption.",
-  "entity.tconstruct.glow_ball": "Glowball",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "Explodes! Safe for mining",
-  "entity.tconstruct.efln_ball": "EFLN",
-
-  "item.tconstruct.quartz_shuriken": "Quartz Shuriken",
-  "item.tconstruct.quartz_shuriken.tooltip": "A throwable weapon with higher damage",
-  "entity.tconstruct.quartz_shuriken": "Quartz Shuriken",
-  "item.tconstruct.flint_shuriken": "Flint Shuriken",
-  "item.tconstruct.flint_shuriken.tooltip": "A throwable weapon with high knockback",
-  "entity.tconstruct.flint_shuriken": "Flint Shuriken",
 
   "block.tconstruct.earth_cake": "Earthslime Cake",
   "block.tconstruct.sky_cake":   "Skyslime Cake",

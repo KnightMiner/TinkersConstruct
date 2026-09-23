@@ -1061,19 +1061,7 @@
   "item.tconstruct.necrotic_bone_armor_stand.tooltip": "始终拥有最高亮度的视觉效果",
   "entity.tconstruct.armor_stand": "精致盔甲架",
 
-  "item.tconstruct.glow_ball": "荧光球",
-  "item.tconstruct.glow_ball.tooltip": "不宜食用",
-  "entity.tconstruct.glow_ball": "荧光球",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "爆破！一种安全的采矿方式",
-  "entity.tconstruct.efln_ball": "EFLN",
-
-  "item.tconstruct.quartz_shuriken": "石英手里剑",
-  "item.tconstruct.quartz_shuriken.tooltip": "高伤害投掷型武器",
-  "entity.tconstruct.quartz_shuriken": "石英手里剑",
-  "item.tconstruct.flint_shuriken": "燧石手里剑",
-  "item.tconstruct.flint_shuriken.tooltip": "高击退性投掷型武器",
-  "entity.tconstruct.flint_shuriken": "燧石手里剑",
 
   "block.tconstruct.earth_cake": "大地黏液蛋糕",
   "block.tconstruct.sky_cake": "碧空黏液蛋糕",

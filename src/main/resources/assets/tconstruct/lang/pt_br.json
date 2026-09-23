@@ -947,19 +947,7 @@
 "item.tconstruct.netherite_item_frame": "Moldura de Item de Netherita",
 "entity.tconstruct.item_frame": "Moldura de Item Extravagante",
 
-"item.tconstruct.glow_ball": "Bola Luminosa",
-"item.tconstruct.glow_ball.tooltip": "Não é adequada para consumo.",
-"entity.tconstruct.glow_ball": "Bola Luminosa",
 "item.tconstruct.efln_ball": "EFLN",
-"item.tconstruct.efln_ball.tooltip": "Explode! Seguro para mineração",
-"entity.tconstruct.efln_ball": "EFLN",
-
-"item.tconstruct.quartz_shuriken": "Shuriken de Quartzo",
-"item.tconstruct.quartz_shuriken.tooltip": "Uma arma arremessável com dano elevado",
-"entity.tconstruct.quartz_shuriken": "Shuriken de Quartzo",
-"item.tconstruct.flint_shuriken": "Shuriken de Sílex",
-"item.tconstruct.flint_shuriken.tooltip": "Uma arma arremessável com alta repulsão",
-"entity.tconstruct.flint_shuriken": "Shuriken de Sílex",
 
 "block.tconstruct.earth_cake": "Bolo de Slime-da-Terra",
 "block.tconstruct.sky_cake": "Bolo de Slime-do-Céu",

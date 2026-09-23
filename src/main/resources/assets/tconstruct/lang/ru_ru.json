@@ -1035,19 +1035,7 @@
   "item.tconstruct.netherite_item_frame": "Незеритовая рамка",
   "entity.tconstruct.item_frame": "Необычная рамка для предмета",
 
-  "item.tconstruct.glow_ball": "Светошарик",
-  "item.tconstruct.glow_ball.tooltip": "Не подходит для употребления.",
-  "entity.tconstruct.glow_ball": "Светошарик",
   "item.tconstruct.efln_ball": "Божественная взрывчатка",
-  "item.tconstruct.efln_ball.tooltip": "Взрывается! Безопасен для добычи руды.",
-  "entity.tconstruct.efln_ball": "Божественная взрывчатка",
-
-  "item.tconstruct.quartz_shuriken": "Кварцевый сюрикен",
-  "item.tconstruct.quartz_shuriken.tooltip": "Метательное оружие с более высоким уроном.",
-  "entity.tconstruct.quartz_shuriken": "Кварцевый сюрикен",
-  "item.tconstruct.flint_shuriken": "Кремневый сюрикен",
-  "item.tconstruct.flint_shuriken.tooltip": "Метательное оружие с повышенным отбрасывающим действием.",
-  "entity.tconstruct.flint_shuriken": "Кремневый сюрикен",
 
   "block.tconstruct.earth_cake": "Торт из земной слизи",
   "block.tconstruct.sky_cake":   "Торт из небесной слизи",

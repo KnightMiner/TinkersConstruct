@@ -689,15 +689,7 @@
   "item.tconstruct.manyullyn_item_frame": "마뉼린 아이템 액자",
   "item.tconstruct.netherite_item_frame": "네더라이트 아이템 액자",
 
-  "item.tconstruct.glow_ball": "발광덩이",
-  "item.tconstruct.glow_ball.tooltip": "먹지는 마세요!",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "펑! 채광할 때 유용합니다.",
-
-  "item.tconstruct.quartz_shuriken": "석영 수리검",
-  "item.tconstruct.quartz_shuriken.tooltip": "적에게 큰 피해를 줄 수 있는 투척용 무기입니다.",
-  "item.tconstruct.flint_shuriken": "부싯돌 수리검",
-  "item.tconstruct.flint_shuriken.tooltip": "적을 크게 밀칠 수 있는 투척용 무기입니다.",
 
   "block.tconstruct.earth_cake": "대지슬라임 케이크",
   "block.tconstruct.sky_cake":   "하늘슬라임 케이크",

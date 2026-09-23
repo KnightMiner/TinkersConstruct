@@ -706,15 +706,8 @@
   "item.tconstruct.manyullyn_item_frame": "Marco de Objeto de Manyullyn",
   "item.tconstruct.netherite_item_frame": "Marco de Objeto de Netherita",
 
-  "item.tconstruct.glow_ball": "Bola Luminosa",
-  "item.tconstruct.glow_ball.tooltip": "No apta para el consumo.",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "¡Explota! Seguro para la minería.",
 
-  "item.tconstruct.quartz_shuriken": "Shuriken de Cuarzo",
-  "item.tconstruct.quartz_shuriken.tooltip": "Un arma arrojadiza con mayor daño.",
-  "item.tconstruct.flint_shuriken": "Shuriken de Pedernal",
-  "item.tconstruct.flint_shuriken.tooltip": "Un arma arrojadiza con gran retroceso.",
   "block.tconstruct.earth_cake": "Pastel de baba terrestre",
   "block.tconstruct.sky_cake": "Pastel de baba celestial",
   "block.tconstruct.ichor_cake": "Pastel de ícor",

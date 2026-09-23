@@ -692,15 +692,7 @@
   "item.tconstruct.manyullyn_item_frame": "Manyullyn-Rahmen",
   "item.tconstruct.netherite_item_frame": "Netherite-Rahmen",
 
-  "item.tconstruct.glow_ball": "Glühkugel",
-  "item.tconstruct.glow_ball.tooltip": "Nicht zum Verzehr geeignet.",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "Explodiert! Sicher für den Bergbau",
-
-  "item.tconstruct.quartz_shuriken": "Quarz-Shuriken",
-  "item.tconstruct.quartz_shuriken.tooltip": "Eine Wurfwaffe mit höherem Schaden",
-  "item.tconstruct.flint_shuriken": "Flint-Shuriken",
-  "item.tconstruct.flint_shuriken.tooltip": "Eine Wurfwaffe mit hohem Rückstoß",
 
   "block.tconstruct.earth_cake": "Erdschleimkuchen",
   "block.tconstruct.sky_cake": "Himmelsschleimkuchen",

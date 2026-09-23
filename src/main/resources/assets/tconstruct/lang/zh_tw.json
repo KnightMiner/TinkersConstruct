@@ -761,15 +761,7 @@
   "item.tconstruct.manyullyn_item_frame": "瑪玉靈物品展示框",
   "item.tconstruct.netherite_item_frame": "獄髓物品展示框",
 
-  "item.tconstruct.glow_ball": "螢光球",
-  "item.tconstruct.glow_ball.tooltip": "不宜食用",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "爆破！一種安全的採礦方式",
-
-  "item.tconstruct.quartz_shuriken": "石英手裡劍",
-  "item.tconstruct.quartz_shuriken.tooltip": "高傷害投擲型武器",
-  "item.tconstruct.flint_shuriken": "燧石手裡劍",
-  "item.tconstruct.flint_shuriken.tooltip": "高擊退性投擲型武器",
 
   "block.tconstruct.earth_cake": "大地史萊姆蛋糕",
   "block.tconstruct.sky_cake": "碧空史萊姆蛋糕",

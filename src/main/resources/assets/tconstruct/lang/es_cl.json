@@ -1037,19 +1037,7 @@
   "item.tconstruct.netherite_item_frame": "Marco de items de netherite",
   "entity.tconstruct.item_frame": "Marco de items fabuloso",
 
-  "item.tconstruct.glow_ball": "Bola Brillante",
-  "item.tconstruct.glow_ball.tooltip": "No consumir.",
-  "entity.tconstruct.glow_ball": "Bola Brillante",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "¡Explota! Es seguro para la minería",
-  "entity.tconstruct.efln_ball": "EFLN",
-
-  "item.tconstruct.quartz_shuriken": "Shuriken de Cuarzo",
-  "item.tconstruct.quartz_shuriken.tooltip": "Un arma arrojable con más daño",
-  "entity.tconstruct.quartz_shuriken": "Shuriken de Cuarzo",
-  "item.tconstruct.flint_shuriken": "Shuriken de Pedernal",
-  "item.tconstruct.flint_shuriken.tooltip": "Una arma arrojable con un empuje alto",
-  "entity.tconstruct.flint_shuriken": "Shuriken de Pedernal",
 
   "block.tconstruct.earth_cake": "Torta de Slime Terrestre",
   "block.tconstruct.sky_cake":   "Torta de Slime Celestial",

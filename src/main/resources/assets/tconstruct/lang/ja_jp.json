@@ -1021,15 +1021,7 @@
   "item.tconstruct.netherite_item_frame": "ネザライトの額縁",
   "entity.tconstruct.item_frame": "おしゃれな額縁",
 
-  "item.tconstruct.glow_ball": "グロウボール",
-  "item.tconstruct.glow_ball.tooltip": "食べられません。",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "爆発する！採掘に安全に使える",
-
-  "item.tconstruct.quartz_shuriken": "クォーツの手裏剣",
-  "item.tconstruct.quartz_shuriken.tooltip": "大ダメージを与える投擲武器",
-  "item.tconstruct.flint_shuriken": "火打石の手裏剣",
-  "item.tconstruct.flint_shuriken.tooltip": "大きくノックバックさせる投擲武器",
 
   "block.tconstruct.earth_cake": "アーススライムケーキ",
   "block.tconstruct.sky_cake": "スカイスライムケーキ",

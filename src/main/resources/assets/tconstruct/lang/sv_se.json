@@ -702,16 +702,8 @@
   "item.tconstruct.manyullyn_item_frame": "Föremålsram av manyullyn",
   "item.tconstruct.netherite_item_frame": "Föremålsram av netherit",
   
-  "item.tconstruct.glow_ball": "Glödboll",
-  "item.tconstruct.glow_ball.tooltip": "Inte lämplig att förtäras.",
   "item.tconstruct.efln_ball": "EFLN",
-  "item.tconstruct.efln_ball.tooltip": "Exploderar! Kan används för att bryta block",
-  
-  "item.tconstruct.quartz_shuriken": "Kaststjärna av kvarts",
-  "item.tconstruct.quartz_shuriken.tooltip": "Ett kastbart vapen med högre skada",
-  "item.tconstruct.flint_shuriken": "Kaststjärna av flinta",
-  "item.tconstruct.flint_shuriken.tooltip": "Ett kastbart vapen med stark knuff",
-  
+
   "block.tconstruct.earth_cake": "Jordslemstårta",
   "block.tconstruct.sky_cake": "Himmelslemstårta",
   "block.tconstruct.ichor_cake": "Ichortårta",

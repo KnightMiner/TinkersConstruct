@@ -29,22 +29,14 @@ import slimeknights.tconstruct.gadgets.block.PunjiBlock;
 import slimeknights.tconstruct.gadgets.capability.PiggybackCapability;
 import slimeknights.tconstruct.gadgets.data.GadgetRecipeProvider;
 import slimeknights.tconstruct.gadgets.entity.DispenseFancyArmorStand;
-import slimeknights.tconstruct.gadgets.entity.EFLNEntity;
 import slimeknights.tconstruct.gadgets.entity.FancyArmorStandEntity;
 import slimeknights.tconstruct.gadgets.entity.FancyArmorStandEntity.StandType;
 import slimeknights.tconstruct.gadgets.entity.FancyItemFrameEntity;
 import slimeknights.tconstruct.gadgets.entity.FrameType;
-import slimeknights.tconstruct.gadgets.entity.GlowballEntity;
-import slimeknights.tconstruct.gadgets.entity.shuriken.FlintShurikenEntity;
-import slimeknights.tconstruct.gadgets.entity.shuriken.QuartzShurikenEntity;
-import slimeknights.tconstruct.gadgets.item.EFLNItem;
 import slimeknights.tconstruct.gadgets.item.FancyArmorStandItem;
 import slimeknights.tconstruct.gadgets.item.FancyItemFrameItem;
-import slimeknights.tconstruct.gadgets.item.GlowBallItem;
 import slimeknights.tconstruct.gadgets.item.PiggyBackPackItem;
 import slimeknights.tconstruct.gadgets.item.PiggyBackPackItem.CarryPotionEffect;
-import slimeknights.tconstruct.gadgets.item.ShootProjectileDispenserBehavior;
-import slimeknights.tconstruct.gadgets.item.ShurikenItem;
 import slimeknights.tconstruct.shared.TinkerFood;
 import slimeknights.tconstruct.world.block.FoliageType;
 
@@ -67,21 +59,6 @@ public final class TinkerGadgets extends TinkerModule {
   public static final ItemObject<PiggyBackPackItem> piggyBackpack = ITEMS.register("piggy_backpack", () -> new PiggyBackPackItem(new Properties().stacksTo(16)));
   public static final EnumObject<FrameType,FancyItemFrameItem> itemFrame = ITEMS.registerEnum(FrameType.values(), "item_frame", (type) -> new FancyItemFrameItem(ITEM_PROPS, (world, pos, dir) -> new FancyItemFrameEntity(world, pos, dir, type)));
   public static final EnumObject<StandType,FancyArmorStandItem> armorStand = ITEMS.registerEnum(StandType.values(), "armor_stand", type -> new FancyArmorStandItem(new Item.Properties().stacksTo(16), type));
-
-  // throwballs
-  @Deprecated
-  public static final ItemObject<GlowBallItem> glowBall;
-  @Deprecated
-  public static final ItemObject<EFLNItem> efln;
-  @Deprecated
-  public static final ItemObject<ShurikenItem> quartzShuriken, flintShuriken;
-  static {
-    Item.Properties THROWABLE_PROPS = new Item.Properties().stacksTo(16);
-    glowBall = ITEMS.register("glow_ball", () -> new GlowBallItem(THROWABLE_PROPS));
-    efln = ITEMS.register("efln_ball", () -> new EFLNItem(THROWABLE_PROPS));
-    quartzShuriken = ITEMS.register("quartz_shuriken", () -> new ShurikenItem(THROWABLE_PROPS, QuartzShurikenEntity::new));
-    flintShuriken = ITEMS.register("flint_shuriken", () -> new ShurikenItem(THROWABLE_PROPS, FlintShurikenEntity::new));
-  }
 
   // foods
   public static final EnumObject<FoliageType,FoodCakeBlock> cake;
@@ -114,42 +91,6 @@ public final class TinkerGadgets extends TinkerModule {
   public static final RegistryObject<EntityType<FancyArmorStandEntity>> armorStandEntity = ENTITIES.register("armor_stand", () ->
     EntityType.Builder.of(FancyArmorStandEntity::new, MobCategory.MISC).sized(0.5F, 1.975F).clientTrackingRange(10));
 
-  @Deprecated
-  public static final RegistryObject<EntityType<GlowballEntity>> glowBallEntity = ENTITIES.register("glow_ball", () ->
-    EntityType.Builder.<GlowballEntity>of(GlowballEntity::new, MobCategory.MISC)
-      .sized(0.25F, 0.25F)
-      .setTrackingRange(4)
-      .setUpdateInterval(10)
-      .setCustomClientFactory((spawnEntity, world) -> new GlowballEntity(TinkerGadgets.glowBallEntity.get(), world))
-      .setShouldReceiveVelocityUpdates(true)
-  );
-  @Deprecated
-  public static final RegistryObject<EntityType<EFLNEntity>> eflnEntity = ENTITIES.register("efln_ball", () ->
-    EntityType.Builder.<EFLNEntity>of(EFLNEntity::new, MobCategory.MISC)
-      .sized(0.25F, 0.25F)
-      .setTrackingRange(4)
-      .setUpdateInterval(10)
-      .setCustomClientFactory((spawnEntity, world) -> new EFLNEntity(TinkerGadgets.eflnEntity.get(), world))
-      .setShouldReceiveVelocityUpdates(true));
-  @Deprecated
-  public static final RegistryObject<EntityType<QuartzShurikenEntity>> quartzShurikenEntity = ENTITIES.register("quartz_shuriken", () ->
-    EntityType.Builder.<QuartzShurikenEntity>of(QuartzShurikenEntity::new, MobCategory.MISC)
-      .sized(0.25F, 0.25F)
-      .setTrackingRange(4)
-      .setUpdateInterval(10)
-      .setCustomClientFactory((spawnEntity, world) -> new QuartzShurikenEntity(TinkerGadgets.quartzShurikenEntity.get(), world))
-      .setShouldReceiveVelocityUpdates(true)
-  );
-  @Deprecated
-  public static final RegistryObject<EntityType<FlintShurikenEntity>> flintShurikenEntity = ENTITIES.register("flint_shuriken", () ->
-    EntityType.Builder.<FlintShurikenEntity>of(FlintShurikenEntity::new, MobCategory.MISC)
-      .sized(0.25F, 0.25F)
-      .setTrackingRange(4)
-      .setUpdateInterval(10)
-      .setCustomClientFactory((spawnEntity, world) -> new FlintShurikenEntity(TinkerGadgets.flintShurikenEntity.get(), world))
-      .setShouldReceiveVelocityUpdates(true)
-  );
-
   /*
    * Potions
    */
@@ -164,11 +105,6 @@ public final class TinkerGadgets extends TinkerModule {
     event.enqueueWork(() -> {
       cake.forEach(block -> ComposterBlock.add(1.0f, block));
       ComposterBlock.add(1.0f, magmaCake.get());
-
-      DispenserBlock.registerBehavior(glowBall, new ShootProjectileDispenserBehavior(glowBallEntity.get()));
-      DispenserBlock.registerBehavior(efln, new ShootProjectileDispenserBehavior(eflnEntity.get()));
-      DispenserBlock.registerBehavior(flintShuriken, new ShootProjectileDispenserBehavior(flintShurikenEntity.get()));
-      DispenserBlock.registerBehavior(quartzShuriken, new ShootProjectileDispenserBehavior(quartzShurikenEntity.get()));
       armorStand.forEach((type, item) -> DispenserBlock.registerBehavior(item, new DispenseFancyArmorStand(type)));
     });
   }

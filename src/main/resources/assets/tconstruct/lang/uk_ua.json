@@ -1045,19 +1045,7 @@
   "item.tconstruct.netherite_item_frame": "Незеритова рамка",
   "entity.tconstruct.item_frame": "Незвичайна рамка для предметів",
 
-  "item.tconstruct.glow_ball": "Світлом'ячик",
-  "item.tconstruct.glow_ball.tooltip": "Не їстівний.",
-  "entity.tconstruct.glow_ball": "Світлом'ячик",
   "item.tconstruct.efln_ball": "ВКРМ",
-  "item.tconstruct.efln_ball.tooltip": "Вибухає! Безпечно для рудокопства",
-  "entity.tconstruct.efln_ball": "ВКРМ",
-
-  "item.tconstruct.quartz_shuriken": "Кварцовий шюрикен",
-  "item.tconstruct.quartz_shuriken.tooltip": "Метальна зброя з більшою шкодою",
-  "entity.tconstruct.quartz_shuriken": "Кварцовий шюрикен",
-  "item.tconstruct.flint_shuriken": "Кремінний шюрикен",
-  "item.tconstruct.flint_shuriken.tooltip": "Метальна зброя з високою віддачею",
-  "entity.tconstruct.flint_shuriken": "Кремінний шюрикен",
 
   "block.tconstruct.earth_cake": "Слизовий торт",
   "block.tconstruct.sky_cake": "Небослизовий торт",
