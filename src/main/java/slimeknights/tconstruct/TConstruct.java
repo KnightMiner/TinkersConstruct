@@ -8,6 +8,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
@@ -202,7 +203,10 @@ public class TConstruct {
   /** Handles missing mappings of all types */
   private static void missingMappings(MissingMappingsEvent event) {
     RegistrationHelper.handleMissingMappings(event, MOD_ID, Registries.ITEM, name -> switch (name) {
+      // removed shurikens
       case "glow_ball", "efln_ball", "quartz_shuriken", "flint_shuriken" -> TinkerTools.shuriken.get();
+      // restore standard ID for slimecage
+      case "slimy_chestplate" -> TinkerTools.slimesuit.get(ArmorItem.Type.CHESTPLATE);
       default -> null;
     });
   }
