@@ -2,16 +2,12 @@ package slimeknights.tconstruct;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -22,10 +18,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.MissingMappingsEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
@@ -109,7 +103,6 @@ public class TConstruct {
     MaterialRegistry.init();
 
     // initialize modules, done this way rather than with annotations to give us control over the order
-    MinecraftForge.EVENT_BUS.addListener(TConstruct::missingMappings);
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     // base
     bus.register(new TinkerCommons());
@@ -201,32 +194,6 @@ public class TConstruct {
     generator.addProvider(server, new FunctionProvider(packOutput));
   }
 
-  /** Handles missing mappings of all types */
-  private static void missingMappings(MissingMappingsEvent event) {
-    RegistrationHelper.handleMissingMappings(event, MOD_ID, Registries.BLOCK, name -> switch (name) {
-      // silky jewel removal
-      case "silky_jewel_block" -> Blocks.EMERALD_BLOCK;
-      // piglin heads are vanilla
-      case "piglin_head" -> Blocks.PIGLIN_HEAD;
-      case "piglin_wall_head" -> Blocks.PIGLIN_WALL_HEAD;
-      default -> null;
-    });
-    RegistrationHelper.handleMissingMappings(event, MOD_ID, Registries.ITEM, name -> switch (name) {
-      // silky jewel removal
-      case "silky_jewel" -> Items.EMERALD;
-      case "silky_jewel_block" -> Items.EMERALD_BLOCK;
-      // piglin heads are vanilla
-      case "piglin_head" -> Items.PIGLIN_HEAD;
-      // round plate rename
-      case "round_plate" -> TinkerToolParts.adzeHead.get();
-      case "round_plate_cast" -> TinkerSmeltery.adzeHeadCast.get();
-      case "round_plate_sand_cast" -> TinkerSmeltery.adzeHeadCast.getSand();
-      case "round_plate_red_sand_cast" -> TinkerSmeltery.adzeHeadCast.getRedSand();
-      // slimesuit rework
-      case "slime_chestplate" -> TinkerTools.slimeWings.get();
-      default -> null;
-    });
-  }
 
   /* Utils */
 
