@@ -90,8 +90,8 @@ import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
 import slimeknights.tconstruct.shared.TinkerAttributes;
 import slimeknights.tconstruct.shared.TinkerEffects;
+import slimeknights.tconstruct.shared.effect.MagneticEffect;
 import slimeknights.tconstruct.tools.data.ModifierIds;
-import slimeknights.tconstruct.tools.modifiers.effect.MagneticEffect;
 import slimeknights.tconstruct.tools.modules.ranged.RestrictAngleModule;
 
 import java.util.List;

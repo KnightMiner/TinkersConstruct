@@ -36,11 +36,11 @@ import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.smeltery.data.SmelteryCompat;
 import slimeknights.tconstruct.smeltery.data.SmelteryCompat.CompatType;
 import slimeknights.tconstruct.tools.data.ModifierIds;
-import slimeknights.tconstruct.tools.modifiers.ModifierLootModifier;
 import slimeknights.tconstruct.tools.modifiers.loot.ChrysophiliteBonusFunction;
 import slimeknights.tconstruct.tools.modifiers.loot.ChrysophiliteLootCondition;
 import slimeknights.tconstruct.tools.modifiers.loot.HasModifierLootCondition;
 import slimeknights.tconstruct.tools.modifiers.loot.ModifierBonusLootFunction;
+import slimeknights.tconstruct.tools.modifiers.loot.ModifierLootModifier;
 
 import static slimeknights.mantle.Mantle.commonResource;
 

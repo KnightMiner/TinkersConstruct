@@ -74,7 +74,7 @@ import slimeknights.tconstruct.library.recipe.TagPredicate;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.StrongBonesModifier;
+import slimeknights.tconstruct.tools.modifiers.skull.StrongBonesModifier;
 import slimeknights.tconstruct.world.block.DirtType;
 
 import java.util.function.Function;

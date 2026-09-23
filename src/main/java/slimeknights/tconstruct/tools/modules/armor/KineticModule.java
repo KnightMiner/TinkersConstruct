@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerModifiers;
-import slimeknights.tconstruct.tools.modifiers.traits.melee.InsatiableModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.InsatiableModifier;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;

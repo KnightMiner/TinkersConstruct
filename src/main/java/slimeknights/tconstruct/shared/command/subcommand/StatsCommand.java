@@ -26,7 +26,7 @@ import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.shared.command.HeldModifiableItemIterator;
 import slimeknights.tconstruct.shared.command.argument.ToolStatArgument;
 import slimeknights.tconstruct.tools.TinkerModifiers;
-import slimeknights.tconstruct.tools.modifiers.slotless.StatOverrideModifier;
+import slimeknights.tconstruct.tools.modifiers.creative.StatOverrideModifier;
 
 import java.util.List;
 import java.util.Locale;

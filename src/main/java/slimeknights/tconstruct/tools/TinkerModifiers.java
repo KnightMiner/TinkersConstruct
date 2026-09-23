@@ -68,9 +68,7 @@ import slimeknights.tconstruct.library.json.variable.tool.StatMultiplierVariable
 import slimeknights.tconstruct.library.json.variable.tool.TankCapacityVariable;
 import slimeknights.tconstruct.library.json.variable.tool.ToolStatVariable;
 import slimeknights.tconstruct.library.json.variable.tool.ToolVariable;
-import slimeknights.tconstruct.library.modifiers.FakeModifier;
 import slimeknights.tconstruct.library.modifiers.Modifier;
-import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectManager;
@@ -203,6 +201,11 @@ import slimeknights.tconstruct.library.tools.capability.inventory.InventoryMenuM
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventorySlotMenuModule;
 import slimeknights.tconstruct.shared.TinkerEffects;
+import slimeknights.tconstruct.shared.effect.BleedingEffect;
+import slimeknights.tconstruct.shared.effect.HelmetChargingEffect;
+import slimeknights.tconstruct.shared.effect.MagneticEffect;
+import slimeknights.tconstruct.shared.effect.NoMilkEffect;
+import slimeknights.tconstruct.shared.effect.RepulsiveEffect;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.data.EnchantmentToModifierProvider;
 import slimeknights.tconstruct.tools.data.FluidEffectProvider;
@@ -213,43 +216,32 @@ import slimeknights.tconstruct.tools.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.tools.item.CreativeSlotItem;
 import slimeknights.tconstruct.tools.item.DragonScaleItem;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
+import slimeknights.tconstruct.tools.modifiers.EnderportingModifier;
 import slimeknights.tconstruct.tools.modifiers.EnergyHandlerModifier;
-import slimeknights.tconstruct.tools.modifiers.ModifierLootModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.armor.AmbidextrousModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.fluid.BurstingModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.fluid.WettingModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.tool.DuelWieldingModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.tool.ExchangingModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.tool.OffhandAttackModifier;
-import slimeknights.tconstruct.tools.modifiers.ability.tool.ParryingModifier;
-import slimeknights.tconstruct.tools.modifiers.effect.BleedingEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.HelmetChargingEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.MagneticEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.NoMilkEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.RepulsiveEffect;
+import slimeknights.tconstruct.tools.modifiers.ExchangingModifier;
+import slimeknights.tconstruct.tools.modifiers.OverslimeModifier;
+import slimeknights.tconstruct.tools.modifiers.SinistralModifier;
+import slimeknights.tconstruct.tools.modifiers.creative.CreativeSlotModifier;
+import slimeknights.tconstruct.tools.modifiers.creative.StatOverrideModifier;
+import slimeknights.tconstruct.tools.modifiers.fluid.BurstingModifier;
+import slimeknights.tconstruct.tools.modifiers.fluid.WettingModifier;
+import slimeknights.tconstruct.tools.modifiers.harvest.DwarvenModifier;
+import slimeknights.tconstruct.tools.modifiers.harvest.MomentumModifier;
 import slimeknights.tconstruct.tools.modifiers.loot.ChrysophiliteBonusFunction;
 import slimeknights.tconstruct.tools.modifiers.loot.ChrysophiliteLootCondition;
 import slimeknights.tconstruct.tools.modifiers.loot.HasModifierLootCondition;
 import slimeknights.tconstruct.tools.modifiers.loot.ModifierBonusLootFunction;
-import slimeknights.tconstruct.tools.modifiers.slotless.CreativeSlotModifier;
-import slimeknights.tconstruct.tools.modifiers.slotless.OverslimeModifier;
-import slimeknights.tconstruct.tools.modifiers.slotless.StatOverrideModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.general.EnderportingModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.harvest.DwarvenModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.harvest.MomentumModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.melee.ConductingModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.melee.InsatiableModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.melee.LaceratingModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.ranged.OlympicModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.BreathtakingModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.FirebreathModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.PlagueModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.SelfDestructiveModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.StrongBonesModifier;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.WildfireModifier;
-import slimeknights.tconstruct.tools.modifiers.upgrades.melee.PiercingModifier;
-import slimeknights.tconstruct.tools.modifiers.upgrades.melee.SweepingEdgeModifier;
-import slimeknights.tconstruct.tools.modifiers.upgrades.ranged.SinistralModifier;
+import slimeknights.tconstruct.tools.modifiers.loot.ModifierLootModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.ConductingModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.InsatiableModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.LaceratingModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.dual.AmbidextrousModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.dual.DualWieldingModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.dual.OffhandAttackModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.dual.ParryingModifier;
+import slimeknights.tconstruct.tools.modifiers.skull.PlagueModifier;
+import slimeknights.tconstruct.tools.modifiers.skull.SelfDestructiveModifier;
+import slimeknights.tconstruct.tools.modifiers.skull.StrongBonesModifier;
 import slimeknights.tconstruct.tools.modules.AutosmeltModule;
 import slimeknights.tconstruct.tools.modules.ClearEffectOnUnequipModule;
 import slimeknights.tconstruct.tools.modules.CraftCountModule;
@@ -401,7 +393,7 @@ public final class TinkerModifiers extends TinkerModule {
   public static final StaticModifier<WettingModifier> wetting = MODIFIERS.register("wetting", WettingModifier::new);
   // dual wielding
   public static final StaticModifier<OffhandAttackModifier> offhandAttack = MODIFIERS.register("offhand_attack", OffhandAttackModifier::new);
-  public static final StaticModifier<DuelWieldingModifier> dualWielding = MODIFIERS.register("dual_wielding", DuelWieldingModifier::new);
+  public static final StaticModifier<DualWieldingModifier> dualWielding = MODIFIERS.register("dual_wielding", DualWieldingModifier::new);
   public static final StaticModifier<AmbidextrousModifier> ambidextrous = MODIFIERS.register("ambidextrous", AmbidextrousModifier::new);
   public static final StaticModifier<ParryingModifier> parrying = MODIFIERS.register("parrying", ParryingModifier::new);
 
@@ -457,36 +449,10 @@ public final class TinkerModifiers extends TinkerModule {
   // modifiers with deprecated API
   /** Use API from {@link slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule} */
   public static final StaticModifier<OverslimeModifier> overslime = MODIFIERS.register("overslime", OverslimeModifier::new);
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#sweeping} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<SweepingEdgeModifier> sweeping = new FakeModifier<>(new ModifierId(TConstruct.MOD_ID, "sweeping_edge"), SweepingEdgeModifier::new);
-  /** @deprecated use {@link slimeknights.tconstruct.tools.data.ModifierIds#expanded} (modifier) or {@link slimeknights.tconstruct.library.tools.item.IModifiable#EXPANDED} (querying) */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<?> expanded = MODIFIERS.registerDynamic("expanded");
 
 
   // modifiers pending removal - reimplement if you need them
-  /** @deprecated Piercing now removes armor instead of ignoring armor. See {@link SpillingModule} for a similar effect. */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<PiercingModifier> piercing = MODIFIERS.register("piercing", PiercingModifier::new);
-  /** @deprecated Platinum was removed. */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<OlympicModifier> olympic = MODIFIERS.register("olympic", OlympicModifier::new);
-  /** @deprecated invar's trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#solid}. Reimplement if you need its behavior. */
-  @Deprecated(forRemoval = true)
-  public static final DynamicModifier invariant = MODIFIERS.registerDynamic("invariant");
   // slimeskull
-  /** @deprecated zombie's trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#consecrated}. Reimplement if you need its behavior. */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<WildfireModifier> wildfire = MODIFIERS.register("wildfire", WildfireModifier::new);
-  /** @deprecated drowned's trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#respiration}. Reimplement if you need its behavior. */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<BreathtakingModifier> breathtaking = MODIFIERS.register("breathtaking", BreathtakingModifier::new);
-  /** @deprecated blazes trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#fireborn} and helmet projectile was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#spitting} */
-  @Deprecated(forRemoval = true)
-  public static final StaticModifier<FirebreathModifier> firebreath = MODIFIERS.register("firebreath", FirebreathModifier::new);
   /** @deprecated zombified piglin's trait was switched to {@link slimeknights.tconstruct.tools.data.ModifierIds#vitalProtectionSkull} */
   @Deprecated(forRemoval = true)
   public static final StaticModifier<?> revenge = MODIFIERS.registerDynamic("revenge");

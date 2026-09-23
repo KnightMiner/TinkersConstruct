@@ -51,9 +51,9 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Schedule;
 import slimeknights.tconstruct.shared.TinkerEffects;
+import slimeknights.tconstruct.shared.effect.MagneticEffect;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.data.ModifierIds;
-import slimeknights.tconstruct.tools.modifiers.effect.MagneticEffect;
 
 import javax.annotation.Nullable;
 

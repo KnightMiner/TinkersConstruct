@@ -26,7 +26,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tools.modifiers.effect.HelmetChargingEffect;
+import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
 
 import java.util.List;
 

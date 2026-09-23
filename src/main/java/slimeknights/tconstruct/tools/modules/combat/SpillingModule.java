@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper.TANK_HELPER;
-import static slimeknights.tconstruct.tools.modifiers.ability.fluid.UseFluidOnHitModifier.spawnParticles;
+import static slimeknights.tconstruct.tools.modifiers.fluid.UseFluidOnHitModifier.spawnParticles;
 
 /** Module to apply spilling effects post melee or projectile hit */
 public record SpillingModule(LevelingValue level, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ConditionalModule<IToolStackView> {

@@ -40,7 +40,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.FluidEffectProjectile;
-import slimeknights.tconstruct.tools.modifiers.effect.HelmetChargingEffect;
+import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
 
 import java.util.List;
 

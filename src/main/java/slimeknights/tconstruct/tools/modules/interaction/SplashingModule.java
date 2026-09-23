@@ -41,7 +41,7 @@ import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
-import slimeknights.tconstruct.tools.modifiers.ability.fluid.UseFluidOnHitModifier;
+import slimeknights.tconstruct.tools.modifiers.fluid.UseFluidOnHitModifier;
 
 import java.util.List;
 

@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.tools.modifiers.traits.melee.ConductingModifier;
+import slimeknights.tconstruct.tools.modifiers.melee.ConductingModifier;
 
 import javax.annotation.Nullable;
 import java.util.List;

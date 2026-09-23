@@ -26,11 +26,11 @@ import slimeknights.tconstruct.common.TinkerEffect;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.shared.block.SlimeType;
 import slimeknights.tconstruct.shared.effect.AntigravityEffect;
+import slimeknights.tconstruct.shared.effect.BleedingEffect;
+import slimeknights.tconstruct.shared.effect.MagneticEffect;
+import slimeknights.tconstruct.shared.effect.RepulsiveEffect;
 import slimeknights.tconstruct.shared.effect.ReturningEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.BleedingEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.MagneticEffect;
-import slimeknights.tconstruct.tools.modifiers.effect.RepulsiveEffect;
-import slimeknights.tconstruct.tools.modifiers.traits.skull.SelfDestructiveModifier.SelfDestructiveEffect;
+import slimeknights.tconstruct.tools.modifiers.skull.SelfDestructiveModifier.SelfDestructiveEffect;
 import slimeknights.tconstruct.world.TinkerWorld;
 
 import javax.annotation.Nullable;

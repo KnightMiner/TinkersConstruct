@@ -4,9 +4,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Cancelable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.tools.data.ModifierIds;
+import slimeknights.tconstruct.tools.modifiers.EnderportingModifier;
 
 /**
- * Event fired when an entity teleports using {@link slimeknights.tconstruct.tools.modifiers.traits.general.EnderportingModifier}
+ * Event fired when an entity teleports using {@link EnderportingModifier}
  * @deprecated replacing with {@link ModifierTeleportEvent} in the future.
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
