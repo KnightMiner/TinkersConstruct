@@ -2,7 +2,7 @@
   "level_display": "tconstruct:default",
   "modules": [
     {
-      "type": "tconstruct:repair",
+      "type": "tconstruct:repair_factor",
       "each_level": 0.5
     }
   ]

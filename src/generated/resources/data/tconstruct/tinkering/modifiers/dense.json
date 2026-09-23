@@ -2,7 +2,7 @@
   "level_display": "tconstruct:default",
   "modules": [
     {
-      "type": "tconstruct:repair",
+      "type": "tconstruct:repair_factor",
       "formula": [
         "$factor",
         1.0,
@@ -21,7 +21,7 @@
       }
     },
     {
-      "type": "tconstruct:repair",
+      "type": "tconstruct:repair_factor",
       "each_level": -0.05,
       "flat": -0.5,
       "modifier_level": {

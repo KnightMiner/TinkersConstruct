@@ -18,22 +18,22 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import java.util.List;
 
 /** Module for multiplying tool repair */
-public record RepairModule(ModifierFormula formula, ModifierCondition<IToolStackView> condition) implements RepairFactorModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<RepairModule>defaultHooks(ModifierHooks.REPAIR_FACTOR);
+public record RepairFactorModule(ModifierFormula formula, ModifierCondition<IToolStackView> condition) implements RepairFactorModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<RepairFactorModule>defaultHooks(ModifierHooks.REPAIR_FACTOR);
   public static final int FACTOR = 1;
   /** Formula instance for the loader */
   private static final FormulaLoadable FORMULA = new FormulaLoadable(FallbackFormula.PERCENT, "level", "factor");
   /** Loader instance */
-  public static final RecordLoadable<RepairModule> LOADER = RecordLoadable.create(FORMULA.directField(RepairModule::formula), ModifierCondition.TOOL_FIELD, RepairModule::new);
+  public static final RecordLoadable<RepairFactorModule> LOADER = RecordLoadable.create(FORMULA.directField(RepairFactorModule::formula), ModifierCondition.TOOL_FIELD, RepairFactorModule::new);
 
   /** Creates a builder instance */
-  public static FormulaLoadable.Builder<RepairModule> builder() {
-    return FORMULA.builder(RepairModule::new);
+  public static FormulaLoadable.Builder<RepairFactorModule> builder() {
+    return FORMULA.builder(RepairFactorModule::new);
   }
 
   /** @apiNote Internal constructor, use {@link #builder()} */
   @Internal
-  public RepairModule {}
+  public RepairFactorModule {}
 
   @Override
   public float getRepairFactor(IToolStackView tool, ModifierEntry entry, float factor) {
@@ -49,7 +49,7 @@ public record RepairModule(ModifierFormula formula, ModifierCondition<IToolStack
   }
 
   @Override
-  public RecordLoadable<RepairModule> getLoader() {
+  public RecordLoadable<RepairFactorModule> getLoader() {
     return LOADER;
   }
 }

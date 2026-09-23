@@ -12,7 +12,7 @@
       "stat": "tconstruct:durability"
     },
     {
-      "type": "tconstruct:repair",
+      "type": "tconstruct:repair_factor",
       "flat": 0.5
     },
     {

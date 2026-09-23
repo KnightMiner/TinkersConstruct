@@ -116,7 +116,7 @@ import slimeknights.tconstruct.library.modifiers.modules.behavior.ConditionalSta
 import slimeknights.tconstruct.library.modifiers.modules.behavior.InfinityModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.MaterialRepairModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ReduceToolDamageModule;
-import slimeknights.tconstruct.library.modifiers.modules.behavior.RepairModule;
+import slimeknights.tconstruct.library.modifiers.modules.behavior.RepairFactorModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ShowOffhandModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionTransformModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionsModule;
@@ -593,8 +593,7 @@ public final class TinkerModifiers extends TinkerModule {
       // behavior
       ModifierModule.LOADER.register(getResource("attribute"), AttributeModule.LOADER);
       ModifierModule.LOADER.register(getResource("reduce_tool_damage"), ReduceToolDamageModule.LOADER);
-      // TODO 1.21: rename to repair_factor?
-      ModifierModule.LOADER.register(getResource("repair"), RepairModule.LOADER);
+      ModifierModule.LOADER.register(getResource("repair_factor"), RepairFactorModule.LOADER);
       ModifierModule.LOADER.register(getResource("material_repair"), MaterialRepairModule.LOADER);
       ModifierModule.LOADER.register(getResource("show_offhand"), ShowOffhandModule.LOADER);
       ModifierModule.LOADER.register(getResource("tool_actions"), ToolActionsModule.LOADER);

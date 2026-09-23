@@ -109,7 +109,7 @@ import slimeknights.tconstruct.library.modifiers.modules.behavior.ConditionalSta
 import slimeknights.tconstruct.library.modifiers.modules.behavior.InfinityModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.MaterialRepairModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ReduceToolDamageModule;
-import slimeknights.tconstruct.library.modifiers.modules.behavior.RepairModule;
+import slimeknights.tconstruct.library.modifiers.modules.behavior.RepairFactorModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ShowOffhandModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionTransformModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionsModule;
@@ -279,7 +279,7 @@ import static slimeknights.tconstruct.common.TinkerTags.Items.WORN_ARMOR;
 import static slimeknights.tconstruct.library.json.math.ModifierFormula.LEVEL;
 import static slimeknights.tconstruct.library.json.math.ModifierFormula.MULTIPLIER;
 import static slimeknights.tconstruct.library.json.math.ModifierFormula.VALUE;
-import static slimeknights.tconstruct.library.modifiers.modules.behavior.RepairModule.FACTOR;
+import static slimeknights.tconstruct.library.modifiers.modules.behavior.RepairFactorModule.FACTOR;
 import static slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial.ARMOR_SLOTS;
 
 public class ModifierProvider extends AbstractModifierProvider implements IConditionBuilder {
@@ -321,7 +321,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new RarityModule(Rarity.UNCOMMON))
       .addModule(StatBoostModule.multiplyBase(ToolStats.DURABILITY).flat(0.5f))
-      .addModule(RepairModule.builder().flat(0.5f))
+      .addModule(RepairFactorModule.builder().flat(0.5f))
       // armor
       .addModule(StatBoostModule.add(ToolStats.ARMOR_TOUGHNESS).flat(1))
       // melee harvest
@@ -924,7 +924,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.ironArmor).showInTooltips(ShowInTooltips.NEVER).addModule(new VolatileFlagModule(AdvancementIds.IRON_ARMOR));
 
     // traits - tier 1
-    buildModifier(ModifierIds.cultivated).addModule(RepairModule.builder().eachLevel(0.5f));
+    buildModifier(ModifierIds.cultivated).addModule(RepairFactorModule.builder().eachLevel(0.5f));
     buildModifier(ModifierIds.economical).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new CraftCountModule(LevelingValue.flat(2)));
     buildModifier(ModifierIds.cheap).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new CraftCountModule(LevelingValue.flat(0.5f), ModifierCondition.ANY_TOOL));
     buildModifier(ModifierIds.stringy).addModule(MaterialRepairModule.material(MaterialIds.string).constant(140));
@@ -1194,7 +1194,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(AttributeModule.builder(TinkerAttributes.USE_ITEM_SPEED, Operation.ADDITION).tooltipStyle(TooltipStyle.PERCENT).toolItem(ItemPredicate.tag(ARMOR)).eachLevel(0.05f));
     buildModifier(ModifierIds.dense)
       // from 0 to 5, repair formula is FACTOR * (1 - 0.025 * LEVEL * (11 - LEVEL))
-      .addModule(RepairModule.builder().maxLevel(5).formula()
+      .addModule(RepairFactorModule.builder().maxLevel(5).formula()
           .variable(FACTOR)
             .constant(1)
               .constant(0.025f).variable(LEVEL).multiply()
@@ -1203,7 +1203,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
           .subtract()
         .multiply().build())
       // at 6+, repair formula is FACTOR * (0.5 - LEVEL * 0.05), simple formula supports below
-      .addModule(RepairModule.builder().minLevel(6).amount(-0.5f, -0.05f))
+      .addModule(RepairFactorModule.builder().minLevel(6).amount(-0.5f, -0.05f))
       // durability formula is 1 - 1/(1.5^LEVEL)
       .addModule(ReduceToolDamageModule.builder().formula()
           .constant(1)
@@ -1212,7 +1212,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
           .divide()
         .subtract().build());
     buildModifier(ModifierIds.consecrated).addModule(ProtectionModule.builder().attacker(new MobTypePredicate(MobType.UNDEAD)).eachLevel(1.25f));
-    buildModifier(ModifierIds.preserved).addModules(StatBoostModule.multiplyBase(ToolStats.DURABILITY).eachLevel(0.15f), RepairModule.builder().eachLevel(0.15f));
+    buildModifier(ModifierIds.preserved).addModules(StatBoostModule.multiplyBase(ToolStats.DURABILITY).eachLevel(0.15f), RepairFactorModule.builder().eachLevel(0.15f));
     buildModifier(ModifierIds.holy).addModule(ConditionalPowerModule.builder().target(new MobTypePredicate(MobType.UNDEAD)).eachLevel(0.75f));
 
     // traits - tier 3

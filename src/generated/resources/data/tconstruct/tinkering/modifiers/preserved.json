@@ -8,7 +8,7 @@
       "stat": "tconstruct:durability"
     },
     {
-      "type": "tconstruct:repair",
+      "type": "tconstruct:repair_factor",
       "each_level": 0.15
     }
   ]
