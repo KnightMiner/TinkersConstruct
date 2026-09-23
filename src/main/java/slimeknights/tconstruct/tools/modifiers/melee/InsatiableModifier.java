@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.tools.modifiers.melee;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -50,7 +51,8 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
   /** Applies the effect to the target */
   public static void applyEffect(LivingEntity living, ToolType type, int duration, int add, int maxLevel) {
     TinkerEffect effect = TinkerModifiers.insatiableEffect.get(type);
-    effect.apply(living, duration, Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + add), true);
+    int amplifier = Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + add);
+    living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }
 
   @Override

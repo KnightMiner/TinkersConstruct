@@ -51,47 +51,6 @@ public class TinkerEffect extends MobEffect {
   /* Helpers */
 
   /**
-   * Applies this potion to an entity
-   * @param entity    Entity
-   * @param duration  Duration
-   * @return  Applied instance
-   * @deprecated use {@link LivingEntity#addEffect(MobEffectInstance)}
-   */
-  @Deprecated
-  public MobEffectInstance apply(LivingEntity entity, int duration) {
-    return this.apply(entity, duration, 0);
-  }
-
-  /**
-   * Applies this potion to an entity
-   * @param entity    Entity
-   * @param duration  Duration
-   * @param level     Effect level
-   * @return  Applied instance
-   * @deprecated use {@link LivingEntity#addEffect(MobEffectInstance)}
-   */
-  @Deprecated
-  public MobEffectInstance apply(LivingEntity entity, int duration, int level) {
-    return this.apply(entity, duration, level, false);
-  }
-
-  /**
-   * Applies this potion to an entity
-   * @param entity    Entity
-   * @param duration  Duration
-   * @param amplifier Effect level
-   * @param showIcon  If true, shows an icon in the HUD
-   * @return  Applied instance
-   * @deprecated use {@link LivingEntity#addEffect(MobEffectInstance)}
-   */
-  @Deprecated
-  public MobEffectInstance apply(LivingEntity entity, int duration, int amplifier, boolean showIcon) {
-    MobEffectInstance effect = new MobEffectInstance(this, duration, amplifier, false, false, showIcon);
-    entity.addEffect(effect);
-    return effect;
-  }
-
-  /**
    * Gets the level of the effect on the entity starting from 1, or 0 if not active
    * @param entity  Entity to check
    * @return  Level, or 0 if inactive
@@ -120,11 +79,5 @@ public class TinkerEffect extends MobEffect {
       return instance.getAmplifier();
     }
     return -1;
-  }
-
-  /** @deprecated use {@link #getAmplifier(LivingEntity, MobEffect)} which is better named or {@link #getLevel(LivingEntity, MobEffect)} which gives a more useful return */
-  @Deprecated(forRemoval = true)
-  public int getLevel(LivingEntity entity) {
-    return getAmplifier(entity, this);
   }
 }

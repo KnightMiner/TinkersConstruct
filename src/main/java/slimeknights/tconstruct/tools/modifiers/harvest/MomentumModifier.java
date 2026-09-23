@@ -2,6 +2,7 @@ package slimeknights.tconstruct.tools.modifiers.harvest;
 
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -57,7 +58,8 @@ public class MomentumModifier extends Modifier implements ProjectileLaunchModifi
   /** Applies the effect to the target */
   private static void applyEffect(LivingEntity living, ToolType type, int duration, int maxLevel) {
     TinkerEffect effect = TinkerModifiers.momentumEffect.get(type);
-    effect.apply(living, duration, Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + 1), true);
+    int amplifier = Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + 1);
+    living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }
 
   @Override
