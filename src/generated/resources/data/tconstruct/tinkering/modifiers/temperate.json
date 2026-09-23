@@ -62,7 +62,7 @@
         "non-negative",
         "$level",
         "*",
-        "$protection",
+        "$value",
         "+"
       ],
       "tool": {

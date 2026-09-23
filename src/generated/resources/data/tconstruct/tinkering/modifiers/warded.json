@@ -5,12 +5,12 @@
       "type": "tconstruct:adjust_damage",
       "damage_source": "mantle:can_protect",
       "formula": [
-        "$protection",
+        "$value",
         "$level",
         "-",
         1.0,
         "max",
-        "$protection",
+        "$value",
         "min"
       ],
       "holder": "tconstruct:full_health",

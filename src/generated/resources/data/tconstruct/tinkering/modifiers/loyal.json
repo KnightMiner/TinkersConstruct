@@ -12,7 +12,7 @@
         "*",
         "$level",
         "*",
-        "$protection",
+        "$value",
         "+"
       ],
       "variables": {

@@ -8,7 +8,7 @@
         "$equipment",
         "$level",
         "*",
-        "$protection",
+        "$value",
         "+"
       ],
       "variables": {

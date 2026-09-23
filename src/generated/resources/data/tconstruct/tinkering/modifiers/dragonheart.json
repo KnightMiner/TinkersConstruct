@@ -5,7 +5,7 @@
       "type": "tconstruct:adjust_damage",
       "damage_source": "mantle:can_protect",
       "formula": [
-        "$protection",
+        "$value",
         "$max_health",
         "$level",
         2.0,

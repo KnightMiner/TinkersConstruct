@@ -52,7 +52,7 @@
         "$temperature",
         0.75,
         "-",
-        "$protection",
+        "$value",
         "+"
       ],
       "tool": {

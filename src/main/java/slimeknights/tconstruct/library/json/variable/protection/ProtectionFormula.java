@@ -19,8 +19,8 @@ import java.util.Map;
 
 /** Variable context for {@link ConditionalMeleeDamageModule} */
 public record ProtectionFormula(ModifierFormula formula, List<ProtectionVariable> variables, String[] variableNames, boolean percent) implements VariableFormula<ProtectionVariable> {
-  /** Variables for the modifier formula. TODO 1.21: replace "protection" with "value". */
-  public static final String[] VARIABLES = { "level", "protection" };
+  /** Variables for the modifier formula. */
+  public static final String[] VARIABLES = { "level", "value" };
   /** Loader instance for protection */
   public static final RecordLoadable<ProtectionFormula> LOADER = new VariableFormulaLoadable<>(ProtectionVariable.LOADER, VARIABLES, FallbackFormula.ADD, (formula, variables, percent) -> new ProtectionFormula(formula, variables, EMPTY_STRINGS));
   /** Loader instance for damage adjustment */
