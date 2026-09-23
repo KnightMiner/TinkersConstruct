@@ -23,7 +23,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.loadable.LegacyLoadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
@@ -32,7 +31,6 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
-import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.json.RandomLevelingValue;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
@@ -82,15 +80,6 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   /** Shared chance field */
   RecordField<LevelingValue, MobEffectModule> CHANCE_FIELD = LevelingValue.LOADABLE.defaultField("chance", LevelingValue.ONE, MobEffectModule::chance);
 
-  /** @deprecated use {@link Weapon#LOADER} or {@link ArmorCounter#LOADER}. */
-  @Deprecated
-  RecordLoadable<Legacy> LOADER = LegacyLoadable.message(RecordLoadable.create(
-    EFFECT_FIELD, WeaponCommon.BEFORE_MELEE_FIELD,
-    LevelingValue.LOADABLE.defaultField("chance", LevelingValue.eachLevel(0.25f), MobEffectModule::chance),
-    IntLoadable.FROM_ZERO.defaultField("counter_durability_usage", 1, CounterCommon::durabilityUsage),
-    ModifierCondition.TOOL_FIELD,
-    Legacy::new), "Using deprecated modifier module 'tconstruct:mob_effect'. Use one or both of 'tconstruct:weapon_mob_effect' or 'tconstruct:counter_mob_effect'");
-
   /** Gets the effect for this module */
   ModifierMobEffect effect();
 
@@ -125,6 +114,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Builder for this modifier in datagen */
+  @SuppressWarnings("unused") // API
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   @Accessors(fluent = true)
   @Setter
@@ -158,8 +148,8 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     /** Damage source condition for applying on armor attack */
     private IJsonPredicate<DamageSource> damageSource = DamageSourcePredicate.ANY;
     // counter
-    /** Amount of durability spent applying this modifier to counter-attacks. TODO 1.21: rename to {@code durabilityUsage} */
-    private int counterDurabilityUsage = 1;
+    /** Amount of durability spent applying this modifier to counter-attacks. */
+    private int durabilityUsage = 1;
     /** If true, the counter module targets ourselves instead of the attacker. For non-counter modules, {@link #buildToolUsage()} will target yourself. */
     private boolean targetSelf = false;
 
@@ -191,7 +181,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
 
     /** Effect targets the entity attacking us */
     public ArmorCounter buildCounter() {
-      return new ArmorCounter(buildEffect(), requireNonNullElse(chance, LevelingValue.eachLevel(0.15f)), holder, requireNonNullElse(directDamage, BooleanPredicate.TRUE), damageSource, counterDurabilityUsage, targetSelf, condition);
+      return new ArmorCounter(buildEffect(), requireNonNullElse(chance, LevelingValue.eachLevel(0.15f)), holder, requireNonNullElse(directDamage, BooleanPredicate.TRUE), damageSource, durabilityUsage, targetSelf, condition);
     }
 
     /** Effect targets entities attacked by us while wearing this as armor */
@@ -207,12 +197,6 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     /** Effect upon eating an edible tool */
     public Edible buildEdible() {
       return new Edible(buildEffect(), holder, condition);
-    }
-
-    /** Builds the finished modifier */
-    @Deprecated(forRemoval = true)
-    public Legacy build() {
-      return new Legacy(buildEffect(), applyBeforeMelee, requireNonNullElse(chance, LevelingValue.eachLevel(0.25f)), counterDurabilityUsage, condition);
     }
   }
 
@@ -265,55 +249,14 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
   }
 
-  /** Common logic between {@link Weapon} and {@link Legacy}. TODO 1.21: merge into {@link Weapon} */
-  @Internal
-  interface WeaponCommon extends Combat, MeleeHitModifierHook, MonsterMeleeHitModifierHook, ProjectileHitModifierHook {
-    RecordField<Boolean,WeaponCommon> BEFORE_MELEE_FIELD = BooleanLoadable.INSTANCE.defaultField("apply_before_melee", false, false, WeaponCommon::applyBeforeMelee);
-
-    /** If true, this applies before melee hits instead of after. */
-    boolean applyBeforeMelee();
-
-    @Override
-    default void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
-      if (context.isFullyCharged() && condition().matches(tool, modifier) && checkChance(modifier)) {
-        LivingEntity attacker = context.getAttacker();
-        if (holder().matches(attacker)) {
-          effect().applyEffect(context.getLivingTarget(), modifier, attacker);
-        }
-      }
-    }
-
-    @Override
-    default float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
-      if (applyBeforeMelee()) {
-        onMonsterMeleeHit(tool, modifier, context, damage);
-      }
-      return knockback;
-    }
-
-    @Override
-    default void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
-      if (!applyBeforeMelee()) {
-        onMonsterMeleeHit(tool, modifier, context, damageDealt);
-      }
-    }
-
-    @Deprecated
-    @Override
-    default boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
-      if (condition().modifierLevel().test(modifier.getLevel()) && TinkerPredicate.matches(holder(), attacker) && checkChance(modifier)) {
-        effect().applyEffect(target, modifier, projectile.getEffectSource());
-      }
-      return false;
-    }
-  }
-
   /** Implementation for melee and ranged weapons, applying the effect to the target. */
   @Internal
-  record Weapon(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, boolean applyBeforeMelee, ModifierCondition<IToolStackView> condition) implements WeaponCommon {
+  record Weapon(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, boolean applyBeforeMelee, ModifierCondition<IToolStackView> condition) implements Combat, MeleeHitModifierHook, MonsterMeleeHitModifierHook, ProjectileHitModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Weapon>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_HIT);
     /** Loader for a weapon effect. */
-    public static final RecordLoadable<Weapon> LOADER = RecordLoadable.create(EFFECT_FIELD, CHANCE_FIELD, HOLDER_FIELD, BEFORE_MELEE_FIELD, ModifierCondition.TOOL_FIELD, Weapon::new);
+    public static final RecordLoadable<Weapon> LOADER = RecordLoadable.create(EFFECT_FIELD, CHANCE_FIELD, HOLDER_FIELD,
+      BooleanLoadable.INSTANCE.defaultField("apply_before_melee", false, false, Weapon::applyBeforeMelee),
+      ModifierCondition.TOOL_FIELD, Weapon::new);
 
     /** @apiNote use {@link Builder#buildWeapon()} */
     @Internal
@@ -328,66 +271,49 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     public RecordLoadable<? extends Weapon> getLoader() {
       return LOADER;
     }
-  }
 
-  /** Common logic between {@link ArmorCounter} and {@link Legacy}. TODO 1.21: merge into {@link ArmorCounter}. */
-  @Internal
-  interface CounterCommon extends Combat, OnAttackedModifierHook {
-    /** Reimplementation of chance field to change the default */
-    RecordField<LevelingValue, CounterCommon> CHANCE_FIELD = LevelingValue.LOADABLE.defaultField("chance", LevelingValue.eachLevel(0.15f), false, CounterCommon::chance);
-
-    /** Gets the amount of durability consumed by counter-attacks. */
-    int durabilityUsage();
-
-    /** If true, effect targets ourselves. If false, effect targets the attacker. */
-    default boolean targetSelf() {
-      return false;
-    }
-
-    /** Condition on the direct damage parameter. */
-    default BooleanPredicate directDamage() {
-      return BooleanPredicate.TRUE;
-    }
-
-    /** Condition on the direct damage source. */
-    default IJsonPredicate<DamageSource> damageSource() {
-      return DamageSourcePredicate.ANY;
+    @Override
+    public void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
+      if (context.isFullyCharged() && condition.matches(tool, modifier) && checkChance(modifier)) {
+        LivingEntity attacker = context.getAttacker();
+        if (holder.matches(attacker)) {
+          effect.applyEffect(context.getLivingTarget(), modifier, attacker);
+        }
+      }
     }
 
     @Override
-    default void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
-      if (directDamage().test(isDirectDamage) && condition().matches(tool, modifier) && damageSource().matches(source)) {
-        LivingEntity defender = context.getEntity();
-        Entity sourceEntity = source.getEntity();
-        float scaledLevel = CounterModule.getLevel(tool, modifier, slotType, defender);
-        if (sourceEntity != defender && checkChance(scaledLevel)) {
-          // target self if requested
-          boolean applied = false;
-          if (targetSelf()) {
-            // repurpose holder to refer to attacker, as target is now self. makes the JSON a bit weird, but is more flexible
-            if (TinkerPredicate.matches(holder(), sourceEntity)) {
-              effect().applyEffect(defender, modifier, null);
-              applied = true;
-            }
-          } else if (holder().matches(defender) && sourceEntity instanceof LivingEntity attacker) {
-            effect().applyEffect(attacker, scaledLevel, defender);
-            applied = true;
-          }
-          // consume durability
-          int durabilityUsage = this.durabilityUsage();
-          if (applied && durabilityUsage > 0) {
-            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.getId());
-          }
-        }
+    public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+      if (applyBeforeMelee) {
+        onMonsterMeleeHit(tool, modifier, context, damage);
       }
+      return knockback;
+    }
+
+    @Override
+    public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+      if (!applyBeforeMelee) {
+        onMonsterMeleeHit(tool, modifier, context, damageDealt);
+      }
+    }
+
+    @Deprecated
+    @Override
+    public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+      if (condition.modifierLevel().test(modifier.getLevel()) && TinkerPredicate.matches(holder, attacker) && checkChance(modifier)) {
+        effect.applyEffect(target, modifier, projectile.getEffectSource());
+      }
+      return false;
     }
   }
 
   /** Implementation for counter-attacks from armor */
-  record ArmorCounter(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, int durabilityUsage, boolean targetSelf, ModifierCondition<IToolStackView> condition) implements CounterCommon {
+  record ArmorCounter(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, int durabilityUsage, boolean targetSelf, ModifierCondition<IToolStackView> condition) implements Combat, OnAttackedModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ArmorCounter>defaultHooks(ModifierHooks.ON_ATTACKED);
     public static final RecordLoadable<ArmorCounter> LOADER = RecordLoadable.create(
-      EFFECT_FIELD, CHANCE_FIELD, HOLDER_FIELD,
+      EFFECT_FIELD,
+      LevelingValue.LOADABLE.defaultField("chance", LevelingValue.eachLevel(0.15f), false, ArmorCounter::chance),
+      HOLDER_FIELD,
       BooleanPredicate.LOADABLE.defaultField("direct_damage", BooleanPredicate.TRUE, ArmorCounter::directDamage),
       DamageSourcePredicate.LOADER.defaultField("damage_source", ArmorCounter::damageSource),
       IntLoadable.FROM_ZERO.defaultField("durability_usage", 1, ArmorCounter::durabilityUsage),
@@ -406,6 +332,33 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     @Override
     public RecordLoadable<ArmorCounter> getLoader() {
       return LOADER;
+    }
+
+    @Override
+    public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+      if (directDamage.test(isDirectDamage) && condition.matches(tool, modifier) && damageSource.matches(source)) {
+        LivingEntity defender = context.getEntity();
+        Entity sourceEntity = source.getEntity();
+        float scaledLevel = CounterModule.getLevel(tool, modifier, slotType, defender);
+        if (sourceEntity != defender && checkChance(scaledLevel)) {
+          // target self if requested
+          boolean applied = false;
+          if (targetSelf) {
+            // repurpose holder to refer to attacker, as target is now self. makes the JSON a bit weird, but is more flexible
+            if (TinkerPredicate.matches(holder, sourceEntity)) {
+              effect.applyEffect(defender, modifier, null);
+              applied = true;
+            }
+          } else if (holder.matches(defender) && sourceEntity instanceof LivingEntity attacker) {
+            effect.applyEffect(attacker, scaledLevel, defender);
+            applied = true;
+          }
+          // consume durability
+          if (applied && durabilityUsage > 0) {
+            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.getId());
+          }
+        }
+      }
     }
   }
 
@@ -547,34 +500,6 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
       if (condition.matches(tool, modifier) && this.holder.matches(player)) {
         effect.applyEffect(player, modifier, null);
-      }
-    }
-  }
-
-  /** Legacy implementation that does weapon, armor, and alike. Too many things happening. */
-  @Deprecated
-  record Legacy(ModifierMobEffect effect, boolean applyBeforeMelee, LevelingValue chance, int durabilityUsage, ModifierCondition<IToolStackView> condition) implements WeaponCommon, CounterCommon {
-    private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Legacy>defaultHooks(ModifierHooks.ON_ATTACKED, ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_HIT);
-
-    /** @apiNote use {@link Builder#build()} */
-    @Internal
-    public Legacy {}
-
-    @Override
-    public List<ModuleHook<?>> getDefaultHooks() {
-      return DEFAULT_HOOKS;
-    }
-
-    @Override
-    public RecordLoadable<Legacy> getLoader() {
-      return MobEffectModule.LOADER;
-    }
-
-    @Override
-    public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
-      // legacy implementation conditioned on only being armor. For the new module we let you set the condition for that.
-      if (tool.hasTag(TinkerTags.Items.ARMOR)) {
-        CounterCommon.super.onAttacked(tool, modifier, context, slotType, source, amount, isDirectDamage);
       }
     }
   }

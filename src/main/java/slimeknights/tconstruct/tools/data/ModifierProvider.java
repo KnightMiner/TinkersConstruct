@@ -1252,7 +1252,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(AttributeModule.builder(Attributes.ATTACK_SPEED, Operation.MULTIPLY_TOTAL).tooltipStyle(TooltipStyle.PERCENT).eachLevel(0.05f))
       .addModule(AttributeModule.builder(TinkerAttributes.BAD_EFFECT_DURATION, Operation.MULTIPLY_TOTAL).tooltipStyle(TooltipStyle.PERCENT).eachLevel(0.05f))
       .addModule(new ArmorLevelModule(TinkerDataKeys.CRYSTALSTRIKE, false, TinkerTags.Items.HELD_ARMOR));
-    MobEffectModule.Builder spectralBuilder = MobEffectModule.builder(MobEffects.GLOWING).chance(LevelingValue.flat(1)).counterDurabilityUsage(0).time(RandomLevelingValue.perLevel(0, 200));
+    MobEffectModule.Builder spectralBuilder = MobEffectModule.builder(MobEffects.GLOWING).chance(LevelingValue.flat(1)).durabilityUsage(0).time(RandomLevelingValue.perLevel(0, 200));
     buildModifier(ModifierIds.spectral).priority(10) // run late so we don't cancel another effect by deleting the projectile
       .addModule(spectralBuilder.buildWeapon())
       .addModule(spectralBuilder.buildCounter())
@@ -1448,7 +1448,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(decayBuilder.chance(LevelingValue.flat(0.25f)).buildToolUsage(), ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_THROWN, ModifierHooks.SLING_LAUNCH)
       // on counter, 50% chance of 10 seconds of wither 2, 10% chance of you taking 10 seconds of wither 1
       .addModule(MobEffectModule.builder(MobEffects.WITHER).level(RandomLevelingValue.flat(2)).time(RandomLevelingValue.flat(120)).chance(LevelingValue.eachLevel(0.5f)).buildCounter())
-      .addModule(MobEffectModule.builder(MobEffects.WITHER).level(RandomLevelingValue.flat(1)).time(RandomLevelingValue.flat(120)).chance(LevelingValue.eachLevel(0.1f)).targetSelf(true).counterDurabilityUsage(0).buildCounter());
+      .addModule(MobEffectModule.builder(MobEffects.WITHER).level(RandomLevelingValue.flat(1)).time(RandomLevelingValue.flat(120)).chance(LevelingValue.eachLevel(0.1f)).targetSelf(true).durabilityUsage(0).buildCounter());
 
     // traits - tier 4
     buildModifier(ModifierIds.overburn).addModules(OverburnModule.INSTANCE, StatBoostModule.add(ToolTankHelper.CAPACITY_STAT).flat(FluidType.BUCKET_VOLUME), ToolTankHelper.TANK_HANDLER);

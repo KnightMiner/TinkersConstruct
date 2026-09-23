@@ -618,7 +618,6 @@ public final class TinkerModifiers extends TinkerModule {
       ModifierModule.LOADER.register(getResource("projectile_explosion"), ProjectileExplosionModule.LOADER);
       ModifierModule.LOADER.register(getResource("sling_force"), SlingForceModule.LOADER);
       // mob effect
-      ModifierModule.LOADER.register(getResource("mob_effect"), MobEffectModule.LOADER);
       ModifierModule.LOADER.register(getResource("weapon_mob_effect"), MobEffectModule.Weapon.LOADER);
       ModifierModule.LOADER.register(getResource("counter_mob_effect"), MobEffectModule.ArmorCounter.LOADER);
       ModifierModule.LOADER.register(getResource("tool_usage_mob_effect"), MobEffectModule.ToolUsage.LOADER);
