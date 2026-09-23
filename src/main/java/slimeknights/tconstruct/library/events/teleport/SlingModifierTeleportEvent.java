@@ -15,10 +15,4 @@ public class SlingModifierTeleportEvent extends ModifierTeleportEvent {
     super(entity, targetX, targetY, targetZ, entry);
     this.tool = tool;
   }
-
-  /** @deprecated use {@link #getModifier()} */
-  @Deprecated
-  public ModifierEntry getEntry() {
-    return getModifier();
-  }
 }

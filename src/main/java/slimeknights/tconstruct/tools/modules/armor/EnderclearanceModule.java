@@ -32,20 +32,11 @@ import java.util.List;
 public record EnderclearanceModule(LevelingValue chance, LevelingInt diameter, LevelingInt teleportChances) implements ModifierModule, ProjectileHitModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, OnAttackedModifierHook {
   private static final LevelingInt DEFAULT = LevelingInt.flat(16);
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<EnderclearanceModule>defaultHooks(ModifierHooks.PROJECTILE_HIT, ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.ON_ATTACKED);
-  /** @deprecated use {@link #EnderclearanceModule(LevelingValue)} */
-  @Deprecated(forRemoval = true)
-  public static final EnderclearanceModule INSTANCE = new EnderclearanceModule(LevelingValue.eachLevel(0.25f));
   public static final RecordLoadable<EnderclearanceModule> LOADER = RecordLoadable.create(
     LevelingValue.LOADABLE.requiredField("chance", EnderclearanceModule::chance),
     LevelingInt.LOADABLE.defaultField("diameter", DEFAULT, true, EnderclearanceModule::diameter),
     LevelingInt.LOADABLE.defaultField("teleport_chances", DEFAULT, true, EnderclearanceModule::teleportChances),
     EnderclearanceModule::new);
-
-  /** @deprecated use {@link #EnderclearanceModule(LevelingValue, LevelingInt, LevelingInt)} */
-  @Deprecated(forRemoval = true)
-  public EnderclearanceModule(LevelingValue chance) {
-    this(chance, DEFAULT, DEFAULT);
-  }
 
   @Override
   public RecordLoadable<EnderclearanceModule> getLoader() {

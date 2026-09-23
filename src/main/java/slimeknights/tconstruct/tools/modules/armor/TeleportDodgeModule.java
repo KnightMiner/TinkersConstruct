@@ -11,7 +11,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
-import slimeknights.tconstruct.library.events.teleport.EnderdodgingTeleportEvent;
+import slimeknights.tconstruct.library.events.teleport.ModifierTeleportEvent;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -62,7 +62,7 @@ public record TeleportDodgeModule(IJsonPredicate<LivingEntity> defender, IJsonPr
     if (!entity.hasEffect(TinkerEffects.enderference.get()) && this.defender.matches(entity) && damageSource.matches(source)) {
       // chance of applying is boosted when blocking with a shield
       float level = CounterModule.getLevel(tool, modifier, slotType, entity);
-      if (entity.getRandom().nextFloat() < chance.compute(level) && TeleportHelper.randomNearbyTeleport(context.getEntity(), (e, x, y, z) -> new EnderdodgingTeleportEvent(e, x, y, z, modifier))) {
+      if (entity.getRandom().nextFloat() < chance.compute(level) && TeleportHelper.randomNearbyTeleport(context.getEntity(), (e, x, y, z) -> new ModifierTeleportEvent(e, x, y, z, modifier))) {
         // if we successfully teleport, apply the cooldown
         int cooldown = this.cooldown.compute(level);
         if (cooldown > 0) {

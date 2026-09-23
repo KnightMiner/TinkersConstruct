@@ -18,7 +18,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.events.teleport.EnderportingTeleportEvent;
+import slimeknights.tconstruct.library.events.teleport.ModifierTeleportEvent;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.entity.ReusableProjectile;
@@ -80,7 +80,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
 
     // as long as no collision now, we can teleport
     if (!didCollide) {
-      return TeleportHelper.tryTeleport(new EnderportingTeleportEvent(living, x, y, z, modifier));
+      return TeleportHelper.tryTeleport(new ModifierTeleportEvent(living, x, y, z, modifier));
     }
     return false;
   }
