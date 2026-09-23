@@ -1,8 +1,6 @@
 package slimeknights.tconstruct.library.json.variable.mining;
 
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.variable.block.BlockVariable;
@@ -21,15 +19,6 @@ public record BlockMiningSpeedVariable(BlockVariable block, float fallback) impl
     BlockVariable.LOADER.directField("block_type", BlockMiningSpeedVariable::block),
     FloatLoadable.ANY.requiredField("fallback", BlockMiningSpeedVariable::fallback),
     BlockMiningSpeedVariable::new);
-
-  @Deprecated
-  @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeed event, @Nullable Player player, @Nullable Direction sideHit) {
-    if (event != null) {
-      return block.getValue(event.getState());
-    }
-    return fallback;
-  }
 
   @Override
   public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {

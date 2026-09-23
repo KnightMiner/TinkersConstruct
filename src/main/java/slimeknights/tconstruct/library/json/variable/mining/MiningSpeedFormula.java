@@ -1,8 +1,6 @@
 package slimeknights.tconstruct.library.json.variable.mining;
 
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.math.ModifierFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
@@ -26,24 +24,6 @@ public record MiningSpeedFormula(ModifierFormula formula, List<MiningSpeedVariab
   public MiningSpeedFormula(ModifierFormula formula, Map<String,MiningSpeedVariable> variables, boolean percent) {
     this(formula, List.copyOf(variables.values()), VariableFormula.getNames(variables), percent);
   }
-
-  /** Builds the arguments from the context */
-  @SuppressWarnings("deprecation")
-  private float[] getArguments(IToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeed event, @Nullable Player player, @Nullable Direction sideHit, float baseSpeed, float newSpeed, float multiplier) {
-    int size = variables.size();
-    float[] arguments = VariableFormula.statModuleArguments(size, formula.processLevel(modifier), baseSpeed, newSpeed, multiplier * tool.getMultiplier(ToolStats.MINING_SPEED));
-    for (int i = 0; i < size; i++) {
-      arguments[4+i] = variables.get(i).getValue(tool, event, player, sideHit);
-    }
-    return arguments;
-  }
-
-  /** Runs this formula */
-  @Deprecated(forRemoval = true)
-  public float apply(IToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeed event, @Nullable Player player, @Nullable Direction sideHit, float baseSpeed, float newSpeed, float multiplier) {
-    return formula.apply(getArguments(tool, modifier, event, player, sideHit, baseSpeed, newSpeed, multiplier));
-  }
-
 
   /** Builds the arguments from the context */
   private float[] getArguments(IToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeedContext context, @Nullable Player player, float baseSpeed, float newSpeed, float multiplier) {

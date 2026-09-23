@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.tools.modifiers.harvest;
 
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,7 +8,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerEffect;
@@ -60,14 +58,6 @@ public class MomentumModifier extends Modifier implements ProjectileLaunchModifi
     TinkerEffect effect = TinkerModifiers.momentumEffect.get(type);
     int amplifier = Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + 1);
     living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
-  }
-
-  @Override
-  public void onBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeed event, Direction sideHit, boolean isEffective, float miningSpeedModifier) {
-    if (isEffective) {
-      // 25% boost per level at max
-      event.setNewSpeed(event.getNewSpeed() * (1 + getBonus(event.getEntity(), ToolType.HARVEST, modifier) / 40f));
-    }
   }
 
   @Override

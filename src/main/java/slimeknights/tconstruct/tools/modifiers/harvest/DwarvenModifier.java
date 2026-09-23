@@ -1,14 +1,12 @@
 package slimeknights.tconstruct.tools.modifiers.harvest;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -26,7 +24,6 @@ import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 // TODO: convert into a module
 public class DwarvenModifier extends Modifier implements ConditionalStatModifierHook, BreakSpeedModifierHook, TooltipModifierHook {
@@ -77,15 +74,6 @@ public class DwarvenModifier extends Modifier implements ConditionalStatModifier
 
     // no boost, no debuff
     return baseSpeed;
-  }
-
-  @Override
-  public void onBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeed event, Direction sideHit, boolean isEffective, float miningSpeedModifier) {
-    Optional<BlockPos> pos = event.getPosition();
-    if (!isEffective || pos.isEmpty()) {
-      return;
-    }
-    event.setNewSpeed(getBoost(event.getEntity().level(), pos.get().getY(), modifier, event.getNewSpeed(), miningSpeedModifier * tool.getMultiplier(ToolStats.MINING_SPEED) * MINING_BONUS));
   }
 
   @Override

@@ -1,8 +1,5 @@
 package slimeknights.tconstruct.library.modifiers.hook.mining;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
@@ -14,9 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -43,11 +37,6 @@ public sealed interface BreakSpeedContext {
 
   /** Calculated modifier from potion effects such as haste and environment such as water, use for additive bonuses to ensure consistency with the mining speed stat. */
   float miningSpeedMultiplier();
-
-  /** Gets the event instance for calling the deprecated hook. No need to use directly, returning in {@link BreakSpeedModifierHook#modifyBreakSpeed(IToolStackView, ModifierEntry, BreakSpeedContext, float)} is how you update the speed now. */
-  @Internal
-  @Deprecated
-  BreakSpeed event();
 
 
   /* Helpers */
@@ -110,27 +99,9 @@ public sealed interface BreakSpeedContext {
     }
   }
 
-  /** Implementation for non-event usages of the hook, such as {@link slimeknights.tconstruct.tools.entity.ThrownTool} */
-  @Getter
-  @Accessors(fluent = true)
-  @RequiredArgsConstructor
-  final class Direct implements BreakSpeedContext {
-    private final Player player;
-    private final BlockState state;
-    private final @Nullable BlockPos pos;
-    private final Direction sideHit;
-    private final boolean isEffective;
-    private final float originalSpeed;
-    private final float miningSpeedMultiplier;
-    private BreakSpeed event;
-
-    @Override
-    public BreakSpeed event() {
-      // lazily create event instance, as constructing an event that never fires is weird
-      if (event == null) {
-        event = new BreakSpeed(player, state, originalSpeed, pos);
-      }
-      return event;
-    }
-  }
+  /** Implementation of break speed context. */
+  record Direct(
+    Player player, BlockState state, @Nullable BlockPos pos, Direction sideHit,
+    boolean isEffective, float originalSpeed, float miningSpeedMultiplier
+  ) implements BreakSpeedContext {}
 }

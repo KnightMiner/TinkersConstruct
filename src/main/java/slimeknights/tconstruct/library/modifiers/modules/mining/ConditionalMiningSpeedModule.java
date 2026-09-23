@@ -2,11 +2,9 @@ package slimeknights.tconstruct.library.modifiers.modules.mining;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -68,16 +66,6 @@ public record ConditionalMiningSpeedModule(
   public Integer getPriority() {
     // run multipliers a bit later
     return percent() ? 75 : null;
-  }
-
-  @SuppressWarnings("removal")
-  @Deprecated
-  @Override
-  public void onBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeed event, Direction sideHit, boolean isEffective, float miningSpeedModifier) {
-    Player player = event.getEntity();
-    if ((isEffective || !requireEffective) && condition.matches(tool, modifier) && block.matches(event.getState()) && holder.matches(player)) {
-      event.setNewSpeed(formula.apply(tool, modifier, event, player, sideHit, event.getOriginalSpeed(), event.getNewSpeed(), miningSpeedModifier));
-    }
   }
 
   @Override
