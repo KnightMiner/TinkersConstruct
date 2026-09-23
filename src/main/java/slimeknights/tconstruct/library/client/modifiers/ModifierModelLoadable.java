@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -10,7 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.util.typed.TypedMap;
-import slimeknights.tconstruct.library.client.modifiers.NormalModifierModel;
+import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
+import slimeknights.tconstruct.library.client.modifiers.model.NormalModifierModel;
+import slimeknights.tconstruct.library.client.modifiers.model.nested.CompoundModifierModel;
 
 import java.util.List;
 

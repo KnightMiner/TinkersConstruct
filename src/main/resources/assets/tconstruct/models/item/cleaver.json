@@ -13,10 +13,6 @@
     "large_shield": "tconstruct:item/tool/cleaver/large/shield"
   },
   "modifier_maps": ["tconstruct:cleaver"],
-  "modifier_roots": {
-    "small": [ "tconstruct:item/tool/cleaver/modifiers/" ],
-    "large": [ "tconstruct:item/tool/cleaver/large/modifiers/" ]
-  },
   "large": true,
   "large_offset": [-2, 2],
   "parts": [

@@ -11,10 +11,6 @@
     "tconstruct:swasher/2",
     "tconstruct:swasher"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/swasher/modifiers/2/",
-    "tconstruct:item/tool/swasher/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

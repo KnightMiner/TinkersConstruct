@@ -15,16 +15,6 @@
     "tconstruct:broad_axe_broken",
     "tconstruct:broad_axe"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/broad_axe/modifiers/broken/",
-      "tconstruct:item/tool/broad_axe/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/broad_axe/large/modifiers/broken/",
-      "tconstruct:item/tool/broad_axe/large/modifiers/"
-    ]
-  },
   "large": true,
   "large_offset": [
     -2,

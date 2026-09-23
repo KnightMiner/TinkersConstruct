@@ -52,16 +52,7 @@ import slimeknights.tconstruct.library.client.model.TinkerItemProperties;
 import slimeknights.tconstruct.library.client.model.tools.MaterialBlockModel;
 import slimeknights.tconstruct.library.client.model.tools.MaterialModel;
 import slimeknights.tconstruct.library.client.model.tools.ToolModel;
-import slimeknights.tconstruct.library.client.modifiers.DyedModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.FluidModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.MaterialModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.ModifierModelManager;
-import slimeknights.tconstruct.library.client.modifiers.ModifierModelManager.ModifierModelRegistrationEvent;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager;
-import slimeknights.tconstruct.library.client.modifiers.NormalModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.PotionModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.TankModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.TrimModifierModel;
 import slimeknights.tconstruct.library.client.particle.AttackParticle;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
@@ -73,7 +64,6 @@ import slimeknights.tconstruct.shared.TinkerAttributes;
 import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.client.CrystalshotRenderer;
 import slimeknights.tconstruct.tools.client.FluidEffectProjectileRenderer;
-import slimeknights.tconstruct.tools.client.OverslimeModifierModel;
 import slimeknights.tconstruct.tools.client.ShieldBannerModifierSpriteSource;
 import slimeknights.tconstruct.tools.client.SlimeskullArmorModel;
 import slimeknights.tconstruct.tools.client.ToolContainerScreen;
@@ -83,12 +73,10 @@ import slimeknights.tconstruct.tools.client.material.ThrownToolRenderer;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
-import slimeknights.tconstruct.tools.modules.ranged.ammo.SmashingModule;
 import slimeknights.tconstruct.tools.network.TinkerControlPacket;
 
 import java.util.function.Consumer;
 
-import static slimeknights.tconstruct.TConstruct.getResource;
 import static slimeknights.tconstruct.library.client.model.tools.ToolModel.registerItemColors;
 
 @SuppressWarnings("unused")
@@ -104,10 +92,8 @@ public class ToolClientEvents extends ClientEventBase {
     ModifierManager.INSTANCE.getAllValues().forEach(modifier -> modifier.clearCache(PackType.CLIENT_RESOURCES));
   };
 
-  @SuppressWarnings("deprecation")
   @SubscribeEvent
   static void addResourceListener(RegisterClientReloadListenersEvent manager) {
-    ModifierModelManager.init(manager);
     manager.registerReloadListener(ModifierModelMapManager.INSTANCE);
     MaterialTooltipCache.init(manager);
     DynamicTextureLoader.init(manager);
@@ -124,21 +110,6 @@ public class ToolClientEvents extends ClientEventBase {
     event.register("material", MaterialModel.LOADER);
     event.register("tool", ToolModel.LOADER);
     event.register("material_block", MaterialBlockModel.LOADER);
-  }
-
-  @SubscribeEvent
-  static void registerModifierModels(ModifierModelRegistrationEvent event) {
-    event.registerModel(getResource("normal"), NormalModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("overslime"), OverslimeModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("fluid"), FluidModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("tank"), TankModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("material"), MaterialModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("dyed"), DyedModifierModel.UNBAKED_INSTANCE);
-    // trim shows up as valid on every tool, skip to reduce memory overhead on tools using the new system - add it using the new system if you want it
-    event.registerModel(getResource("trim"), TrimModifierModel.UNBAKED_INSTANCE);
-    ModifierModelMapManager.legacyBlacklist(TrimModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("potion"), PotionModifierModel.UNBAKED_INSTANCE);
-    event.registerModel(getResource("smashing_fluid"), new FluidModifierModel.Unbaked(SmashingModule.TANK_HELPER));
   }
 
   @SubscribeEvent

@@ -6,7 +6,6 @@
     "handle":  "tconstruct:item/tool/melting_pan/handle"
   },
   "modifier_maps": ["tconstruct:melting_pan"],
-  "modifier_roots": [ "tconstruct:item/tool/melting_pan/modifiers/" ],
   "parts": [
     { "name": "handle",  "index": 1 },
     { "name": "head",    "index": 0 }

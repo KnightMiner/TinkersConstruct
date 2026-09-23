@@ -9,10 +9,6 @@
     "tconstruct:dagger_broken",
     "tconstruct:dagger"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/dagger/modifiers/broken/",
-    "tconstruct:item/tool/dagger/modifiers/"
-  ],
   "parts": [
     {
       "name": "head",

@@ -11,19 +11,5 @@
     "tconstruct:staff/ichor",
     "tconstruct:staff/broken",
     "tconstruct:staff"
-  ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/staff/modifiers/ichor/broken/",
-      "tconstruct:item/tool/staff/modifiers/ichor/",
-      "tconstruct:item/tool/staff/modifiers/broken/",
-      "tconstruct:item/tool/staff/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/staff/large_modifiers/ichor/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/ichor/",
-      "tconstruct:item/tool/staff/large_modifiers/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/"
-    ]
-  }
+  ]
 }

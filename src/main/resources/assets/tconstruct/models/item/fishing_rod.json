@@ -7,7 +7,6 @@
     "hook":   "tconstruct:item/tool/fishing_rod/hook"
   },
   "modifier_maps": ["tconstruct:fishing_rod"],
-  "modifier_roots": [ "tconstruct:item/tool/fishing_rod/modifiers/" ],
   "parts": [
     { "name": "rod",    "index": 0 },
     { "name": "string", "index": 1 },

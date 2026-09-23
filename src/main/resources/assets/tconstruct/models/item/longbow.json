@@ -15,10 +15,6 @@
   "large": true,
   "large_offset": [-7, 9],
   "modifier_maps": ["tconstruct:longbow"],
-  "modifier_roots": {
-    "small": [ "tconstruct:item/tool/longbow/modifiers/" ],
-    "large": [ "tconstruct:item/tool/longbow/large/modifiers/" ]
-  },
   "parts": [
     { "name": "limb_bottom", "index": 0 },
     { "name": "limb_top",    "index": 1 },

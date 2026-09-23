@@ -10,10 +10,6 @@
     "tconstruct:kama_broken",
     "tconstruct:kama"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/kama/modifiers/broken/",
-    "tconstruct:item/tool/kama/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

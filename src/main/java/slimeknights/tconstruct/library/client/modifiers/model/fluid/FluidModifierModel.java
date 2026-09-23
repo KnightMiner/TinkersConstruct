@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers.model.fluid;
 
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -20,6 +20,8 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.model.FluidContainerModel;
+import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
+import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;

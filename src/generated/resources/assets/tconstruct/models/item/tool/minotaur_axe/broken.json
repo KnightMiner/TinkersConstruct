@@ -10,10 +10,6 @@
     "tconstruct:minotaur_axe_broken",
     "tconstruct:minotaur_axe"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/minotaur_axe/modifiers/broken/",
-    "tconstruct:item/tool/minotaur_axe/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

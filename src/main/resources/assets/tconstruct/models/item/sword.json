@@ -7,7 +7,6 @@
     "guard":  "tconstruct:item/tool/sword/guard"
   },
   "modifier_maps": ["tconstruct:sword"],
-  "modifier_roots": [ "tconstruct:item/tool/sword/modifiers/" ],
   "parts": [
     { "name": "handle", "index": 1 },
     { "name": "head",   "index": 0 },

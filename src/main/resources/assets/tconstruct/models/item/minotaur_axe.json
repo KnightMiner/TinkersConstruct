@@ -7,7 +7,6 @@
     "handle":  "tconstruct:item/tool/pickaxe/handle"
   },
   "modifier_maps": ["tconstruct:minotaur_axe"],
-  "modifier_roots": [ "tconstruct:item/tool/minotaur_axe/modifiers/" ],
   "parts": [
     { "name": "handle", "index": 2 },
     { "name": "front",  "index": 0 },

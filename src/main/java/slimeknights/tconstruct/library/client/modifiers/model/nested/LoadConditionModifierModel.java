@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers.model.nested;
 
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -8,6 +8,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
+import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 

@@ -10,10 +10,6 @@
     "tconstruct:pickaxe_broken",
     "tconstruct:pickaxe"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/pickaxe/modifiers/broken/",
-    "tconstruct:item/tool/pickaxe/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

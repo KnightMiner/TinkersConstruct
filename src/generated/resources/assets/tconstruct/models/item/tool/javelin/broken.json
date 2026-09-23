@@ -15,16 +15,6 @@
     "tconstruct:javelin_broken",
     "tconstruct:javelin"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/javelin/modifiers/broken/",
-      "tconstruct:item/tool/javelin/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/javelin/large/modifiers/broken/",
-      "tconstruct:item/tool/javelin/large/modifiers/"
-    ]
-  },
   "large": true,
   "large_offset": [
     -2,

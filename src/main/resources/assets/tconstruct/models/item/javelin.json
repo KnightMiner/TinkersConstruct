@@ -13,10 +13,6 @@
     "large_grip":   "tconstruct:item/tool/javelin/large/grip"
   },
   "modifier_maps": ["tconstruct:javelin"],
-  "modifier_roots": {
-    "small": [ "tconstruct:item/tool/javelin/modifiers/" ],
-    "large": [ "tconstruct:item/tool/javelin/large/modifiers/" ]
-  },
   "large": true,
   "large_offset": [-2, 2],
   "parts": [

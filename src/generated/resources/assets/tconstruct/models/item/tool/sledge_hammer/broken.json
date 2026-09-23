@@ -15,16 +15,6 @@
     "tconstruct:sledge_hammer_broken",
     "tconstruct:sledge_hammer"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/sledge_hammer/modifiers/broken/",
-      "tconstruct:item/tool/sledge_hammer/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/sledge_hammer/large/modifiers/broken/",
-      "tconstruct:item/tool/sledge_hammer/large/modifiers/"
-    ]
-  },
   "large": true,
   "large_offset": [
     -2,

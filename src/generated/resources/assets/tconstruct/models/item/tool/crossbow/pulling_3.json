@@ -10,10 +10,6 @@
     "tconstruct:crossbow/3",
     "tconstruct:crossbow"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/crossbow/modifiers/3/",
-    "tconstruct:item/tool/crossbow/modifiers/"
-  ],
   "parts": [
     {
       "name": "limb",

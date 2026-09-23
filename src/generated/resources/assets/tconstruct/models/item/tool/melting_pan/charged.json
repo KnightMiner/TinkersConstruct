@@ -10,10 +10,6 @@
     "tconstruct:melting_pan/charged",
     "tconstruct:melting_pan"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/melting_pan/modifiers/charged/",
-    "tconstruct:item/tool/melting_pan/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

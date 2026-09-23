@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers.model.material;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.math.Transformation;
@@ -12,6 +12,8 @@ import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
+import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
+import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;

@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers;
+package slimeknights.tconstruct.library.client.modifiers.model.specialized;
 
 import com.mojang.math.Transformation;
 import lombok.Getter;
@@ -27,26 +27,12 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Modifier model that renders the textured tinted based on the active potion color.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.modifiers.modules}
- */
+/** Modifier model that renders the textured tinted based on the active potion color. */
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public class PotionModifierModel implements SimpleModifierModel {
   public static final RecordLoadable<PotionModifierModel> LOADER = SimpleModifierModel.loader(PotionModifierModel::new);
-  /** @deprecated legacy system, use {@link #LOADER} */
-  @SuppressWarnings("DeprecatedIsStillUsed")
-  @Deprecated
-  public static final IUnbakedModifierModel UNBAKED_INSTANCE = (smallGetter, largeGetter) -> {
-    Material smallTexture = smallGetter.apply("");
-    Material largeTexture = largeGetter.apply("");
-    if (smallTexture != null || largeTexture != null) {
-      return new PotionModifierModel(smallTexture, largeTexture);
-    }
-    return null;
-  };
 
   /** Textures to show */
   @Nullable

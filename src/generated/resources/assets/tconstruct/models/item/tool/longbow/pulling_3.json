@@ -20,16 +20,6 @@
     "tconstruct:longbow/3",
     "tconstruct:longbow"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/longbow/modifiers/3/",
-      "tconstruct:item/tool/longbow/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/longbow/large/modifiers/3/",
-      "tconstruct:item/tool/longbow/large/modifiers/"
-    ]
-  },
   "parts": [
     {
       "name": "limb_bottom",

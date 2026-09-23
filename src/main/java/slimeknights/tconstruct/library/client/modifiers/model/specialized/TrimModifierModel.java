@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers.model.specialized;
 
 import com.mojang.math.Transformation;
 import lombok.Getter;
@@ -23,6 +23,7 @@ import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.tools.modules.cosmetic.TrimModule;

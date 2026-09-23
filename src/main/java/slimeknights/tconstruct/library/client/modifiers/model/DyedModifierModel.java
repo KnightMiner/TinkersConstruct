@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers;
+package slimeknights.tconstruct.library.client.modifiers.model;
 
 import com.mojang.math.Transformation;
 import lombok.Getter;
@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
-import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
@@ -23,25 +22,12 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Modifier model that copies dye from a key.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.modifiers.modules}
- */
+/** Modifier model that copies dye from a key. */
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public class DyedModifierModel implements SimpleModifierModel {
   public static final RecordLoadable<DyedModifierModel> LOADER = SimpleModifierModel.loader(DyedModifierModel::new);
-  /** @deprecated legacy system, use {@link #LOADER} */
-  @Deprecated
-  public static final IUnbakedModifierModel UNBAKED_INSTANCE = (smallGetter, largeGetter) -> {
-    Material smallTexture = smallGetter.apply("");
-    Material largeTexture = largeGetter.apply("");
-    if (smallTexture != null || largeTexture != null) {
-      return new DyedModifierModel(smallTexture, largeTexture);
-    }
-    return null;
-  };
 
   /** Textures to show */
   @Nullable

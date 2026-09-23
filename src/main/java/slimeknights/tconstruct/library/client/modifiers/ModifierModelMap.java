@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /** Holds all modifier models for a given tool. */
-public record ModifierModelMap(Map<ModifierId, ? extends IBakedModifierModel> modifiers, Map<String, ModifierModel> constant, List<ModifierModel> sortedConstant) {
+public record ModifierModelMap(Map<ModifierId, ModifierModel> modifiers, Map<String, ModifierModel> constant, List<ModifierModel> sortedConstant) {
   public static final ModifierModelMap EMPTY = new ModifierModelMap(Map.of(), Map.of(), List.of());
 
   /** Creates a new instance, returning empty if no data is provided */
-  public static ModifierModelMap create(Map<ModifierId, ? extends IBakedModifierModel> modifiers, Map<String, ModifierModel> constant) {
+  public static ModifierModelMap create(Map<ModifierId, ModifierModel> modifiers, Map<String, ModifierModel> constant) {
     if (constant.isEmpty() && modifiers.isEmpty()) {
       return EMPTY;
     }
@@ -32,7 +32,7 @@ public record ModifierModelMap(Map<ModifierId, ? extends IBakedModifierModel> mo
   }
 
   /** Creates a new map using the given modifiers */
-  public ModifierModelMap withModifiers(Map<ModifierId, ? extends IBakedModifierModel> modifiers) {
+  public ModifierModelMap withModifiers(Map<ModifierId, ModifierModel> modifiers) {
     if (constant.isEmpty() && modifiers.isEmpty()) {
       return EMPTY;
     }
@@ -46,7 +46,7 @@ public record ModifierModelMap(Map<ModifierId, ? extends IBakedModifierModel> mo
 
   /** Gets the model for the given modifier */
   @Nullable
-  public IBakedModifierModel get(ModifierId modifier) {
+  public ModifierModel get(ModifierId modifier) {
     return modifiers.get(modifier);
   }
 }

@@ -9,10 +9,6 @@
     "tconstruct:travelers/shield_broken",
     "tconstruct:travelers/shield"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/armor/travelers/shield/modifiers/broken/",
-    "tconstruct:item/tool/armor/travelers/shield/modifiers/"
-  ],
   "parts": [
     {
       "name": "wood",

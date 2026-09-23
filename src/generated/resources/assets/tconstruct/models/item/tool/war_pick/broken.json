@@ -10,10 +10,6 @@
     "tconstruct:war_pick/broken",
     "tconstruct:war_pick"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/war_pick/modifiers/broken/",
-    "tconstruct:item/tool/war_pick/modifiers/"
-  ],
   "parts": [
     {
       "name": "body",

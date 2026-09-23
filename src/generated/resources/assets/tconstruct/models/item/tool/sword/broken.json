@@ -10,10 +10,6 @@
     "tconstruct:sword_broken",
     "tconstruct:sword"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/sword/modifiers/broken/",
-    "tconstruct:item/tool/sword/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

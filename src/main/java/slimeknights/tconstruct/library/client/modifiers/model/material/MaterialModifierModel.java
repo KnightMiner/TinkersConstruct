@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.client.modifiers.model;
+package slimeknights.tconstruct.library.client.modifiers.model.material;
 
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -18,6 +18,7 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo.TintedSprite;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
 import slimeknights.tconstruct.library.client.model.tools.MaterialModel;
+import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;

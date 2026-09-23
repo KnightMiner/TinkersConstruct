@@ -11,16 +11,6 @@
     "tconstruct:plate/shield_broken",
     "tconstruct:plate/shield"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/armor/plate/shield/modifiers/broken/",
-      "tconstruct:item/tool/armor/plate/shield/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/armor/plate/shield/large_modifiers/broken/",
-      "tconstruct:item/tool/armor/plate/shield/large_modifiers/"
-    ]
-  },
   "parts": [
     {
       "name": "core",

@@ -148,7 +148,7 @@ public class MaterialRenderInfoLoader implements IEarlySafeManagerReloadListener
 
   /* Helpers */
 
-  /** Checks if the given material has any of the given fallbacks. Used by {@link slimeknights.tconstruct.library.client.armor.texture.MaterialHasFallbackTextureSupplier} and {@link slimeknights.tconstruct.library.client.modifiers.model.MaterialHasFallbackModifierModel} */
+  /** Checks if the given material has any of the given fallbacks. Used by {@link slimeknights.tconstruct.library.client.armor.texture.MaterialHasFallbackTextureSupplier} and {@link slimeknights.tconstruct.library.client.modifiers.model.material.MaterialHasFallbackModifierModel} */
   public boolean hasFallback(MaterialVariantId material, Set<String> fallbacks) {
     MaterialRenderInfo info = MaterialRenderInfoLoader.INSTANCE.getRenderInfo(material).orElse(null);
     if (info != null) {

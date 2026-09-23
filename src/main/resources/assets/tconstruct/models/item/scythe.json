@@ -13,10 +13,6 @@
     "large_accessory": "tconstruct:item/tool/scythe/large/accessory"
   },
   "modifier_maps": ["tconstruct:scythe"],
-  "modifier_roots": {
-    "small": [ "tconstruct:item/tool/scythe/modifiers/" ],
-    "large": [ "tconstruct:item/tool/scythe/large/modifiers/" ]
-  },
   "large": true,
   "large_offset": [-2, 2],
   "parts": [

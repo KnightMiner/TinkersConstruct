@@ -15,16 +15,6 @@
     "tconstruct:vein_hammer_broken",
     "tconstruct:vein_hammer"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/vein_hammer/modifiers/broken/",
-      "tconstruct:item/tool/vein_hammer/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/vein_hammer/large/modifiers/broken/",
-      "tconstruct:item/tool/vein_hammer/large/modifiers/"
-    ]
-  },
   "large": true,
   "large_offset": [
     -2,

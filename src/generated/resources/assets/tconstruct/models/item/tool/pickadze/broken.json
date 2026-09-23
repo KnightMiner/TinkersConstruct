@@ -10,10 +10,6 @@
     "tconstruct:pickadze_broken",
     "tconstruct:pickadze"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/pickadze/modifiers/broken/",
-    "tconstruct:item/tool/pickadze/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

@@ -15,16 +15,6 @@
     "tconstruct:cleaver_broken",
     "tconstruct:cleaver"
   ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/cleaver/modifiers/broken/",
-      "tconstruct:item/tool/cleaver/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/cleaver/large/modifiers/broken/",
-      "tconstruct:item/tool/cleaver/large/modifiers/"
-    ]
-  },
   "large": true,
   "large_offset": [
     -2,

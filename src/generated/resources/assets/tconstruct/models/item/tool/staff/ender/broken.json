@@ -11,19 +11,5 @@
     "tconstruct:staff/ender",
     "tconstruct:staff/broken",
     "tconstruct:staff"
-  ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/staff/modifiers/ender/broken/",
-      "tconstruct:item/tool/staff/modifiers/ender/",
-      "tconstruct:item/tool/staff/modifiers/broken/",
-      "tconstruct:item/tool/staff/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/staff/large_modifiers/ender/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/ender/",
-      "tconstruct:item/tool/staff/large_modifiers/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/"
-    ]
-  }
+  ]
 }

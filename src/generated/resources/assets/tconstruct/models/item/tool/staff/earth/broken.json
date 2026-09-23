@@ -11,19 +11,5 @@
     "tconstruct:staff/earth",
     "tconstruct:staff/broken",
     "tconstruct:staff"
-  ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/staff/modifiers/earth/broken/",
-      "tconstruct:item/tool/staff/modifiers/earth/",
-      "tconstruct:item/tool/staff/modifiers/broken/",
-      "tconstruct:item/tool/staff/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/staff/large_modifiers/earth/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/earth/",
-      "tconstruct:item/tool/staff/large_modifiers/broken/",
-      "tconstruct:item/tool/staff/large_modifiers/"
-    ]
-  }
+  ]
 }

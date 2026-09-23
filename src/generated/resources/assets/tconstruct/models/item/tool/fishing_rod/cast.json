@@ -10,10 +10,6 @@
     "tconstruct:fishing_rod/cast",
     "tconstruct:fishing_rod"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/fishing_rod/modifiers/cast/",
-    "tconstruct:item/tool/fishing_rod/modifiers/"
-  ],
   "parts": [
     {
       "name": "rod",

@@ -348,13 +348,13 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
     return tool;
   }
 
-  /** Transforms the given tool by adding suffixes to listed textures and the modifier roots */
+  /** Transforms the given tool by adding suffixes to listed textures and the modifier maps */
   @Deprecated
   protected JsonObject transformTool(String destination, JsonObject tool, String parent, boolean allRoots, String suffix, String... updateTextures) {
     return transformTool(destination, tool, parent, allRoots, '_', suffix, updateTextures);
   }
 
-  /** Transforms the given tool by adding suffixes to listed textures and the modifier roots */
+  /** Transforms the given tool by adding suffixes to listed textures and the modifier maps */
   protected JsonObject transformTool(String destination, JsonObject tool, String parent, boolean allRoots, char mapSeparator, String suffix, String... updateTextures) {
     JsonObject transformed = tool.deepCopy();
     // set parent if given
@@ -363,16 +363,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
     }
     // update parts that we were told to update
     suffixTextures(transformed, suffix, updateTextures);
-    // add modifier roots
-    if (transformed.has("modifier_roots")) {
-      if (GsonHelper.getAsBoolean(transformed, "large", false)) {
-        JsonObject roots = transformed.getAsJsonObject("modifier_roots");
-        roots.add("small", copyAndSuffixRoot(roots.getAsJsonArray("small"), suffix + '/', allRoots));
-        roots.add("large", copyAndSuffixRoot(roots.getAsJsonArray("large"), suffix + '/', allRoots));
-      } else {
-        transformed.add("modifier_roots", copyAndSuffixRoot(transformed.getAsJsonArray("modifier_roots"), suffix + '/', allRoots));
-      }
-    }
+    // add modifier maps
     if (transformed.has("modifier_maps")) {
       transformed.add("modifier_maps", copyAndSuffixRoot(transformed.getAsJsonArray("modifier_maps"), mapSeparator + suffix, allRoots));
     }

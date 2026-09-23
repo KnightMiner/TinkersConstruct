@@ -11,8 +11,8 @@ import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SpriteSourceProvider;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.client.modifiers.model.TrimModifierModel;
-import slimeknights.tconstruct.library.client.modifiers.model.TrimModifierModel.Armor;
+import slimeknights.tconstruct.library.client.modifiers.model.specialized.TrimModifierModel;
+import slimeknights.tconstruct.library.client.modifiers.model.specialized.TrimModifierModel.Armor;
 import slimeknights.tconstruct.tools.client.ShieldBannerModifierSpriteSource;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 

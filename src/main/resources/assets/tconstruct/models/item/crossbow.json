@@ -7,7 +7,6 @@
     "bowstring": "tconstruct:item/tool/crossbow/bowstring"
   },
   "modifier_maps": ["tconstruct:crossbow"],
-  "modifier_roots": [ "tconstruct:item/tool/crossbow/modifiers/" ],
   "parts": [
     { "name": "limb",      "index": 0 },
     { "name": "body",      "index": 1 },

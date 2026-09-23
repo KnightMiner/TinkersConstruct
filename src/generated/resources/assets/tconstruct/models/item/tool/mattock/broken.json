@@ -10,10 +10,6 @@
     "tconstruct:mattock_broken",
     "tconstruct:mattock"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/mattock/modifiers/broken/",
-    "tconstruct:item/tool/mattock/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",

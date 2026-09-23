@@ -6,7 +6,6 @@
     "wood":    "tconstruct:item/tool/armor/travelers/shield/wood"
   },
   "modifier_maps": ["tconstruct:travelers/shield"],
-  "modifier_roots": [ "tconstruct:item/tool/armor/travelers/shield/modifiers/" ],
   "parts": [
     { "name": "wood", "index": 0 },
     { "name": "cuirass", "index": 1 }

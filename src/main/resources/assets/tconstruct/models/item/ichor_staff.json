@@ -7,10 +7,6 @@
   },
   "large": true,
   "modifier_maps": ["tconstruct:staff/ichor", "tconstruct:staff"],
-  "modifier_roots": {
-    "small": [ "tconstruct:item/tool/staff/modifiers/ichor/", "tconstruct:item/tool/staff/modifiers/" ],
-    "large": [ "tconstruct:item/tool/staff/large_modifiers/ichor/", "tconstruct:item/tool/staff/large_modifiers/" ]
-  },
   "overrides": [
     {
       "predicate": { "tconstruct:charging": 1 },

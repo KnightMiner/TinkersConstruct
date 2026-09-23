@@ -1,6 +1,5 @@
-package slimeknights.tconstruct.library.client.modifiers;
+package slimeknights.tconstruct.library.client.modifiers.model;
 
-import com.google.gson.JsonObject;
 import com.mojang.math.Transformation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
-import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
@@ -23,10 +21,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Default modifier model loader, loads a single texture from the standard path.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.modifiers.modules}
- */
+/** Default modifier model loader, loads a single texture from the standard path. */
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
@@ -34,9 +29,6 @@ public class NormalModifierModel implements SimpleModifierModel {
   protected static final LoadableField<Integer, NormalModifierModel> COLOR_FIELD = ColorLoadable.ALPHA.defaultField("color", false, m -> m.color);
   protected static final LoadableField<Integer, NormalModifierModel> LUMINOSITY_FIELD = IntLoadable.range(0, 15).defaultField("luminosity", 0, false, m -> m.luminosity);
   public static final RecordLoadable<NormalModifierModel> LOADER = RecordLoadable.create(TEXTURE_FIELD, LARGE_TEXTURE_FIELD, COLOR_FIELD, LUMINOSITY_FIELD, NormalModifierModel::new);
-  /** @deprecated legacy system, use {@link #LOADER */
-  @Deprecated
-  public static final IUnbakedModifierModel UNBAKED_INSTANCE = new Unbaked(-1, 0);
 
   /** Textures to show */
   @Nullable
@@ -72,32 +64,6 @@ public class NormalModifierModel implements SimpleModifierModel {
     Material spriteName = isLarge ? large : small;
     if (spriteName != null) {
       quadConsumer.accept(MantleItemLayerModel.getQuadsForSprite(color, -1, spriteGetter.apply(spriteName), transforms, luminosity, pixels));
-    }
-  }
-
-  @Deprecated
-  private record Unbaked(int color, int luminosity) implements IUnbakedModifierModel {
-    @Nullable
-    @Override
-    public IBakedModifierModel forTool(Function<String,Material> smallGetter, Function<String,Material> largeGetter) {
-      Material smallTexture = smallGetter.apply("");
-      Material largeTexture = largeGetter.apply("");
-      if (smallTexture != null || largeTexture != null) {
-        return new NormalModifierModel(smallTexture, largeTexture, color, luminosity);
-      }
-      return null;
-    }
-
-    @Deprecated
-    @Override
-    public IUnbakedModifierModel configure(JsonObject data) {
-      // parse the two keys, if we ended up with something new create an instance
-      int color = COLOR_FIELD.get(data);
-      int luminosity = LUMINOSITY_FIELD.get(data);
-      if (color != this.color || luminosity != this.luminosity) {
-        return new Unbaked(color, luminosity);
-      }
-      return this;
     }
   }
 }

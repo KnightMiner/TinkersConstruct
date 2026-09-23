@@ -10,17 +10,5 @@
     "tconstruct:staff/earth/3",
     "tconstruct:staff/earth",
     "tconstruct:staff"
-  ],
-  "modifier_roots": {
-    "small": [
-      "tconstruct:item/tool/staff/modifiers/earth/3/",
-      "tconstruct:item/tool/staff/modifiers/earth/",
-      "tconstruct:item/tool/staff/modifiers/"
-    ],
-    "large": [
-      "tconstruct:item/tool/staff/large_modifiers/earth/3/",
-      "tconstruct:item/tool/staff/large_modifiers/earth/",
-      "tconstruct:item/tool/staff/large_modifiers/"
-    ]
-  }
+  ]
 }

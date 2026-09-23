@@ -9,10 +9,6 @@
     "tconstruct:melting_pan/broken",
     "tconstruct:melting_pan"
   ],
-  "modifier_roots": [
-    "tconstruct:item/tool/melting_pan/modifiers/broken/",
-    "tconstruct:item/tool/melting_pan/modifiers/"
-  ],
   "parts": [
     {
       "name": "handle",
