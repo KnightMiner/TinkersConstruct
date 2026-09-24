@@ -11,8 +11,6 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierTraitHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
-import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
-import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
@@ -23,48 +21,30 @@ import java.util.List;
  * Module for a modifier to have a nested modifier as a trait.
  * TODO 1.21: level range does not actually function when this module is applied across multiple sources, remove it.
  */
-public record ModifierTraitModule(ModifierEntry modifier, boolean fixedLevel, ModifierCondition<IToolContext> condition) implements ModifierTraitHook, ModifierModule, ConditionalModule<IToolContext> {
+public record ModifierTraitModule(ModifierEntry modifier, boolean fixedLevel, IJsonPredicate<IToolContext> tool) implements ModifierTraitHook, ModifierModule {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierTraitModule>defaultHooks(ModifierHooks.MODIFIER_TRAITS);
   public static final RecordLoadable<ModifierTraitModule> LOADER = RecordLoadable.create(
     ModifierEntry.LOADABLE.directField(ModifierTraitModule::modifier),
     BooleanLoadable.INSTANCE.requiredField("fixed_level", ModifierTraitModule::fixedLevel),
-    ModifierCondition.CONTEXT_FIELD,
+    ToolContextPredicate.LOADER.defaultField("tool", ModifierTraitModule::tool),
     ModifierTraitModule::new);
-
-  /** @deprecated use {@link #ModifierTraitModule(ModifierEntry, boolean, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  public ModifierTraitModule {}
-
-  public ModifierTraitModule(ModifierEntry modifier, boolean fixedLevel, IJsonPredicate<IToolContext> tool) {
-    this(modifier, fixedLevel, ModifierCondition.ANY_CONTEXT.with(tool));
-  }
-
-  /** @deprecated use {@link #ModifierTraitModule(ModifierId, int, boolean, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  public ModifierTraitModule(ModifierId id, int level, boolean fixedLevel, ModifierCondition<IToolContext> condition) {
-    this(new ModifierEntry(id, level), fixedLevel, condition);
-  }
 
   public ModifierTraitModule(ModifierId id, int level, boolean fixedLevel, IJsonPredicate<IToolContext> tool) {
     this(new ModifierEntry(id, level), fixedLevel, tool);
   }
 
-  public ModifierTraitModule(ModifierEntry modifier, boolean fixedLevel) {
-    this(modifier, fixedLevel, ModifierCondition.ANY_CONTEXT);
-  }
-
   public ModifierTraitModule(ModifierId id, int level, boolean fixedLevel) {
-    this(id, level, fixedLevel, ModifierCondition.ANY_CONTEXT);
+    this(id, level, fixedLevel, ToolContextPredicate.ANY);
   }
 
-  /** Common usecase of a modifier only applied to specificly tagged tools */
+  /** Common usecase of a modifier only applied to specifically tagged tools */
   public static ModifierTraitModule tagCondition(ModifierId id, TagKey<Item> tag) {
     return new ModifierTraitModule(id, 1, false, ToolContextPredicate.tag(tag));
   }
 
   @Override
   public void addTraits(IToolContext context, ModifierEntry self, TraitBuilder builder, boolean firstEncounter) {
-    if (condition.matches(context, self)) {
+    if (tool.matches(context)) {
       if (fixedLevel) {
         // fixed levels do not need to add again if already added
         if (firstEncounter) {
