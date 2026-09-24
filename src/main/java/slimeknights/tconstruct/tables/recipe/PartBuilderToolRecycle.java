@@ -275,7 +275,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
 
   @Getter
   @RequiredArgsConstructor
-  private class DisplayRecipe implements IDisplayPartBuilderRecipe.DisplayOnly {
+  private class DisplayRecipe implements IDisplayPartBuilderRecipe {
     private final Object2IntMap<IMaterialItem> parts;
     private final List<Pattern> patterns;
     private final List<ItemStack> patternItems;
@@ -294,12 +294,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
     }
 
     @Override
-    public Pattern getPattern() {
-      return patterns.get(0);
-    }
-
-    @Override
-    public ResourceLocation getId() {
+    public ResourceLocation getRecipeId() {
       return id;
     }
 

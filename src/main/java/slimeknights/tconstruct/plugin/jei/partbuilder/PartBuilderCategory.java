@@ -75,7 +75,7 @@ public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuil
     boolean focusOutput = false;
     IFocus<ItemStack> itemFocus = focuses.getItemStackFocuses().findFirst().orElse(null);
     if (itemFocus != null) {
-      focusStack = itemFocus.getTypedValue().getIngredient();;
+      focusStack = itemFocus.getTypedValue().getIngredient();
       focusOutput = itemFocus.getRole() == RecipeIngredientRole.OUTPUT;
     }
     IFocus<MaterialVariant> materialFocus = focuses.getFocuses(TConstructJEIConstants.MATERIAL_TYPE, RecipeIngredientRole.INPUT).findFirst().orElse(null);
@@ -138,7 +138,7 @@ public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuil
 
   @Override
   public ResourceLocation getRegistryName(IDisplayPartBuilderRecipe recipe) {
-    return recipe.getId();
+    return recipe.getRecipeId();
   }
 
   /** Tooltip for the pattern showing the cost */

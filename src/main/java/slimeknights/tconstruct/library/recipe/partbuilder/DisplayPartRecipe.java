@@ -18,9 +18,9 @@ import java.util.List;
 /** Part builder recipe for JEI display with full control over display. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class DisplayPartRecipe implements IDisplayPartBuilderRecipe.DisplayOnly {
+public class DisplayPartRecipe implements IDisplayPartBuilderRecipe {
   /** ID of recipe; should generally match a real recipe JSON */
-  private final ResourceLocation id;
+  private final ResourceLocation recipeId;
   /** Material variant for name display */
   private final List<MaterialVariant> materials;
   /** Display title override. */
@@ -38,25 +38,6 @@ public class DisplayPartRecipe implements IDisplayPartBuilderRecipe.DisplayOnly 
   private final List<ItemStack> materialItems;
   /** List of items to display for the result */
   private final List<ItemStack> resultItems;
-
-  /** @deprecated use {@link #id(ResourceLocation)} */
-  @Deprecated(forRemoval = true)
-  public DisplayPartRecipe(ResourceLocation id, MaterialVariant material, Pattern pattern, List<ItemStack> patternItems, int cost, List<ItemStack> materialItems, List<ItemStack> resultItems) {
-    this(id, List.of(material), null, List.of(), List.of(pattern), patternItems, cost, materialItems, resultItems);
-  }
-
-  @Override
-  public MaterialVariant getMaterial() {
-    if (materials.isEmpty()) {
-      return MaterialVariant.UNKNOWN;
-    }
-    return materials.get(0);
-  }
-
-  @Override
-  public Pattern getPattern() {
-    return patterns.get(0);
-  }
 
 
   /* Builder */

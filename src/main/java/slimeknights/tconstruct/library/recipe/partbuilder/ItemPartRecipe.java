@@ -30,7 +30,7 @@ import java.util.List;
  * Can be used for crafting with a material, or leave the material blank to just require the pattern item.
  * @see PartRecipe
  */
-public class ItemPartRecipe implements IDisplayPartBuilderRecipe {
+public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRecipe {
   public static final RecordLoadable<ItemPartRecipe> LOADER = RecordLoadable.create(
     ContextKey.ID.requiredField(),
     MaterialVariantId.LOADABLE.defaultField("material", MaterialId.UNKNOWN, r -> r.material.getVariant()),
@@ -82,12 +82,6 @@ public class ItemPartRecipe implements IDisplayPartBuilderRecipe {
     }
   }
 
-  /** @deprecated use {@link ItemPartRecipeBuilder} */
-  @Deprecated(forRemoval = true)
-  public ItemPartRecipe(ResourceLocation id, MaterialVariantId material, Pattern pattern, Ingredient patternItem, int cost, ItemOutput result) {
-    this(id, material, pattern, patternItem, cost, result, null);
-  }
-
   @Override
   public boolean allowUncraftable() {
     // if we have a recipe, we craft it
@@ -128,7 +122,7 @@ public class ItemPartRecipe implements IDisplayPartBuilderRecipe {
     if (material.isEmpty()) {
       return 0;
     }
-    return IDisplayPartBuilderRecipe.super.getItemsUsed(inv);
+    return IPartBuilderRecipe.super.getItemsUsed(inv);
   }
 
   @Override
@@ -176,8 +170,17 @@ public class ItemPartRecipe implements IDisplayPartBuilderRecipe {
 
 
   /* JEI */
-
   private List<ItemStack> materialItems;
+
+  @Override
+  public ResourceLocation getRecipeId() {
+    return getId();
+  }
+
+  @Override
+  public List<Pattern> getPatterns() {
+    return List.of(pattern);
+  }
 
   @Override
   public List<ItemStack> getPatternItems() {

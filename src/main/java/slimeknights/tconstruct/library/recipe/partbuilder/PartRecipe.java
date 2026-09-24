@@ -71,12 +71,6 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
   /** Count for the recipe output */
   protected final int outputCount;
 
-  /** @deprecated use {@link #PartRecipe(ResourceLocation, String, Pattern, Ingredient, int, boolean, IMaterialItem, int)} */
-  @Deprecated(forRemoval = true)
-  public PartRecipe(ResourceLocation id, String group, Pattern pattern, Ingredient patternItem, int cost, IMaterialItem output, int outputCount) {
-    this(id, group, pattern, patternItem, cost, false, output, outputCount);
-  }
-
   @Override
   public RecipeSerializer<?> getSerializer() {
     return TinkerTables.partRecipeSerializer.get();
@@ -125,7 +119,7 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
     return false;
   }
 
-  /** @deprecated use {@link #getRecipeOutput(MaterialVariantId)} */
+  /** @deprecated use {@link #getRecipeOutput(MaterialVariantId, int)} */
   @Deprecated
   @Override
   public ItemStack getResultItem(RegistryAccess access) {
@@ -142,12 +136,6 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
     ItemStack stack = output.withMaterial(material);
     stack.setCount(count);
     return stack;
-  }
-
-  /** @deprecated use {@link #getRecipeOutput(MaterialVariantId, int)} */
-  @Deprecated(forRemoval = true)
-  public ItemStack getRecipeOutput(MaterialVariantId material) {
-    return getRecipeOutput(material, outputCount);
   }
 
   @Override
@@ -251,7 +239,7 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
   /** Display recipe handling dynamic focus */
   @Getter
   @RequiredArgsConstructor
-  private class DisplayRecipe implements IDisplayPartBuilderRecipe.DisplayOnly {
+  private class DisplayRecipe implements IDisplayPartBuilderRecipe {
     private final List<ItemStack> materialItems;
     private final List<MaterialVariant> materials;
     private final List<ItemStack> resultItems;
@@ -259,7 +247,7 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
     private final List<ItemStack> hiddenInputs;
 
     @Override
-    public ResourceLocation getId() {
+    public ResourceLocation getRecipeId() {
       return id;
     }
 
@@ -269,13 +257,8 @@ public class PartRecipe implements IPartBuilderRecipe, IMultiRecipe<IDisplayPart
     }
 
     @Override
-    public Pattern getPattern() {
-      return pattern;
-    }
-
-    @Override
-    public MaterialVariant getMaterial() {
-      return materials.get(0);
+    public List<Pattern> getPatterns() {
+      return List.of(pattern);
     }
 
     @Override
