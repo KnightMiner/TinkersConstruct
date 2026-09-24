@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /** Tool name that always shows the same material */
-public record FixedMaterialToolName(int index) implements ToolNameHook.FromDefault, ToolModule {
+public record FixedMaterialToolName(int index) implements ToolNameHook, ToolModule {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FixedMaterialToolName>defaultHooks(ToolHooks.DISPLAY_NAME);
   /** Instance for an index of 0 */
   public static final FixedMaterialToolName FIRST = new FixedMaterialToolName(0);

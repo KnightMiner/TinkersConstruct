@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /** Tool name singleton implementations */
-public enum SimpleToolName implements ToolModule, ToolNameHook.FromDefault {
+public enum SimpleToolName implements ToolModule, ToolNameHook {
   /** Displays the tool using the simple translation of the item, ignoring materials. */
   ITEM {
     @Override

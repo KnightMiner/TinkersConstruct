@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Make the tool display name by displaying all materials that match some criteria. */
-public interface MaterialToolName extends ToolNameHook.FromDefault {
+public interface MaterialToolName extends ToolNameHook {
   /** Translation key for the tool name format string */
   Component MATERIAL_SEPARATOR = TConstruct.makeTranslation("item", "tool.material_separator");
 

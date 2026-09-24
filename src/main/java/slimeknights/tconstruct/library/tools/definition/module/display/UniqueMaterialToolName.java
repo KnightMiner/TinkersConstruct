@@ -46,24 +46,23 @@ public record UniqueMaterialToolName(int index) implements ToolNameHook, ToolMod
     return LOADER;
   }
 
-  @Deprecated
   @Override
-  public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool) {
-    String key = stack.getItem().getDescriptionId();
+  public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name) {
     MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).getVariant();
     if (!MaterialId.UNKNOWN.equals(material)) {
+      String key = stack.getItem().getDescriptionId();
       String materialKey = key + '.' + MaterialTooltipCache.getKey(material);
       // if we can translate it, we can use it
       if (Util.canTranslate(materialKey)) {
-        key = materialKey;
+        return Component.translatable(materialKey);
       // if we cannot, try the base key to use that
       } else if (material.hasVariant()) {
         materialKey = key + MaterialTooltipCache.getKey(material.getId());
         if (Util.canTranslate(materialKey)) {
-          key = materialKey;
+          return Component.translatable(materialKey);
         }
       }
     }
-    return Component.translatable(key);
+    return name;
   }
 }

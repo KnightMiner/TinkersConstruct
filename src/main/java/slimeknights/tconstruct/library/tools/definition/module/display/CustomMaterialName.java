@@ -25,7 +25,7 @@ import java.util.List;
  * @param index   Material index to fetch
  * @param suffix  Translation key suffix to apply to the material name.
  */
-public record CustomMaterialName(int index, String suffix) implements ToolNameHook.FromDefault, ToolModule {
+public record CustomMaterialName(int index, String suffix) implements ToolNameHook, ToolModule {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<CustomMaterialName>defaultHooks(ToolHooks.DISPLAY_NAME);
   /** Loader instance */
   public static final RecordLoadable<CustomMaterialName> LOADER = RecordLoadable.create(
