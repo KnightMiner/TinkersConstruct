@@ -46,7 +46,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
   public static final RecordLoadable<ToolCastingRecipe> LOADER = RecordLoadable.create(
     LoadableRecipeSerializer.TYPED_SERIALIZER.requiredField(),
     ContextKey.ID.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP, CAST_FIELD, ITEM_COST_FIELD,
-    new EnumLoadable<>(CastPurpose.class).defaultField("cast_purpose", CastPurpose.MAYBE_MATERIAL, true, r -> r.castPurpose),
+    new EnumLoadable<>(CastPurpose.class).requiredField("cast_purpose", r -> r.castPurpose),
     TinkerLoadables.MODIFIABLE_ITEM.requiredField("result", r -> r.result),
     MATERIALS_FIELD,
     MaterialVariantId.LOADABLE.list(0).defaultField("extra_materials", List.of(), false, r -> r.extraMaterials),
@@ -98,7 +98,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
     List<MaterialStatsId> requirements = ToolMaterialHook.stats(result.getToolDefinition());
     // last material is the part, may be index 0 or 1
     MaterialFluidRecipe recipe = getFluidRecipe(inv);
-    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose == CastPurpose.MAYBE_MATERIAL ? requirements.size() - 1 : castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().getId());
+    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().getId());
   }
 
   @Override
@@ -121,8 +121,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
       materials.add(fluidMaterial);
     }
     // add cast material if relevant
-    if (castPurpose == CastPurpose.FIRST_MATERIAL || castPurpose == CastPurpose.SECOND_MATERIAL
-      || castPurpose == CastPurpose.MAYBE_MATERIAL && ToolMaterialHook.stats(result.getToolDefinition()).size() > 1) {
+    if (castPurpose == CastPurpose.FIRST_MATERIAL || castPurpose == CastPurpose.SECOND_MATERIAL) {
       materials.add(IMaterialItem.getMaterialFromStack(cast));
     }
     // add fluid material
@@ -212,8 +211,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
 
           // if we have a second material, create the dynamic display recipe
           List<ItemStack> casts = List.of(getCast().getItems());
-          if (castPurpose == CastPurpose.FIRST_MATERIAL || castPurpose == CastPurpose.SECOND_MATERIAL
-            || castPurpose == CastPurpose.MAYBE_MATERIAL && requirements.size() > 1) {
+          if (castPurpose == CastPurpose.FIRST_MATERIAL || castPurpose == CastPurpose.SECOND_MATERIAL) {
             displayRecipes.add(new DisplayRecipe(fluidIndex, casts, castSwap.getFluids(), maxCoolingTime));
           } else {
             // standard display recipe, animates 1 material
@@ -261,12 +259,6 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
   /** Enum describing the function of the cast in this recipe */
   @RequiredArgsConstructor
   public enum CastPurpose {
-    /**
-     * Based on the material definition stat count, cast is either the first material or has no material purpose.
-     * @deprecated use {@link #CONSUMED} or {@link #FIRST_MATERIAL}.
-     */
-    @Deprecated
-    MAYBE_MATERIAL(-1, 1),
     /** Cast is not consumed by the recipe */
     CATALYST(0, 1),
     /** Cast is consumed, but has no material purpose */
@@ -286,7 +278,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
 
   /**
    * Recipe to display tool casting with multiple materials.
-   * Only used if {@link #castPurpose} is {@link CastPurpose#FIRST_MATERIAL}, {@link CastPurpose#SECOND_MATERIAL}, or {@link CastPurpose#MAYBE_MATERIAL} with the materrial confirmed.
+   * Only used if {@link #castPurpose} is {@link CastPurpose#FIRST_MATERIAL} or {@link CastPurpose#SECOND_MATERIAL}.
    */
   private class DisplayRecipe implements IDisplayableCastingRecipe {
     @Getter
