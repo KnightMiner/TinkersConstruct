@@ -107,12 +107,6 @@ public final class MaterialIds {
   // tier 2 (mod integration)
   public static final MaterialId treatedWood = id("treated_wood");
   public static final MaterialId osmium = id("osmium");
-  /** @deprecated removing material, use alternative or recreate in your addon */
-  @Deprecated(forRemoval = true)
-  public static final MaterialId tungsten = id("tungsten");
-  /** @deprecated removing material, use alternative or recreate in your addon */
-  @Deprecated(forRemoval = true)
-  public static final MaterialId platinum = id("platinum");
   public static final MaterialId silver = id("silver");
   public static final MaterialId lead = id("lead");
   public static final MaterialId aluminum = id("aluminum");
@@ -133,9 +127,6 @@ public final class MaterialIds {
   // plate
   public static final MaterialId gold = id("gold");
   public static final MaterialId obsidian = id("obsidian");
-  /** @deprecated use {@link #leather} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialId rottenFlesh = id("rotten_flesh");
   // slimesuit
   public static final MaterialId blood = id("blood");
   public static final MaterialId clay = id("clay");
@@ -157,30 +148,6 @@ public final class MaterialIds {
    * Variants
    */
   // wood
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId oak      = create(wood, "oak");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId spruce   = create(wood, "spruce");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId birch    = create(wood, "birch");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId jungle   = create(wood, "jungle");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId acacia   = create(wood, "acacia");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId darkOak  = create(wood, "dark_oak");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId mangrove = create(wood, "mangrove");
-  /** @deprecated use {@link #wood} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId cherry   = create(wood, "cherry");
   public static final MaterialVariantId crimson  = create(wood, "crimson");
   public static final MaterialVariantId warped   = create(wood, "warped");
   // stone
@@ -196,28 +163,12 @@ public final class MaterialIds {
   // whitestone
   public static final MaterialVariantId endstone            = create(whitestone, "end");
   public static final MaterialVariantId whitestoneComposite = create(whitestone, "composite");
-  /** @deprecated use {@link #whitestoneComposite} */
-  @Deprecated
-  public static final MaterialVariantId whitestoneAluminum  = create(whitestone, "aluminum");
-  /** @deprecated use {@link #whitestoneComposite} */
-  @Deprecated
-  public static final MaterialVariantId whitestoneTin       = create(whitestone, "tin");
-  /** @deprecated use {@link #whitestoneComposite} */
-  @Deprecated
-  public static final MaterialVariantId whitestoneZinc      = create(whitestone, "zinc");
   // slimewood
   public static final MaterialVariantId slimewoodComposite = create(slimewood, "composite");
   public static final MaterialVariantId greenheart         = create(slimewood, "greenheart");
   public static final MaterialVariantId skyroot            = create(slimewood, "skyroot");
   public static final MaterialVariantId bloodshroom        = create(slimewood, "bloodshroom");
   public static final MaterialVariantId enderbark          = create(slimewood, "enderbark");
-  // slime vines
-  /** @deprecated use {@link #skyslimeskin} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId skySlimeskin = skyslimeskin;
-  /** @deprecated use {@link #enderslimeskin} */
-  @Deprecated(forRemoval = true)
-  public static final MaterialVariantId enderSlimeskin = enderslimeskin;
   // oxidized
   public static final MaterialVariantId oxidizedIron = create(iron, "oxidized");
   public static final MaterialVariantId oxidizedCopper = create(copper, "oxidized");
