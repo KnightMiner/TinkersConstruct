@@ -63,7 +63,7 @@ public record ShareDurabilityModule(LazyModifier shield, LevelingInt grant, Leve
   }
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     if (holder != null) {
       // want to randomly select a slot, but skip any that lack tools
       List<ItemStack> options = new ArrayList<>(10);

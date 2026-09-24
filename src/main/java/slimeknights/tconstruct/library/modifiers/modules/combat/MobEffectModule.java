@@ -431,7 +431,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
 
     @Deprecated
     @Override
-    public void onProjectileLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+    public void onProjectileLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
       // yes, we are launching a projectile, but the intention of that condition is are we a projectile that just hit
       if (isAoe.test(!primary) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(shooter, modifier, null);

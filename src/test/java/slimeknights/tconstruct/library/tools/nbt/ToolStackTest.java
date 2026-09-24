@@ -179,7 +179,7 @@ class ToolStackTest extends ToolItemTest {
   void damage_damageTool() {
     ToolStack tool = ToolStack.from(testItemStack);
     int oldDamage = tool.getDamage();
-    ToolDamageUtil.directDamage(tool, 100, null, null);
+    ToolDamageUtil.directDamage(tool, 100, null, ItemStack.EMPTY);
     assertThat(tool.getDamage()).isEqualTo(oldDamage + 100);
   }
 

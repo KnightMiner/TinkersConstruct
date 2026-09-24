@@ -47,8 +47,9 @@ public record EdibleConsumeDurabilityModule(LevelingInt durabilityUsage, IJsonPr
   public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
     if (condition.matches(tool, modifier) && holder.matches(player)) {
       int damage = this.durabilityUsage.compute(modifier.getEffectiveLevel());
+      // want to direct damage, so handling the animation ourselves
       if (damage > 0 && ToolDamageUtil.directDamage(tool, damage, player, player.getItemBySlot(eatenSlot))) {
-        player.broadcastBreakEvent(player.getUsedItemHand());
+        player.broadcastBreakEvent(eatenSlot);
       }
     }
   }

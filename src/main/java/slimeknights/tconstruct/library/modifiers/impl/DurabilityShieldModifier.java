@@ -42,7 +42,7 @@ public abstract class DurabilityShieldModifier extends Modifier implements Capac
   /* Damaging */
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     return DurabilityShieldModule.onDamageTool(this, tool, modifier, amount);
   }
 

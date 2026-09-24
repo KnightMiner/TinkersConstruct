@@ -57,8 +57,17 @@ public class ToolDamageUtil {
     return tool.isBroken() ? durability + 1 : durability;
   }
 
+  /** Implements {@link net.minecraft.world.item.Item#damageItem(ItemStack, int, LivingEntity, Consumer)} for a modifiable item */
+  public static <T extends LivingEntity> void handleDamageItem(ItemStack stack, int amount, T damager, Consumer<T> onBroken) {
+    // We basically emulate Itemstack.damageItem here. We always return 0 to skip the handling in ItemStack.
+    // If we don't tools ignore our damage logic
+    if (stack.getItem().canBeDepleted() && ToolDamageUtil.damage(ToolStack.from(stack), amount, damager, stack)) {
+      onBroken.accept(damager);
+    }
+  }
 
-  /* Damaging and repairing */
+
+  /* Direct damage */
 
   /**
    * Directly damages the tool, bypassing modifier hooks
@@ -68,7 +77,7 @@ public class ToolDamageUtil {
    * @param stack   Stack being damaged
    * @return  True if the tool is broken now
    */
-  public static boolean directDamage(IToolStackView tool, int amount, @Nullable LivingEntity entity, @Nullable ItemStack stack) {
+  public static boolean directDamage(IToolStackView tool, int amount, @Nullable LivingEntity entity, ItemStack stack) {
     if (!ModifierUtil.consumesResources(entity)) {
       return false;
     }
@@ -80,23 +89,9 @@ public class ToolDamageUtil {
     if (amount > 0) {
       // criteria updates
       int newDamage = damage + amount;
-      if (entity instanceof ServerPlayer player) {
-        // if not given the stack, find it on the player
-        if (stack == null) {
-          stack = ItemStack.EMPTY;
-          for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack slotStack = player.getItemBySlot(slot);
-            if (tool.isSameStack(slotStack)) {
-              stack = slotStack;
-            }
-          }
-        }
-        // if we have a stack, update the criteria
-        if (!stack.isEmpty()) {
-          CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(player, stack, newDamage);
-        }
-      } else if (stack == null) {
-        stack = ItemStack.EMPTY;
+      // if we have a stack, update the criteria
+      if (!stack.isEmpty() && entity instanceof ServerPlayer player) {
+        CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(player, stack, newDamage);
       }
 
       // update durability
@@ -112,6 +107,30 @@ public class ToolDamageUtil {
   }
 
   /**
+   * Directly damages the tool, bypassing modifier hooks. Finds the stack by iterating the inventory slots.
+   * @param tool    Tool to damage
+   * @param amount  Amount to damage
+   * @param entity  Entity holding the tool
+   * @return  True if the tool is broken now
+   */
+  public static boolean directDamage(IToolStackView tool, int amount, @Nullable LivingEntity entity) {
+    ItemStack stack = ItemStack.EMPTY;
+    if (entity != null) {
+      for (EquipmentSlot slot : EquipmentSlot.values()) {
+        ItemStack check = entity.getItemBySlot(slot);
+        if (!check.isEmpty() && tool.isSameStack(check)) {
+          stack = check;
+          break;
+        }
+      }
+    }
+    return directDamage(tool, amount, entity, stack);
+  }
+
+
+  /* Damage without animation */
+
+  /**
    * Damages the tool by the given amount
    * @param amount  Amount to damage
    * @param entity  Entity for criteria updates, if null no updates run
@@ -119,7 +138,7 @@ public class ToolDamageUtil {
    * @param cause   Modifier damaging the tool. If null, its damaged by standard tool usage.
    * @return true if the tool broke when damaging
    */
-  public static boolean damage(IToolStackView tool, int amount, @Nullable LivingEntity entity, @Nullable ItemStack stack, ModifierId cause) {
+  public static boolean damage(IToolStackView tool, int amount, @Nullable LivingEntity entity, ItemStack stack, ModifierId cause) {
     if (amount <= 0 || tool.isBroken() || tool.isUnbreakable() || !tool.hasTag(TinkerTags.Items.DURABILITY)) {
       return false;
     }
@@ -142,9 +161,12 @@ public class ToolDamageUtil {
    * @param stack   Stack to use for criteria updates, if null uses main hand stack
    * @return true if the tool broke when damaging
    */
-  public static boolean damage(IToolStackView tool, int amount, @Nullable LivingEntity entity, @Nullable ItemStack stack) {
+  public static boolean damage(IToolStackView tool, int amount, @Nullable LivingEntity entity, ItemStack stack) {
     return damage(tool, amount, entity, stack, ModifierId.EMPTY);
   }
+
+
+  /* Animated damage by slot */
 
   /**
    * Damages the tool and sends the break animation if it broke
@@ -155,9 +177,9 @@ public class ToolDamageUtil {
    * @param cause   Modifier damaging the tool
    * @return true if the tool broke.
    */
-  public static boolean damageAnimated(IToolStackView tool, int amount, LivingEntity entity, EquipmentSlot slot, ModifierId cause) {
-    if (damage(tool, amount, entity, entity.getItemBySlot(slot), cause)) {
-      entity.broadcastBreakEvent(slot);
+  public static boolean damageAnimated(IToolStackView tool, int amount, @Nullable LivingEntity entity, EquipmentSlot slot, ModifierId cause) {
+    if (damage(tool, amount, entity, entity != null ? entity.getItemBySlot(slot) : ItemStack.EMPTY, cause)) {
+      if (entity != null) entity.broadcastBreakEvent(slot);
       return true;
     }
     return false;
@@ -171,7 +193,7 @@ public class ToolDamageUtil {
    * @param slot    Slot containing the stack
    * @return true if the tool broke.
    */
-  public static boolean damageAnimated(IToolStackView tool, int amount, LivingEntity entity, EquipmentSlot slot) {
+  public static boolean damageAnimated(IToolStackView tool, int amount, @Nullable LivingEntity entity, EquipmentSlot slot) {
     return damageAnimated(tool, amount, entity, slot, ModifierId.EMPTY);
   }
 
@@ -185,9 +207,9 @@ public class ToolDamageUtil {
    * @param cause   Modifier damaging the tool
    * @return true if the tool broke when damaging
    */
-  public static boolean damageAnimated(IToolStackView tool, int amount, LivingEntity entity, InteractionHand hand, ModifierId cause) {
-    if (damage(tool, amount, entity, entity.getItemInHand(hand), cause)) {
-      entity.broadcastBreakEvent(hand);
+  public static boolean damageAnimated(IToolStackView tool, int amount, @Nullable LivingEntity entity, InteractionHand hand, ModifierId cause) {
+    if (damage(tool, amount, entity, entity != null ? entity.getItemInHand(hand) : ItemStack.EMPTY, cause)) {
+      if (entity != null) entity.broadcastBreakEvent(hand);
       // TODO: why don't we fire ForgeEventFactory.onPlayerDestroyItem here?
       return true;
     }
@@ -202,7 +224,7 @@ public class ToolDamageUtil {
    * @param hand    Hand containing the stack
    * @return true if the tool broke when damaging
    */
-  public static boolean damageAnimated(IToolStackView tool, int amount, LivingEntity entity, InteractionHand hand) {
+  public static boolean damageAnimated(IToolStackView tool, int amount, @Nullable LivingEntity entity, InteractionHand hand) {
     return damageAnimated(tool, amount, entity, hand, ModifierId.EMPTY);
   }
 
@@ -219,7 +241,7 @@ public class ToolDamageUtil {
     if (entity != null) {
       for (EquipmentSlot slot : EquipmentSlot.values()) {
         ItemStack stack = entity.getItemBySlot(slot);
-        if (tool.isSameStack(stack)) {
+        if (!stack.isEmpty() && tool.isSameStack(stack)) {
           if (damage(tool, amount, entity, stack, cause)) {
             entity.broadcastBreakEvent(slot);
             return true;
@@ -229,7 +251,7 @@ public class ToolDamageUtil {
       }
     }
     // did not find in any of the slots? just skip the animation/stack
-    return damage(tool, amount, entity, ItemStack.EMPTY);
+    return damage(tool, amount, entity, ItemStack.EMPTY, cause);
   }
 
   /**
@@ -243,6 +265,9 @@ public class ToolDamageUtil {
     return damageAnimated(tool, amount, entity, ModifierId.EMPTY);
   }
 
+
+  /* Special damaging */
+
   /**
    * Calls {@link #damageAnimated(IToolStackView, int, LivingEntity, InteractionHand, ModifierId)} for a projectile launcher in a launch hook.
    * Avoids damaging fishing rods, which will be damaged in the on hit hook.
@@ -253,21 +278,16 @@ public class ToolDamageUtil {
    * @param projectile  Projectile that was launched. If a fishing hook damage is canceled.
    * @return True if the tool broke.
    */
-  public static boolean damageLauncher(IToolStackView tool, int amount, LivingEntity entity, Projectile projectile, ModifierId modifier) {
+  @SuppressWarnings("UnusedReturnValue") // API
+  public static boolean damageLauncher(IToolStackView tool, int amount, @Nullable LivingEntity entity, Projectile projectile, ModifierId modifier) {
     if (projectile.getType() != TinkerTools.fishingHook.get()) {
-      return ToolDamageUtil.damageAnimated(tool, amount, entity, entity.getUsedItemHand(), modifier);
+      return ToolDamageUtil.damageAnimated(tool, amount, entity, entity == null ? InteractionHand.MAIN_HAND : entity.getUsedItemHand(), modifier);
     }
     return false;
   }
 
-  /** Implements {@link net.minecraft.world.item.Item#damageItem(ItemStack, int, LivingEntity, Consumer)} for a modifiable item */
-  public static <T extends LivingEntity> void handleDamageItem(ItemStack stack, int amount, T damager, Consumer<T> onBroken) {
-    // We basically emulate Itemstack.damageItem here. We always return 0 to skip the handling in ItemStack.
-    // If we don't tools ignore our damage logic
-    if (stack.getItem().canBeDepleted() && ToolDamageUtil.damage(ToolStack.from(stack), amount, damager, stack)) {
-      onBroken.accept(damager);
-    }
-  }
+
+  /* Repair */
 
   /**
    * Repairs the given tool stack

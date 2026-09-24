@@ -92,7 +92,7 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
   /* Shield implementation */
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, @Nullable ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     // allow overslime bypass
     if (!ModifierManager.isInTag(cause, TinkerTags.Modifiers.BYPASS_OVERSLIME)) {
       return super.beforeDamageTool(tool, modifier, amount, holder, stack, cause);
