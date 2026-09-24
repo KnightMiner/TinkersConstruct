@@ -4,7 +4,6 @@ import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection;
-import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -16,7 +15,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
@@ -28,8 +26,6 @@ import slimeknights.tconstruct.plugin.jei.util.FluidTooltipCallback;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
 import java.awt.Color;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * Alloy recipe category for JEI display
@@ -77,28 +73,6 @@ public class AlloyRecipeCategory extends AbstractRecipeCategory<AlloyRecipe> {
   @Override
   public void draw(AlloyRecipe recipe, IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY) {
     background.draw(graphics);
-  }
-
-  /**
-   * Draws a variable number of fluids
-   * @param builder      Builder
-   * @param role         Role of the fluids in the recipe
-   * @param x            X start
-   * @param y            Y start
-   * @param totalWidth   Total width
-   * @param height       Tank height
-   * @param fluids       List of fluids to draw
-   * @param minAmount    Minimum tank size
-   * @param mapper       Logic to get a fluid list from the object
-   * @param tooltip      Tooltip callback
-   * @param <T> Object type
-   * @return Max amount based on fluids
-   */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static <T> int drawVariableFluids(IRecipeLayoutBuilder builder, RecipeIngredientRole role, int x, int y, int totalWidth, int height, List<T> fluids, int minAmount, Function<T,List<FluidStack>> mapper, Function<T,mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback> tooltip) {
-    Function<T,IRecipeSlotRichTooltipCallback> richTooltip = (ingredient) -> tooltip.apply(ingredient)::onRichTooltip;
-    return CategoryUtil.drawMultipleFluids(builder, i -> role, x, y, totalWidth, height, fluids, minAmount, mapper, richTooltip);
   }
 
   @Override

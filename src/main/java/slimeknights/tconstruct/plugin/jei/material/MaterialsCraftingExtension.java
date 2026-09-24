@@ -96,38 +96,6 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
     return recipe.getIngredients().stream().map(ingredient -> List.of(ingredient.getItems())).collect(Collectors.toList());
   }
 
-  /** Sets the recipe in the builder */
-  @Deprecated
-  public static void setRecipe(ICraftingCategoryExtension self, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, CraftingRecipe recipe, List<ItemStack> result, ItemStack plainResult, @Nullable int[] materialSlots) {
-    setRecipe(self, builder, craftingGridHelper, recipe.getId(), getInputs(recipe), result, plainResult, materialSlots);
-  }
-
-  /** Sets the recipe in the builder */
-  public static void setRecipe(ICraftingCategoryExtension self, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, ResourceLocation id, List<List<ItemStack>> inputStacks, List<ItemStack> result, ItemStack plainResult, @Nullable int[] materialSlots) {
-    builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(plainResult);
-
-    // shapeless needs its width and height set, but we also want to recover those sizes, so calculate it locally
-    int width = self.getWidth();
-    int height = self.getHeight();
-    if (width <= 0 || height <= 0) {
-      width = height = CategoryUtil.getShapelessSize(inputStacks.size());
-      builder.setShapeless();
-    }
-    List<IRecipeSlotBuilder> inputs = craftingGridHelper.createAndSetInputs(builder, inputStacks, width, height);
-    IRecipeSlotBuilder output = craftingGridHelper.createAndSetOutputs(builder, result).setSlotName(RESULT_SLOT);
-    if (inputs.size() != 9) {
-      TConstruct.LOG.error("Failed to create focus link for {} as the layout {} is not 3x3", id, builder.getClass().getName());
-    } else if (materialSlots != null) {
-      // apply focus links
-      int fWidth = width;
-      int fHeight = height;
-      builder.createFocusLink(Streams.concat(
-        Stream.of(output),
-        Arrays.stream(materialSlots).mapToObj(i -> inputs.get(MantleJEIConstants.getCraftingIndex(i, fWidth, fHeight)))
-      ).toArray(IRecipeSlotBuilder[]::new));
-    }
-  }
-
   @Override
   public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
     List<List<ItemStack>> inputs = getInputs(recipe);
@@ -155,7 +123,29 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
         }
       }
     }
-    setRecipe(this, builder, craftingGridHelper, recipe.getId(), inputs, result, plainResult, outputLink);
+    builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(plainResult);
+
+    // shapeless needs its width and height set, but we also want to recover those sizes, so calculate it locally
+    int width = getWidth();
+    int height = getHeight();
+    if (width <= 0 || height <= 0) {
+      width = height = CategoryUtil.getShapelessSize(inputs.size());
+      builder.setShapeless();
+    }
+    List<IRecipeSlotBuilder> inputSlots = craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
+    IRecipeSlotBuilder outputSlot = craftingGridHelper.createAndSetOutputs(builder, result).setSlotName(RESULT_SLOT);
+
+    // create focus links
+    if (inputSlots.size() != 9) {
+      TConstruct.LOG.error("Failed to create focus link for {} as the layout {} is not 3x3", recipe.getId(), builder.getClass().getName());
+    } else if (outputLink != null) {
+      int fWidth = width;
+      int fHeight = height;
+      builder.createFocusLink(Streams.concat(
+        Stream.of(outputSlot),
+        Arrays.stream(outputLink).mapToObj(i -> inputSlots.get(MantleJEIConstants.getCraftingIndex(i, fWidth, fHeight)))
+      ).toArray(IRecipeSlotBuilder[]::new));
+    }
   }
 
   @Override

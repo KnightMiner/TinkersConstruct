@@ -7,7 +7,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -118,7 +117,6 @@ import slimeknights.tconstruct.plugin.jei.modifiers.SlotIngredientHelper;
 import slimeknights.tconstruct.plugin.jei.modifiers.SlotIngredientRenderer;
 import slimeknights.tconstruct.plugin.jei.modifiers.ToolTinkeringCategory;
 import slimeknights.tconstruct.plugin.jei.modifiers.ToolTinkeringExtension;
-import slimeknights.tconstruct.plugin.jei.partbuilder.MaterialItemList;
 import slimeknights.tconstruct.plugin.jei.partbuilder.PartBuilderCategory;
 import slimeknights.tconstruct.plugin.jei.partbuilder.PatternIngredientHelper;
 import slimeknights.tconstruct.plugin.jei.partbuilder.PatternIngredientRenderer;
@@ -171,9 +169,6 @@ public class JEIPlugin implements IModPlugin {
     TConstruct.getResource("tables/seared_forge_material"),
     TConstruct.getResource("tables/scorched_forge_material")
   };
-  /** @deprecated no longer used */
-  @Deprecated(forRemoval = true)
-  public static IModIdHelper modIdHelper;
 
   @Override
   public ResourceLocation getPluginUid() {
@@ -306,7 +301,6 @@ public class JEIPlugin implements IModPlugin {
       .sorted(Comparator.comparing(IDisplayMaterialRecipe::getMaterial)).toList());
 
     // part builder
-    MaterialItemList.setRecipes(List.of()); // list of recipes is ignored as this whole class is getting ditched in 1.21; it just clears cache right now
     register.addRecipes(TConstructJEIConstants.PART_BUILDER, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipeTypes.PART_BUILDER.get(), IDisplayPartBuilderRecipe.class));
 
     // modifier worktable
@@ -708,7 +702,5 @@ public class JEIPlugin implements IModPlugin {
         jeiRuntime.getRecipeManager().hideRecipes(RecipeTypes.CRAFTING, easterEggs);
       }
     }
-
-    modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
   }
 }
