@@ -1,8 +1,5 @@
 package slimeknights.tconstruct.library.tools.stat;
 
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.tconstruct.TConstruct;
@@ -49,29 +46,23 @@ public class ToolStats {
   /** Set of stats supporting {@link slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook} */
   private static final Set<INumericToolStat<?>> CONDITIONAL = new HashSet<>();
 
-  /** Logs an error message for unsupported stats */
-  private static void logUnsupportedConditional(INumericToolStat<?> stat) {
-    // TODO 1.21: make this error instead of log
-    ResourceLocation id = stat.getName();
-    if (TConstruct.MOD_ID.equals(id.getNamespace())) {
-      TConstruct.LOG.error("Tool stat {} does not support conditional stats but is used in a conditional stat loader.", id);
-    } else {
-      TConstruct.LOG.warn("Tool stat {} is not marked as supporting conditional stats but is used in a conditional stat loader. This may be a bug with the mod adding the stat having not marked it using the new API.", id);
-    }
+  /** Gets the error for the given stat */
+  private static String getError(INumericToolStat<?> stat) {
+    return "Tool stat " + stat.getName() + " does not support conditional stats but is used in a conditional stat loader.";
   }
 
   /** Loader that filters to only numeric tool stats */
   public static final StringLoadable<INumericToolStat<?>> CONDITIONAL_LOADER = LOADER.xmap((stat, error) -> {
     if (stat instanceof INumericToolStat<?> numeric) {
-      if (error == ErrorFactory.JSON_SYNTAX_ERROR && !CONDITIONAL.contains(numeric)) {
-        logUnsupportedConditional(numeric);
+      if (error == ErrorFactory.JSON_SYNTAX_ERROR && !supportsConditional(numeric)) {
+        throw error.create(getError(numeric));
       }
       return numeric;
     }
     throw error.create("Invalid tool stat " + stat.getName() + ", must be a numeric stat");
   }, (stat, error) -> {
     if (error == ErrorFactory.RUNTIME && !CONDITIONAL.contains(stat)) {
-      throw error.create("Tool stat " + stat.getName() + " does not support conditional stats but is used in a conditional stat loader.");
+      throw error.create(getError(stat));
     }
     return stat;
   });
@@ -136,28 +127,6 @@ public class ToolStats {
     return ALL_STATS.get(name);
   }
 
-  /** @deprecated use {@link #LOADER} with {@link StringLoadable#parseString(String, String)} */
-  @Deprecated(forRemoval = true)
-  public static IToolStat<?> fromJson(String key) {
-    ResourceLocation location = ResourceLocation.tryParse(key);
-    if (location != null) {
-      IToolStat<?> stat = ToolStats.getToolStat(new ToolStatId(location));
-      if (stat != null) {
-        return stat;
-      }
-    }
-    throw new JsonSyntaxException("Unknown stat type " + key);
-  }
-
-  /** @deprecated use {@link #NUMERIC_LOADER} with {@link StringLoadable#parseString(String, String)} */
-  @Deprecated(forRemoval = true)
-  public static INumericToolStat<?> numericFromJson(String key) {
-    if (fromJson(key) instanceof INumericToolStat<?> stat) {
-      return stat;
-    }
-    throw new JsonSyntaxException("Invalid tool stat " + key + ", must be a numeric stat");
-  }
-
   /**
    * Registers a new tool stat
    * @param toolStat  Stat to register
@@ -204,20 +173,5 @@ public class ToolStats {
    */
   public static boolean supportsConditional(INumericToolStat<?> toolStat) {
     return CONDITIONAL.contains(toolStat);
-  }
-
-
-  /* Deprecated */
-
-  /** @deprecated use {@link #LOADER} with {@link slimeknights.mantle.data.loadable.Loadable#decode(FriendlyByteBuf)} */
-  @Deprecated(forRemoval = true)
-  public static IToolStat<?> fromNetwork(FriendlyByteBuf buffer) {
-    return LOADER.decode(buffer);
-  }
-
-  /** @deprecated use {@link #NUMERIC_LOADER} with {@link slimeknights.mantle.data.loadable.Loadable#decode(FriendlyByteBuf)} */
-  @Deprecated(forRemoval = true)
-  public static INumericToolStat<?> numericFromNetwork(FriendlyByteBuf buffer) {
-    return NUMERIC_LOADER.decode(buffer);
   }
 }
