@@ -115,7 +115,7 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
 
           // let modifiers such as fiery and punch set properties
           for (ModifierEntry entry : modifiers.getModifiers()) {
-            entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileLaunch(tool, entry, player, ItemStack.EMPTY, hook, null, arrowData, true);
+            entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, player, ItemStack.EMPTY, hook, null, arrowData, true);
           }
           level.addFreshEntity(hook);
         }

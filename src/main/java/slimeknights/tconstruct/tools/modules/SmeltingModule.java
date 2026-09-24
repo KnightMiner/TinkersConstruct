@@ -46,7 +46,7 @@ import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeHitModifierHoo
 import slimeknights.tconstruct.library.modifiers.hook.combat.MonsterMeleeHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BlockHarvestModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.LauncherHitModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.PlantHarvestModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.ShearsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchModifierHook;
@@ -72,7 +72,7 @@ import java.util.Objects;
 import static slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule.TAG_SLOT;
 
 /** Module that cooks items inside a frypan */
-public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeType, float multiplier, InventoryModule input, InventoryModule output) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, BlockHarvestModifierHook, ProjectileLaunchModifierHook, OnAttackedModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
+public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeType, float multiplier, InventoryModule input, InventoryModule output) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, BlockHarvestModifierHook, ProjectileShootModifierHook, OnAttackedModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
   /** NBT key to store the cooking time */
   private static final String TAG_TIME = "tic_remaining_time";
   /** Container instance for recipe lookups */
@@ -297,7 +297,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
   }
 
   @Override
-  public void onProjectileLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // arrow launch cook by arrow power
     float amount;
     if (arrow != null) {
@@ -307,7 +307,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
     } else {
       amount = ToolStats.PROJECTILE_DAMAGE.getDefaultValue();
     }
-    cookItems(tool, modifier, shooter, amount);
+    cookItems(tool, modifier, projectile.level(), shooter, amount);
   }
 
   @Override

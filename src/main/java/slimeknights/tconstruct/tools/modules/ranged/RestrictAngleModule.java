@@ -13,7 +13,7 @@ import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingAngleModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
@@ -28,7 +28,7 @@ import java.util.List;
  * Modifier to restrict a projectile angle, used also by an event for knockback angle.
  * TODO 1.21: move to {@link slimeknights.tconstruct.tools.modules.ranged.common}
  */
-public enum RestrictAngleModule implements ModifierModule, ProjectileLaunchModifierHook.NoShooter, SlingAngleModifierHook {
+public enum RestrictAngleModule implements ModifierModule, ProjectileShootModifierHook, SlingAngleModifierHook {
   INSTANCE;
 
   private static final ResourceLocation TOTAL_LEVEL = TConstruct.getResource("restrict_angle_level");

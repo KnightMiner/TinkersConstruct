@@ -43,7 +43,7 @@ import slimeknights.tconstruct.library.modifiers.hook.combat.MonsterMeleeHitModi
 import slimeknights.tconstruct.library.modifiers.hook.interaction.EdibleEffectHook;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BlockBreakModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.PlantHarvestModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.ShearsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchModifierHook;
@@ -297,7 +297,6 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
       }
     }
 
-    @Deprecated
     @Override
     public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
       if (condition.modifierLevel().test(modifier.getLevel()) && TinkerPredicate.matches(holder, attacker) && checkChance(modifier)) {
@@ -397,7 +396,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Grants a mob effect when a tool is used to perform its standard tasks. */
-  record ToolUsage(ModifierMobEffect effect, LevelingValue chance, BooleanPredicate isAoe, BooleanPredicate isProjectile, ModifierCondition<IToolStackView> condition) implements MobEffectModule, BlockBreakModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, ProjectileLaunchModifierHook, ProjectileHitModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
+  record ToolUsage(ModifierMobEffect effect, LevelingValue chance, BooleanPredicate isAoe, BooleanPredicate isProjectile, ModifierCondition<IToolStackView> condition) implements MobEffectModule, BlockBreakModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, ProjectileShootModifierHook, ProjectileHitModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolUsage>defaultHooks(ModifierHooks.BLOCK_BREAK, ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_THROWN, ModifierHooks.PROJECTILE_HIT, ModifierHooks.PLANT_HARVEST, ModifierHooks.SHEAR_ENTITY, ModifierHooks.SLING_LAUNCH);
     public static final RecordLoadable<ToolUsage> LOADER = RecordLoadable.create(
       EFFECT_FIELD, CHANCE_FIELD,
@@ -429,11 +428,10 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
       }
     }
 
-    @Deprecated
     @Override
-    public void onProjectileLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+    public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
       // yes, we are launching a projectile, but the intention of that condition is are we a projectile that just hit
-      if (isAoe.test(!primary) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
+      if (shooter != null && isAoe.test(!primary) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(shooter, modifier, null);
       }
     }

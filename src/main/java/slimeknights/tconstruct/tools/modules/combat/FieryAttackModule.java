@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.MonsterMeleeHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module for lighting the target on fire after a melee or ranged attack */
-public record FieryAttackModule(LevelingValue time) implements ModifierModule, ProjectileLaunchModifierHook.NoShooter, ProjectileHitModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter {
+public record FieryAttackModule(LevelingValue time) implements ModifierModule, ProjectileShootModifierHook, ProjectileHitModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FieryAttackModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_THROWN, ModifierHooks.PROJECTILE_HIT);
   public static final RecordLoadable<FieryAttackModule> LOADER = RecordLoadable.create(
     LevelingValue.LOADABLE.requiredField("seconds", FieryAttackModule::time),

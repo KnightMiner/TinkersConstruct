@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
@@ -13,7 +14,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.entity.ReusableProjectile;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
@@ -33,7 +34,7 @@ import java.util.List;
  * @param blocks     If true, places glow on hitting a block
  * @param entities   If true, places glow at the feet of the hit entity
  */
-public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean entities) implements ModifierModule, ProjectileHitModifierHook, ProjectileLaunchModifierHook {
+public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean entities) implements ModifierModule, ProjectileHitModifierHook, ProjectileShootModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ProjectilePlaceGlowModule>defaultHooks(ModifierHooks.PROJECTILE_HIT, ModifierHooks.PROJECTILE_LAUNCH);
   public static final RecordLoadable<ProjectilePlaceGlowModule> LOADER = RecordLoadable.create(
     IntLoadable.FROM_ZERO.requiredField("tool_damage", ProjectilePlaceGlowModule::damage),
@@ -52,7 +53,7 @@ public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean enti
   }
 
   @Override
-  public void onProjectileLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // deal damage to the bow if it added glowing to its arrow
     // don't damage fishing hooks though, we will do that on hit
     if (primary && damage > 0) {

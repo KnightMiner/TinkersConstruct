@@ -182,7 +182,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
         ModDataNBT projectileData = PersistentDataCapability.getOrWarn(projectile);
         // let modifiers set properties
         for (ModifierEntry entry : tool.getModifierList()) {
-          entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileLaunch(tool, entry, entity, ItemStack.EMPTY, projectile, null, projectileData, true);
+          entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, entity, ItemStack.EMPTY, projectile, null, projectileData, true);
         }
 
         // finally, release the projectile

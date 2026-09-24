@@ -118,7 +118,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
             ModDataNBT arrowData = PersistentDataCapability.getOrWarn(spit);
             // let modifiers set properties
             for (ModifierEntry entry : tool.getModifierList()) {
-              entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileLaunch(tool, entry, entity, ItemStack.EMPTY, spit, null, arrowData, shotIndex == primaryIndex);
+              entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, entity, ItemStack.EMPTY, spit, null, arrowData, shotIndex == primaryIndex);
             }
 
             // finally, fire the projectile
