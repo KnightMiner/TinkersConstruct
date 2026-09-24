@@ -25,11 +25,6 @@ public class ParryingModifier extends OffhandAttackModifier implements ToolActio
   }
 
   @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return true;
-  }
-
-  @Override
   public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK) {
       InteractionResult result = super.beforeEntityUse(tool, modifier, player, target, hand, source);

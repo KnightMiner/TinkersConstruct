@@ -14,6 +14,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
+import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
@@ -52,8 +53,8 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return advanced;
+  public boolean shouldDisplay(ModifierTooltip context) {
+    return context.isTable();
   }
 
   @Nullable

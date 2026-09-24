@@ -517,13 +517,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
 
   /** Class for the empty modifier instance, mods should not need to extend this class */
   private static class EmptyModifier extends Modifier {
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    public boolean shouldDisplay(boolean advanced) {
-      return false;
-    }
-
     @Override
     public boolean shouldDisplay(ModifierTooltip context) {
       return false;

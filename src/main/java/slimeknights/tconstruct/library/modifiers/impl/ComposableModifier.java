@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip.ShowInTooltips;
-import slimeknights.tconstruct.library.modifiers.util.ModifierTooltipsField;
+import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip.TooltipsLoadable;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.module.WithHooks;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class ComposableModifier extends BasicModifier {
   public static final RecordLoadable<ComposableModifier> LOADER = RecordLoadable.create(
     ModifierLevelDisplay.LOADER.defaultField("level_display", true, m -> m.levelDisplay),
-    new ModifierTooltipsField<>("show_in_tooltips", "tooltip_display", m -> m.showInTooltips),
+    TooltipsLoadable.INSTANCE.defaultField("show_in_tooltips", ShowInTooltips.ALWAYS, false, m -> m.showInTooltips),
     IntLoadable.ANY_FULL.defaultField("priority", Integer.MIN_VALUE, m -> m.priority),
     ModifierModule.WITH_HOOKS.list(0).defaultField("modules", List.of(), m -> m.modules),
     StringLoadable.DEFAULT.nullableField("translation_key", m -> m.translationKey),
@@ -54,24 +54,6 @@ public class ComposableModifier extends BasicModifier {
     if (translationKey != null) {
       this.translationKey = translationKey;
     }
-  }
-
-  /** @deprecated use {@link #ComposableModifier(ModifierLevelDisplay, ShowInTooltips, int, List, String, ErrorFactory)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  protected ComposableModifier(ModifierLevelDisplay levelDisplay, TooltipDisplay tooltipDisplay, int priority, List<WithHooks<ModifierModule>> modules, @Nullable String translationKey, ErrorFactory error) {
-    super(ModuleHookMap.createMap(modules, error), levelDisplay, tooltipDisplay, priority);
-    this.modules = modules;
-    if (translationKey != null) {
-      this.translationKey = translationKey;
-    }
-  }
-
-  /** @deprecated use {@link #ComposableModifier(ModifierLevelDisplay, ShowInTooltips, int, List, String, ErrorFactory)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  protected ComposableModifier(ModifierLevelDisplay levelDisplay, TooltipDisplay tooltipDisplay, int priority, List<WithHooks<ModifierModule>> modules, ErrorFactory error) {
-    this(levelDisplay, tooltipDisplay, priority, modules, "", error);
   }
 
   /** Creates a builder instance for datagen */
@@ -168,13 +150,6 @@ public class ComposableModifier extends BasicModifier {
     /** Sets the tooltips this modifier shows in */
     public Builder showInTooltips(ModifierTooltip... tooltips) {
       return showInTooltips(ShowInTooltips.match(tooltips));
-    }
-
-    /** @deprecated use {@link #showInTooltips(ShowInTooltips)} */
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    public Builder tooltipDisplay(TooltipDisplay display) {
-      return showInTooltips(display.getShowInTooltips());
     }
 
     /** Builds the final instance */

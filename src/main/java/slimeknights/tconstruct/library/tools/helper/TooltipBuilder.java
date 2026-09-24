@@ -202,18 +202,6 @@ public class TooltipBuilder {
     return this;
   }
 
-  /** @deprecated use {@link #addModifierInfo(ModifierTooltip, RegistryAccess)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public TooltipBuilder addModifierInfo(boolean advanced, @Nullable RegistryAccess access) {
-    for (ModifierEntry entry : tool.getModifierList()) {
-      if (entry.getModifier().shouldDisplay(advanced)) {
-        this.tooltips.add(entry.getModifier().getDisplayName(tool, entry, access));
-      }
-    }
-    return this;
-  }
-
   /**
    * Adds the modifier information to the tooltip
    *

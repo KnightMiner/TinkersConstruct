@@ -295,19 +295,13 @@ public class Modifier implements IdAwareObject {
 
   /* General hooks */
 
-  /** @deprecated use {@link #shouldDisplay(ModifierTooltip)} */
-  @Deprecated(forRemoval = true)
-  public boolean shouldDisplay(boolean advanced) {
-    return true;
-  }
-
   /**
    * Determines if the modifier should display in modifier lists
    * @param context  Context displaing the modifier. Might be a block, a book, or a tool.
    * @return  True if the modifier should show
    */
   public boolean shouldDisplay(ModifierTooltip context) {
-    return context.isNew() || shouldDisplay(context == ModifierTooltip.TINKER_STATION);
+    return true;
   }
 
 

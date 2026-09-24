@@ -9,9 +9,4 @@ public class AmbidextrousModifier extends OffhandAttackModifier {
     super.registerHooks(hookBuilder);
     hookBuilder.addModule(ShowOffhandModule.DISALLOW_BROKEN);
   }
-
-  @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return true;
-  }
 }

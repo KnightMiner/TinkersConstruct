@@ -28,9 +28,4 @@ public class DualWieldingModifier extends OffhandAttackModifier implements ToolS
       ToolStats.ATTACK_SPEED.multiplyAll(builder, 0.8);
     }
   }
-
-  @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return true;
-  }
 }

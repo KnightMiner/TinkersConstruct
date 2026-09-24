@@ -24,10 +24,6 @@ import javax.annotation.Nullable;
  */
 public class BasicModifier extends Modifier {
   protected final ModifierLevelDisplay levelDisplay;
-  /** @deprecated use {@link #showInTooltips} */
-  @SuppressWarnings("DeprecatedIsStillUsed")
-  @Deprecated(forRemoval = true)
-  protected final TooltipDisplay tooltipDisplay;
   protected final ShowInTooltips showInTooltips;
   @Getter
   protected final int priority;
@@ -36,17 +32,6 @@ public class BasicModifier extends Modifier {
     super(hookMap);
     this.levelDisplay = levelDisplay;
     this.showInTooltips = showInTooltips;
-    this.tooltipDisplay = TooltipDisplay.ALWAYS;
-    this.priority = priority;
-  }
-
-  /** @deprecated use {@link #BasicModifier(ModuleHookMap, ModifierLevelDisplay, ShowInTooltips, int)} */
-  @Deprecated(forRemoval = true)
-  public BasicModifier(ModuleHookMap hookMap, ModifierLevelDisplay levelDisplay, TooltipDisplay tooltipDisplay, int priority) {
-    super(hookMap);
-    this.levelDisplay = levelDisplay;
-    this.tooltipDisplay = tooltipDisplay;
-    this.showInTooltips = tooltipDisplay.showInTooltips;
     this.priority = priority;
   }
 
@@ -68,29 +53,11 @@ public class BasicModifier extends Modifier {
     return getHook(ModifierHooks.DISPLAY_NAME).getDisplayName(tool, entry, entry.getDisplayName(), access);
   }
 
-  @SuppressWarnings("removal")
   @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return shouldDisplay(advanced ? ModifierTooltip.TINKER_STATION : ModifierTooltip.TOOL);
-  }
-
-  @Override
-    public boolean shouldDisplay(ModifierTooltip context) {
+  public boolean shouldDisplay(ModifierTooltip context) {
     return showInTooltips.test(context);
   }
 
-  /** Determines when this modifier shows in tooltips */
-  @Deprecated(forRemoval = true)
-  @RequiredArgsConstructor
-  public enum TooltipDisplay {
-    // while semantically the replacement would have the same name, logically the replacements all need to include the 3 new values
-    ALWAYS(ShowInTooltips.ALWAYS),
-    TINKER_STATION(ShowInTooltips.BONUS_SLOT),
-    NEVER(ShowInTooltips.PARTS_ONLY);
-
-    @Getter
-    private final ShowInTooltips showInTooltips;
-  }
 
   /**
    * Builder to create simple static modifiers. Similar to {@link ComposableModifier.Builder}, except more efficient as we don't require it be JSON serializable.
@@ -118,12 +85,6 @@ public class BasicModifier extends Modifier {
     /** Sets the tooltips this modifier shows in */
     public Builder showInTooltips(ModifierTooltip... tooltips) {
       return showInTooltips(ShowInTooltips.match(tooltips));
-    }
-
-    /** @deprecated use {@link #showInTooltips(ShowInTooltips)} */
-    @Deprecated(forRemoval = true)
-    public Builder tooltipDisplay(TooltipDisplay display) {
-      return showInTooltips(display.showInTooltips);
     }
 
     /** Builds the final modifier */

@@ -36,11 +36,6 @@ public class OffhandAttackModifier extends NoLevelsModifier implements EntityInt
   }
 
   @Override
-  public boolean shouldDisplay(boolean advanced) {
-    return false;
-  }
-
-  @Override
   public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
     volatileData.putBoolean(DUEL_WIELDING, true);
   }

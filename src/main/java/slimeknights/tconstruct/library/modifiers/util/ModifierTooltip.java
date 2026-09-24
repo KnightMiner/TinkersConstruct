@@ -21,19 +21,19 @@ public enum ModifierTooltip {
   /** Shows in tooltips on tool items. */
   TOOL(false),
   /** Shows in advanced details on a tool in the tinker station or modifier worktable. */
-  TINKER_STATION(false),
+  TINKER_STATION(true),
   /** Shows in tooltips on tool part items. */
-  TOOL_PART(true),
+  TOOL_PART(false),
   /** Shows in advanced details for the material in the part builder. */
   PART_BUILDER(true),
   /** Shows on book pages covering tool materials. */
-  BOOK(true);
+  BOOK(false);
 
   /** Loadable instance for JSON contexts */
   public static final EnumLoadable<ModifierTooltip> LOADABLE = new EnumLoadable<>(ModifierTooltip.class);
 
-  /** If true, this is a new flag type that did not exist with the old hook. */
-  private final boolean isNew;
+  /** If true, this is a table. */
+  private final boolean isTable;
 
   /** Predicate testing for a modifier tooltip. */
   public record ShowInTooltips(Set<ModifierTooltip> tooltips) implements Predicate<ModifierTooltip> {
