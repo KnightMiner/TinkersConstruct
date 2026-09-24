@@ -57,11 +57,11 @@ public class DamageableMeltingRecipe extends MeltingRecipe {
 
   @Override
   public FluidStack getOutput(IMeltingContainer inv) {
-    FluidStack output = getOutput();
+    FluidStack output = super.getOutput(inv);
     ItemStack input = inv.getStack();
     int maxDamage = input.getMaxDamage();
     if (maxDamage <= 0) {
-      return output.copy();
+      return output;
     }
     // scale output based on damage value, its possible 1mb is a lot for some high durability things, but whatever
     return scaleOutput(output, input.getDamageValue(), maxDamage, unitSize);

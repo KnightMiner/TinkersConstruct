@@ -17,7 +17,6 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.IMultiRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
-import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -65,12 +64,6 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
   protected PartSwapCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, int index, IJsonPredicate<MaterialVariantId> materials) {
     super(serializer, id, group, cast, itemCost, true, false, materials);
     this.index = index;
-  }
-
-  /** @deprecated use {@link #PartSwapCastingRecipe(TypeAwareRecipeSerializer, ResourceLocation, String, Ingredient, int, int, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  protected PartSwapCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, int index) {
-    this(serializer, id, group, cast, itemCost, index, MaterialPredicate.ANY);
   }
 
   /** Maps negative indices to the end of the parts list */
@@ -453,13 +446,6 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
         return results.stream().map(result -> materials.replaceMaterial(fluidIndex, result).updateStack(new ItemStack(focus.getItem()))).toList();
       }
       return outputs;
-    }
-
-    /** @deprecated use {@link #getOutputs()} */
-    @Deprecated
-    @Override
-    public ItemStack getOutput() {
-      return outputs.get(0);
     }
   }
 

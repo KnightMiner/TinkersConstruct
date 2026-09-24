@@ -53,15 +53,6 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
   protected List<List<FluidStack>> outputWithByproducts;
 
   public MeltingRecipe(ResourceLocation id, String group, Ingredient input, FluidOutput output, int temperature, int time, List<FluidOutput> byproducts) {
-    this(id, group, input, output, temperature, time, byproducts, true);
-  }
-
-  /**
-   * Constructor that allows canceling the lookup addition, for generated recipes in JEI
-   * @deprecated use {@link DisplayMeltingRecipe}
-   */
-  @Deprecated
-  public MeltingRecipe(ResourceLocation id, String group, Ingredient input, FluidOutput output, int temperature, int time, List<FluidOutput> byproducts, boolean addLookup) {
     this.id = id;
     this.group = group;
     this.input = input;
@@ -69,9 +60,7 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
     this.temperature = temperature;
     this.time = time;
     this.byproducts = byproducts;
-    if (addLookup) {
-      MeltingRecipeLookup.addMeltingFluid(input, output, temperature);
-    }
+    MeltingRecipeLookup.addMeltingFluid(input, output, temperature);
   }
 
   @Override
@@ -127,7 +116,7 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
 
   @Override
   public List<FluidStack> getOutputs() {
-    return List.of(getOutput());
+    return List.of(output.get());
   }
 
   /** Gets the recipe output for foundry display in JEI */
@@ -137,14 +126,5 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
       outputWithByproducts = Stream.concat(Stream.of(output), byproducts.stream()).map(fluid -> List.of(fluid.get())).toList();
     }
     return outputWithByproducts;
-  }
-
-
-  /* Legacy JEI */
-
-  /** @deprecated use {@link #getOutputs()} */
-  @Deprecated(forRemoval = true)
-  public FluidStack getOutput() {
-    return output.get();
   }
 }

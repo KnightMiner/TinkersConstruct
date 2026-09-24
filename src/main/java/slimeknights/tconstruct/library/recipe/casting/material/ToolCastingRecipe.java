@@ -19,7 +19,6 @@ import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -73,18 +72,6 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
       this.castPurpose = castPurpose;
     }
     this.fluidSwapping = fluidSwapping;
-  }
-
-  /** @deprecated use {@link #ToolCastingRecipe(TypeAwareRecipeSerializer, ResourceLocation, String, Ingredient, int, CastPurpose, IModifiable, IJsonPredicate, List, boolean)} */
-  @Deprecated(forRemoval = true)
-  protected ToolCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, CastPurpose castPurpose, IModifiable result, IJsonPredicate<MaterialVariantId> allowedMaterials, List<MaterialVariantId> extraMaterials) {
-    this(serializer, id, group, cast, itemCost, castPurpose, result, allowedMaterials, extraMaterials, true);
-  }
-
-  /** @deprecated use {@link #ToolCastingRecipe(TypeAwareRecipeSerializer, ResourceLocation, String, Ingredient, int, CastPurpose, IModifiable, IJsonPredicate, List, boolean)} */
-  @Deprecated(forRemoval = true)
-  public ToolCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, IModifiable result) {
-    this(serializer, id, group, cast, itemCost, CastPurpose.MAYBE_MATERIAL, result, MaterialPredicate.ANY, List.of());
   }
 
   @Override
@@ -418,13 +405,6 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements IMultiRe
         }
       }
       return true;
-    }
-
-    /** @deprecated use {@link #getOutputs()} */
-    @Deprecated
-    @Override
-    public ItemStack getOutput() {
-      return new ItemStack(result);
     }
   }
 }

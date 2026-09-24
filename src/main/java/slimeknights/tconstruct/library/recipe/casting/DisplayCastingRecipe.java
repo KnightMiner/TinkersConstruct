@@ -40,31 +40,6 @@ public final class DisplayCastingRecipe implements IDisplayableCastingRecipe {
   @Nullable
   private final ItemVisible isVisible;
 
-  /** @deprecated use {@link #type(RecipeType)} */
-  @Deprecated
-  public DisplayCastingRecipe(@Nullable ResourceLocation recipeId, RecipeType<?> type, List<ItemStack> castItems, List<FluidStack> fluids, List<ItemStack> outputs, int coolingTime, boolean consumed) {
-    this(recipeId, type, castItems, fluids, outputs, coolingTime, consumed, true, false, false, true, null);
-  }
-
-  /** @deprecated use {@link #type(RecipeType)} */
-  @Deprecated
-  public DisplayCastingRecipe(@Nullable ResourceLocation recipeId, RecipeType<?> type, List<ItemStack> castItems, List<FluidStack> fluids, ItemStack output, int coolingTime, boolean consumed) {
-    this(recipeId, type, castItems, fluids, List.of(output), coolingTime, consumed);
-  }
-
-
-  /** @deprecated use {@link #type(RecipeType)} */
-  @Deprecated
-  public DisplayCastingRecipe(RecipeType<?> type, List<ItemStack> castItems, List<FluidStack> fluids, ItemStack output, int coolingTime, boolean consumed) {
-    this(null, type, castItems, fluids, output, coolingTime, consumed);
-  }
-
-  @Deprecated
-  @Override
-  public ItemStack getOutput() {
-    return outputs.get(0);
-  }
-
   @Override
   public boolean hasCast() {
     return !castItems.isEmpty();

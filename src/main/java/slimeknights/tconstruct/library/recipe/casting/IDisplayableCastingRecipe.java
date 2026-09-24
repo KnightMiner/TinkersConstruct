@@ -33,14 +33,8 @@ public interface IDisplayableCastingRecipe extends FilteredItemRecipe, FilteredF
   /** Gets a list of fluid */
   List<FluidStack> getFluids();
 
-  /** @deprecated use {@link #getOutputs()}. Okay to override. */
-  @Deprecated
-  ItemStack getOutput();
-
   /** Gets a list of recipe outputs. Size should either be 1 or match the size of {@link #getCastItems()}. */
-  default List<ItemStack> getOutputs() {
-    return List.of(getOutput());
-  }
+  List<ItemStack> getOutputs();
 
   /** If true, will attempt to link the output slot with the cast slot. */
   default boolean linkCastToOutput() {

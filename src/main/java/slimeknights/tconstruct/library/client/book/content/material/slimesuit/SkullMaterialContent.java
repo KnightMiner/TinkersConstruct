@@ -72,10 +72,8 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
     Level world = Minecraft.getInstance().level;
     if (!searchedSkullRecipe && world != null) {
       skullRecipe = RecipeHelper.getJEIRecipes(world.registryAccess(), world.getRecipeManager(), TinkerRecipeTypes.CASTING_BASIN.get(), IDisplayableCastingRecipe.class).stream()
-        .filter(recipe -> {
-          ItemStack output = recipe.getOutput();
-          return output.getItem() == TinkerTools.slimesuit.get(ArmorItem.Type.HELMET) && MaterialIdNBT.getMaterial(output, 0).getId().toString().equals(materialName);
-        })
+        .filter(recipe -> recipe.getOutputs().stream().anyMatch(output ->
+          output.getItem() == TinkerTools.slimesuit.get(ArmorItem.Type.HELMET) && materialName.equals(MaterialIdNBT.getMaterial(output, 0).toString())))
         .findFirst().orElse(null);
       searchedSkullRecipe = true;
     }
