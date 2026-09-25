@@ -37,12 +37,6 @@ public class AnvilBlockItem extends MaterialBlockItem {
     this.validMaterials = validMaterials;
   }
 
-  /** @deprecated use {@link #AnvilBlockItem(Block, Properties, Supplier, TagKey)} */
-  @Deprecated(forRemoval = true)
-  public AnvilBlockItem(Block block, Properties properties, Supplier<? extends IMaterialItem> matching) {
-    this(block, properties, matching, TinkerTags.Materials.COMPATABILITY_ALLOYS);
-  }
-
   @Override
   public boolean canUseMaterial(MaterialId material) {
     return MaterialRegistry.getInstance().isInTag(material, validMaterials) && matching.get().canUseMaterial(material);

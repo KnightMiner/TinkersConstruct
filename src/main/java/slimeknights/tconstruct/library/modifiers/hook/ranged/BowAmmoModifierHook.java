@@ -51,18 +51,6 @@ public interface BowAmmoModifierHook {
     ammo.shrink(needed);
   }
 
-  /** @deprecated use {@link #getAmmo(IToolStackView, ItemStack, LivingEntity, Predicate)} */
-  @Deprecated(forRemoval = true)
-  static boolean hasAmmo(IToolStackView tool, ItemStack bowStack, Player player, Predicate<ItemStack> predicate) {
-    return !getAmmo(tool, bowStack, player, predicate).isEmpty();
-  }
-
-  /** @deprecated use {@link #getAmmo(IToolStackView, ItemStack, LivingEntity, Predicate)} */
-  @Deprecated(forRemoval = true)
-  static boolean hasAmmo(IToolStackView tool, ItemStack bowStack, LivingEntity living, Predicate<ItemStack> predicate) {
-    return !getAmmo(tool, bowStack, living, predicate).isEmpty();
-  }
-
   /**
    * Gets ammo for the given tool without consuming it.
    * @param tool       Tool instance, for running modifier hooks
@@ -123,12 +111,6 @@ public interface BowAmmoModifierHook {
       }
     }
     return ItemStack.EMPTY;
-  }
-
-  /** @deprecated use {@link #consumeAmmo(IToolStackView, ItemStack, LivingEntity, Player, Predicate)} */
-  @Deprecated(forRemoval = true)
-  static ItemStack findAmmo(IToolStackView tool, ItemStack bow, Player player, Predicate<ItemStack> predicate) {
-    return consumeAmmo(tool, bow, player, player, predicate);
   }
 
   /** Gets the number of projectiles desired for the given tool */

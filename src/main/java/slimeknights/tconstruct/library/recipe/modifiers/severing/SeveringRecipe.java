@@ -43,12 +43,6 @@ public class SeveringRecipe implements ICustomOutputRecipe<IEmptyContainer> {
   protected final float baseChance;
   protected final float lootingBonus;
 
-  /** @deprecated use {@link #SeveringRecipe(ResourceLocation, EntityIngredient, ItemOutput, float, float)} */
-  @Deprecated(forRemoval = true)
-  public SeveringRecipe(ResourceLocation id, EntityIngredient ingredient, ItemOutput output) {
-    this(id, ingredient, output, 0.05f, 0.01f);
-  }
-
   /**
    * Checks if the recipe matches the given type
    * @param type  Type

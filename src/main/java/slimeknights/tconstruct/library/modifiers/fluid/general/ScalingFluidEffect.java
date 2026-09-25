@@ -19,7 +19,6 @@ import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext.Entity
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Effect that changes based on the amount of fluid present */
 public record ScalingFluidEffect<C extends FluidEffectContext>(List<EffectForLevel<C>> effects, RecordLoadable<ScalingFluidEffect<C>> getLoader) implements FluidEffect<C> {
@@ -56,12 +55,6 @@ public record ScalingFluidEffect<C extends FluidEffectContext>(List<EffectForLev
     return effects.get(effects.size() - 1).effect().getDescription(registryAccess);
   }
 
-  /** @deprecated use {@link #createLoader(RecordLoadable)} */
-  @Deprecated(forRemoval = true)
-  public static <C extends FluidEffectContext> RecordLoadable<ScalingFluidEffect<C>> createLoader(RecordLoadable<EffectForLevel<C>> effectForScale, Supplier<RecordLoadable<ScalingFluidEffect<C>>> loader) {
-    return createLoader(effectForScale);
-  }
-
   /** Creates a loader for the given */
   public static <C extends FluidEffectContext> RecordLoadable<ScalingFluidEffect<C>> createLoader(RecordLoadable<EffectForLevel<C>> effectForScale) {
     return RecordLoadable.withLoader(effectForScale.list(1).requiredField("effects", ScalingFluidEffect::effects), ScalingFluidEffect::new);
@@ -82,12 +75,6 @@ public record ScalingFluidEffect<C extends FluidEffectContext>(List<EffectForLev
   /** Creates a new builder for block effects */
   public static Builder<FluidEffectContext.Block> blocks() {
     return new Builder<>(BLOCK_LOADER);
-  }
-
-  /** @deprecated use {@link #entities()} */
-  @Deprecated(forRemoval = true)
-  public static Builder<FluidEffectContext.Entity> entites() {
-    return entities();
   }
 
   /** Creates a new builder for entity effects */

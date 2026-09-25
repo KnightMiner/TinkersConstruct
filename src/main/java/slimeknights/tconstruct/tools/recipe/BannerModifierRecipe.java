@@ -67,11 +67,6 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
     ModifierRecipeLookup.addRecipeModifier(null, TinkerModifiers.banner);
   }
 
-  @Deprecated(forRemoval = true)
-  public BannerModifierRecipe(ResourceLocation id) {
-    this(id, Ingredient.EMPTY);
-  }
-
   @Override
   public boolean matches(ITinkerStationContainer inv, Level world) {
     // ensure this modifier can be applied

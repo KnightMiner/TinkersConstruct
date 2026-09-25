@@ -26,12 +26,6 @@ public class AgeableSeveringRecipe extends SeveringRecipe {
     this.childOutput = childOutput;
   }
 
-  /** @deprecated use {@link #AgeableSeveringRecipe(ResourceLocation, EntityIngredient, ItemOutput, ItemOutput, float, float)} */
-  @Deprecated(forRemoval = true)
-  public AgeableSeveringRecipe(ResourceLocation id, EntityIngredient ingredient, ItemOutput adultOutput, ItemOutput childOutput) {
-    this(id, ingredient, adultOutput, childOutput, 0.05f, 0.01f);
-  }
-
   @Override
   public ItemStack getOutput(Entity entity) {
     if (entity instanceof LivingEntity && ((LivingEntity) entity).isBaby()) {

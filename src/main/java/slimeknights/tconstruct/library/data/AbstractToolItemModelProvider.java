@@ -349,12 +349,6 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
   }
 
   /** Transforms the given tool by adding suffixes to listed textures and the modifier maps */
-  @Deprecated
-  protected JsonObject transformTool(String destination, JsonObject tool, String parent, boolean allRoots, String suffix, String... updateTextures) {
-    return transformTool(destination, tool, parent, allRoots, '_', suffix, updateTextures);
-  }
-
-  /** Transforms the given tool by adding suffixes to listed textures and the modifier maps */
   protected JsonObject transformTool(String destination, JsonObject tool, String parent, boolean allRoots, char mapSeparator, String suffix, String... updateTextures) {
     JsonObject transformed = tool.deepCopy();
     // set parent if given

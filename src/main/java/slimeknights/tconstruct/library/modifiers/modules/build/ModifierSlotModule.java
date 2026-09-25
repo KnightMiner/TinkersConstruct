@@ -39,24 +39,6 @@ public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondi
   @Internal
   public ModifierSlotModule {}
 
-  /** @deprecated use {@link #slot(SlotType)} */
-  @Deprecated(forRemoval = true)
-  public ModifierSlotModule(SlotType type, int count, ModifierCondition<IToolContext> condition) {
-    this(type, LevelingInt.eachLevel(count), condition);
-  }
-
-  /** @deprecated use {@link #slot(SlotType)} */
-  @Deprecated(forRemoval = true)
-  public ModifierSlotModule(SlotType type, int count) {
-    this(type, count, ModifierCondition.ANY_CONTEXT);
-  }
-
-  /** @deprecated use {@link #slot(SlotType)} */
-  @Deprecated(forRemoval = true)
-  public ModifierSlotModule(SlotType type) {
-    this(type, 1);
-  }
-
   @Override
   public Integer getPriority() {
     // show lower priority so they group together

@@ -41,7 +41,6 @@ import slimeknights.tconstruct.shared.network.GeneratePartTexturesPacket.Operati
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,12 +66,6 @@ public class ClientGeneratePartTexturesCommand {
   private static final String PACK_NAME = "TinkersConstructGeneratedPartTextures";
   /** Part file to load, pulls from all namespaces, but no merging */
   private static final String GENERATOR_PART_TEXTURES = "tinkering/generator_part_textures.json";
-
-  /** @deprecated use {@link GeneratePackHelper#getOutputComponent(File)} */
-  @Deprecated(forRemoval = true)
-  protected static Component getOutputComponent(File file) {
-    return GeneratePackHelper.getOutputComponent(file);
-  }
 
   /** Generates all textures using the resource pack list */
   public static void generateTextures(Operation operation, String modId, String materialPath) {

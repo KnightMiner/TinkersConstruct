@@ -33,12 +33,6 @@ public record SweepWeaponAttack(LevelingValue ranges) implements MeleeHitToolHoo
     this(new LevelingValue(range, 1));
   }
 
-  /** @deprecated use {@link #ranges()} */
-  @Deprecated(forRemoval = true)
-  public float range() {
-    return ranges.flat();
-  }
-
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
     return DEFAULT_HOOKS;

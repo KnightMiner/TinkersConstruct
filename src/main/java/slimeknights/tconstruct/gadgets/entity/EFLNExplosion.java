@@ -24,12 +24,6 @@ public class EFLNExplosion extends CustomExplosion {
     super(world, location, size, entity, null, damage, source, knockback, null, causesFire, mode);
   }
 
-  /** @deprecated use {@link #EFLNExplosion(Level, Vec3, float, Entity, float, DamageSource, float, boolean, BlockInteraction)} */
-  @Deprecated(forRemoval = true)
-  public EFLNExplosion(Level world, Vec3 location, float size, @Nullable Entity entity, float damage, @Nullable DamageSource source, boolean causesFire, BlockInteraction mode) {
-    this(world, location, size, entity, damage, source, 1, causesFire, mode);
-  }
-
   @Override
   protected void calculateHitBlocks() {
     // optimization: if we are not interacting with blocks, no need to calculate blocks

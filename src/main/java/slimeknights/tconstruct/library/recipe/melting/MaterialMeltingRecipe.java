@@ -53,12 +53,6 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, IMultiRecipe<IDisp
     this.byproducts = byproducts;
   }
 
-  /** @deprecated use {@link #MaterialMeltingRecipe(ResourceLocation,MaterialVariantId,int,FluidOutput,List)} */
-  @Deprecated(forRemoval = true)
-  public MaterialMeltingRecipe(ResourceLocation id, MaterialVariantId input, int temperature, FluidOutput result) {
-    this(id, input, temperature, result, List.of());
-  }
-
   @Override
   public boolean matches(IMeltingContainer inv, Level worldIn) {
     if (input.isUnknown()) {

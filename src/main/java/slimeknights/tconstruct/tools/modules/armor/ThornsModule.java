@@ -31,12 +31,6 @@ public record ThornsModule(ResourceKey<DamageType> damageType, LevelingValue cha
   @Internal
   public ThornsModule {}
 
-  /** @deprecated use {@link #type(ResourceKey)} */
-  @Deprecated(forRemoval = true)
-  public static CounterModule.Builder<ThornsModule> builder() {
-    return type(DamageTypes.THORNS);
-  }
-
   /** Creates a new builder instance */
   public static CounterModule.Builder<ThornsModule> type(ResourceKey<DamageType> type) {
     return new CounterModule.Builder<>((chance, constant, random, durability, defender, attacker, condition) -> new ThornsModule(type, chance, constant, random, durability, defender, attacker, condition));

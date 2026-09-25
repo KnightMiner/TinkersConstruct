@@ -90,12 +90,6 @@ public interface EnchantmentModule extends ModifierModule, LevelingIntModule, Co
       return this;
     }
 
-    /** @deprecated use {@link #level(LevelingInt)} */
-    @Deprecated(forRemoval = true)
-    public Builder level(int level) {
-      return level(LevelingInt.eachLevel(level));
-    }
-
     /** Builds a module for a constant enchantment */
     public Constant constant() {
       if (block != BlockPredicate.ANY || holder != LivingEntityPredicate.ANY) {
@@ -155,18 +149,6 @@ public interface EnchantmentModule extends ModifierModule, LevelingIntModule, Co
     private final LevelingInt level;
     private final ModifierCondition<IToolStackView> condition;
 
-    /** @deprecated use {@link Builder#constant()} */
-    @Deprecated(forRemoval = true)
-    public Constant(Enchantment enchantment, int level, ModifierCondition<IToolStackView> condition) {
-      this(enchantment, LevelingInt.eachLevel(level), condition);
-    }
-
-    /** @deprecated use {@link Builder#constant()} */
-    @Deprecated(forRemoval = true)
-    public Constant(Enchantment enchantment, int level) {
-      this(enchantment, level, ModifierCondition.ANY_TOOL);
-    }
-
     @Override
     public int updateEnchantmentLevel(IToolStackView tool, ModifierEntry modifier, Enchantment enchantment, int level) {
       if (enchantment == this.enchantment() && condition().matches(tool, modifier)) {
@@ -198,12 +180,6 @@ public interface EnchantmentModule extends ModifierModule, LevelingIntModule, Co
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Protection>defaultHooks(ModifierHooks.ENCHANTMENTS, ModifierHooks.PROTECTION);
     public static final RecordLoadable<Constant> LOADER = RecordLoadable.create(ENCHANTMENT, LevelingIntModule.FIELD, ModifierCondition.TOOL_FIELD, Protection::new);
     protected Protection(Enchantment enchantment, LevelingInt level, ModifierCondition<IToolStackView> condition) {
-      super(enchantment, level, condition);
-    }
-
-    /** @deprecated use {@link Builder#protection()} */
-    @Deprecated(forRemoval = true)
-    public Protection(Enchantment enchantment, int level, ModifierCondition<IToolStackView> condition) {
       super(enchantment, level, condition);
     }
 
@@ -241,12 +217,6 @@ public interface EnchantmentModule extends ModifierModule, LevelingIntModule, Co
     /** @apiNote use {@link Builder#mainHandHarvest(ResourceLocation)} */
     @Internal
     public MainHandHarvest {}
-
-    /** @deprecated use {@link Builder#mainHandHarvest(ResourceLocation)} */
-    @Deprecated(forRemoval = true)
-    public MainHandHarvest(Enchantment enchantment, int level, ModifierCondition<IToolStackView> condition, ResourceLocation conditionFlag, IJsonPredicate<BlockState> block, IJsonPredicate<LivingEntity> holder) {
-      this(enchantment, LevelingInt.eachLevel(level), condition, conditionFlag, block, holder);
-    }
 
     @Override
     public void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
@@ -298,12 +268,6 @@ public interface EnchantmentModule extends ModifierModule, LevelingIntModule, Co
     /** @apiNote use {@link Builder#armorHarvest(EquipmentSlot...)} */
     @Internal
     public ArmorHarvest {}
-
-    /** @deprecated use {@link Builder#armorHarvest(EquipmentSlot...)} */
-    @Deprecated(forRemoval = true)
-    public ArmorHarvest(Enchantment enchantment, int level, ModifierCondition<IToolStackView> condition, Set<EquipmentSlot> slots, IJsonPredicate<BlockState> block, IJsonPredicate<LivingEntity> holder) {
-      this(enchantment, LevelingInt.eachLevel(level), condition, slots, block, holder);
-    }
 
     @Override
     public void updateHarvestEnchantments(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, EquipmentContext equipment, EquipmentSlot slot, Map<Enchantment,Integer> map) {

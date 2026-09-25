@@ -16,7 +16,6 @@ import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierManager.ModifierRegistrationEvent;
-import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHook;
@@ -356,11 +355,5 @@ public class Modifier implements IdAwareObject {
     }
     ToolStack tool = ToolStack.from(stack);
     return tool.isBroken() ? null : tool;
-  }
-
-  /** @deprecated use {@link BreakSpeedContext#getMiningModifier(LivingEntity)} */
-  @Deprecated(forRemoval = true)
-  public static float getMiningModifier(LivingEntity entity) {
-    return BreakSpeedContext.getMiningModifier(entity);
   }
 }

@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.tools.modules.armor;
 
-import com.mojang.datafixers.util.Function5;
 import com.mojang.datafixers.util.Function7;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -149,18 +148,6 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   LoadableField<IJsonPredicate<LivingEntity>,CounterModule> DEFENDER_FIELD = LivingEntityPredicate.LOADER.defaultField("defender", CounterModule::defender);
   LoadableField<IJsonPredicate<LivingEntity>,CounterModule> ATTACKER_FIELD = LivingEntityPredicate.LOADER.defaultField("attacker", CounterModule::attacker);
 
-  /** @deprecated use {@link #makeLoader(String, Function7)} */
-  @Deprecated(forRemoval = true)
-  static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function5<LevelingValue,LevelingValue,LevelingValue,Integer,ModifierCondition<IToolStackView>,T> constructor) {
-    return RecordLoadable.create(
-      CHANCE_FIELD,
-      LevelingValue.LOADABLE.defaultField("constant_" + value, LevelingValue.ZERO, CounterModule::constant),
-      LevelingValue.LOADABLE.defaultField("random_" + value, LevelingValue.ZERO, CounterModule::random),
-      DURABILITY_FIELD,
-      ModifierCondition.TOOL_FIELD,
-      constructor);
-  }
-
   /** Creates a loader with the standard parameter set */
   static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,IJsonPredicate<LivingEntity>,ModifierCondition<IToolStackView>,T> constructor) {
     return RecordLoadable.create(
@@ -187,12 +174,6 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
     private int durabilityUsage = 1;
     private IJsonPredicate<LivingEntity> defender = LivingEntityPredicate.ANY;
     private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
-
-    /** @deprecated use {@link #Builder(Function7)} */
-    @Deprecated(forRemoval = true)
-    public Builder(Function5<LevelingValue,LevelingValue,LevelingValue,Integer,ModifierCondition<IToolStackView>,T> constructor) {
-      this((chance, constant, random, durability,defender, attacker, condition) -> constructor.apply(chance, constant, random, durability, condition));
-    }
 
     /** Common case of leveling chance */
     public Builder<T> chanceLeveling(float value) {

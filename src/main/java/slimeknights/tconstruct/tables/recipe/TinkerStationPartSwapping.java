@@ -50,12 +50,6 @@ public class TinkerStationPartSwapping extends MaterialSwappingRecipe implements
     super(id, tools, maxStackSize, extraRequirements);
   }
 
-  /** @deprecated use {@link #TinkerStationPartSwapping(ResourceLocation, Ingredient, int, List)} */
-  @Deprecated(forRemoval = true)
-  public TinkerStationPartSwapping(ResourceLocation id, Ingredient tools, int maxStackSize) {
-    this(id, tools, maxStackSize, List.of());
-  }
-
   @Override
   public boolean matches(ITinkerStationContainer inv, Level world) {
     ItemStack tinkerable = inv.getTinkerableStack();

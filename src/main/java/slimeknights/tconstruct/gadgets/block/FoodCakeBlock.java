@@ -35,11 +35,6 @@ public class FoodCakeBlock extends CakeBlock {
     this.combination = combination;
   }
 
-  @Deprecated(forRemoval = true)
-  public FoodCakeBlock(Properties properties, FoodProperties food) {
-    this(properties, food, EffectCombination.BLOCK);
-  }
-
   @Override
   public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> tooltip, TooltipFlag pFlag) {
     ContainerFoodItem.addEffectTooltip(food, tooltip);

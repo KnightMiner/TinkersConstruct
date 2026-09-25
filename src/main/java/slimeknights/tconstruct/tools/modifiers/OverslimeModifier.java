@@ -15,7 +15,6 @@ import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModul
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -24,10 +23,6 @@ import javax.annotation.Nullable;
 /** @deprecated use helpers from {@link OverslimeModule} if possible. */
 @Deprecated
 public class OverslimeModifier extends DurabilityShieldModifier implements ToolStatsModifierHook {
-  /** @deprecated use {@link OverslimeModule#OVERSLIME_STAT} */
-  @Deprecated(forRemoval = true)
-  public static final FloatToolStat OVERSLIME_STAT = OverslimeModule.OVERSLIME_STAT;
-
   @Override
   protected void registerHooks(Builder hookBuilder) {
     super.registerHooks(hookBuilder);
@@ -52,7 +47,7 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
   @Override
   public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     // TODO 1.21: encode stat debuffs using JSON?
-    OVERSLIME_STAT.add(builder, 50);
+    OverslimeModule.OVERSLIME_STAT.add(builder, 50);
     if (!context.getModifiers().has(TinkerTags.Modifiers.OVERSLIME_FRIEND)) {
       if (context.hasTag(Items.MELEE)) {
         ToolStats.ATTACK_DAMAGE.multiply(builder, 0.9f);
@@ -107,28 +102,10 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
     return OverslimeModule.getCapacity(tool);
   }
 
-  /** @deprecated use {@link OverslimeModule#getOverworkedBonus(IToolStackView)} */
-  @Deprecated(forRemoval = true)
-  public static int getOverworkedBonus(IToolStackView tool) {
-    return OverslimeModule.getOverworkedBonus(tool);
-  }
-
   @Override
   public void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
     // yeah, I am hardcoding overworked. If you need something similar, put in an issue request on github
     // grants +100% restoring per level
-    super.addAmount(tool, modifier, amount * getOverworkedBonus(tool));
-  }
-
-  /** @deprecated use {@link OverslimeModule#addAmount(IToolStackView, int)} */
-  @Deprecated(forRemoval = true)
-  public void addOverslime(IToolStackView tool, ModifierEntry entry, int amount) {
-    addAmount(tool, entry, amount);
-  }
-
-  /** @deprecated use {@link OverslimeModule#removeAmount(IToolStackView, int)} */
-  @Deprecated(forRemoval = true)
-  public void removeOverslime(IToolStackView tool, ModifierEntry entry, int amount) {
-    removeAmount(tool, entry, amount);
+    super.addAmount(tool, modifier, amount * OverslimeModule.getOverworkedBonus(tool));
   }
 }

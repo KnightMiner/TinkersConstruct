@@ -40,12 +40,6 @@ public class Material implements IMaterial {
     this.hidden = hidden;
   }
 
-  /** @deprecated use {@link #Material(ResourceLocation, int, int, Rarity, boolean, boolean)} */
-  @Deprecated(forRemoval = true)
-  public Material(ResourceLocation identifier, int tier, int order, boolean craftable, boolean hidden) {
-    this(identifier, tier, order, IMaterial.computeRarity(tier), craftable, hidden);
-  }
-
   protected Material(ResourceLocation identifier, boolean craftable, boolean hidden) {
     this(identifier, 0, -1, Rarity.COMMON, craftable, hidden);
   }

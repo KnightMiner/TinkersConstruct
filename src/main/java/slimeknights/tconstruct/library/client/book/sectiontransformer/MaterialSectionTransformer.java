@@ -118,12 +118,6 @@ public class MaterialSectionTransformer extends BookTransformer {
 
   /** Helper to create a material predicate */
   public record ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, IJsonPredicate<MaterialVariantId> predicate) implements Predicate<IMaterial> {
-    /** @deprecated use {@link #ValidMaterial(Set, IntRange, IJsonPredicate)} */
-    @Deprecated(forRemoval = true)
-    public ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, TagKey<IMaterial> tag) {
-      this(visibleStats, tier, MaterialPredicate.tag(tag));
-    }
-
     @Override
     public boolean test(IMaterial material) {
       if (!this.tier.test(material.getTier())) {
@@ -320,20 +314,5 @@ public class MaterialSectionTransformer extends BookTransformer {
       int index = values.indexOf(mat);
       return index == -1 ? values.size() : index;
     };
-  }
-
-
-  /* Deprecated */
-
-  /** @deprecated use {@link MaterialTier#createPages(BookData, SectionData)} */
-  @Deprecated(forRemoval = true)
-  public static void createPages(BookData book, SectionData sectionData, Predicate<IMaterial> validMaterial, Function<MaterialVariantId,AbstractMaterialContent> pageCreator) {
-    createPages(book, sectionData, validMaterial, pageCreator, null);
-  }
-
-  /** @deprecated use {@link MaterialTier#createPages(BookData, SectionData)} */
-  @Deprecated(forRemoval = true)
-  public static void createPages(BookData book, SectionData sectionData, Predicate<IMaterial> validMaterial, Function<MaterialVariantId,AbstractMaterialContent> pageCreator, @Nullable Comparator<IMaterial> sortComparator) {
-    new MaterialTier("", validMaterial, pageCreator, sortComparator, null).createPages(book, sectionData);
   }
 }

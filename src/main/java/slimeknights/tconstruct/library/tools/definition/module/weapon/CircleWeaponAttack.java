@@ -29,12 +29,6 @@ public record CircleWeaponAttack(LevelingValue diameters) implements MeleeHitToo
     this(new LevelingValue(diameter, 1));
   }
 
-  /** @deprecated use {@link #diameters()} */
-  @Deprecated(forRemoval = true)
-  public float diameter() {
-    return diameters.flat();
-  }
-
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
     return DEFAULT_HOOKS;

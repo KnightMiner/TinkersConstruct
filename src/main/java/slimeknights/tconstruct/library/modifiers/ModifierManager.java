@@ -40,7 +40,6 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.RegistryHelper;
-import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.JsonRedirect;
@@ -80,10 +79,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   /** GSON instance for loading dynamic modifiers */
   public static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
-  /** @deprecated use {@link ModifierId#EMPTY} */
-  @Deprecated
-  public static final ModifierId EMPTY = ModifierId.EMPTY;
-
   /** Singleton instance of the modifier manager */
   public static final ModifierManager INSTANCE = new ModifierManager();
 
@@ -121,8 +116,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     super(GSON, FOLDER);
     // create the empty modifier
     defaultValue = new EmptyModifier();
-    defaultValue.setId(EMPTY);
-    staticModifiers.put(EMPTY, defaultValue);
+    defaultValue.setId(ModifierId.EMPTY);
+    staticModifiers.put(ModifierId.EMPTY, defaultValue);
   }
 
   /** For internal use only */
@@ -196,7 +191,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     TagLoader<Modifier> tagLoader = new TagLoader<>(id -> {
       Modifier modifier = ModifierManager.getValue(new ModifierId(id));
       // only allow the default modifier if it's explicitly set to empty
-      if (modifier == defaultValue && !id.equals(EMPTY)) {
+      if (modifier == defaultValue && !id.equals(ModifierId.EMPTY)) {
         return Optional.empty();
       }
       return Optional.of(modifier);
@@ -272,12 +267,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   /** Creates context for modifier parsing */
   public static TypedMapBuilder contextBuilder(ResourceLocation modifier) {
     return TypedMapBuilder.builder().put(ContextKey.ID, modifier).put(ContextKey.DEBUG, "Modifier " + modifier);
-  }
-
-  /** @deprecated use {@link #contextBuilder(ResourceLocation)} */
-  @Deprecated(forRemoval = true)
-  public static TypedMap createContext(ResourceLocation modifier) {
-    return contextBuilder(modifier).build();
   }
 
   /** Loads a modifier from JSON */

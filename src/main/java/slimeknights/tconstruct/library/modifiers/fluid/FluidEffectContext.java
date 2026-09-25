@@ -29,7 +29,7 @@ import static slimeknights.tconstruct.library.tools.helper.ModifierUtil.asPlayer
 
 /** Context for calling fluid effects */
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class FluidEffectContext {
   protected final Level level;
   /** Entity using the fluid */
@@ -43,12 +43,6 @@ public abstract class FluidEffectContext {
   protected final Projectile projectile;
   /** Item stack fallback for when the entity is not set */
   protected final ItemStack stack;
-
-  /** @deprecated use {@link #FluidEffectContext(Level,LivingEntity,Player,Projectile,ItemStack} */
-  @Deprecated
-  public FluidEffectContext(Level level, @Nullable LivingEntity entity, @Nullable Player player, @Nullable Projectile projectile) {
-    this(level, entity, player, projectile, ItemStack.EMPTY);
-  }
 
   /** Gets the relevant block position for this context */
   public abstract BlockPos getBlockPos();
@@ -121,30 +115,6 @@ public abstract class FluidEffectContext {
       this.location = Objects.requireNonNullElse(location, target.position());
     }
 
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Entity(Level level, @Nullable LivingEntity holder, @Nullable Player player, @Nullable Projectile projectile, net.minecraft.world.entity.Entity target, @Nullable LivingEntity livingTarget, @Nullable Vec3 location) {
-      this(level, holder, player, projectile, ItemStack.EMPTY, target, livingTarget, location);
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Entity(Level level, @Nullable LivingEntity holder, @Nullable Player player, @Nullable Projectile projectile, net.minecraft.world.entity.Entity target, @Nullable LivingEntity livingTarget) {
-      this(level, holder, player, projectile, target, livingTarget, null);
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Entity(Level level, @Nullable LivingEntity holder, @Nullable Projectile projectile, net.minecraft.world.entity.Entity target, @Nullable Vec3 location) {
-      this(level, holder, asPlayer(holder), projectile, target, asLiving(target), location);
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Entity(Level level, Player player, @Nullable Projectile projectile, LivingEntity target) {
-      this(level, player, player, projectile, target, target);
-    }
-
     @Override
     public BlockPos getBlockPos() {
       return target.blockPosition();
@@ -160,24 +130,6 @@ public abstract class FluidEffectContext {
     private Block(Level level, @Nullable LivingEntity holder, @Nullable Player player, @Nullable Projectile projectile, ItemStack stack, BlockHitResult hitResult) {
       super(level, holder, player, projectile, stack);
       this.hitResult = hitResult;
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Block(Level level, @Nullable LivingEntity holder, @Nullable Player player, @Nullable Projectile projectile, BlockHitResult hitResult) {
-      this(level, holder, player, projectile, ItemStack.EMPTY, hitResult);
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Block(Level level, @Nullable LivingEntity holder, @Nullable Projectile projectile, BlockHitResult hitResult) {
-      this(level, holder, asPlayer(holder), projectile, hitResult);
-    }
-
-    /** @deprecated use {@link #builder(Level)} */
-    @Deprecated(forRemoval = true)
-    public Block(Level level, @Nullable Player player, @Nullable Projectile projectile, BlockHitResult hitResult) {
-      this(level, player, player, projectile, hitResult);
     }
 
     @Override

@@ -103,18 +103,6 @@ public class ToolHarvestLogic {
     return removed;
   }
 
-  /** @deprecated use {@link #breakBlock(ToolStack, ItemStack, ToolHarvestContext, boolean)}*/
-  @Deprecated(forRemoval = true)
-  protected static boolean breakBlock(ToolStack tool, ItemStack stack, ToolHarvestContext context) {
-    return breakBlock(tool, stack, context, false);
-  }
-
-  /** @deprecated use {@link #breakBlock(IToolStackView, ItemStack, ToolHarvestContext, boolean)} */
-  @Deprecated(forRemoval = true)
-  protected static boolean breakBlock(ToolStack tool, ItemStack stack, ToolHarvestContext context, boolean useLastXP) {
-    return breakBlock((IToolStackView) tool, stack, context, useLastXP);
-  }
-
   /**
    * Called to break a block using this tool
    * @param tool      Tool instance

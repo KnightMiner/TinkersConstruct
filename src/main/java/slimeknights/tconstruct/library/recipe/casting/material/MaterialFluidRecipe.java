@@ -36,7 +36,7 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<ICastingContaine
     BooleanLoadable.INSTANCE.defaultField("hide_in_book", false, false, r -> r.hideInBook),
     MaterialFluidRecipe::new);
   /** Empty recipe instance, used as a fallback */
-  public static final MaterialFluidRecipe EMPTY = new MaterialFluidRecipe(TConstruct.getResource("missingno"), FluidIngredient.EMPTY, 0, null, MaterialId.UNKNOWN);
+  public static final MaterialFluidRecipe EMPTY = new MaterialFluidRecipe(TConstruct.getResource("missingno"), FluidIngredient.EMPTY, 0, null, MaterialId.UNKNOWN, true);
 
   @Getter
   private final ResourceLocation id;
@@ -51,12 +51,6 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<ICastingContaine
   private final MaterialVariant output;
   @Getter
   private final boolean hideInBook;
-
-  /** @deprecated use {@link #MaterialFluidRecipe(ResourceLocation, FluidIngredient, int, MaterialVariantId, MaterialVariantId, boolean)} */
-  @Deprecated(forRemoval = true)
-  public MaterialFluidRecipe(ResourceLocation id, FluidIngredient fluid, int temperature, @Nullable MaterialVariantId inputId, MaterialVariantId outputId) {
-    this(id, fluid, temperature, inputId, outputId, false);
-  }
 
   protected MaterialFluidRecipe(ResourceLocation id, FluidIngredient fluid, int temperature, @Nullable MaterialVariantId inputId, MaterialVariantId outputId, boolean hideInBook) {
     this.id = id;

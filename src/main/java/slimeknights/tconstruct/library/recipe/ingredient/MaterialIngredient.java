@@ -40,27 +40,6 @@ public class MaterialIngredient extends NestedIngredient {
     this.material = material;
   }
 
-  /** @deprecated use {@link #MaterialIngredient(Ingredient, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  protected MaterialIngredient(Ingredient nested, MaterialVariantId material, @Nullable TagKey<IMaterial> tag) {
-    this(nested, makePredicate(material, tag));
-  }
-
-  /** Converts the legacy material and tag into a predicate */
-  private static IJsonPredicate<MaterialVariantId> makePredicate(MaterialVariantId material, @Nullable TagKey<IMaterial> tag) {
-    // UNKNOWN is the legacy way to express any material
-    IJsonPredicate<MaterialVariantId> predicate = material.equals(IMaterial.UNKNOWN.getIdentifier()) ? MaterialPredicate.ANY : MaterialPredicate.variant(material);
-    if (tag != null) {
-      IJsonPredicate<MaterialVariantId> tagPredicate = MaterialPredicate.tag(tag);
-      if (predicate == MaterialPredicate.ANY) {
-        predicate = tagPredicate;
-      } else {
-        predicate = MaterialPredicate.and(predicate, tagPredicate);
-      }
-    }
-    return predicate;
-  }
-
   /** Creates an ingredient matching the given materials */
   public static MaterialIngredient of(Ingredient ingredient, IJsonPredicate<MaterialVariantId> material) {
     return new MaterialIngredient(ingredient, material);

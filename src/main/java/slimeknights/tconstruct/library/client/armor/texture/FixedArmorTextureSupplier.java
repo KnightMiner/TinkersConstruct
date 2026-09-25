@@ -38,12 +38,6 @@ public class FixedArmorTextureSupplier implements ArmorTextureSupplier {
   private final ModifierId modifier;
   private final TintedArmorTexture[] textures;
 
-  /** @deprecated use {@link #FixedArmorTextureSupplier(ResourceLocation,String,int,int,ModifierId)} */
-  @Deprecated(forRemoval = true)
-  public FixedArmorTextureSupplier(ResourceLocation prefix, String suffix, int color, @Nullable ModifierId modifier) {
-    this(prefix, suffix, color, 0, modifier);
-  }
-
   public FixedArmorTextureSupplier(ResourceLocation prefix, String suffix, int color, int luminosity, @Nullable ModifierId modifier) {
     this.prefix = prefix;
     this.suffix = suffix;
@@ -56,13 +50,6 @@ public class FixedArmorTextureSupplier implements ArmorTextureSupplier {
       getTexture(prefix, "leggings" + suffix, color, luminosity),
       getTexture(prefix, "wings" + suffix, color, luminosity),
     };
-  }
-
-  /** @deprecated use {@link #getTexture(ResourceLocation, String, int, int)} */
-  @Nullable
-  @Deprecated(forRemoval = true)
-  public static TintedArmorTexture getTexture(ResourceLocation base, String suffix, int color) {
-    return getTexture(base, suffix, color, 0);
   }
 
   /** Gets the texture for the given name */

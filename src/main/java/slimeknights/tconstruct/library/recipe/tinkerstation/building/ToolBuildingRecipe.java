@@ -102,11 +102,6 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   protected List<ItemStack> hiddenInputs;
   protected List<ItemStack> displayOutput;
 
-  @Deprecated(forRemoval = true)
-  public ToolBuildingRecipe(ResourceLocation id, String group, IModifiable output, int outputCount, @Nullable ResourceLocation layoutSlot, List<Ingredient> ingredients) {
-    this(id, group, output, outputCount, layoutSlot, ingredients, null, List.of());
-  }
-
   @Override
   public RecipeSerializer<?> getSerializer() {
     return TinkerTables.toolBuildingRecipeSerializer.get();

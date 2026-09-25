@@ -169,13 +169,6 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
     return variant;
   }
 
-  /** @deprecated use {@link #read(String, StringReader)} */
-  @Deprecated(forRemoval = true)
-  @Nullable
-  static MaterialVariantId tryParse(StringReader reader) {
-    return read("minecraft", reader);
-  }
-
   /**
    * Parses a material variant ID, throwing if invalid
    * @param text  Text to parse

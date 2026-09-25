@@ -65,12 +65,6 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
     ModifierRecipeLookup.addRecipeModifier(null, TinkerModifiers.overslime);
   }
 
-  /** @deprecated use {@link #OverslimeModifierRecipe(ResourceLocation, Ingredient, Ingredient, int)} */
-  @Deprecated(forRemoval = true)
-  public OverslimeModifierRecipe(ResourceLocation id, Ingredient ingredient, int restoreAmount) {
-    this(id, Ingredient.of(TinkerTags.Items.DURABILITY), ingredient, restoreAmount);
-  }
-
   @Override
   public boolean matches(ITinkerStationContainer inv, Level world) {
     if (!tools.test(inv.getTinkerableStack())) {

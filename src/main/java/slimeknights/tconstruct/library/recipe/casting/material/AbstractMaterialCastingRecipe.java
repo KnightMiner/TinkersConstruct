@@ -36,12 +36,6 @@ public abstract class AbstractMaterialCastingRecipe extends AbstractCastingRecip
     this.materials = materials;
   }
 
-  /** @deprecated use {@link #AbstractMaterialCastingRecipe(TypeAwareRecipeSerializer, ResourceLocation, String, Ingredient, int, boolean, boolean, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  public AbstractMaterialCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, boolean consumed, boolean switchSlots) {
-    this(serializer, id, group, cast, itemCost, consumed, switchSlots, MaterialPredicate.ANY);
-  }
-
   /** Gets the material fluid recipe for the given recipe */
   protected MaterialFluidRecipe getFluidRecipe(ICastingContainer inv) {
     return MaterialCastingLookup.getCastingFluid(inv.getFluid(), materials);

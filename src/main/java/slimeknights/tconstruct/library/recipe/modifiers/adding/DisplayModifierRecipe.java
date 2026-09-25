@@ -19,51 +19,24 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /** Recipe instance to return in JEI from recipes that contain multiple display recipes */
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DisplayModifierRecipe implements IDisplayModifierRecipe {
-  @Getter
   @Nullable
   private final ResourceLocation recipeId;
   private final List<List<ItemStack>> inputs;
-  @Getter
   private final List<ItemStack> toolWithoutModifier;
-  @Getter
   private final List<ItemStack> toolWithModifier;
-  @Getter
   private final int maxToolSize;
-  @Nullable
   private final Predicate<ItemStack> isTool;
-  @Getter
   private final ModifierEntry displayResult;
-  @Getter
   private final IntRange level;
   @Nullable
-  @Getter
   private final SlotCount slots;
-  @Getter
   private final List<SlotCount> resultSlots;
-  @Getter
   private final boolean incremental;
-  @Getter @Accessors(fluent = true)
+  @Accessors(fluent = true)
   private final boolean checkTraitLevel;
-
-  /** @deprecated use {@link #builder()} */
-  @Deprecated(forRemoval = true)
-  public DisplayModifierRecipe(@Nullable ResourceLocation id, List<SizedIngredient> inputs, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, ModifierEntry displayResult, IntRange level, @Nullable SlotCount slots, List<SlotCount> resultSlots) {
-    this(id, resolve(inputs), toolWithoutModifier, toolWithModifier, ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE, null, displayResult, level, slots, resultSlots, false, false);
-  }
-
-  /** @deprecated use {@link #builder()} */
-  @Deprecated(forRemoval = true)
-  public DisplayModifierRecipe(List<SizedIngredient> inputs, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, ModifierEntry displayResult, IntRange level, @Nullable SlotCount slots, List<SlotCount> resultSlots) {
-    this(null, inputs, toolWithoutModifier, toolWithModifier, displayResult, level, slots, resultSlots);
-  }
-
-  /** @deprecated use {@link #builder()} */
-  @Deprecated(forRemoval = true)
-  public DisplayModifierRecipe(List<SizedIngredient> inputs, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, ModifierEntry displayResult, IntRange level, @Nullable SlotCount slots) {
-    this(inputs, toolWithoutModifier, toolWithModifier, displayResult, level, slots, List.of());
-  }
 
   @Override
   public int getInputCount() {
@@ -147,8 +120,7 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
     }
 
     /** Builds the final recipe */
-    public DisplayModifierRecipe build() {
-      // TODO 1.21: change return type to something more generic like IDisplayModifierRecipe
+    public IDisplayModifierRecipe build() {
       if (result == ModifierEntry.EMPTY) {
         throw new IllegalStateException("Must set result");
       }

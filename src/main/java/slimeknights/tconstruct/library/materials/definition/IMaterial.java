@@ -7,10 +7,6 @@ import net.minecraft.world.item.Rarity;
  * TODO 1.21: Make {@link slimeknights.mantle.registration.object.IdAwareObject}
  */
 public interface IMaterial extends Comparable<IMaterial> {
-  /** @deprecated use {@link MaterialId#UNKNOWN} */
-  @Deprecated(forRemoval = true)
-  MaterialId UNKNOWN_ID = MaterialId.UNKNOWN;
-
   /**
    * Fallback material. Used for operations where a material or specific aspects of a material are used,
    * but the given input is missing or does not match the requirements.

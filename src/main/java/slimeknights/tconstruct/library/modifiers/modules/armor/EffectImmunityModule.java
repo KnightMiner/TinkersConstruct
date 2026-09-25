@@ -38,12 +38,6 @@ public record EffectImmunityModule(MobEffect effect, LevelingInt maxLevel, Modif
     ModifierCondition.TOOL_FIELD,
     EffectImmunityModule::new);
 
-  /** @deprecated use {@link #EffectImmunityModule(MobEffect, LevelingInt, ModifierCondition)} */
-  @Deprecated(forRemoval = true)
-  public EffectImmunityModule(MobEffect effect, ModifierCondition<IToolStackView> condition) {
-    this(effect, ANY_LEVEL, condition);
-  }
-
   public EffectImmunityModule(MobEffect effect, LevelingInt maxLevel) {
     this(effect, maxLevel, ModifierCondition.ANY_TOOL);
   }

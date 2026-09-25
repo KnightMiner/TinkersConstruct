@@ -228,12 +228,6 @@ public final class ModifierUtil {
     return 3 * (1 / ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.ACCURACY) - 1);
   }
 
-  /** @deprecated use {@link GeneralInteractionModifierHook#addCooldown(IToolStackView, Player, float)} */
-  @Deprecated(forRemoval = true)
-  public static void addCooldown(IToolStackView tool, Player player) {
-    GeneralInteractionModifierHook.addCooldown(tool, player, 1);
-  }
-
   /** Checks if this modifier is the one actively being used. Used for failure sound effects. */
   public static boolean isActiveModifier(IToolStackView tool, ModifierEntry modifier, ModifierEntry activeModifier) {
     // active modifier being us, or a bow is firing and no drawback ammo
@@ -283,7 +277,7 @@ public final class ModifierUtil {
           IToolStackView tool = ToolStack.from(stack);
           // trigger cooldown on the item
           if (applyCooldown && living instanceof Player player) {
-            addCooldown(tool, player);
+            GeneralInteractionModifierHook.addCooldown(tool, player, 1);
           }
           // damage the rod
           if (damage > 0) {

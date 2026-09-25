@@ -316,13 +316,6 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
     return success(tool, original.getCount(), original);
   }
 
-  /** @deprecated use {@link #success(ToolStack, int, ItemStack)} or {@link #success(ToolStack, ItemStack)} to preserve capabilities. */
-  @Deprecated(forRemoval = true)
-  @NonExtendable
-  protected RecipeResult<LazyToolStack> success(ToolStack tool, int count) {
-    return success(tool, count, ItemStack.EMPTY);
-  }
-
   /** Creates a successful result for the given tool and input stack size */
   @NonExtendable
   protected RecipeResult<LazyToolStack> success(ToolStack tool, ITinkerStationContainer inv) {

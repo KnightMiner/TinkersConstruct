@@ -55,12 +55,6 @@ public record DurabilityShieldModule(LevelingInt cost, int color, IJsonPredicate
   }
 
   /** Logic for damaging a tool with the durability shield */
-  @Deprecated
-  public static int onDamageTool(CapacityBarHook bar, IToolStackView tool, ModifierEntry modifier, int amount) {
-    return onDamageTool(bar, tool, modifier, amount, 1);
-  }
-
-  /** Logic for damaging a tool with the durability shield */
   public static int onDamageTool(CapacityBarHook bar, IToolStackView tool, ModifierEntry modifier, int amount, int cost) {
     int shield = bar.getAmount(tool);
     if (shield > 0 && cost > 0) {

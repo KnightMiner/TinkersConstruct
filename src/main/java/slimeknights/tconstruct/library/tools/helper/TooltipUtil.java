@@ -36,7 +36,6 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteract
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
@@ -122,30 +121,6 @@ public class TooltipUtil {
       return tag.getString(KEY_NAME);
     }
     return "";
-  }
-
-  /**
-   * Gets the display name for a tool including the head material in the name
-   * @param stack           Stack instance
-   * @param toolDefinition  Tool definition
-   * @return  Display name including the head material
-   * @deprecated call using {@link ToolNameHook#getName(ToolDefinition, ItemStack)}.
-   */
-  @Deprecated(forRemoval = true)
-  public static Component getDisplayName(ItemStack stack, ToolDefinition toolDefinition) {
-    return ToolNameHook.getName(toolDefinition, stack);
-  }
-
-  /**
-   * Gets the display name for a tool including the head material in the name
-   * @param stack  Stack instance
-   * @param tool   Tool instance
-   * @return  Display name including the head material
-   * @deprecated call using {@link ToolNameHook#getName(ToolDefinition, ItemStack)}.
-   */
-  @Deprecated(forRemoval = true)
-  public static Component getDisplayName(ItemStack stack, @Nullable IToolStackView tool, ToolDefinition toolDefinition) {
-    return ToolNameHook.getName(toolDefinition, stack, tool);
   }
 
   /** Replaces the world argument with the local player */
