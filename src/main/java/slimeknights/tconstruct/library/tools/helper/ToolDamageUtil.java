@@ -25,14 +25,6 @@ import java.util.function.Consumer;
  */
 public class ToolDamageUtil {
   /**
-   * Raw method to set a tool as broken. Bypasses {@link ToolStack} for the sake of things that may not be a full Tinker Tool
-   * @param stack  Tool stack
-   */
-  public static void breakTool(ItemStack stack) {
-    stack.getOrCreateTag().putBoolean(ToolStack.TAG_BROKEN, true);
-  }
-
-  /**
    * Checks if the given stack is broken
    * @param stack  Stack to check
    * @return  True if broken
