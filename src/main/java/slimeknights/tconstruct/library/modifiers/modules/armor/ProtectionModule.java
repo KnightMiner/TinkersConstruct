@@ -126,7 +126,7 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
     }
 
     /** @deprecated Serves no function for protection modules, they are always percentage */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @Override
     public Builder percent() {
       return this;

@@ -32,16 +32,18 @@ public class SwappableModifierRecipeBuilder extends ModifierRecipeBuilder {
     return modifier(modifier.getId(), value);
   }
 
+  /** @deprecated Min level is always 1 for swappable. */
   @Override
   @Deprecated
   public ModifierRecipeBuilder setMinLevel(int level) {
-    throw new UnsupportedOperationException("Min level is always 1 for a swappable modifier recipe");
+    return this;
   }
 
+  /** @deprecated Max level is always 1 for swappable. */
   @Override
   @Deprecated
   public ModifierRecipeBuilder setMaxLevel(int level) {
-    throw new UnsupportedOperationException("Max level is always 1 for a swappable modifier recipe");
+    return this;
   }
 
   /* Building */

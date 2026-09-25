@@ -56,10 +56,11 @@ public class QuiverInventoryModule extends InventoryModule {
   public static class Builder extends InventoryModule.Builder {
     private Builder() {}
 
-    @Deprecated(forRemoval = true)
+    /** @deprecated Cannot set filter, as the point of the quiver inventory is dynamic filter. */
+    @Deprecated
     @Override
     public InventoryModule.Builder filter(IJsonPredicate<Item> filter) {
-      throw new IllegalStateException("Cannot set filter on QuiverInventoryModule");
+      return this;
     }
 
     @Override

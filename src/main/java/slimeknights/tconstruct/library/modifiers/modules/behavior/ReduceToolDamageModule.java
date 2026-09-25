@@ -132,8 +132,8 @@ public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonP
       super(ConditionalStatFormula.VARIABLES);
     }
 
-    /** @deprecated Has no effect */
-    @Deprecated(forRemoval = true)
+    /** @deprecated Has no effect as this module is always percent based. */
+    @Deprecated
     @Override
     public Builder percent() {
       return this;
