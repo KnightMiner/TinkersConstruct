@@ -25,7 +25,10 @@ public class LazyResultContainer implements Container {
    * @return  Item stack result
    */
   public final ItemStack getResult() {
-    return getResult(null);
+    if (result == null) {
+      result = Objects.requireNonNull(crafter.calcResult(null), "Result cannot be null");
+    }
+    return result;
   }
 
   /** Calculates the result for the given player. Used by the crafting station since we want player sensitive results. */
@@ -33,14 +36,6 @@ public class LazyResultContainer implements Container {
     return crafter.calcResult(player);
   }
 
-  /** @deprecated use {@link #calcResult(Player)} or {@link #getResult()} */
-  @Deprecated(forRemoval = true)
-  public ItemStack getResult(@Nullable Player player) {
-    if (result == null) {
-      result = Objects.requireNonNull(crafter.calcResult(player), "Result cannot be null");
-    }
-    return result;
-  }
 
   /* Inventory logic */
 
@@ -70,12 +65,6 @@ public class LazyResultContainer implements Container {
     crafter.onCraft(player, result, amount);
     // clear result cache, items changed
     clearContent();
-  }
-
-  /** @deprecated use {@link #craftResult(Player, ItemStack, int)} */
-  @Deprecated(forRemoval = true)
-  public void craftResult(Player player, int amount) {
-    craftResult(player, calcResult(player).copy(), amount);
   }
 
   /**

@@ -121,14 +121,6 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
     return result;
   }
 
-  /** @deprecated use {@link #getResult()} */
-  @SuppressWarnings("unused")
-  @Deprecated(forRemoval = true)
-  @Nullable
-  public LazyToolStack getResult(@Nullable Player player) {
-    return getResult();
-  }
-
   @Override
   public void resize(int size) {
     super.resize(size);
