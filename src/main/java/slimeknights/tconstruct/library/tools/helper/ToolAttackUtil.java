@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +28,6 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import slimeknights.mantle.util.CombatHelper;
-import slimeknights.mantle.util.OffhandCooldownTracker;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -39,7 +37,6 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerEffects;
 
 import javax.annotation.Nullable;
@@ -47,14 +44,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.DoubleSupplier;
 
 public class ToolAttackUtil {
   private static final float DEGREE_TO_RADIANS = (float)Math.PI / 180F;
   private static final AttributeModifier ANTI_KNOCKBACK_MODIFIER = new AttributeModifier(TConstruct.MOD_ID + ".anti_knockback", 1f, Operation.ADDITION);
-  /** @deprecated new default for {@link ToolAttackContext.Builder} */
-  @Deprecated(forRemoval = true)
-  public static final DoubleSupplier NO_COOLDOWN = () -> 1.0;
 
   /**
    * Gets the attack damage for the given tool, acting as though it was used in the main hand. Used for offhand attack and chestplate attack notably.
@@ -473,111 +466,5 @@ public class ToolAttackUtil {
     }
 
     return hit;
-  }
-
-
-  /* Deprecated */
-
-  /**
-   * Gets the cooldown function for the given player and hand
-   * @param player  Player instance
-   * @param hand    Attacking hand
-   * @return  Cooldown function
-   * @deprecated use {@link ToolAttackContext.Builder#defaultCooldown()}.
-   */
-  @Deprecated(forRemoval = true)
-  public static DoubleSupplier getCooldownFunction(Player player, InteractionHand hand) {
-    if (hand == InteractionHand.OFF_HAND) {
-      return () -> OffhandCooldownTracker.getCooldown(player);
-    }
-    return () -> player.getAttackStrengthScale(0.5f);
-  }
-
-  /**
-   * @deprecated use {@link #getToolAttribute(IToolStackView, LivingEntity, Attribute, float)}
-   */
-  @Deprecated(forRemoval = true)
-  public static float getSlotAttribute(IToolStackView tool, LivingEntity holder, EquipmentSlot slotType, Attribute attribute, float toolValue) {
-    if (slotType == EquipmentSlot.MAINHAND) {
-      return (float) holder.getAttributeValue(attribute);
-    }
-    return getToolAttribute(tool, holder, attribute, toolValue);
-  }
-
-  /**
-   * Gets the attack damage for the given hand, acting as though it was used in the main hand.
-   * <p>
-   * If your goal is damage for display, you are better off checking the tool attack damage stat directly, then displaying relevant attribute modifiers in the tooltip.
-   * @param tool     Held tool
-   * @param holder   Entity holding the tool
-   * @param slotType Slot with tool
-   * @return  Attack damage
-   * @deprecated use {@link #getSlotAttribute(IToolStackView, LivingEntity, EquipmentSlot, Attribute, float)}
-   */
-  @Deprecated(forRemoval = true)
-  public static float getAttributeAttackDamage(IToolStackView tool, LivingEntity holder, EquipmentSlot slotType) {
-    if (holder.level().isClientSide) {
-      return (float) holder.getAttributeValue(Attributes.ATTACK_DAMAGE);
-    }
-    // TODO 1.21: consider inlining this method as its only used once
-    return getSlotAttribute(tool, holder, slotType, Attributes.ATTACK_DAMAGE, tool.getStats().get(ToolStats.ATTACK_DAMAGE));
-  }
-
-  /** @deprecated use {@link ToolAttackContext#makeDamageSource()} */
-  @Deprecated(forRemoval = true)
-  public static boolean dealDefaultDamage(LivingEntity attacker, Entity target, float damage) {
-    if (attacker instanceof Player player) {
-      return target.hurt(attacker.damageSources().playerAttack(player), damage);
-    }
-    return target.hurt(attacker.damageSources().mobAttack(attacker), damage);
-  }
-
-  /** @deprecated use {@link #performAttack(IToolStackView, ToolAttackContext)} */
-  @Deprecated(forRemoval = true)
-  public static boolean attackEntity(IToolStackView tool, LivingEntity attackerLiving, InteractionHand hand,
-                                     Entity targetEntity, DoubleSupplier cooldownFunction, boolean isExtraAttack) {
-    return attackEntity(tool, attackerLiving, hand, targetEntity, cooldownFunction, isExtraAttack, Util.getSlotType(hand));
-  }
-
-  /**
-   * Base attack logic, used by normal attacks, projectiles, and extra attacks.
-   * Based on {@link Player#attack(Entity)}
-   * @deprecated use {@link #canPerformAttack(IToolStackView)}, {@link #isAttackable(LivingEntity, Entity)}, and {@link #performAttack(IToolStackView, ToolAttackContext)} with {@link ToolAttackContext.Builder}
-   */
-  @Deprecated(forRemoval = true)
-  public static boolean attackEntity(IToolStackView tool, LivingEntity attackerLiving, InteractionHand hand,
-                                     Entity targetEntity, DoubleSupplier cooldownFunction, boolean isExtraAttack, EquipmentSlot sourceSlot) {
-    // false to defer to vanilla
-    if (!canPerformAttack(tool)) {
-      return false;
-    }
-    // return true to indicate we wish to cancel the attack
-    if (!isAttackable(attackerLiving, targetEntity)) {
-      return true;
-    }
-    ToolAttackContext.Builder builder = ToolAttackContext.attacker(attackerLiving).target(targetEntity).slot(sourceSlot, hand).cooldown((float)cooldownFunction.getAsDouble());
-    if (sourceSlot == EquipmentSlot.MAINHAND) {
-      builder.applyAttributes();
-    } else {
-      builder.toolAttributes(tool);
-    }
-    if (isExtraAttack) {
-      builder.extraAttack();
-    }
-    boolean success = performAttack(tool, builder.build());
-    return success || !isExtraAttack;
-  }
-
-  /**
-   * Applies a secondary attack to an entity, notably not running AOE attacks from the tool logic
-   * @param tool            Tool instance
-   * @param attackerLiving  Attacker
-   * @param targetEntity    Target
-   * @return  True if hit
-   * @deprecated use {@link #performAttack(IToolStackView, ToolAttackContext)} with {@link ToolAttackContext#withAOETarget(Entity)}
-   */
-  @Deprecated(forRemoval = true)
-  public static boolean extraEntityAttack(IToolStackView tool, LivingEntity attackerLiving, InteractionHand hand, Entity targetEntity) {
-    return attackEntity(tool, attackerLiving, hand, targetEntity, NO_COOLDOWN, true);
   }
 }
