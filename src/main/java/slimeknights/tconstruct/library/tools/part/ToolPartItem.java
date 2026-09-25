@@ -110,21 +110,4 @@ public class ToolPartItem extends MaterialItem implements IToolPart {
   public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
     appendHoverText(this, stack, tooltip, flag);
   }
-
-  /**
-   * Adds the stat info for the given part to the tooltip
-   * @param tooltip   Tooltip list
-   * @param material  Material to add
-   */
-  @Deprecated(forRemoval = true)
-  protected void addStatInfoTooltip(MaterialId material, List<Component> tooltip) {
-    MaterialRegistry.getInstance().getMaterialStats(material, this.materialStatId).ifPresent((stat) -> {
-      List<Component> text = stat.getLocalizedInfo();
-      if (!text.isEmpty()) {
-        tooltip.add(Component.empty());
-        tooltip.add(stat.getLocalizedName().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
-        tooltip.addAll(text);
-      }
-    });
-  }
 }

@@ -67,10 +67,6 @@ public enum SmelteryCompat {
   private final FluidObject<? extends ForgeFlowingFluid> fluid;
   @Getter
   private final CompatType type;
-  /** @deprecated use {@link #isPresent()}. No longer does anything. */
-  @Deprecated(forRemoval = true)
-  @Getter
-  private final String[] tags = new String[0];
   /** Material that must be present to show this compat. */
   @Nullable
   private final MaterialId material;
@@ -85,18 +81,6 @@ public enum SmelteryCompat {
   /** Creates compat using just the local name as JEI condition. */
   SmelteryCompat(FluidObject<? extends ForgeFlowingFluid> fluid, CompatType type) {
     this(fluid, type, null);
-  }
-
-  /** @deprecated use {@link #getType()} */
-  @Deprecated(forRemoval = true)
-  public boolean isOre() {
-    return type == CompatType.ORE;
-  }
-
-  /** @deprecated use {@link #isPresent()} */
-  @Deprecated(forRemoval = true)
-  public String getAltTag() {
-    return "";
   }
 
   /** Gets teh fluid for this compat */

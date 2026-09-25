@@ -7,15 +7,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fluids.FluidStack;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.client.GuiUtil;
 import slimeknights.tconstruct.smeltery.block.entity.tank.SmelteryTank;
 import slimeknights.tconstruct.smeltery.client.screen.IScreenWithFluidTank;
-import slimeknights.tconstruct.smeltery.network.SmelteryFluidClickedPacket;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -194,20 +191,6 @@ public class GuiSmelteryTank implements IScreenWithFluidTank {
       return getFluidFromMouse(calcLiquidHeights(false), mouseY);
     }
     return -2;
-  }
-
-  /**
-   * Checks if the tank was clicked at the given location
-   * @return Index clicked. -1 if in the tank and nothing was clicked. -2 if not in the tank
-   * @deprecated use {@link #getFluidClicked(int, int)} with {@link net.minecraft.world.inventory.AbstractContainerMenu#clickMenuButton(Player, int)} and {@link net.minecraft.client.multiplayer.MultiPlayerGameMode#handleInventoryButtonClick(int, int)}
-   */
-  @Deprecated
-  public int handleClick(int mouseX, int mouseY) {
-    int index = getFluidClicked(mouseX, mouseY);
-    if (index >= 0) {
-      TinkerNetwork.getInstance().sendToServer(new SmelteryFluidClickedPacket(index));
-    }
-    return index;
   }
 
   @Nullable

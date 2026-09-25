@@ -120,18 +120,6 @@ public class FluidEffectProjectile extends Projectile implements ProjectileWithK
     this.knockback += amount;
   }
 
-  /** @deprecated use {@link #addKnockback(float)} */
-  @Deprecated
-  public int getKnockback() {
-    return (int) knockback;
-  }
-
-  /** @deprecated use {@link #addKnockback(float)} */
-  @Deprecated
-  public void setKnockback(int knockback) {
-    this.knockback = knockback;
-  }
-
   @Override
   protected Component getTypeName() {
     return getFluid().getDisplayName();

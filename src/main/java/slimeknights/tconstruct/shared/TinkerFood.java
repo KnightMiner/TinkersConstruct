@@ -33,9 +33,6 @@ public final class TinkerFood {
   public static final FoodProperties ENDER_BOTTLE = new FoodProperties.Builder().alwaysEat().effect(() -> new MobEffectInstance(TinkerEffects.enderference.get(),  60 * 20), 1.0f).effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,  60 * 20, 1), 1.0f).build();
   // 250 is 10 poison damage
   public static final FoodProperties VENOM_BOTTLE = new FoodProperties.Builder().alwaysEat().effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 30 * 20), 1.0f).effect(() -> new MobEffectInstance(MobEffects.POISON, 250), 1.0f).build();
-  /** @deprecated no longer used */
-  @Deprecated(forRemoval = true)
-  public static final FoodProperties MAGMA_BOTTLE = new FoodProperties.Builder().alwaysEat().build();
 
   public static final FoodProperties MEAT_SOUP = new FoodProperties.Builder().nutrition(8).saturationMod(0.6f).build();
 

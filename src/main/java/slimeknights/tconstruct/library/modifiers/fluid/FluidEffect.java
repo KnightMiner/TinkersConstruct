@@ -19,8 +19,6 @@ import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.json.LevelingInt;
-import slimeknights.tconstruct.library.modifiers.fluid.entity.RandomTeleportFluidEffect;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.function.BinaryOperator;
@@ -64,10 +62,6 @@ public interface FluidEffect<C extends FluidEffectContext> extends IHaveLoader, 
     }
     return 0;
   });
-
-  /** @deprecated use {@link RandomTeleportFluidEffect} */
-  @Deprecated(forRemoval = true)
-  FluidEffect<FluidEffectContext.Entity> TELEPORT = new RandomTeleportFluidEffect(LevelingInt.flat(16), LevelingInt.flat(16));
 
   /** Weathers the targeted copper block */
   FluidEffect<FluidEffectContext.Block> WEATHER = simple((fluid, level, context, action) -> {

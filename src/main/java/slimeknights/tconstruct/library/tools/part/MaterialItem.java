@@ -14,11 +14,9 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.utils.DomainDisplayName;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -149,19 +147,6 @@ public class MaterialItem extends Item implements IMaterialItem {
     return getCreatorModId(this, stack);
   }
 
-
-  /**
-   * Adds the mod that added the material to the tooltip
-   * @param tooltip   Tooltip list
-   * @param material  Material to add
-   */
-  @Deprecated(forRemoval = true)
-  protected static void addModTooltip(IMaterial material, List<Component> tooltip) {
-    if (material != IMaterial.UNKNOWN) {
-      tooltip.add(Component.empty());
-      tooltip.add(Component.translatable(ADDED_BY, DomainDisplayName.nameFor(material.getIdentifier().getNamespace())));
-    }
-  }
 
   public static void verifyTag(CompoundTag nbt) {
     // if the material exists and was changed, update it

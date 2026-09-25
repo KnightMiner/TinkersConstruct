@@ -6,8 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import slimeknights.tconstruct.library.materials.json.MaterialTraitsJson;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 
@@ -132,19 +130,6 @@ public class MaterialTraits {
         // allow higher level datapacks to reset a stat type to default
         traitsPerStats.remove(statsId);
       }
-    }
-
-    /** @deprecated use {@link slimeknights.tconstruct.library.data.material.AbstractMaterialTraitDataProvider.MaterialTraitsBuilder} */
-    @Deprecated(forRemoval = true)
-    public MaterialTraitsJson serialize() {
-      // need to adjust the map to the right generics
-      // also suppress the map if no stat types were defined
-      Map<ResourceLocation,List<ModifierEntry>> newMap = null;
-      if (!traitsPerStats.isEmpty()) {
-        newMap = new HashMap<>(traitsPerStats.size());
-        newMap.putAll(traitsPerStats);
-      }
-      return new MaterialTraitsJson(defaultTraits, newMap);
     }
 
     /**

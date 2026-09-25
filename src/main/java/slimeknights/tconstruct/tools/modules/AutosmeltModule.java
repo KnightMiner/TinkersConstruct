@@ -9,7 +9,6 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootContext;
-import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
@@ -64,16 +63,6 @@ public class AutosmeltModule implements ModifierModule, ProcessLootModifierHook 
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
     return DEFAULT_HOOKS;
-  }
-
-  /**
-   * Called by the deprecated {@code AutosmeltModifier} to clear cache on reload.
-   * @apiNote Will be removed in 1.21 when the deprecated class is removed.
-   */
-  @Deprecated
-  @Internal
-  public void clearCache() {
-    recipeCache.invalidateAll();
   }
 
   /**

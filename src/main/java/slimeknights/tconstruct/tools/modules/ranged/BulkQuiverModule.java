@@ -29,9 +29,6 @@ public record BulkQuiverModule(boolean checkStandardArrows) implements ModifierM
     BulkQuiverModule::new);
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<BulkQuiverModule>defaultHooks(ModifierHooks.BOW_AMMO);
   private static final ResourceLocation LAST_SLOT = TConstruct.getResource("quiver_last_selected");
-  /** @deprecated use {@link #BulkQuiverModule(boolean)} */
-  @Deprecated(forRemoval = true)
-  public static final BulkQuiverModule INSTANCE = new BulkQuiverModule(true);
 
   @Override
   public RecordLoadable<BulkQuiverModule> getLoader() {
