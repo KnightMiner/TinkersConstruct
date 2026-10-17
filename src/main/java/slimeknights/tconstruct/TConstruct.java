@@ -99,13 +99,15 @@ public class TConstruct {
     Config.init(modContainer);
     TinkerItemDisplays.init();
     MaterialRegistry.init();
+    // init deferred registers
+    TinkerModule.initRegisters(modEventBus);
+    TinkerAttributes.init(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());
     modEventBus.register(new TinkerMaterials());
     modEventBus.register(new TinkerEffects());
     modEventBus.register(new TinkerGadgets());
-    modEventBus.register(new TinkerAttributes());
     // world
     modEventBus.register(new TinkerWorld());
     modEventBus.register(new TinkerStructures());
@@ -118,8 +120,7 @@ public class TConstruct {
     modEventBus.register(new TinkerSmeltery());
     modEventBus.register(new TinkerFluids());
 
-    // init deferred registers
-    TinkerModule.initRegisters();
+    // other events
     modEventBus.addListener(RegisterPayloadHandlersEvent.class, TinkerNetwork::registerPackets);
     TinkerTags.init();
     // compat
