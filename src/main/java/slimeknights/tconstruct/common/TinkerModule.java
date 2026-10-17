@@ -45,7 +45,6 @@ import slimeknights.tconstruct.common.registration.ItemDeferredRegisterExtension
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -107,7 +106,6 @@ public abstract class TinkerModule {
     LOOT_CONDITIONS.register(bus);
     LOOT_FUNCTIONS.register(bus);
     LOOT_ENTRIES.register(bus);
-    TinkerRecipeTypes.init(bus);
   }
 
   /**

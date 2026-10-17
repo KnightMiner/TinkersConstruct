@@ -48,6 +48,7 @@ import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerItemDisplays;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionLoader;
@@ -104,6 +105,7 @@ public class TConstruct {
     TinkerModule.initRegisters(modEventBus);
     TinkerAttributes.init(modEventBus);
     TinkerData.register(modEventBus);
+    TinkerRecipeTypes.init(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());
