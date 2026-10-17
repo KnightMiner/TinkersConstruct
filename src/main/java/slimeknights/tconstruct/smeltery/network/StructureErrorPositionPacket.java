@@ -1,41 +1,34 @@
 package slimeknights.tconstruct.smeltery.network;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.BlockEntityPacket;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.BlockEntityPacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.smeltery.block.entity.controller.HeatingStructureBlockEntity;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
- * Packet to tell a multiblock to render a specific position as the cause of the error
+ * Packet to tell a multiblock to render a specific position as the cause of the error, or to clear the error.
  */
-@RequiredArgsConstructor
-public class StructureErrorPositionPacket implements BlockEntityPacket<HeatingStructureBlockEntity> {
-  private final BlockPos controllerPos;
-  @Nullable
-  private final BlockPos errorPos;
+public record StructureErrorPositionPacket(BlockPos controllerPos, Optional<BlockPos> errorPos) implements BlockEntityPacket<HeatingStructureBlockEntity> {
+  public static final Type<StructureErrorPositionPacket> TYPE = new Type<>(TConstruct.getResource("structure_error_position"));
+  public static final StreamCodec<RegistryFriendlyByteBuf,StructureErrorPositionPacket> CODEC = StreamCodec.composite(
+    BlockPos.STREAM_CODEC, StructureErrorPositionPacket::controllerPos,
+    ByteBufCodecs.optional(BlockPos.STREAM_CODEC), StructureErrorPositionPacket::errorPos,
+    StructureErrorPositionPacket::new);
 
-  public StructureErrorPositionPacket(FriendlyByteBuf buffer) {
-    this.controllerPos = buffer.readBlockPos();
-    if (buffer.readBoolean()) {
-      this.errorPos = buffer.readBlockPos();
-    } else {
-      this.errorPos = null;
-    }
+  public StructureErrorPositionPacket(BlockPos controllerPos, @Nullable BlockPos errorPos) {
+    this(controllerPos, Optional.ofNullable(errorPos));
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeBlockPos(controllerPos);
-    if (errorPos != null) {
-      buffer.writeBoolean(true);
-      buffer.writeBlockPos(errorPos);
-    } else {
-      buffer.writeBoolean(false);
-    }
+  public Type<StructureErrorPositionPacket> type() {
+    return TYPE;
   }
 
   @Override
@@ -44,12 +37,12 @@ public class StructureErrorPositionPacket implements BlockEntityPacket<HeatingSt
   }
 
   @Override
-  public Class<HeatingStructureBlockEntity> type() {
+  public Class<HeatingStructureBlockEntity> blockEntityType() {
     return HeatingStructureBlockEntity.class;
   }
 
   @Override
-  public void handleBlockEntity(Context context, HeatingStructureBlockEntity be) {
-    be.setErrorPos(errorPos);
+  public void handleBlockEntity(IPayloadContext context, HeatingStructureBlockEntity be) {
+    be.setErrorPos(errorPos.orElse(null));
   }
 }

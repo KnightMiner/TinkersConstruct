@@ -1,22 +1,33 @@
 package slimeknights.tconstruct.tables.network;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.tables.client.inventory.BaseTabbedScreen;
 
-public class UpdateStationScreenPacket implements IThreadsafePacket {
-  public static final UpdateStationScreenPacket INSTANCE = new UpdateStationScreenPacket();
+/** Packet sent to update the screen on a table. */
+public enum UpdateStationScreenPacket implements ISimplePacket {
+  INSTANCE;
 
-  private UpdateStationScreenPacket() {}
+  public static final Type<UpdateStationScreenPacket> TYPE = new Type<>(TConstruct.getResource("update_station_screen"));
+  public static final StreamCodec<ByteBuf,UpdateStationScreenPacket> CODEC = StreamCodec.unit(INSTANCE);
 
   @Override
-  public void encode(FriendlyByteBuf packetBuffer) {}
+  public Type<UpdateStationScreenPacket> type() {
+    return TYPE;
+  }
 
   @Override
-  public void handleThreadsafe(Context context) {
+  public void handle(IPayloadContext context) {
+    HandleClient.handle();
+  }
+
+  /** Helper to update the screen client side. Only call if on the client side. */
+  public static void updateScreen() {
     HandleClient.handle();
   }
 

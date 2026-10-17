@@ -1,12 +1,17 @@
 package slimeknights.tconstruct.tools.network;
 
+import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
@@ -14,8 +19,9 @@ import slimeknights.tconstruct.tools.logic.InteractionHandler;
 /**
  * Generic packet for various controls the client may send to the server
  */
+@Internal
 @RequiredArgsConstructor
-public enum TinkerControlPacket implements IThreadsafePacket {
+public enum TinkerControlPacket implements ISimplePacket {
   DOUBLE_JUMP,
   ANTIGRAVITY_JUMP,
   // helmet
@@ -30,6 +36,9 @@ public enum TinkerControlPacket implements IThreadsafePacket {
   START_LEGGINGS_INTERACT_CONTROL(TooltipKey.CONTROL),
   START_LEGGINGS_INTERACT_ALT(TooltipKey.ALT),
   STOP_LEGGINGS_INTERACT;
+
+  public static final Type<TinkerControlPacket> TYPE = new Type<>(TConstruct.getResource("control"));
+  public static final StreamCodec<ByteBuf,TinkerControlPacket> CODEC = MantleStreamCodecs.enumCodec(TinkerControlPacket.class, OutOfBoundsStrategy.WRAP);
 
   private final TooltipKey modifier;
 
@@ -57,29 +66,23 @@ public enum TinkerControlPacket implements IThreadsafePacket {
     };
   }
 
-  public static TinkerControlPacket read(FriendlyByteBuf buffer) {
-    return buffer.readEnum(TinkerControlPacket.class);
+  @Override
+  public Type<TinkerControlPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf packetBuffer) {
-    packetBuffer.writeEnum(this);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    ServerPlayer player = context.getSender();
-    if (player != null) {
-      switch (this) {
-        case DOUBLE_JUMP -> DoubleJumpHandler.extraJump(player);
-        case ANTIGRAVITY_JUMP -> TinkerEffects.antigravity.get().antigravityJump(player);
-        case START_HELMET_INTERACT, START_HELMET_INTERACT_SHIFT, START_HELMET_INTERACT_CONTROL, START_HELMET_INTERACT_ALT
-          -> InteractionHandler.startArmorInteract(player, EquipmentSlot.HEAD, this.modifier);
-        case STOP_HELMET_INTERACT -> InteractionHandler.stopArmorInteract(player, EquipmentSlot.HEAD);
-        case START_LEGGINGS_INTERACT, START_LEGGINGS_INTERACT_SHIFT, START_LEGGINGS_INTERACT_CONTROL, START_LEGGINGS_INTERACT_ALT
-          -> InteractionHandler.startArmorInteract(player, EquipmentSlot.LEGS, this.modifier);
-        case STOP_LEGGINGS_INTERACT -> InteractionHandler.stopArmorInteract(player, EquipmentSlot.LEGS);
-      }
+  public void handle(IPayloadContext context) {
+    Player player = context.player();
+    switch (this) {
+      case DOUBLE_JUMP -> DoubleJumpHandler.extraJump(player);
+      case ANTIGRAVITY_JUMP -> TinkerEffects.antigravity.get().antigravityJump(player);
+      case START_HELMET_INTERACT, START_HELMET_INTERACT_SHIFT, START_HELMET_INTERACT_CONTROL,
+           START_HELMET_INTERACT_ALT -> InteractionHandler.startArmorInteract(player, EquipmentSlot.HEAD, this.modifier);
+      case STOP_HELMET_INTERACT -> InteractionHandler.stopArmorInteract(player, EquipmentSlot.HEAD);
+      case START_LEGGINGS_INTERACT, START_LEGGINGS_INTERACT_SHIFT, START_LEGGINGS_INTERACT_CONTROL,
+           START_LEGGINGS_INTERACT_ALT -> InteractionHandler.startArmorInteract(player, EquipmentSlot.LEGS, this.modifier);
+      case STOP_LEGGINGS_INTERACT -> InteractionHandler.stopArmorInteract(player, EquipmentSlot.LEGS);
     }
   }
 }

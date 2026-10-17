@@ -1,35 +1,32 @@
 package slimeknights.tconstruct.tables.network;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tools.layout.StationSlotLayoutLoader;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
 
-@RequiredArgsConstructor
-public class TinkerStationSelectionPacket implements IThreadsafePacket {
-  private final ResourceLocation layoutName;
-  public TinkerStationSelectionPacket(FriendlyByteBuf buffer) {
-    this.layoutName = buffer.readResourceLocation();
+/** Packet to update the tinker station slot layout on the server, which affects slot filters. */
+@Internal
+public record TinkerStationSelectionPacket(ResourceLocation layoutName) implements ISimplePacket {
+  public static final Type<TinkerStationSelectionPacket> TYPE = new Type<>(TConstruct.getResource("tinker_station_selection"));
+  public static final StreamCodec<ByteBuf,TinkerStationSelectionPacket> CODEC = ResourceLocation.STREAM_CODEC.map(TinkerStationSelectionPacket::new, TinkerStationSelectionPacket::layoutName);
+
+  @Override
+  public Type<TinkerStationSelectionPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(this.layoutName);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    ServerPlayer sender = context.getSender();
-    if (sender != null) {
-      AbstractContainerMenu container = sender.containerMenu;
-      if (container instanceof TinkerStationContainerMenu tinker) {
-        tinker.setToolSelection(StationSlotLayoutLoader.getInstance().get(layoutName));
-      }
+  public void handle(IPayloadContext context) {
+    AbstractContainerMenu container = context.player().containerMenu;
+    if (container instanceof TinkerStationContainerMenu tinker) {
+      tinker.setToolSelection(StationSlotLayoutLoader.getInstance().get(layoutName));
     }
   }
 }

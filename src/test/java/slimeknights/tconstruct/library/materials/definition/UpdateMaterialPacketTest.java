@@ -30,11 +30,11 @@ class UpdateMaterialPacketTest extends BaseMcTest {
     // send a packet over the buffer
     FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
     UpdateMaterialsPacket packetToEncode = new UpdateMaterialsPacket(materials, redirects, Collections.emptyMap());
-    packetToEncode.encode(buffer);
-    UpdateMaterialsPacket decoded = new UpdateMaterialsPacket(buffer);
+    UpdateMaterialsPacket.CODEC.encode(buffer, packetToEncode);
+    UpdateMaterialsPacket decoded = UpdateMaterialsPacket.CODEC.decode(buffer);
 
     // parse results
-    Map<MaterialId,IMaterial> parsed = decoded.getMaterials();
+    Map<MaterialId,IMaterial> parsed = decoded.materials();
     assertThat(parsed).hasSize(2);
 
     // material 1
@@ -57,7 +57,7 @@ class UpdateMaterialPacketTest extends BaseMcTest {
     assertThat(parsedMat.getRarity()).isEqualTo(Rarity.RARE);
 
     // redirects not included
-    Map<MaterialId,MaterialId> decodedRedirects = decoded.getRedirects();
+    Map<MaterialId,MaterialId> decodedRedirects = decoded.redirects();
     assertThat(decodedRedirects).hasSize(1);
     assertThat(decodedRedirects.get(REDIRECT_ID)).isEqualTo(MATERIAL_ID_1);
   }

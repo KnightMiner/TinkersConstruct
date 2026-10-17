@@ -1,26 +1,33 @@
 package slimeknights.tconstruct.tools.network;
 
+import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
 
 /** Packet sent client to server when an empty hand interaction */
 @RequiredArgsConstructor
-public enum InteractWithAirPacket implements IThreadsafePacket {
+public enum InteractWithAirPacket implements ISimplePacket {
   /** Right click with an empty main hand and a chestplate */
   MAINHAND(InteractionHand.MAIN_HAND),
   /** Right click with an empty off hand and a chestplate */
   OFFHAND(InteractionHand.OFF_HAND),
   /** Left click with a supported tool */
   LEFT_CLICK(InteractionHand.MAIN_HAND);
+
+  public static final Type<InteractWithAirPacket> TYPE = new Type<>(TConstruct.getResource("interact_with_air"));
+  public static final StreamCodec<ByteBuf,InteractWithAirPacket> CODEC = MantleStreamCodecs.enumCodec(InteractWithAirPacket.class, OutOfBoundsStrategy.WRAP);
 
   private final InteractionHand hand;
 
@@ -29,20 +36,15 @@ public enum InteractWithAirPacket implements IThreadsafePacket {
     return hand == InteractionHand.OFF_HAND ? OFFHAND : MAINHAND;
   }
 
-  /** Gets the packet from the packet buffer */
-  public static InteractWithAirPacket read(FriendlyByteBuf buffer) {
-    return buffer.readEnum(InteractWithAirPacket.class);
+  @Override
+  public Type<InteractWithAirPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeEnum(this);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    ServerPlayer player = context.getSender();
-    if (player != null && !player.isSpectator()) {
+  public void handle(IPayloadContext context) {
+    Player player = context.player();
+    if (!player.isSpectator()) {
       if (this == LEFT_CLICK) {
         ItemStack held = player.getItemInHand(hand);
         if (held.is(TinkerTags.Items.INTERACTABLE_LEFT)) {

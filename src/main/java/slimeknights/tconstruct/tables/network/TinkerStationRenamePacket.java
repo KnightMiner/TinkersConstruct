@@ -1,34 +1,32 @@
 package slimeknights.tconstruct.tables.network;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
 
 /** Packet to send to the server to update the name in the UI */
-@RequiredArgsConstructor
-public class TinkerStationRenamePacket implements IThreadsafePacket {
-  private final String name;
+@Internal
+public record TinkerStationRenamePacket(String name) implements ISimplePacket {
+  public static final Type<TinkerStationRenamePacket> TYPE = new Type<>(TConstruct.getResource("tinker_station_rename"));
+  public static final StreamCodec<ByteBuf,TinkerStationRenamePacket> CODEC = ByteBufCodecs.STRING_UTF8.map(TinkerStationRenamePacket::new, TinkerStationRenamePacket::name);
 
-  public TinkerStationRenamePacket(FriendlyByteBuf buf) {
-    this.name = buf.readUtf(Short.MAX_VALUE);
+  @Override
+  public Type<TinkerStationRenamePacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buf) {
-    buf.writeUtf(name);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    ServerPlayer sender = context.getSender();
-    if (sender != null && sender.containerMenu instanceof TinkerStationContainerMenu station) {
+  public void handle(IPayloadContext context) {
+    if (context.player().containerMenu instanceof TinkerStationContainerMenu station) {
       TinkerStationBlockEntity tile = station.getTile();
       if (tile != null) {
-        station.getTile().setItemName(name);
+        tile.setItemName(name);
       }
     }
   }

@@ -10,8 +10,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,23 +25,23 @@ import net.minecraft.tags.TagLoader;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.extensions.IHolderExtension;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.eventbus.api.Event;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.JsonRedirect;
@@ -49,11 +51,10 @@ import slimeknights.tconstruct.library.utils.GenericTagUtil;
 import slimeknights.tconstruct.library.utils.JsonUtils;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,16 +97,21 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   private final Set<ModifierId> expectedDynamicModifiers = new HashSet<>();
 
   /** Modifiers loaded from JSON */
-  private Map<ModifierId,Modifier> dynamicModifiers = Collections.emptyMap();
+  private Map<ModifierId,Modifier> dynamicModifiers = Map.of();
   /** Modifier tags loaded from JSON */
-  private Map<TagKey<Modifier>,List<Modifier>> tags = Collections.emptyMap();
+  private Map<TagKey<Modifier>,List<Modifier>> tags = Map.of();
   /** Map from modifier to tags on the modifier */
-  private Map<ModifierId,Set<TagKey<Modifier>>> reverseTags = Collections.emptyMap();
+  private Map<ModifierId,Set<TagKey<Modifier>>> reverseTags = Map.of();
+
+  /** Entry for a tag holder set */
+  record EnchantmentTag(HolderSet.Named<Enchantment> tag, Modifier modifier) {}
 
   /** List of tag to modifier mappings to try */
-  private Map<TagKey<Enchantment>, Modifier> enchantmentTagMap = Collections.emptyMap();
+  private List<EnchantmentTag> enchantmentTags = List.of();
   /** Mapping from enchantment to modifiers, for conversions */
-  private Map<Enchantment,Modifier> enchantmentMap = Collections.emptyMap();
+  private Map<Holder.Reference<Enchantment>,Modifier> enchantmentMap = Map.of();
+  /** Set of all modifiers that have an enchantment equivelent */
+  private Set<Modifier> enchantmentModifiers = Set.of();
 
   /** If true, dynamic modifiers have been loaded from datapacks, so its safe to fetch dynamic modifiers */
   @Getter
@@ -120,16 +126,16 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     staticModifiers.put(ModifierId.EMPTY, defaultValue);
   }
 
-  /** For internal use only */
-  public void init() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, e -> e.enqueueWork(this::fireRegistryEvent));
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, this::addDataPackListeners);
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, e -> JsonUtils.syncPackets(e, new UpdateModifiersPacket(this.dynamicModifiers, this.tags, this.enchantmentMap, this.enchantmentTagMap)));
+  @Internal
+  public void init(IEventBus bus) {
+    bus.addListener(FMLCommonSetupEvent.class, e -> e.enqueueWork(this::fireRegistryEvent));
+    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::addDataPackListeners);
+    NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new UpdateModifiersPacket(this.dynamicModifiers, this.tags, this.enchantmentMap, this.enchantmentTags)));
   }
 
   /** Fires the modifier registry event */
   private void fireRegistryEvent() {
-    ModLoader.get().runEventGenerator(ModifierRegistrationEvent::new);
+    ModLoader.runEventGenerator(ModifierRegistrationEvent::new);
     modifiersRegistered = true;
   }
 
@@ -139,7 +145,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     conditionContext = event.getConditionContext();
   }
 
-  @SuppressWarnings({"removal", "deprecation"})
   @Override
   protected void apply(Map<ResourceLocation,JsonElement> splashList, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
     long time = System.nanoTime();
@@ -147,9 +152,9 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     // load modifiers from JSON
     Map<ModifierId,ModifierId> redirects = new HashMap<>();
     this.dynamicModifiers = splashList.entrySet().stream()
-                                      .map(entry -> loadModifier(entry.getKey(), entry.getValue().getAsJsonObject(), redirects))
-                                      .filter(Objects::nonNull)
-                                      .collect(Collectors.toMap(Modifier::getId, mod -> mod));
+      .map(entry -> loadModifier(entry.getKey(), entry.getValue().getAsJsonObject(), redirects))
+      .filter(Objects::nonNull)
+      .collect(Collectors.toMap(Modifier::getId, mod -> mod));
 
     // process redirects
     Map<ModifierId,Modifier> resolvedRedirects = new HashMap<>(); // handled as a separate map to prevent redirects depending on order (no double redirects)
@@ -202,8 +207,11 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     log.info("Loaded {} modifier tags for {} modifiers in {} ms", tags.size(), this.reverseTags.size(), (timeStep - time) / 1000000f);
 
     // load modifier to enchantment mapping
-    enchantmentMap = new HashMap<>();
-    this.enchantmentTagMap = new LinkedHashMap<>();
+    HolderLookup.RegistryLookup<Enchantment> enchantmentRegistry = getRegistryLookup().lookupOrThrow(Registries.ENCHANTMENT);
+
+    Map<Holder.Reference<Enchantment>,Modifier> enchantmentMap = new HashMap<>();
+    List<EnchantmentTag> enchantmentTags = new ArrayList<>();
+    Set<Modifier> enchantmentModifiers = new HashSet<>();
     for (Resource resource : pResourceManager.getResourceStack(ENCHANTMENT_MAP)) {
       JsonObject enchantmentJson = JsonHelper.getJson(resource, ENCHANTMENT_MAP);
       if (enchantmentJson != null) {
@@ -214,9 +222,10 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
 
             // if the modifier ends with a ?, its optional, so suppress errors if missing
             String modifierStr = GsonHelper.convertToString(entry.getValue(), key);
-            boolean optional = modifierStr.charAt(modifierStr.length() - 1) == '?';
+            int length = modifierStr.length();
+            boolean optional = modifierStr.charAt(length - 1) == '?';
             if (optional) {
-              modifierStr = modifierStr.substring(0, modifierStr.length() - 1);
+              modifierStr = modifierStr.substring(0, length - 1);
             }
             ModifierId modifierId = ModifierId.PARSER.parseString(modifierStr, key);
             Modifier modifier = get(modifierId);
@@ -230,28 +239,45 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
               throw new JsonSyntaxException("Unknown modifier " + modifierId + " for enchantment " + key);
             }
 
+            // if it ends with a ?, its an optional enchantment (tag), so suppress errors on missing
+            length = key.length();
+            optional = key.charAt(length - 1) == '?';
+            if (optional) {
+              key = key.substring(0, length - 1);
+            }
+
             // if it starts with #, it's a tag
             if (key.charAt(0) == '#') {
-              ResourceLocation tagId = ResourceLocation.tryParse(key.substring(1));
+              key = key.substring(1);
+              ResourceLocation tagId = ResourceLocation.tryParse(key);
               if (tagId == null) {
-                throw new JsonSyntaxException("Invalid enchantment tag ID " + key.substring(1));
+                throw new JsonSyntaxException("Invalid enchantment tag ID " + key);
               }
-              this.enchantmentTagMap.put(TagKey.create(Registries.ENCHANTMENT, tagId), modifier);
+              // ensure the tag exists, error if it does not
+              HolderSet.Named<Enchantment> tag = enchantmentRegistry.get(TagKey.create(Registries.ENCHANTMENT, tagId)).orElse(null);
+              if (tag == null) {
+                if (optional) {
+                  TConstruct.LOG.debug("Skipping modifier {} due to unknown optional enchantment tag {}", modifierId, key);
+                  continue;
+                }
+                throw new JsonSyntaxException("Invalid enchantment tag key " + key + " for modifier " + modifierId);
+              }
+              // skip if the tag is empty (no error) as its not useful then
+              if (tag.size() > 0) {
+                enchantmentTags.add(new EnchantmentTag(tag, modifier));
+                enchantmentModifiers.add(modifier);
+              }
             } else {
-              // if it ends with a ?, its an optional enchantment, so suppress errors on missing
-              optional = key.charAt(key.length() - 1) == '?';
-              if (optional) {
-                key = key.substring(0, key.length() - 1);
-              }
-              Enchantment enchantment = BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(key));
+              Holder.Reference<Enchantment> enchantment = enchantmentRegistry.get(ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.parse(key))).orElse(null);
               if (enchantment == null) {
                 if (optional) {
-                  TConstruct.LOG.debug("Skipping modifier " + modifierId + " due to unknown optional enchantment " + key);
+                  TConstruct.LOG.debug("Skipping modifier {} due to unknown optional enchantment {}", modifierId, key);
                   continue;
                 }
                 throw new JsonSyntaxException("Invalid enchantment ID " + key + " for modifier " + modifierId);
               }
               enchantmentMap.put(enchantment, modifier);
+              enchantmentModifiers.add(modifier);
             }
           } catch (RuntimeException e) {
             log.info("Invalid enchantment to modifier mapping", e);
@@ -259,9 +285,12 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
         }
       }
     }
-    log.info("Loaded {} enchantment to modifier mappings in {} ms", enchantmentMap.size() + enchantmentTagMap.size(), (System.nanoTime() - timeStep) / 1000000f);
+    this.enchantmentMap = Map.copyOf(enchantmentMap);
+    this.enchantmentTags = List.copyOf(enchantmentTags);
+    this.enchantmentModifiers = Set.copyOf(enchantmentModifiers);
+    log.info("Loaded {} enchantment to modifier mappings for {} modifiers in {} ms", enchantmentMap.size() + enchantmentTags.size(), enchantmentModifiers.size(), (System.nanoTime() - timeStep) / 1000000f);
 
-    MinecraftForge.EVENT_BUS.post(new ModifiersLoadedEvent());
+    NeoForge.EVENT_BUS.post(new ModifiersLoadedEvent());
   }
 
   /** Creates context for modifier parsing */
@@ -289,7 +318,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
       }
 
       // conditions
-      if (json.has("condition") && !CraftingHelper.getCondition(GsonHelper.getAsJsonObject(json, "condition")).test(conditionContext)) {
+      // TODO: conditions array
+      if (json.has("condition") && !JsonHelper.parse(ICondition.CODEC, GsonHelper.getAsJsonObject(json, "condition")).test(conditionContext)) {
         return null;
       }
 
@@ -304,14 +334,16 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   }
 
   /** Updates the modifiers from the server */
-  void updateModifiersFromServer(Map<ModifierId,Modifier> modifiers, Map<TagKey<Modifier>,List<Modifier>> tags, Map<Enchantment,Modifier> enchantmentMap, Map<TagKey<Enchantment>,Modifier> enchantmentTagMappings) {
-    this.dynamicModifiers = modifiers;
+  @Internal
+  void updateModifiersFromServer(UpdateModifiersPacket packet) {
+    this.dynamicModifiers = packet.getAllModifiers();
     this.dynamicModifiersLoaded = true;
-    this.tags = tags;
+    this.tags = packet.getTags();
     this.reverseTags = GenericTagUtil.reverseTags(Modifier::getId, tags);
-    this.enchantmentMap = enchantmentMap;
-    this.enchantmentTagMap = enchantmentTagMappings;
-    MinecraftForge.EVENT_BUS.post(new ModifiersLoadedEvent());
+    this.enchantmentMap = packet.getEnchantmentMap();
+    this.enchantmentTags = packet.getEnchantmentTags();
+    this.enchantmentModifiers = Stream.concat(enchantmentMap.values().stream(), enchantmentTags.stream().map(EnchantmentTag::modifier)).collect(Collectors.toSet());
+    NeoForge.EVENT_BUS.post(new ModifiersLoadedEvent());
   }
 
 
@@ -348,35 +380,34 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
    * @param enchantment  Enchantment
    * @return Closest modifier to the enchantment, or null if no match
    */
-  @SuppressWarnings("deprecation")  // eventually it won't be if we move away from forge
+  @SuppressWarnings("SuspiciousMethodCalls")  // Holder.Reference is a subclass
   @Nullable
-  public Modifier get(Enchantment enchantment) {
+  public Modifier get(Holder<Enchantment> enchantment) {
     // if we saw it before, return the last value
-    if (enchantmentMap.containsKey(enchantment)) {
-      return enchantmentMap.get(enchantment);
+    Modifier modifier = enchantmentMap.get(enchantment);
+    if (modifier != null) {
+      return modifier;
     }
     // did not find, check the tags
-    for (Entry<TagKey<Enchantment>,Modifier> mapping : enchantmentTagMap.entrySet()) {
-      if (RegistryHelper.contains(BuiltInRegistries.ENCHANTMENT, mapping.getKey(), enchantment)) {
-        return mapping.getValue();
+    for (EnchantmentTag mapping : enchantmentTags) {
+      if (mapping.tag.contains(enchantment)) {
+        return mapping.modifier;
       }
     }
     return null;
   }
 
-  /** Checks if the given modifier has an enchantment equivelent */
+  /** Checks if the given modifier has an enchantment equivalent. Only considers cases with actual equivalents, so empty tags are ignored. */
   public boolean hasEnchantment(Modifier modifier) {
-    return enchantmentMap.containsValue(modifier) || enchantmentTagMap.containsValue(modifier);
+    return enchantmentModifiers.contains(modifier);
   }
 
   /** Gets a stream of all enchantments that match the given modifiers */
-  @SuppressWarnings("deprecation")  // eventually it won't be if we move away from forge
-  public Stream<Enchantment> getEquivalentEnchantments(Predicate<ModifierId> modifiers) {
-    Predicate<Entry<?,Modifier>> predicate = entry -> modifiers.test(entry.getValue().getId());
+  public Stream<Holder<Enchantment>> getEquivalentEnchantments(Predicate<ModifierId> modifiers) {
     return Stream.concat(
-      enchantmentMap.entrySet().stream().filter(predicate).map(Entry::getKey),
-      enchantmentTagMap.entrySet().stream().filter(predicate).flatMap(entry -> RegistryHelper.getTagValueStream(BuiltInRegistries.ENCHANTMENT, entry.getKey()))
-    ).distinct().sorted(Comparator.comparing(enchantment -> Objects.requireNonNull(BuiltInRegistries.ENCHANTMENT.getKey(enchantment))));
+      enchantmentMap.entrySet().stream().filter(entry -> modifiers.test(entry.getValue().getId())).map(Entry::getKey),
+      enchantmentTags.stream().filter(entry -> modifiers.test(entry.modifier.getId())).flatMap(entry -> entry.tag.stream())
+    ).distinct().sorted(Comparator.comparing(IHolderExtension::getKey, Comparator.nullsLast(Comparator.naturalOrder())));
   }
 
   /** Gets a list of all modifier IDs */

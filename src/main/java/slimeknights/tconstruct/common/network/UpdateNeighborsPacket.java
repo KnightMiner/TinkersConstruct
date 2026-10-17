@@ -1,47 +1,35 @@
 package slimeknights.tconstruct.common.network;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import net.neoforged.neoforge.registries.GameData;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 
 /**
  * Packet to notify neighbors that a block changed, used when breaking blocks in weird contexts that vanilla suppresses updates in for some reason
  */
-@RequiredArgsConstructor
-public class UpdateNeighborsPacket implements IThreadsafePacket {
-  private final BlockState state;
-  private final BlockPos pos;
+public record UpdateNeighborsPacket(BlockState state, BlockPos pos) implements ISimplePacket {
+  public static final Type<UpdateNeighborsPacket> TYPE = new Type<>(TConstruct.getResource("update_neighbors"));
+  public static final StreamCodec<ByteBuf,UpdateNeighborsPacket> CODEC = StreamCodec.composite(
+    TinkerStreamCodecs.BLOCK_STATE, UpdateNeighborsPacket::state,
+    BlockPos.STREAM_CODEC, UpdateNeighborsPacket::pos,
+    UpdateNeighborsPacket::new);
 
-  public UpdateNeighborsPacket(FriendlyByteBuf buffer) {
-    this.state = GameData.getBlockStateIDMap().byId(buffer.readVarInt());
-    this.pos = buffer.readBlockPos();
+  @Override
+  public Type<UpdateNeighborsPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeVarInt(Block.getId(state));
-    buffer.writeBlockPos(pos);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    HandleClient.handle(this);
-  }
-
-  private static class HandleClient {
-    private static void handle(UpdateNeighborsPacket packet) {
-      Level level = Minecraft.getInstance().level;
-      if (level != null) {
-        packet.state.updateNeighbourShapes(level, packet.pos, Block.UPDATE_CLIENTS, 511);
-        packet.state.updateIndirectNeighbourShapes(level, packet.pos, Block.UPDATE_CLIENTS, 511);
-      }
-    }
+  public void handle(IPayloadContext context) {
+    Level level = context.player().level();
+    state.updateNeighbourShapes(level, pos, Block.UPDATE_CLIENTS, 511);
+    state.updateIndirectNeighbourShapes(level, pos, Block.UPDATE_CLIENTS, 511);
   }
 }

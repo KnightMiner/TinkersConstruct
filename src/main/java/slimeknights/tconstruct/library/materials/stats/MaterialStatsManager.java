@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import org.apache.logging.log4j.Level;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.listener.MergingJsonDataLoader;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.registry.IdAwareComponentRegistry;
@@ -146,6 +147,7 @@ public class MaterialStatsManager extends MergingJsonDataLoader<Map<ResourceLoca
    * Updates the material stats from the server, should only be called on the client
    * @param materialStats  Material stats list
    */
+  @Internal
   public void updateMaterialStatsFromServer(Map<MaterialId, Collection<IMaterialStats>> materialStats) {
     this.materialToStatsPerType = materialStats.entrySet().stream()
       .collect(Collectors.toMap(
@@ -213,12 +215,9 @@ public class MaterialStatsManager extends MergingJsonDataLoader<Map<ResourceLoca
    * Gets the packet to send on player login
    * @return  Packet object
    */
+  @Internal
   public UpdateMaterialStatsPacket getUpdatePacket() {
-    Map<MaterialId, Collection<IMaterialStats>> networkPayload =
-      materialToStatsPerType.entrySet().stream()
-                            .collect(Collectors.toMap(
-                              Map.Entry::getKey,
-                              entry -> entry.getValue().values()));
+    Map<MaterialId, Collection<IMaterialStats>> networkPayload = materialToStatsPerType.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().values()));
     return new UpdateMaterialStatsPacket(networkPayload);
   }
 

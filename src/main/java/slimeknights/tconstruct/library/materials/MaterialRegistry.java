@@ -2,16 +2,13 @@ package slimeknights.tconstruct.library.materials;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor.PacketTarget;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.command.argument.TagSource;
-import slimeknights.mantle.network.packet.ISimplePacket;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.events.MaterialsLoadedEvent;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
@@ -81,8 +78,8 @@ public final class MaterialRegistry {
     // create registry instance
     INSTANCE = new MaterialRegistry();
     // add event listeners
-    MinecraftForge.EVENT_BUS.addListener(INSTANCE::addDataPackListeners);
-    MinecraftForge.EVENT_BUS.addListener(INSTANCE::onDatapackSync);
+    NeoForge.EVENT_BUS.addListener(INSTANCE::addDataPackListeners);
+    NeoForge.EVENT_BUS.addListener(INSTANCE::onDatapackSync);
     // on the client, mark materials not fully loaded when the client logs out.
     // this also runs when starting a world in SP, but its early enough that the player login event will correct the state later (see handleLogin method)
     // TODO: is this still needed? disabled as it runs before the world finishes unloading in SP
@@ -156,24 +153,27 @@ public final class MaterialRegistry {
    * Updates the material list from the server list. Should only be called client side
    * @param packet  Materials packet
    */
+  @Internal
   public static void updateMaterialsFromServer(UpdateMaterialsPacket packet) {
-    INSTANCE.materialManager.updateMaterialsFromServer(packet.getMaterials(), packet.getRedirects(), packet.getTags());
+    INSTANCE.materialManager.updateMaterialsFromServer(packet.materials(), packet.redirects(), packet.tags());
   }
 
   /**
    * Updates material stats from the server list. Should only be called client side
    * @param packet  Materials stats packet
    */
+  @Internal
   public static void updateMaterialStatsFromServer(UpdateMaterialStatsPacket packet) {
-    INSTANCE.materialStatsManager.updateMaterialStatsFromServer(packet.getMaterialToStats());
+    INSTANCE.materialStatsManager.updateMaterialStatsFromServer(packet.materialToStats());
   }
 
   /**
    * Updates material traits from the server list. Should only be called client side
    * @param packet  Materials traits packet
    */
+  @Internal
   public static void updateMaterialTraitsFromServer(UpdateMaterialTraitsPacket packet) {
-    INSTANCE.materialTraitsManager.updateFromServer(packet.getMaterialToTraits());
+    INSTANCE.materialTraitsManager.updateFromServer(packet.materialToTraits());
   }
 
 
@@ -232,7 +232,7 @@ public final class MaterialRegistry {
       traitsLoaded = false;
       fullyLoaded = true;
       FIRST_MATERIALS.clear();
-      MinecraftForge.EVENT_BUS.post(new MaterialsLoadedEvent());
+      NeoForge.EVENT_BUS.post(new MaterialsLoadedEvent());
     } else {
       fullyLoaded = false;
     }
@@ -248,45 +248,31 @@ public final class MaterialRegistry {
     event.addListener(materialTraitsManager);
   }
 
-  /** Sends all relevant packets to the given player */
-  private void sendPackets(ServerPlayer player, ISimplePacket[] packets) {
+  /** Called when the player logs in to send packets */
+  private void onDatapackSync(OnDatapackSyncEvent event) {
+    PacketHelper.syncPackets(event, materialManager.getUpdatePacket(), materialStatsManager.getUpdatePacket(), materialStatsManager.getUpdatePacket());
     // on an integrated server, the material registries have a single instance on both the client and the server thread
-    // this means syncing is unneeded, and has the side-effect of recreating all the material instances (which can lead to unexpected behavior)
-    // as a result, integrated servers just mark fullyLoaded as true without syncing anything, side-effect is listeners may run twice on single player
+    // this means syncing is unneeded, and has the side effect of recreating all the material instances (which can lead to unexpected behavior)
+    // as a result, integrated servers just mark fullyLoaded as true without syncing anything, side effect is listeners may run twice on single player
 
     // on a dedicated server, the client is running a separate game instance, this is where we send packets, plus fully loaded should already be true
     // this event is not fired when connecting to a server
-    if (player.connection.connection.isMemoryConnection()) {
-      // if the packet is being sent to ourself, skip sending, prevents recreating all material instances in the registry a second time on dedicated servers
-      // note it will still send the packet if another client connects in LAN
-      fullyLoaded = true;
-      MinecraftForge.EVENT_BUS.post(new MaterialsLoadedEvent());
-    } else {
-      TinkerNetwork network = TinkerNetwork.getInstance();
-      PacketTarget target = PacketDistributor.PLAYER.with(() -> player);
-      for (ISimplePacket packet : packets) {
-        network.send(target, packet);
-      }
-    }
-  }
-
-  /** Called when the player logs in to send packets */
-  private void onDatapackSync(OnDatapackSyncEvent event) {
-    ISimplePacket[] packets = {
-      materialManager.getUpdatePacket(),
-      materialStatsManager.getUpdatePacket(),
-      materialTraitsManager.getUpdatePacket()
-    };
-
-    // send to single player
+    boolean isMemory = false;
     ServerPlayer targetedPlayer = event.getPlayer();
     if (targetedPlayer != null) {
-      sendPackets(targetedPlayer, packets);
+      isMemory = targetedPlayer.connection.getConnection().isMemoryConnection();
     } else {
       // send to all players
       for (ServerPlayer player : event.getPlayerList().getPlayers()) {
-        sendPackets(player, packets);
+        if (player.connection.getConnection().isMemoryConnection()) {
+          isMemory = true;
+          break;
+        }
       }
+    }
+    if (isMemory) {
+      fullyLoaded = true;
+      NeoForge.EVENT_BUS.post(new MaterialsLoadedEvent());
     }
   }
 }

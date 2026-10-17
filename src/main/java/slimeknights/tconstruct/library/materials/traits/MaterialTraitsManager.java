@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.listener.MergingJsonDataLoader;
 import slimeknights.tconstruct.library.exception.TinkerAPIMaterialException;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
@@ -118,6 +119,7 @@ public class MaterialTraitsManager extends MergingJsonDataLoader<MaterialTraits.
    * Gets the packet to send on player login
    * @return  Packet object
    */
+  @Internal
   public UpdateMaterialTraitsPacket getUpdatePacket() {
     return new UpdateMaterialTraitsPacket(materialTraits);
   }
@@ -126,6 +128,7 @@ public class MaterialTraitsManager extends MergingJsonDataLoader<MaterialTraits.
    * Updates the traits from the server
    * @param materialToTraits  Traits map
    */
+  @Internal
   public void updateFromServer(Map<MaterialId,MaterialTraits> materialToTraits) {
     this.materialTraits = materialToTraits;
     onLoaded.run();

@@ -16,9 +16,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
-import slimeknights.mantle.data.gson.ConditionSerializer;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.exception.TinkerJSONException;
 import slimeknights.tconstruct.library.json.JsonRedirect;
@@ -188,6 +188,7 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
   /**
    * Updates the material list from the server.list. Should only be called client side
    */
+  @Internal
   public void updateMaterialsFromServer(Map<MaterialId,IMaterial> materials, Map<MaterialId,MaterialId> redirects, Map<TagKey<IMaterial>,List<IMaterial>> tags) {
     this.materials = materials;
     this.redirects = redirects;
@@ -239,6 +240,7 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
    * Gets the packet to send on player login
    * @return  Packet object
    */
+  @Internal
   public UpdateMaterialsPacket getUpdatePacket() {
     return new UpdateMaterialsPacket(materials, redirects, tags);
   }
@@ -247,6 +249,9 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
   private IMaterial loadMaterial(ResourceLocation materialId, JsonObject jsonObject, Map<MaterialId, MaterialId> redirects) {
     try {
       MaterialJson materialJson = GSON.fromJson(jsonObject, MaterialJson.class);
+
+      // TODO: switch to loadable for parsing
+      // TODO: swtich condition to array to mirror recipes
 
       // if defined, the material will redirect to another material
       // processed first so a material can both conditionally redirect and fallback to a conditional material

@@ -1,64 +1,43 @@
 package slimeknights.tconstruct.tools.network;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
 
-public class EntityMovementChangePacket implements IThreadsafePacket {
-  private final int entityID;
-  private final double x;
-  private final double y;
-  private final double z;
-  private final float yRot;
-  private final float xRot;
+/** Packet to update motion on an entity. TODO: is this no longer needed? */
+public record EntityMovementChangePacket(int entityID, double x, double y, double z, float yRot, float xRot) implements ISimplePacket {
+  public static final Type<EntityMovementChangePacket> TYPE = new Type<>(TConstruct.getResource("entity_movement_change"));
+  public static final StreamCodec<ByteBuf,EntityMovementChangePacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.VAR_INT, EntityMovementChangePacket::entityID,
+    ByteBufCodecs.DOUBLE, EntityMovementChangePacket::x,
+    ByteBufCodecs.DOUBLE, EntityMovementChangePacket::y,
+    ByteBufCodecs.DOUBLE, EntityMovementChangePacket::z,
+    ByteBufCodecs.FLOAT, EntityMovementChangePacket::xRot,
+    ByteBufCodecs.FLOAT, EntityMovementChangePacket::yRot,
+    EntityMovementChangePacket::new);
 
-  public EntityMovementChangePacket(Entity entity) {
-    this.entityID = entity.getId();
-    this.x = entity.getDeltaMovement().x;
-    this.y = entity.getDeltaMovement().y;
-    this.z = entity.getDeltaMovement().z;
-    this.yRot = entity.getYRot();
-    this.xRot = entity.getXRot();
-  }
-
-  public EntityMovementChangePacket(FriendlyByteBuf buffer) {
-    this.entityID = buffer.readInt();
-    this.x = buffer.readDouble();
-    this.y = buffer.readDouble();
-    this.z = buffer.readDouble();
-    this.yRot = buffer.readFloat();
-    this.xRot = buffer.readFloat();
+  public static EntityMovementChangePacket from(Entity entity) {
+    Vec3 movement = entity.getDeltaMovement();
+    return new EntityMovementChangePacket(entity.getId(), movement.x, movement.y, movement.z, entity.getXRot(), entity.getYRot());
   }
 
   @Override
-  public void encode(FriendlyByteBuf packetBuffer) {
-    packetBuffer.writeInt(this.entityID);
-    packetBuffer.writeDouble(this.x);
-    packetBuffer.writeDouble(this.y);
-    packetBuffer.writeDouble(this.z);
-    packetBuffer.writeFloat(this.yRot);
-    packetBuffer.writeFloat(this.xRot);
+  public Type<EntityMovementChangePacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
-    if (context.getSender() != null) {
-      HandleClient.handle(this);
-    }
-  }
-
-  /** Safely runs client side only code in a method only called on client */
-  private static class HandleClient {
-    private static void handle(EntityMovementChangePacket packet) {
-      assert Minecraft.getInstance().level != null;
-      Entity entity = Minecraft.getInstance().level.getEntity(packet.entityID);
-      if (entity != null) {
-        entity.setDeltaMovement(packet.x, packet.y, packet.z);
-        entity.setYRot(packet.yRot);
-        entity.setXRot(packet.xRot);
-      }
+  public void handle(IPayloadContext context) {
+    Entity entity = context.player().level().getEntity(entityID);
+    if (entity != null) {
+      entity.setDeltaMovement(x, y, z);
+      entity.setYRot(yRot);
+      entity.setXRot(xRot);
     }
   }
 }

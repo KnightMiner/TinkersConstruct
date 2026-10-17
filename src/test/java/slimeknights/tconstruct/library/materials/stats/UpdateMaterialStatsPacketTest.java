@@ -1,7 +1,10 @@
 package slimeknights.tconstruct.library.materials.stats;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.Test;
 import slimeknights.mantle.data.registry.IdAwareComponentRegistry;
 import slimeknights.tconstruct.fixture.MaterialFixture;
@@ -28,6 +31,7 @@ class UpdateMaterialStatsPacketTest extends BaseMcTest {
     LOADER.register(HandleMaterialStats.TYPE);
     LOADER.register(StatlessMaterialStats.BINDING.getType());
   }
+  private static final StreamCodec<RegistryFriendlyByteBuf,UpdateMaterialStatsPacket> CODEC = new UpdateMaterialStatsPacket.Codec(LOADER);
 
   @Test
   void testGenericEncodeDecode() {
@@ -36,11 +40,12 @@ class UpdateMaterialStatsPacketTest extends BaseMcTest {
     );
 
     UpdateMaterialStatsPacket packetToDecode = sendAndReceivePacket(materialToStats);
-    assertThat(packetToDecode.materialToStats).hasSize(1);
-    assertThat(packetToDecode.materialToStats).containsKey(MATERIAL_ID);
-    assertThat(packetToDecode.materialToStats.get(MATERIAL_ID)).hasSize(1);
+    Map<MaterialId, Collection<IMaterialStats>> decoded = packetToDecode.materialToStats();
+    assertThat(decoded).hasSize(1);
+    assertThat(decoded).containsKey(MATERIAL_ID);
+    assertThat(decoded.get(MATERIAL_ID)).hasSize(1);
 
-    IMaterialStats materialStats = packetToDecode.materialToStats.get(MATERIAL_ID).iterator().next();
+    IMaterialStats materialStats = decoded.get(MATERIAL_ID).iterator().next();
     assertThat(materialStats).isExactlyInstanceOf(ComplexTestStats.class);
     // ensure the loadable is passed the context field for the proper type
     assertThat(materialStats.getType()).isEqualTo(MaterialStatsFixture.COMPLEX_TYPE);
@@ -60,15 +65,15 @@ class UpdateMaterialStatsPacketTest extends BaseMcTest {
 
     UpdateMaterialStatsPacket packet = sendAndReceivePacket(materialToStats);
 
-    assertThat(packet.materialToStats.get(MATERIAL_ID)).isEqualTo(stats);
+    assertThat(packet.materialToStats().get(MATERIAL_ID)).isEqualTo(stats);
   }
 
   private UpdateMaterialStatsPacket sendAndReceivePacket(Map<MaterialId, Collection<IMaterialStats>> materialToStats) {
-    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+    RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY, ConnectionType.OTHER);
 
     UpdateMaterialStatsPacket packetToEncode = new UpdateMaterialStatsPacket(materialToStats);
-    packetToEncode.encode(buffer);
+    CODEC.encode(buffer, packetToEncode);
 
-    return new UpdateMaterialStatsPacket(buffer, LOADER);
+    return CODEC.decode(buffer);
   }
 }

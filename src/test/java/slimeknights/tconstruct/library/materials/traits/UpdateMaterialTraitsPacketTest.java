@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("ALL")
 class UpdateMaterialTraitsPacketTest extends BaseMcTest {
 
   public static final MaterialId MATERIAL_ID_1 = MaterialFixture.MATERIAL_1.getIdentifier();
@@ -48,11 +49,11 @@ class UpdateMaterialTraitsPacketTest extends BaseMcTest {
     // send a packet over the buffer
     FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
     UpdateMaterialTraitsPacket packetToEncode = new UpdateMaterialTraitsPacket(map);
-    packetToEncode.encode(buffer);
-    UpdateMaterialTraitsPacket decoded = new UpdateMaterialTraitsPacket(buffer);
+    UpdateMaterialTraitsPacket.CODEC.encode(buffer, packetToEncode);
+    UpdateMaterialTraitsPacket decoded = UpdateMaterialTraitsPacket.CODEC.decode(buffer);
 
     // parse results
-    Map<MaterialId, MaterialTraits> parsed = decoded.getMaterialToTraits();
+    Map<MaterialId, MaterialTraits> parsed = decoded.materialToTraits();
     assertThat(parsed).hasSize(2);
 
     // material traits 1

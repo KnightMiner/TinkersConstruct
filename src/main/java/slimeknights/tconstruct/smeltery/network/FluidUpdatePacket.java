@@ -1,47 +1,36 @@
 package slimeknights.tconstruct.smeltery.network;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.BlockEntityPacket;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.network.BlockEntityPacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.smeltery.network.FluidUpdatePacket.IFluidPacketReceiver;
 
 /**
  * Packet for when the fluid changes in a block entity.
- * TODO 1.21: make record.
  */
-@RequiredArgsConstructor
-@ToString
-public class FluidUpdatePacket implements BlockEntityPacket<IFluidPacketReceiver> {
-  protected final BlockPos pos;
-  protected final FluidStack fluid;
+public record FluidUpdatePacket(BlockPos pos, FluidStack fluid) implements BlockEntityPacket<IFluidPacketReceiver> {
+  public static final Type<FluidUpdatePacket> TYPE = new Type<>(TConstruct.getResource("fluid_update"));
+  public static final StreamCodec<RegistryFriendlyByteBuf,FluidUpdatePacket> CODEC = StreamCodec.composite(
+    BlockPos.STREAM_CODEC, FluidUpdatePacket::pos,
+    FluidStack.OPTIONAL_STREAM_CODEC, FluidUpdatePacket::fluid,
+    FluidUpdatePacket::new);
 
-  public FluidUpdatePacket(FriendlyByteBuf buffer) {
-    this.pos = buffer.readBlockPos();
-    this.fluid = buffer.readFluidStack();
+  @Override
+  public Type<FluidUpdatePacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeBlockPos(pos);
-    buffer.writeFluidStack(fluid);
-  }
-
-  @Override
-  public BlockPos pos() {
-    return pos;
-  }
-
-  @Override
-  public Class<IFluidPacketReceiver> type() {
+  public Class<IFluidPacketReceiver> blockEntityType() {
     return IFluidPacketReceiver.class;
   }
 
   @Override
-  public void handleBlockEntity(Context context, IFluidPacketReceiver be) {
+  public void handleBlockEntity(IPayloadContext context, IFluidPacketReceiver be) {
     be.updateFluidTo(fluid);
   }
 

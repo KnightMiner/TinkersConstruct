@@ -1,42 +1,51 @@
 package slimeknights.tconstruct.library.materials.traits;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
-import slimeknights.mantle.network.packet.IThreadsafePacket;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
-@AllArgsConstructor
-public class UpdateMaterialTraitsPacket implements IThreadsafePacket {
-  protected final Map<MaterialId,MaterialTraits> materialToTraits;
-
-  public UpdateMaterialTraitsPacket(FriendlyByteBuf buffer) {
-    int materialCount = buffer.readInt();
-    materialToTraits = new HashMap<>(materialCount);
-    for (int i = 0; i < materialCount; i++) {
-      MaterialId id = new MaterialId(buffer.readResourceLocation());
-      MaterialTraits traits = MaterialTraits.read(buffer);
-      materialToTraits.put(id, traits);
+/** Packet sending material traits from server to client. */
+@Internal
+public record UpdateMaterialTraitsPacket(Map<MaterialId,MaterialTraits> materialToTraits) implements ISimplePacket {
+  public static final Type<UpdateMaterialTraitsPacket> TYPE = new Type<>(TConstruct.getResource("update_material_traits"));
+  public static final StreamCodec<FriendlyByteBuf,UpdateMaterialTraitsPacket> CODEC = new StreamCodec<>() {
+    @Override
+    public UpdateMaterialTraitsPacket decode(FriendlyByteBuf buffer) {
+      int materialCount = buffer.readInt();
+      Map<MaterialId,MaterialTraits> materialToTraits = new HashMap<>(materialCount);
+      for (int i = 0; i < materialCount; i++) {
+        MaterialId id = new MaterialId(buffer.readResourceLocation());
+        MaterialTraits traits = MaterialTraits.read(buffer);
+        materialToTraits.put(id, traits);
+      }
+      return new UpdateMaterialTraitsPacket(Map.copyOf(materialToTraits));
     }
+
+    @Override
+    public void encode(FriendlyByteBuf buffer, UpdateMaterialTraitsPacket packet) {
+      buffer.writeInt(packet.materialToTraits.size());
+      for (Map.Entry<MaterialId,MaterialTraits> entry : packet.materialToTraits.entrySet()) {
+        buffer.writeResourceLocation(entry.getKey());
+        entry.getValue().write(buffer);
+      }
+    }
+  };
+
+  @Override
+  public Type<UpdateMaterialTraitsPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeInt(materialToTraits.size());
-    materialToTraits.forEach((materialId, traits) -> {
-      buffer.writeResourceLocation(materialId);
-      traits.write(buffer);
-    });
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
+  public void handle(IPayloadContext context) {
     MaterialRegistry.updateMaterialTraitsFromServer(this);
   }
 }
