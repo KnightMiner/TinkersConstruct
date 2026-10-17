@@ -674,6 +674,18 @@ public class TinkerTags {
     /** Magmacube like mobs expected to melt into magma (cream). */
     public static final TagKey<EntityType<?>> MELTABLE_MAGMA = local("meltable/magma");
 
+    // ancient tools
+    /** Entities in this tag can spawn holding a war pick */
+    public static final TagKey<EntityType<?>> SPAWNS_WITH_WAR_PICK = local("spawns_with/war_pick");
+    /** Entities in this tag can spawn holding a battle sign. Typically, zombie variants. */
+    public static final TagKey<EntityType<?>> SPAWNS_WITH_MELTING_PAN = local("spawns_with/melting_pan");
+    /** Entities in this tag can spawn holding a swasher with the {@link Fluids#DROWNED_SWASHER} fluid list. */
+    public static final TagKey<EntityType<?>> SPAWNS_WITH_SWASHER_DROWNED = local("spawns_with/swasher/drowned");
+    /** Entities in this tag can spawn holding a swasher with the {@link Fluids#WITHER_SKELETON_SWASHER} fluid list. */
+    public static final TagKey<EntityType<?>> SPAWNS_WITH_SWASHER_WITHER_SKELETON = local("spawns_with/swasher/wither_skeleton");
+    /** Entities in this tag can spawn holding a battle sign, replacing their golden sword or axe. Typically, piglins. */
+    public static final TagKey<EntityType<?>> SPAWNS_WITH_BATTLE_SIGN = local("spawns_with/battle_sign");
+
 
     /** Common tag of fishing bobbers. Note we don't use this so we don't bother adding vanilla to it. */
     public static final TagKey<EntityType<?>> BOBBERS = common("bobber");

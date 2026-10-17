@@ -17,6 +17,7 @@ import net.minecraftforge.common.crafting.DifferenceIngredient;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.ItemNameIngredient;
+import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.PotionDisplayIngredient;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
@@ -41,6 +42,7 @@ import slimeknights.tconstruct.library.recipe.ingredient.MaterialIngredient;
 import slimeknights.tconstruct.library.recipe.ingredient.MaterialValueIngredient;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialsConsumerBuilder;
+import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.PartRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycleBuilder;
@@ -48,6 +50,7 @@ import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToo
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialSwappingRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipeBuilder;
 import slimeknights.tconstruct.library.tools.layout.Patterns;
+import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tables.TinkerTables;
@@ -333,6 +336,12 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
       .setPart(TinkerToolParts.laces, true)
       .setItemCost(4)
       .save(consumer, location(folder + "slime_boots"));
+
+    // duplicate elytra with dragon scales
+    ItemPartRecipeBuilder.item(Pattern.fromItem(TinkerToolParts.maille), ItemOutput.fromItem(Items.ELYTRA))
+      .material(MaterialIds.dragonScale, 32)
+      .setPatternItem(Ingredient.of(Items.ELYTRA))
+      .save(consumer, location(folder + "elytra_copying"));
   }
 
   private void addRecycleRecipes(Consumer<FinishedRecipe> consumer) {
@@ -367,7 +376,24 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
       .part(TinkerToolParts.repairKit)
       .save(consumer, location(folder + "plate_shield"));
 
-    // TODO: consider if I want slimesuit recycling, it gets wierd with skull in particular needing a custom recipe likely
+    // slimesuit recycling
+    for (ArmorItem.Type type : ArmorItem.Type.values()) {
+      PartBuilderToolRecycleBuilder.tool(TinkerTools.slimesuit.get(type))
+        // different parts for index 0
+        .part(switch (type) {
+          // helmet has no part for index 0 though
+          case HELMET -> IMaterialItem.EMPTY;
+          case CHESTPLATE -> TinkerToolParts.ribcage.get();
+          case LEGGINGS -> TinkerToolParts.shell.get();
+          case BOOTS -> TinkerToolParts.laces.get();
+        })
+        // slime lacks a part so do repair kit
+        .part(TinkerToolParts.repairKit)
+        .save(consumer, location(folder + "slime_" + type.getName()));
+    }
+    PartBuilderToolRecycleBuilder.tool(TinkerTools.slimeWings)
+      .part(TinkerToolParts.repairKit)
+      .save(consumer, location(folder + "slime_wings"));
 
     // crafting table tool recycling
     // flint and brick loses the brick as we don't know if you used seared or scorched
