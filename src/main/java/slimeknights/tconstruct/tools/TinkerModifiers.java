@@ -187,7 +187,6 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRe
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.capability.fluid.TankModule;
@@ -817,7 +816,6 @@ public final class TinkerModifiers extends TinkerModule {
   @SubscribeEvent
   void commonSetup(final FMLCommonSetupEvent event) {
     TinkerDataCapability.register();
-    PersistentDataCapability.register();
     EntityModifierCapability.register();
     BlockItemProviderCapability.register();
     // by default, we support modifying projectiles (arrows or fireworks mainly, but maybe other stuff). other entities may come in the future

@@ -24,10 +24,10 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.UsingToolModif
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
 
@@ -104,11 +104,11 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
         }
 
         // alert modifiers we are leaving, though most of these won't have much impact
-        thrown.onRelease(entity, PersistentDataCapability.getOrWarn(thrown));
+        thrown.onRelease(entity, ModDataNBT.get(thrown));
 
         // don't run projectile hooks, as the projectile has the tool already for that. Throwing runs melee hooks
         level.addFreshEntity(thrown);
-        level.playSound(null, thrown, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
+        level.playSound(null, thrown, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1, 1);
         if (!player.getAbilities().instabuild) {
           player.getInventory().removeItem(stack);
         }

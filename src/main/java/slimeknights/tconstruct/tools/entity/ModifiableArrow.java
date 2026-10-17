@@ -19,7 +19,6 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ScheduledProjectileTaskModifierHook;
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
@@ -108,7 +107,7 @@ public class ModifiableArrow extends AbstractArrow implements ToolProjectile, Re
       super.shoot(pX, pY, pZ, velocity, inaccuracy);
 
       // run modifier hooks from the arrow's perspective
-      ModDataNBT arrowData = PersistentDataCapability.getOrWarn(this);
+      ModDataNBT arrowData = ModDataNBT.get(this);
       for (ModifierEntry entry : tool.getModifiers()) {
         entry.getHook(ModifierHooks.PROJECTILE_SHOT).onProjectileShoot(tool, entry, shooter, stack, this, this, arrowData, true);
       }

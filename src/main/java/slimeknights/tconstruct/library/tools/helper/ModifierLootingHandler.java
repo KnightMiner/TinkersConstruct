@@ -17,7 +17,6 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
 import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -99,7 +98,7 @@ public class ModifierLootingHandler {
         // no modifiers means its not a projectile we fired, so just defer to dumb vanilla behavior of whatever looting
         // since we don't set the enchantment on our tools, our looting modifiers won't set anything here anyways
         if (!modifiers.isEmpty()) {
-          ModDataNBT persistentData = direct.getCapability(PersistentDataCapability.CAPABILITY).orElseGet(ModDataNBT::new);
+          ModDataNBT persistentData = ModDataNBT.get(direct);
           level = LootingModifierHook.getLooting(new DummyToolStack(Items.AIR, modifiers, persistentData), context, 0);
         }
       } else {

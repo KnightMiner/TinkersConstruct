@@ -63,7 +63,6 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifi
 import slimeknights.tconstruct.library.modifiers.modules.armor.MobDisguiseModule;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
@@ -524,7 +523,7 @@ public class ToolEvents {
     Projectile projectile = event.getProjectile();
     ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(projectile);
     if (!modifiers.isEmpty()) {
-      ModDataNBT nbt = PersistentDataCapability.getOrWarn(projectile);
+      ModDataNBT nbt = ModDataNBT.get(projectile);
       HitResult hit = event.getRayTraceResult();
       HitResult.Type type = hit.getType();
       // extract a firing entity as that is a common need

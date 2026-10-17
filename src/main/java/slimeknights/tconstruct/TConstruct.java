@@ -45,6 +45,7 @@ import slimeknights.tconstruct.common.data.tags.PotionTagProvider;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerItemDisplays;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
@@ -102,6 +103,7 @@ public class TConstruct {
     // init deferred registers
     TinkerModule.initRegisters(modEventBus);
     TinkerAttributes.init(modEventBus);
+    TinkerData.register(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());

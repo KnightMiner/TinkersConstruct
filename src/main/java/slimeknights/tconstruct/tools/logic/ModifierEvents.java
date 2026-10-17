@@ -35,8 +35,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.ForgeMod;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
@@ -55,7 +55,6 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.eventbus.api.Event.Result;
 import net.neoforged.neoforge.eventbus.api.EventPriority;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.MantleEvents;
 import slimeknights.mantle.util.CombatHelper;
 import slimeknights.mantle.util.RegistryHelper;
@@ -74,7 +73,6 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInterac
 import slimeknights.tconstruct.library.modifiers.modules.armor.EffectImmunityModule;
 import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelModule;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
@@ -201,7 +199,7 @@ public class ModifierEvents {
       if (!modifiers.isEmpty()) {
         TinkerDataCapability.Holder data = TinkerDataCapability.getData(event.getEntity());
         if (data != null) {
-          ModDataNBT projectileData = PersistentDataCapability.getOrWarn(projectile);
+          ModDataNBT projectileData = ModDataNBT.get(projectile);
           data.put(PROJECTILE_EXPERIENCE, projectileData.getFloat(EXPERIENCE));
         }
       }

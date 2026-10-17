@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -7,7 +9,11 @@ import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import slimeknights.tconstruct.library.TinkerData;
 
 import java.util.function.BiFunction;
 
@@ -19,6 +25,11 @@ import java.util.function.BiFunction;
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ModDataNBT implements IModDataView {
+  /** Codec for serializing this to JSON on entities. */
+  public static final Codec<ModDataNBT> CODEC = CompoundTag.CODEC.xmap(ModDataNBT::readFromNBT, ModDataNBT::getCopy);
+  /** Stream codec for network syncing on entities. */
+  public static final StreamCodec<ByteBuf,ModDataNBT> STREAM_CODEC = ByteBufCodecs.COMPOUND_TAG.map(ModDataNBT::readFromNBT, ModDataNBT::getCopy);
+
   /** Compound representing modifier data */
   @Getter(AccessLevel.PROTECTED)
   private final CompoundTag data;
@@ -127,6 +138,14 @@ public class ModDataNBT implements IModDataView {
    * @return  Parsed mod data
    */
   public static ModDataNBT readFromNBT(CompoundTag data) {
-    return new ModDataNBT(data);
+    return new ModDataNBT(data.copy());
+  }
+
+
+  /* Entity */
+
+  /** Gets the data from the given entity. */
+  public static ModDataNBT get(Entity entity) {
+    return entity.getData(TinkerData.PERSISTENT_DATA);
   }
 }

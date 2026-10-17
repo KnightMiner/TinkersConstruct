@@ -29,7 +29,6 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -277,7 +276,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
         EntityModifierCapability.getCapability(arrow).addModifiers(modifiers);
 
         // fetch the persistent data for the arrow as modifiers may want to store data
-        ModDataNBT arrowData = PersistentDataCapability.getOrWarn(arrow);
+        ModDataNBT arrowData = ModDataNBT.get(arrow);
 
         // if infinite, skip pickup
         if (creative) {

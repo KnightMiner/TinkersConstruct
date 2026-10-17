@@ -24,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
@@ -45,7 +44,6 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -91,7 +89,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
    */
   protected record FireballType(Ingredient match, @Nullable DamageTypePair damageType, float damageMultiplier, List<ModifierEntry> ammoModifiers) {
     public static final RecordLoadable<FireballType> LOADABLE = RecordLoadable.create(
-      IngredientLoadable.DISALLOW_EMPTY.requiredField("match", FireballType::match),
+      Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("match", FireballType::match),
       DamageTypePair.LOADER.nullableField("damage_type", FireballType::damageType),
       FloatLoadable.FROM_ZERO.defaultField("damage_multiplier", 1f, false, FireballType::damageMultiplier),
       ModifierEntry.LOADABLE.list(0).defaultField("ammo_modifiers", List.of(), false, FireballType::ammoModifiers),
@@ -154,9 +152,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
         Vec3 lookVec = entity.getLookAngle().scale(2);
         RandomSource random = entity.getRandom();
         CustomFireball projectile = new CustomFireball(level, entity, lookVec.x + random.nextGaussian() * inaccuracy, lookVec.y, lookVec.z + random.nextGaussian() * inaccuracy);
-        projectile.xPower *= velocity;
-        projectile.yPower *= velocity;
-        projectile.zPower *= velocity;
+        projectile.accelerationPower *= velocity;
         projectile.setPower(power);
         projectile.setPos(projectile.getX(), entity.getY(0.5D) + 0.5D, projectile.getZ());
 
@@ -179,7 +175,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
         EntityModifierCapability.getCapability(projectile).setModifiers(modifiers);
 
         // fetch the persistent data for the fireball as modifiers may want to store data
-        ModDataNBT projectileData = PersistentDataCapability.getOrWarn(projectile);
+        ModDataNBT projectileData = ModDataNBT.get(projectile);
         // let modifiers set properties
         for (ModifierEntry entry : tool.getModifierList()) {
           entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, entity, ItemStack.EMPTY, projectile, null, projectileData, true);
@@ -212,10 +208,10 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
 
   @Override
   public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
-    if (keyModifier == TooltipKey.NORMAL && condition.matches(tool, modifier) && !tool.isBroken() && !player.hasEffect(TinkerModifiers.fireballCooldownEffect.get())) {
+    if (keyModifier == TooltipKey.NORMAL && condition.matches(tool, modifier) && !tool.isBroken() && !player.hasEffect(TinkerModifiers.fireballCooldownEffect)) {
       if (shoot(tool, modifier, player, player, slot)) {
         if (!player.level().isClientSide) {
-          player.addEffect(new MobEffectInstance(TinkerModifiers.fireballCooldownEffect.get(), GeneralInteractionModifierHook.getDrawtime(tool, player, 1)));
+          player.addEffect(new MobEffectInstance(TinkerModifiers.fireballCooldownEffect, GeneralInteractionModifierHook.getDrawtime(tool, player, 1)));
         }
         return true;
       }
