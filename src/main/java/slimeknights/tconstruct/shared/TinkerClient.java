@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -16,13 +16,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
-import net.neoforged.neoforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -59,27 +59,23 @@ import slimeknights.tconstruct.library.client.modifiers.model.specialized.Potion
 import slimeknights.tconstruct.library.client.modifiers.model.specialized.TrimModifierModel;
 import slimeknights.tconstruct.tools.client.SlimeskullModifierModel;
 
-import java.util.function.Consumer;
-
 import static slimeknights.tconstruct.TConstruct.getResource;
 
 /**
  * This class should only be referenced on the client side
  */
-@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT, bus = Bus.FORGE)
+@Mod(value = TConstruct.MOD_ID, dist = Dist.CLIENT)
+@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class TinkerClient {
-  /**
-   * Called by TConstruct to handle any client side logic that needs to run during the constructor
-   */
-  public static void onConstruct() {
+  /** Called during mod construct to handle any client side logic that needs to run during the constructor */
+  public TinkerClient() {
     TinkerBook.initBook();
     // needs to register listeners early enough for minecraft to load
     ModifierIconManager.init();
     MaterialRenderInfoLoader.init();
 
     // add the recipe cache invalidator to the client
-    Consumer<RecipesUpdatedEvent> recipesUpdated = event -> RecipeCacheInvalidator.reload(true);
-    MinecraftForge.EVENT_BUS.addListener(recipesUpdated);
+    NeoForge.EVENT_BUS.addListener(RecipesUpdatedEvent.class, event -> RecipeCacheInvalidator.reload(true));
 
     // register datagen serializers
     ISpriteTransformer.SERIALIZER.registerDeserializer(RecolorSpriteTransformer.NAME, RecolorSpriteTransformer.DESERIALIZER);
@@ -136,7 +132,6 @@ public class TinkerClient {
         RenderSystem.setShaderTexture(0, texture.atlasLocation());
         // changed: shader using pos tex
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
         // change: handle brightness based on renderWater, and enable blend
         Player player = minecraft.player;
@@ -152,13 +147,13 @@ public class TinkerClient {
         float v0 = texture.getV0();
         float v1 = texture.getV1();
         Matrix4f matrix4f = event.getPoseStack().last().pose();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         // change: dropped color, see above
-        bufferbuilder.vertex(matrix4f, -1, -1, -0.5f).uv(u1, v1).endVertex();
-        bufferbuilder.vertex(matrix4f, 1, -1, -0.5f).uv(u0, v1).endVertex();
-        bufferbuilder.vertex(matrix4f, 1, 1, -0.5f).uv(u0, v0).endVertex();
-        bufferbuilder.vertex(matrix4f, -1, 1, -0.5f).uv(u1, v0).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(matrix4f, -1, -1, -0.5f).setUv(u1, v1);
+        bufferbuilder.addVertex(matrix4f, 1, -1, -0.5f).setUv(u0, v1);
+        bufferbuilder.addVertex(matrix4f, 1, 1, -0.5f).setUv(u0, v0);
+        bufferbuilder.addVertex(matrix4f, -1, 1, -0.5f).setUv(u1, v0);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         // changed: disable blend
         RenderSystem.disableBlend();
       }

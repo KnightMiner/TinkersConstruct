@@ -2,29 +2,24 @@ package slimeknights.tconstruct;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ArmorItem;
-import net.neoforged.fml.DistExecutor;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.api.distmarker.Dist;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.eventbus.api.IEventBus;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.MissingMappingsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
@@ -63,7 +58,6 @@ import slimeknights.tconstruct.plugin.ImmersiveEngineeringPlugin;
 import slimeknights.tconstruct.plugin.craftingtweaks.CraftingTweaksPlugin;
 import slimeknights.tconstruct.plugin.jsonthings.JsonThingsPlugin;
 import slimeknights.tconstruct.shared.TinkerAttributes;
-import slimeknights.tconstruct.shared.TinkerClient;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.shared.TinkerMaterials;
@@ -90,9 +84,8 @@ import java.util.function.Supplier;
  */
 
 @Mod(TConstruct.MOD_ID)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TConstruct.MOD_ID)
 public class TConstruct {
-
   public static final String MOD_ID = "tconstruct";
   public static final Logger LOG = LogManager.getLogger(MOD_ID);
   public static final Random RANDOM = new Random();
@@ -100,45 +93,39 @@ public class TConstruct {
   /* Instance of this mod, used for grabbing prototype fields */
   public static TConstruct instance;
 
-  public TConstruct() {
+  public TConstruct(IEventBus modEventBus, ModContainer modContainer) {
     instance = this;
 
-    Config.init();
+    Config.init(modContainer);
     TinkerItemDisplays.init();
     MaterialRegistry.init();
 
-    // initialize modules, done this way rather than with annotations to give us control over the order
-    MinecraftForge.EVENT_BUS.addListener(TConstruct::missingMappings);
-    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     // base
-    bus.register(new TinkerCommons());
-    bus.register(new TinkerMaterials());
-    bus.register(new TinkerEffects());
-    bus.register(new TinkerGadgets());
-    bus.register(new TinkerAttributes());
+    modEventBus.register(new TinkerCommons());
+    modEventBus.register(new TinkerMaterials());
+    modEventBus.register(new TinkerEffects());
+    modEventBus.register(new TinkerGadgets());
+    modEventBus.register(new TinkerAttributes());
     // world
-    bus.register(new TinkerWorld());
-    bus.register(new TinkerStructures());
+    modEventBus.register(new TinkerWorld());
+    modEventBus.register(new TinkerStructures());
     // tools
-    bus.register(new TinkerTables());
-    bus.register(new TinkerModifiers());
-    bus.register(new TinkerToolParts());
-    bus.register(new TinkerTools());
+    modEventBus.register(new TinkerTables());
+    modEventBus.register(new TinkerModifiers());
+    modEventBus.register(new TinkerToolParts());
+    modEventBus.register(new TinkerTools());
     // smeltery
-    bus.register(new TinkerSmeltery());
-    bus.register(new TinkerFluids());
+    modEventBus.register(new TinkerSmeltery());
+    modEventBus.register(new TinkerFluids());
 
     // init deferred registers
     TinkerModule.initRegisters();
-    TinkerNetwork.setup();
+    modEventBus.addListener(RegisterPayloadHandlersEvent.class, TinkerNetwork::registerPackets);
     TinkerTags.init();
-    // init client logic
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> TinkerClient::onConstruct);
-
     // compat
     ModList modList = ModList.get();
     if (modList.isLoaded("immersiveengineering")) {
-      bus.register(new ImmersiveEngineeringPlugin());
+      modEventBus.register(new ImmersiveEngineeringPlugin());
     }
     if (modList.isLoaded("jsonthings")) {
       JsonThingsPlugin.onConstruct();
@@ -150,7 +137,7 @@ public class TConstruct {
       CraftingTweaksPlugin.onConstruct();
     }
     if (modList.isLoaded("dummmmmmy")) {
-      bus.register(new DummmmmmyPlugin());
+      modEventBus.register(new DummmmmmyPlugin());
     }
   }
 
@@ -200,7 +187,7 @@ public class TConstruct {
     generator.addProvider(server, new FunctionProvider(packOutput));
   }
 
-  /** Handles missing mappings of all types */
+  /* FIXME: move to aliases on the deferred register
   private static void missingMappings(MissingMappingsEvent event) {
     RegistrationHelper.handleMissingMappings(event, MOD_ID, Registries.ITEM, name -> switch (name) {
       // removed shurikens
@@ -210,6 +197,7 @@ public class TConstruct {
       default -> null;
     });
   }
+   */
 
   /* Utils */
 
@@ -218,9 +206,8 @@ public class TConstruct {
    * @param name  Resource path
    * @return  Location for tinkers
    */
-  @SuppressWarnings("removal")
   public static ResourceLocation getResource(String name) {
-    return new ResourceLocation(MOD_ID, name);
+    return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
   }
 
   /**
@@ -298,7 +285,7 @@ public class TConstruct {
    * This function is called in the constructor in some internal classes that are a common target for addons to wrongly extend.
    * These classes will cause issues if blindly used by the addon, and are typically trivial for the addon to implement
    * the parts they need if they just put in some effort understanding the code they are copying.
-   *
+   * <p>
    * As a reminder for addon devs, anything that is not in the library package can and will change arbitrarily. If you need to use a feature outside library, request it on our github.
    * @param self  Class to validate
    */
