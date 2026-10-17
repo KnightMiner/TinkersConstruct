@@ -3,7 +3,7 @@ package slimeknights.tconstruct.fixture;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import slimeknights.tconstruct.library.tools.part.ToolPartItem;
 import slimeknights.tconstruct.test.TestHelper;
 import slimeknights.tconstruct.tools.stats.HandleMaterialStats;

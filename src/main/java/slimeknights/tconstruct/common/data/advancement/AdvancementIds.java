@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.common.data.advancement;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ToolActions;
 import slimeknights.tconstruct.TConstruct;
 
 /** IDs used in {@link slimeknights.tconstruct.common.data.AdvancementsProvider} and {@link FunctionProvider} */

@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.json.predicate.tool;
 
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;

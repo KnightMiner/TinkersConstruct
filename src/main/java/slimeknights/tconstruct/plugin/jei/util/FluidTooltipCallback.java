@@ -1,15 +1,15 @@
 package slimeknights.tconstruct.plugin.jei.util;
 
 import com.mojang.datafixers.util.Either;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 
 import java.util.ArrayList;
