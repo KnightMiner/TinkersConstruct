@@ -289,7 +289,7 @@ public class AdvancementsProvider extends GenericDataProvider {
     });
     builder(TinkerModifiers.silkyCloth, resource("smeltery/abilities"), anvil, FrameType.CHALLENGE, builder -> {
       Consumer<ModifierId> with = modifier -> builder.addCriterion(modifier.getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(ToolStackItemPredicate.ofContext(HasModifierPredicate.hasUpgrade(modifier, 1))));
-      Consumer<LazyModifier> withL = modifier -> with.accept(modifier.getId());
+      Consumer<LazyModifier> withL = modifier -> with.accept(modifier.id());
 
       // sorted like the modifier tag provider tags
       // general

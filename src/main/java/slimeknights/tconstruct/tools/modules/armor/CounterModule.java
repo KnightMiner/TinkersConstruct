@@ -110,7 +110,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
           // damage the armor if requested
           int durabilityUsage = durabilityUsage();
           if (durabilityUsage > 0) {
-            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.getId());
+            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.id());
           }
         }
       }

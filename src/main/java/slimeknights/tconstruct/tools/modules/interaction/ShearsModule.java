@@ -108,7 +108,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
 
   @Override
   public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
-    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source) || !condition.matches(tool, modifier)) {
+    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source) || !condition.matches(tool, modifier)) {
       return InteractionResult.PASS;
     }
     EquipmentSlot slotType = source.getSlot(hand);
@@ -121,7 +121,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
     looting = ArmorLootingModifierHook.getLooting(tool, context, looting);
     Level world = player.getCommandSenderWorld();
     if (shearEntity(stack, tool, world, player, target, looting)) {
-      boolean broken = ToolDamageUtil.damageAnimated(tool, 1, player, slotType, modifier.getId());
+      boolean broken = ToolDamageUtil.damageAnimated(tool, 1, player, slotType, modifier.id());
       player.swing(hand);
       player.sweepAttack();
       runShearHook(tool, player, target, true);
@@ -134,7 +134,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
           for (LivingEntity aoeTarget : player.getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(expanded, 0.25D, expanded))) {
             if (aoeTarget != player && aoeTarget != target && (!(aoeTarget instanceof ArmorStand) || !((ArmorStand)aoeTarget).isMarker())) {
               if (shearEntity(stack, tool, world, player, aoeTarget, looting)) {
-                broken = ToolDamageUtil.damageAnimated(tool, 1, player, slotType, modifier.getId());
+                broken = ToolDamageUtil.damageAnimated(tool, 1, player, slotType, modifier.id());
                 runShearHook(tool, player, aoeTarget, false);
                 if (broken) {
                   break;

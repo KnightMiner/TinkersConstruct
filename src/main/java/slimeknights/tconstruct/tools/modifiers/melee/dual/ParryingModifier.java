@@ -29,7 +29,7 @@ public class ParryingModifier extends OffhandAttackModifier implements ToolActio
     if (source == InteractionSource.RIGHT_CLICK) {
       InteractionResult result = super.beforeEntityUse(tool, modifier, player, target, hand, source);
       if (result.consumesAction()) {
-        GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+        GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       }
       return result;
     }
@@ -42,7 +42,7 @@ public class ParryingModifier extends OffhandAttackModifier implements ToolActio
       InteractionResult result = super.onToolUse(tool, modifier, player, hand, source);
       // also allow just blocking when used in main hand
       if (result.consumesAction()) {
-        GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+        GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
         return InteractionResult.CONSUME;
       }
     }

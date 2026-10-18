@@ -70,7 +70,7 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
   @Override
   default InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (!tool.isBroken() && source == InteractionSource.RIGHT_CLICK && condition().matches(tool, modifier)) {
-      GeneralInteractionModifierHook.startUsingWithDrawtime(tool, modifier.getId(), player, hand, drawtimeMultiplier());
+      GeneralInteractionModifierHook.startUsingWithDrawtime(tool, modifier.id(), player, hand, drawtimeMultiplier());
       return InteractionResult.SUCCESS;
     }
     return InteractionResult.PASS;

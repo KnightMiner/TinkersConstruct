@@ -57,7 +57,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
 
   /** Sets up a builder for a composable modifier */
   protected ComposableModifier.Builder buildModifier(DynamicModifier modifier, @Nullable ICondition condition, JsonRedirect... redirects) {
-    return buildModifier(modifier.getId(), condition, redirects);
+    return buildModifier(modifier.id(), condition, redirects);
   }
 
   /** Sets up a builder for a composable modifier */

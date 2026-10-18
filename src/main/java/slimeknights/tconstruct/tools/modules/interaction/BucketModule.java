@@ -80,7 +80,7 @@ public record BucketModule(IJsonPredicate<Fluid> fluids) implements ModifierModu
 
   @Override
   public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
-    if (!tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (!tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
     // only place fluid if sneaking, we contain at least a bucket, its a block, and its within our whitelist
@@ -157,7 +157,7 @@ public record BucketModule(IJsonPredicate<Fluid> fluids) implements ModifierModu
 
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
-    if (player.isCrouching() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (player.isCrouching() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
 

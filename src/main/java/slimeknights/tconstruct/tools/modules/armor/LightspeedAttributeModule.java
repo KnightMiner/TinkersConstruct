@@ -98,7 +98,7 @@ public record LightspeedAttributeModule(String unique, UUID uuid, Attribute attr
 
       // damage boots
       if (level.random.nextFloat() < (damageChance * scaledLight)) {
-        ToolDamageUtil.damageAnimated(tool, 1, living, EquipmentSlot.FEET, modifier.getId());
+        ToolDamageUtil.damageAnimated(tool, 1, living, EquipmentSlot.FEET, modifier.id());
       }
     }
   }
@@ -110,7 +110,7 @@ public record LightspeedAttributeModule(String unique, UUID uuid, Attribute attr
     if (context.getChangedSlot() == EquipmentSlot.FEET) {
       IToolStackView newTool = context.getReplacementTool();
       // damaging the tool will trigger this hook, so ensure the new tool has the same level
-      if (newTool == null || newTool.isBroken() || newTool.getModifier(modifier.getId()).getEffectiveLevel() != modifier.getEffectiveLevel()) {
+      if (newTool == null || newTool.isBroken() || newTool.getModifier(modifier.id()).getEffectiveLevel() != modifier.getEffectiveLevel()) {
         AttributeInstance attribute = livingEntity.getAttribute(this.attribute);
         if (attribute != null && attribute.getModifier(uuid) != null) {
           attribute.removeModifier(uuid);

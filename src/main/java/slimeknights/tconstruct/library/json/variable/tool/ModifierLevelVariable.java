@@ -23,7 +23,7 @@ public record ModifierLevelVariable(IJsonPredicate<ModifierId> modifier, Modifie
   @Override
   public float getValue(IToolStackView tool) {
     for (ModifierEntry entry : check.getModifiers(tool)) {
-      if (modifier.matches(entry.getId())) {
+      if (modifier.matches(entry.id())) {
         return entry.getEffectiveLevel();
       }
     }

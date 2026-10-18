@@ -68,7 +68,7 @@ public class UpdateModifiersPacket implements ISimplePacket {
       for (Entry<ModifierId,Modifier> entry : allModifiers.entrySet()) {
         ModifierId id = entry.getKey();
         Modifier value = entry.getValue();
-        ModifierId actual = value.getId();
+        ModifierId actual = value.id();
         if (id.equals(actual)) {
           // we can't sync anything that is not composable
           if (value instanceof ComposableModifier composable) {
@@ -150,7 +150,7 @@ public class UpdateModifiersPacket implements ISimplePacket {
       // write modifiers
       buffer.writeVarInt(packet.modifiers.size());
       for (ComposableModifier modifier : packet.modifiers) {
-        ResourceLocation id = modifier.getId();
+        ResourceLocation id = modifier.id();
         buffer.writeResourceLocation(id);
         try {
           ComposableModifier.LOADER.encode(buffer, modifier);
@@ -166,18 +166,18 @@ public class UpdateModifiersPacket implements ISimplePacket {
         buffer.writeResourceLocation(entry.getKey());
         buffer.writeResourceLocation(entry.getValue());
       }
-      GenericTagUtil.encodeTags(buffer, Modifier::getId, packet.tags);
+      GenericTagUtil.encodeTags(buffer, Modifier::id, packet.tags);
 
       // enchantment mapping
       buffer.writeVarInt(packet.enchantmentMap.size());
       for (Entry<Holder.Reference<Enchantment>,Modifier> entry : packet.enchantmentMap.entrySet()) {
         buffer.writeResourceLocation(entry.getKey().key().location());
-        buffer.writeResourceLocation(entry.getValue().getId());
+        buffer.writeResourceLocation(entry.getValue().id());
       }
       buffer.writeVarInt(packet.enchantmentTags.size());
       for (ModifierManager.EnchantmentTag entry : packet.enchantmentTags) {
         buffer.writeResourceLocation(entry.tag().key().location());
-        buffer.writeResourceLocation(entry.modifier().getId());
+        buffer.writeResourceLocation(entry.modifier().id());
       }
     }
   };

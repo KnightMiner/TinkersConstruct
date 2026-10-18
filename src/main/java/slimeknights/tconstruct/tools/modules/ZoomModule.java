@@ -90,12 +90,12 @@ public enum ZoomModule implements ModifierModule, GeneralInteractionModifierHook
 
   /** Starts spyglass style zooming */
   private static void setZoom(ModifierEntry modifier, LivingEntity living, float amount) {
-    living.getCapability(TinkerDataCapability.CAPABILITY).ifPresent(data -> data.computeIfAbsent(TinkerDataKeys.FOV_MODIFIER).set(modifier.getId(), amount));
+    living.getCapability(TinkerDataCapability.CAPABILITY).ifPresent(data -> data.computeIfAbsent(TinkerDataKeys.FOV_MODIFIER).set(modifier.id(), amount));
   }
 
   /** Stops zooming */
   private static void stopZoom(ModifierEntry modifier, LazyOptional<TinkerDataCapability.Holder> tinkerData) {
-    tinkerData.ifPresent(data -> data.computeIfAbsent(TinkerDataKeys.FOV_MODIFIER).remove(modifier.getId()));
+    tinkerData.ifPresent(data -> data.computeIfAbsent(TinkerDataKeys.FOV_MODIFIER).remove(modifier.id()));
   }
 
   /** Stops zooming */
@@ -109,7 +109,7 @@ public enum ZoomModule implements ModifierModule, GeneralInteractionModifierHook
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK) {
-      GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+      GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
     }
     return InteractionResult.PASS;

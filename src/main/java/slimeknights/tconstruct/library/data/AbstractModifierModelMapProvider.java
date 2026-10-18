@@ -570,7 +570,7 @@ public abstract class AbstractModifierModelMapProvider extends GenericDataProvid
     /** Adds a model for dyed */
     public Builder dyed(ModifierModel model, ModifierModel... models) {
       // whatever is dyed we usually want first next to materials so want extra early
-      return first("__dyed", TinkerModifiers.dyed.getId(), merge(model, models));
+      return first("__dyed", TinkerModifiers.dyed.id(), merge(model, models));
     }
 
     /** Adds a model for dyed */
@@ -594,12 +594,12 @@ public abstract class AbstractModifierModelMapProvider extends GenericDataProvid
 
     /** Adds the trim model to the tool */
     public Builder trim(ArmorItem.Type type) {
-      return first(TinkerModifiers.trim.getId(), TrimModifierModel.Armor.values()[type.ordinal()]);
+      return first(TinkerModifiers.trim.id(), TrimModifierModel.Armor.values()[type.ordinal()]);
     }
 
     /** Creates a custom trim in the given folder, using the given name for the large variant. */
     public Builder customTrim(ResourceLocation smallPath, @Nullable ResourceLocation largePath) {
-      return first(TinkerModifiers.trim.getId(), new TrimModifierModel.Custom(toolPath(smallPath), toolPath(largePath)));
+      return first(TinkerModifiers.trim.id(), new TrimModifierModel.Custom(toolPath(smallPath), toolPath(largePath)));
     }
 
     /** Creates a custom trim in the default folder, using the given name for the large variant */
@@ -612,7 +612,7 @@ public abstract class AbstractModifierModelMapProvider extends GenericDataProvid
 
     /** Adds the embellishment model to the tool using the given textures */
     public Builder embellishment(@Nullable ResourceLocation smallPath, @Nullable ResourceLocation largePath) {
-      ModifierId embellishment = TinkerModifiers.embellishment.getId();
+      ModifierId embellishment = TinkerModifiers.embellishment.id();
       // whatever is embellish is basically a part so want extra early
       return first("__embellishment", embellishment, new MaterialModifierModel.PersistentData(toolMaterial(smallPath), toolMaterial(largePath)))
         // set the embellishment to empty so its skipped in the legacy system. TODO 1.21: remove this
@@ -626,7 +626,7 @@ public abstract class AbstractModifierModelMapProvider extends GenericDataProvid
 
     /** Adds the embellishment model to the tool from the modifiers folder */
     public Builder embellishment() {
-      String suffix = toSuffix(TinkerModifiers.embellishment.getId());
+      String suffix = toSuffix(TinkerModifiers.embellishment.id());
       return embellishment(toPath(smallFolder, suffix), toPath(largeFolder, suffix));
     }
 
@@ -635,7 +635,7 @@ public abstract class AbstractModifierModelMapProvider extends GenericDataProvid
 
     /** Adds the banner model to the tool */
     public Builder banner(@Nullable ResourceLocation smallPrefix, @Nullable ResourceLocation largePrefix) {
-      return first(TinkerModifiers.banner.getId(), new BannerModifierModel(toolPath(smallPrefix), toolPath(largePrefix)));
+      return first(TinkerModifiers.banner.id(), new BannerModifierModel(toolPath(smallPrefix), toolPath(largePrefix)));
     }
 
     /** Adds the banner model to the tool */

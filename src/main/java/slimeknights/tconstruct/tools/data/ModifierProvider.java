@@ -500,7 +500,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.silky).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(EnchantmentModule.builder(Enchantments.SILK_TOUCH).toolItem(harvest).constant())
       .addModule(EnchantmentModule.builder(Enchantments.SILK_TOUCH).toolItem(armor).armorHarvest(ARMOR_SLOTS));
-    buildModifier(TinkerModifiers.severing.getId()).addModule(SeveringModule.INSTANCE);
+    buildModifier(TinkerModifiers.severing.id()).addModule(SeveringModule.INSTANCE);
     buildModifier(ModifierIds.experienced)
       .addModule(new VolatileFloatModule(ModifierEvents.EXPERIENCE, LevelingValue.eachLevel(0.5f)), ModifierHooks.VOLATILE_DATA, ModifierHooks.PROJECTILE_LAUNCH)
       .addModule(AttributeModule.builder(TinkerAttributes.EXPERIENCE_MULTIPLIER, Operation.MULTIPLY_BASE).toolItem(ItemPredicate.tag(ARMOR)).eachLevel(0.25f));
@@ -826,7 +826,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         // TODO: tag?
         .requirement(ToolContextPredicate.or(
           HasModifierPredicate.hasModifier(ModifierIds.blocking, 1),
-          HasModifierPredicate.hasModifier(TinkerModifiers.parrying.getId(), 1)))
+          HasModifierPredicate.hasModifier(TinkerModifiers.parrying.id(), 1)))
         .modifierKey(ModifierIds.blockade).build());
     buildModifier(ModifierIds.boundless)
       .addModule(AttributeModule.builder(TinkerAttributes.PROTECTION_CAP, Operation.ADDITION).tooltipStyle(TooltipStyle.PERCENT).toolItem(ItemPredicate.tag(ARMOR)).amount(0.05f, 0.05f));
@@ -1281,7 +1281,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(StatBoostModule.add(ToolStats.PROJECTILE_DAMAGE).eachLevel(0.25f))
       .addModule(StatBoostModule.add(ToolStats.ARMOR_TOUGHNESS).eachLevel(1));
     buildModifier(ModifierIds.overshield).addModule(new OvershieldModule(LevelingValue.eachLevel(1.25f), LevelingInt.eachLevel(2)));
-    ModifierId overslime = TinkerModifiers.overslime.getId();
+    ModifierId overslime = TinkerModifiers.overslime.id();
     buildModifier(ModifierIds.overwield).priority(75) // run later than other conditionals
       // small tools consume 1 per mining operation
       .addModule(ConditionalMiningSpeedModule.builder().percent().toolItem(ItemPredicate.tag(TinkerTags.Items.BROAD_TOOLS).inverted())
@@ -1679,12 +1679,12 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new VolatileFlagModule(ModifiableArmorItem.ENDERMASK));
 
     // cosmetic
-    buildModifier(TinkerModifiers.dyed.getId()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(DyeModule.INSTANCE);
-    buildModifier(TinkerModifiers.embellishment.getId()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(EmbellishmentModule.INSTANCE);
+    buildModifier(TinkerModifiers.dyed.id()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(DyeModule.INSTANCE);
+    buildModifier(TinkerModifiers.embellishment.id()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(EmbellishmentModule.INSTANCE);
     // will never be used as a tool part trait, so stick to just tinker station
-    buildModifier(TinkerModifiers.banner.getId()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(BannerModule.INSTANCE).priority(25);
+    buildModifier(TinkerModifiers.banner.id()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(BannerModule.INSTANCE).priority(25);
     // trim
-    buildModifier(TinkerModifiers.trim.getId())
+    buildModifier(TinkerModifiers.trim.id())
       .showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new TrimModule())
       .addModule(ModifierSlotModule.slot(SlotType.DEFENSE).toolContext(new HasToolHookPredicate(ToolHooks.TRIM_TRAIT).inverted()).eachLevel(1))

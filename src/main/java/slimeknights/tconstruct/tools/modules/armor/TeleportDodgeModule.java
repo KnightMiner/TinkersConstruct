@@ -69,7 +69,7 @@ public record TeleportDodgeModule(IJsonPredicate<LivingEntity> defender, IJsonPr
           entity.addEffect(new MobEffectInstance(TinkerEffects.enderference.get(), cooldown));
         }
         // damage tool based on how much damage we blocked
-        ToolDamageUtil.damageAnimated(tool, (int)amount, entity, slotType, modifier.getId());
+        ToolDamageUtil.damageAnimated(tool, (int)amount, entity, slotType, modifier.id());
         // prevent said damage
         return 0;
       }

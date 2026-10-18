@@ -105,7 +105,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
     // find the modifier to remove
     List<ModifierEntry> upgrades = tool.getUpgrades().getModifiers();
     int toMove = IntStream.range(0, upgrades.size())
-                          .filter(i -> upgrades.get(i).matches(modifier.getId()))
+                          .filter(i -> upgrades.get(i).matches(modifier.id()))
                           .findFirst().orElse(-1);
     // if no change, no need to do anything
     if (toMove == -1) {

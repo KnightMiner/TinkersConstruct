@@ -154,7 +154,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     this.dynamicModifiers = splashList.entrySet().stream()
       .map(entry -> loadModifier(entry.getKey(), entry.getValue().getAsJsonObject(), redirects))
       .filter(Objects::nonNull)
-      .collect(Collectors.toMap(Modifier::getId, mod -> mod));
+      .collect(Collectors.toMap(Modifier::id, mod -> mod));
 
     // process redirects
     Map<ModifierId,Modifier> resolvedRedirects = new HashMap<>(); // handled as a separate map to prevent redirects depending on order (no double redirects)
@@ -202,7 +202,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
       return Optional.of(modifier);
     }, TAG_FOLDER);
     this.tags = GenericTagUtil.mapLoaderResults(REGISTRY_KEY, tagLoader.loadAndBuild(pResourceManager));
-    this.reverseTags = GenericTagUtil.reverseTags(Modifier::getId, tags);
+    this.reverseTags = GenericTagUtil.reverseTags(Modifier::id, tags);
     timeStep = System.nanoTime();
     log.info("Loaded {} modifier tags for {} modifiers in {} ms", tags.size(), this.reverseTags.size(), (timeStep - time) / 1000000f);
 
@@ -339,7 +339,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     this.dynamicModifiers = packet.getAllModifiers();
     this.dynamicModifiersLoaded = true;
     this.tags = packet.getTags();
-    this.reverseTags = GenericTagUtil.reverseTags(Modifier::getId, tags);
+    this.reverseTags = GenericTagUtil.reverseTags(Modifier::id, tags);
     this.enchantmentMap = packet.getEnchantmentMap();
     this.enchantmentTags = packet.getEnchantmentTags();
     this.enchantmentModifiers = Stream.concat(enchantmentMap.values().stream(), enchantmentTags.stream().map(EnchantmentTag::modifier)).collect(Collectors.toSet());
@@ -405,8 +405,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   /** Gets a stream of all enchantments that match the given modifiers */
   public Stream<Holder<Enchantment>> getEquivalentEnchantments(Predicate<ModifierId> modifiers) {
     return Stream.concat(
-      enchantmentMap.entrySet().stream().filter(entry -> modifiers.test(entry.getValue().getId())).map(Entry::getKey),
-      enchantmentTags.stream().filter(entry -> modifiers.test(entry.modifier.getId())).flatMap(entry -> entry.tag.stream())
+      enchantmentMap.entrySet().stream().filter(entry -> modifiers.test(entry.getValue().id())).map(Entry::getKey),
+      enchantmentTags.stream().filter(entry -> modifiers.test(entry.modifier.id())).flatMap(entry -> entry.tag.stream())
     ).distinct().sorted(Comparator.comparing(IHolderExtension::getKey, Comparator.nullsLast(Comparator.naturalOrder())));
   }
 
@@ -414,7 +414,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   public Stream<ResourceLocation> getAllLocations() {
     // filter out redirects (redirects are any modifiers where the ID does not match the key
     return Stream.concat(staticModifiers.entrySet().stream(), dynamicModifiers.entrySet().stream())
-                 .filter(entry -> entry.getKey().equals(entry.getValue().getId()))
+                 .filter(entry -> entry.getKey().equals(entry.getValue().id()))
                  .map(Entry::getKey);
   }
 

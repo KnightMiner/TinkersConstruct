@@ -85,7 +85,7 @@ public interface IToolContext {
    * @return  Modifier entry, or {@link ModifierEntry#EMPTY} if missing.
    */
   default ModifierEntry getModifier(Modifier modifier) {
-    return getModifiers().getEntry(modifier.getId());
+    return getModifiers().getEntry(modifier.id());
   }
 
   /**
@@ -103,7 +103,7 @@ public interface IToolContext {
    * @return  Level of modifier, 0 if the modifier is not on the tool
    */
   default int getModifierLevel(Modifier modifier) {
-    return getModifiers().getLevel(modifier.getId());
+    return getModifiers().getLevel(modifier.id());
   }
 
 

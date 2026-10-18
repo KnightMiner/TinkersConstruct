@@ -95,7 +95,7 @@ public class OverslimeCraftingTableRecipe extends CustomRecipe {
     ToolStack tool = ToolStack.from(match.tool);
     // no adding overslime via this recipe, only refilling it
     // mostly simplifies some of the craft remainder logic
-    return tool.getModifierLevel(TinkerModifiers.overslime.getId()) > 0 || OverslimeModule.INSTANCE.getAmount(tool) < OverslimeModule.getCapacity(tool);
+    return tool.getModifierLevel(TinkerModifiers.overslime.id()) > 0 || OverslimeModule.INSTANCE.getAmount(tool) < OverslimeModule.getCapacity(tool);
   }
 
   @Override

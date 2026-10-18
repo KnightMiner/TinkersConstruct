@@ -11,13 +11,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -95,7 +95,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
     // ensure we have at least one supported enchantment
     if (inv != null && getEnchantments(inv.getTinkerableStack()).entrySet().stream().noneMatch(entry -> {
       Modifier modifier = ModifierManager.INSTANCE.get(entry.getKey());
-      return modifier != null && modifierPredicate.matches(modifier.getId());
+      return modifier != null && modifierPredicate.matches(modifier.id());
     })) {
       return NO_ENCHANTMENT;
     }
@@ -123,7 +123,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   /** Gets a list of all modifiers that match this recipe, set to level 1 for display */
   private List<ModifierEntry> getMatchingModifiers() {
     return ModifierRecipeLookup.getAllRecipeModifiers()
-      .filter(modifier -> modifierPredicate.matches(modifier.getId()) && ModifierManager.INSTANCE.hasEnchantment(modifier))
+      .filter(modifier -> modifierPredicate.matches(modifier.id()) && ModifierManager.INSTANCE.hasEnchantment(modifier))
       .map(mod -> new ModifierEntry(mod, 1)).toList();
   }
 
@@ -133,7 +133,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
       // map all enchantments to an equal level modifier
       return getEnchantments(inv.getTinkerableStack()).entrySet().stream().map(entry -> {
         Modifier modifier = ModifierManager.INSTANCE.get(entry.getKey());
-        if (modifier != null && modifierPredicate.matches(modifier.getId())) {
+        if (modifier != null && modifierPredicate.matches(modifier.id())) {
           return new ModifierEntry(modifier, returnInput ? 1 : entry.getValue());
         }
         return null;
@@ -141,10 +141,10 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
     }
     if (displayModifiers == null) {
       if (matchBook) {
-        Set<ModifierId> modifiers = getMatchingModifiers().stream().map(ModifierEntry::getId).collect(Collectors.toSet());
+        Set<ModifierId> modifiers = getMatchingModifiers().stream().map(ModifierEntry::id).collect(Collectors.toSet());
         Modifier defaultModifier = ModifierManager.INSTANCE.getDefaultValue();
         displayModifiers = ModifierManager.INSTANCE.getEquivalentEnchantments(modifiers::contains)
-          .flatMap(enchantment -> IntStream.rangeClosed(1, enchantment.getMaxLevel())
+          .flatMap(enchantment -> IntStream.rangeClosed(1, enchantment.value().getMaxLevel())
             .mapToObj(level -> new ModifierEntry(Objects.requireNonNullElse(ModifierManager.INSTANCE.get(enchantment), defaultModifier), level)))
           .toList();
       } else {
@@ -174,7 +174,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
         return TOO_FEW;
       }
     }
-    return LazyToolStack.success(ModifierCrystalItem.withModifier(modifier.getId(), level));
+    return LazyToolStack.success(ModifierCrystalItem.withModifier(modifier.id(), level));
   }
 
   @Override
@@ -199,7 +199,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
       for (Entry<Enchantment,Integer> entry : enchantments.entrySet()) {
         Enchantment enchantment = entry.getKey();
         Modifier enchantmentModifier = ModifierManager.INSTANCE.get(enchantment);
-        if (enchantmentModifier != null && enchantmentModifier.getId().equals(modifier)) {
+        if (enchantmentModifier != null && enchantmentModifier.id().equals(modifier)) {
           int newLevel = entry.getValue() - 1;
           if (newLevel <= 0) {
             enchantments.remove(enchantment);
@@ -260,7 +260,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
     // for books, cache per recipe as we show the enchants
     if (tools == null) {
       // don't use the cached value from getModifierOptions as that is going to contain some redundant listings
-      Set<ModifierId> modifiers = getMatchingModifiers().stream().map(ModifierEntry::getId).collect(Collectors.toSet());
+      Set<ModifierId> modifiers = getMatchingModifiers().stream().map(ModifierEntry::id).collect(Collectors.toSet());
       tools = ModifierManager.INSTANCE.getEquivalentEnchantments(modifiers::contains)
         .flatMap(enchantment -> IntStream.rangeClosed(1, enchantment.getMaxLevel())
           .mapToObj(level -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level))))

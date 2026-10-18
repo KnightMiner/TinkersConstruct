@@ -187,7 +187,7 @@ public class ModifierClientEvents {
       if (context.getChangedSlot() == EquipmentSlot.LEGS) {
         IToolStackView tool = context.getToolInSlot(EquipmentSlot.LEGS);
         if (tool != null) {
-          ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.shieldStrap.getId());
+          ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.shieldStrap.id());
           if (entry != ModifierEntry.EMPTY) {
             nextOffhand = entry.getHook(ToolInventoryCapability.HOOK).getStack(tool, entry, 0);
             return;
@@ -200,7 +200,7 @@ public class ModifierClientEvents {
       if (context.getChangedSlot() == EquipmentSlot.CHEST) {
         IToolStackView tool = context.getToolInSlot(EquipmentSlot.CHEST);
         if (tool != null) {
-          ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.sleeves.getId());
+          ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.sleeves.id());
           if (entry != ModifierEntry.EMPTY) {
             currentSleeve = entry.getHook(ToolInventoryCapability.HOOK).getStack(tool, entry, tool.getPersistentData().getInt(SleevesModule.SELECTED_SLOT));
             return;
@@ -215,7 +215,7 @@ public class ModifierClientEvents {
         itemFrames.clear();
         IToolStackView tool = context.getToolInSlot(EquipmentSlot.HEAD);
         if (tool != null) {
-          ModifierEntry entry = tool.getModifier(TinkerModifiers.itemFrame.getId());
+          ModifierEntry entry = tool.getModifier(TinkerModifiers.itemFrame.id());
           if (entry.intEffectiveLevel() > 0) {
             entry.getHook(ToolInventoryCapability.HOOK).getAllStacks(tool, entry, itemFrames);
           }

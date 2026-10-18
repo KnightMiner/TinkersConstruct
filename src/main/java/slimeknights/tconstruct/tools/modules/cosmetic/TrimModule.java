@@ -48,7 +48,7 @@ public class TrimModule implements ModifierModule, DisplayNameModifierHook, Modi
   @Override
   public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     IModDataView modDataNBT = tool.getPersistentData();
-    ModifierId id = entry.getId();
+    ModifierId id = entry.id();
     String trimMaterial = modDataNBT.getString(materialKey(id));
     String trimPattern = modDataNBT.getString(patternKey(id));
     // get the unformatted name
@@ -79,7 +79,7 @@ public class TrimModule implements ModifierModule, DisplayNameModifierHook, Modi
   @Nullable
   @Override
   public Component onRemoved(IToolStackView tool, Modifier modifier) {
-    ModifierId id = modifier.getId();
+    ModifierId id = modifier.id();
     tool.getPersistentData().remove(patternKey(id));
     tool.getPersistentData().remove(materialKey(id));
     return null;

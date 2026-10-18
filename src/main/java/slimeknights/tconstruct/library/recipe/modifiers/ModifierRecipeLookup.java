@@ -78,7 +78,7 @@ public class ModifierRecipeLookup {
   public static void addRecipeModifier(@Nullable SlotType slotType, LazyModifier modifier) {
     LISTENER.checkClear();
     RECIPE_MODIFIERS.put(slotType, modifier);
-    RECIPE_MODIFIER_IDS.put(slotType, modifier.getId());
+    RECIPE_MODIFIER_IDS.put(slotType, modifier.id());
   }
 
   /** Gets a stream of all modifiers obtainable via recipes */
@@ -93,7 +93,7 @@ public class ModifierRecipeLookup {
       return Collections.emptyList();
     }
     if (RECIPE_MODIFIER_LIST == null) {
-      RECIPE_MODIFIER_LIST = RECIPE_MODIFIERS.values().stream().distinct().sorted(Comparator.comparing(LazyModifier::getId)).map(mod -> new ModifierEntry(mod, 1)).toList();
+      RECIPE_MODIFIER_LIST = RECIPE_MODIFIERS.values().stream().distinct().sorted(Comparator.comparing(LazyModifier::id)).map(mod -> new ModifierEntry(mod, 1)).toList();
     }
     return RECIPE_MODIFIER_LIST;
   }

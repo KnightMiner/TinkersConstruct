@@ -43,7 +43,7 @@ public class DyedModifierModel implements SimpleModifierModel {
   @Nullable
   @Override
   public Object getCacheKey(IToolStackView tool, ModifierEntry entry) {
-    ModifierId modifier = entry.getId();
+    ModifierId modifier = entry.id();
     IModDataView data = tool.getPersistentData();
     int color = -1;
     if (data.contains(modifier, Tag.TAG_INT)) {
@@ -57,7 +57,7 @@ public class DyedModifierModel implements SimpleModifierModel {
     Material texture = isLarge ? large : small;
     if (texture != null) {
       IModDataView data = tool.getPersistentData();
-      ResourceLocation key = modifier.getId();
+      ResourceLocation key = modifier.id();
       if (data.contains(key, Tag.TAG_INT)) {
         quadConsumer.accept(MantleItemLayerModel.getQuadsForSprite(0xFF000000 | data.getInt(key), -1, spriteGetter.apply(texture), transforms, 0, pixels));
       }

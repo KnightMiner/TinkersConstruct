@@ -120,7 +120,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
     // store into tool NBT
     ToolStack tool = inv.getTinkerable().copy();
     ModDataNBT persistentData = tool.getPersistentData();
-    ModifierId modifier = TinkerModifiers.trim.getId();
+    ModifierId modifier = TinkerModifiers.trim.id();
     persistentData.putString(TrimModule.materialKey(modifier), material.key().location().toString());
     if (pattern != null) {
       persistentData.putString(TrimModule.patternKey(modifier), pattern.key().location().toString());
@@ -192,7 +192,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
 
       String materialName = holder.key().location().toString();
       List<ModifierEntry> results = List.of(RESULT);
-      ResourceLocation key = TrimModule.materialKey(TinkerModifiers.trim.getId());
+      ResourceLocation key = TrimModule.materialKey(TinkerModifiers.trim.id());
       toolWithModifier = tools.stream().map(stack -> IDisplayModifierRecipe.withModifiers(stack, results, data -> data.putString(key, materialName))).toList();
 
     }
@@ -240,7 +240,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
     public void applyModifier(ToolStack tool) {
       // store into tool NBT
       ModDataNBT persistentData = tool.getPersistentData();
-      ModifierId modifier = TinkerModifiers.trim.getId();
+      ModifierId modifier = TinkerModifiers.trim.id();
       persistentData.putString(TrimModule.materialKey(modifier), material.key().location().toString());
       // skip pattern, it doesn't show on the item, and it saves us a lookup
 

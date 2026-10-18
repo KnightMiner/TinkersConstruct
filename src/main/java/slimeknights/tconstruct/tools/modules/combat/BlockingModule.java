@@ -51,7 +51,7 @@ public enum BlockingModule implements ModifierModule, GeneralInteractionModifier
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK && !tool.isBroken()) {
-      GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+      GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
     }
     return InteractionResult.PASS;

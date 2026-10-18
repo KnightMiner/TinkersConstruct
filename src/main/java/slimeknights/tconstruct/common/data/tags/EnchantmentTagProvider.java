@@ -28,7 +28,7 @@ public class EnchantmentTagProvider extends TagsProvider<Enchantment> {
     modifierTag(ModifierIds.killager, "ensorcellation:damage_illager");
     modifierTag(ModifierIds.magnetic, "cyclic:magnet");
     modifierTag(ModifierIds.necrotic, "cyclic:life_leech", "ensorcellation:leech");
-    modifierTag(TinkerModifiers.severing.getId(), "cyclic:beheading", "ensorcellation:vorpal");
+    modifierTag(TinkerModifiers.severing.id(), "cyclic:beheading", "ensorcellation:vorpal");
     modifierTag(ModifierIds.stepUp, "cyclic:step");
     modifierTag(ModifierIds.soulbound, "ensorcellation:soulbound", "enderzoology:soulbound");
     modifierTag(ModifierIds.trueshot, "ensorcellation:trueshot");

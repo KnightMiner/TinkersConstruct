@@ -186,7 +186,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
 
         // damage tool if not creative
         if (ModifierUtil.consumesResources(player)) {
-          ToolDamageUtil.damageAnimated(tool, durability.compute(modifier), entity, slot, modifier.getId());
+          ToolDamageUtil.damageAnimated(tool, durability.compute(modifier), entity, slot, modifier.id());
         }
       }
       entity.playSound(sound, 2.0F, (level.random.nextFloat() - level.random.nextFloat()) * 0.2F + 1.0F);
@@ -197,7 +197,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
 
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
-    if (condition.matches(tool, modifier) && !tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (condition.matches(tool, modifier) && !tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       if (shoot(tool, modifier, player, player, Util.getSlotType(hand))) {
         GeneralInteractionModifierHook.addCooldown(tool, player, 1);
         return InteractionResult.sidedSuccess(player.level().isClientSide);

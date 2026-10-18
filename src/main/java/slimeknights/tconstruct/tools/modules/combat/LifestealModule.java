@@ -92,7 +92,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
         // take a bit of extra damage to heal
         int durability = durabilityUsage.compute(level);
         if (durability > 0) {
-          ToolDamageUtil.damageAnimated(tool, durability, attacker, context.getSlotType(), modifier.getId());
+          ToolDamageUtil.damageAnimated(tool, durability, attacker, context.getSlotType(), modifier.id());
         }
       }
     }
@@ -110,7 +110,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
     if (primary && TinkerPredicate.matches(this.attacker, shooter)) {
       int durabilityUsage = this.durabilityUsage.compute(modifier.getEffectiveLevel());
       if (durabilityUsage > 0) {
-        ToolDamageUtil.damageLauncher(tool, durabilityUsage, shooter, projectile, modifier.getId());
+        ToolDamageUtil.damageLauncher(tool, durabilityUsage, shooter, projectile, modifier.id());
       }
     }
   }
@@ -131,7 +131,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
           // damage fishing rod
           int durabilityUsage = this.durabilityUsage.compute(level);
           if (durabilityUsage > 0) {
-            ModifierUtil.updateFishingRod(projectile, durabilityUsage, false, modifier.getId());
+            ModifierUtil.updateFishingRod(projectile, durabilityUsage, false, modifier.id());
           }
         }
       }

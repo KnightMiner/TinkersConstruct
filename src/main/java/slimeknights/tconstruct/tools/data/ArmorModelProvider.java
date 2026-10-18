@@ -23,7 +23,7 @@ public class ArmorModelProvider extends AbstractArmorModelProvider {
 
   @Override
   protected void addModels() {
-    ModifierId dyed = TinkerModifiers.dyed.getId();
+    ModifierId dyed = TinkerModifiers.dyed.id();
     addModel(ArmorDefinitions.TRAVELERS, name -> new ArmorTextureSupplier[] {
       FixedArmorTextureSupplier.builder(name, "/base_").build(),
       new FirstArmorTextureSupplier(

@@ -79,7 +79,7 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
         headModel = skull;
         headTexture = texture;
         // if dyed, color is the dye
-        ModifierId dyed = TinkerModifiers.dyed.getId();
+        ModifierId dyed = TinkerModifiers.dyed.id();
         if (ModifierUtil.getModifierLevel(stack, dyed) > 0) {
           headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed, -1);
         } else {

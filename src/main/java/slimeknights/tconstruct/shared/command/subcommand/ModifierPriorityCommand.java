@@ -45,7 +45,7 @@ public class ModifierPriorityCommand {
   private static int run(CommandContext<CommandSourceStack> context, boolean filtered) {
     // common table properties
     TablePrinter<Modifier> table = new TablePrinter<>();
-    table.header("ID", m -> m.getId().toString());
+    table.header("ID", m -> m.id().toString());
     table.header("Priority", m -> Integer.toString(m.getPriority()));
     Stream<Modifier> modifiers = ModifierManager.INSTANCE.getAllValues();
     StringBuilder builder = new StringBuilder();
@@ -61,7 +61,7 @@ public class ModifierPriorityCommand {
       table.header("Hooks", m -> m.getHooks().getAllModules().keySet().stream().map(ModuleHook::getId).sorted().map(ResourceLocation::toString).collect(Collectors.joining(", ")));
     }
     builder.append(":").append(System.lineSeparator());
-    List<Modifier> list = modifiers.sorted(Comparator.comparingInt(Modifier::getPriority).reversed().thenComparing(Modifier::getId)).toList();
+    List<Modifier> list = modifiers.sorted(Comparator.comparingInt(Modifier::getPriority).reversed().thenComparing(Modifier::id)).toList();
     table.add(list);
 
     table.build(builder);

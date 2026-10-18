@@ -123,7 +123,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     @Override
     public Object getCacheKey(IToolStackView tool, ModifierEntry entry) {
       // since we are using a key in NBT for the material, need to include it in the cache key
-      return new CacheKey(entry.getId(), tool.getPersistentData().getString(getKey(entry)));
+      return new CacheKey(entry.id(), tool.getPersistentData().getString(getKey(entry)));
     }
 
     /** Data class to cache a material texture */
@@ -177,7 +177,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
       if (modifier == ModifierEntry.EMPTY) {
         return color;
       }
-      return new CacheKey(modifier.getId(), color);
+      return new CacheKey(modifier.id(), color);
     }
 
     /** Data class to cache a colored texture */

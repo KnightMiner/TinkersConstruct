@@ -2025,12 +2025,12 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
 
   /** Prefixes the modifier ID with the given prefix */
   public ResourceLocation prefix(LazyModifier modifier, String prefix) {
-    return prefix(modifier.getId(), prefix);
+    return prefix(modifier.id(), prefix);
   }
 
   /** Prefixes the modifier ID with the given prefix and suffix */
   public ResourceLocation wrap(LazyModifier modifier, String prefix, String suffix) {
-    return wrap(modifier.getId(), prefix, suffix);
+    return wrap(modifier.id(), prefix, suffix);
   }
 
   /**

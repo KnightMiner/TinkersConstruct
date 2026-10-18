@@ -63,7 +63,7 @@ public record BlockItemProviderModule(ItemStack item, int damage, ModifierCondit
 
         // we did provide it, so damage and show animation if possible
         if (damage > 0) {
-            ToolDamageUtil.damageAnimated(tool, damage, entity, modifier.getId());
+            ToolDamageUtil.damageAnimated(tool, damage, entity, modifier.id());
         }
         return true;
     }

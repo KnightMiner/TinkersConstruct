@@ -178,14 +178,13 @@ public class TooltipUtil {
    * @param tooltips   Tooltip list
    * @param flag       Tooltip flag
    */
-  @SuppressWarnings("deprecation")
   public static void addModifierNames(ItemStack stack, IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipFlag flag) {
     RegistryAccess access = player == null ? null : player.level().registryAccess();
     for (ModifierEntry entry : tool.getModifierList()) {
       if (entry.getModifier().shouldDisplay(ModifierTooltip.TOOL)) {
         Component name = entry.getModifier().getDisplayName(tool, entry, access);
         if (flag.isAdvanced() && Config.CLIENT.modifiersIDsInAdvancedTooltips.get()) {
-          tooltips.add(Component.translatable(KEY_ID_FORMAT, name, Component.literal(entry.getModifier().getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+          tooltips.add(Component.translatable(KEY_ID_FORMAT, name, Component.literal(entry.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
         } else {
           tooltips.add(name);
         }

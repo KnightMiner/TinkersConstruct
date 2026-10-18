@@ -79,7 +79,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
    */
   public boolean has(TagKey<Modifier> tag) {
     for (ModifierEntry entry : modifiers) {
-      if (ModifierManager.isInTag(entry.getId(), tag)) {
+      if (ModifierManager.isInTag(entry.id(), tag)) {
         return true;
       }
     }
@@ -94,7 +94,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
    */
   public boolean has(IJsonPredicate<ModifierId> predicate) {
     for (ModifierEntry entry : modifiers) {
-      if (predicate.matches(entry.getId())) {
+      if (predicate.matches(entry.id())) {
         return true;
       }
     }
@@ -275,7 +275,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
     @Override
     public Builder add(ModifierEntry entry) {
       if (entry != ModifierEntry.EMPTY && entry.isBound()) {
-        ModifierId id = entry.getId();
+        ModifierId id = entry.id();
         ModifierEntry current = modifiers.get(id);
         if (current != null) {
           entry = current.merge(entry);

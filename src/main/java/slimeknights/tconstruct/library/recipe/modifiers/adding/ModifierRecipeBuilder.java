@@ -37,7 +37,7 @@ public class ModifierRecipeBuilder extends AbstractModifierRecipeBuilder<Modifie
    * @return  Recipe for 1 level of the modifier
    */
   public static ModifierRecipeBuilder modifier(LazyModifier modifier) {
-    return modifier(modifier.getId());
+    return modifier(modifier.id());
   }
 
 

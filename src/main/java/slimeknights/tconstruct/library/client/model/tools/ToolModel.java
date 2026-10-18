@@ -112,9 +112,9 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
         List<ModifierEntry> modifiers = tool.getUpgrades().getModifiers();
         for (int i = modifiers.size() - 1; i >= 0; i--) {
           ModifierEntry entry = modifiers.get(i);
-          ModifierId id = entry.getId();
+          ModifierId id = entry.id();
           // colors are assumed to not be sensitive to the model's large status
-          ModifierModel modifierModel = overrides.modifierModels.get(entry.getId());
+          ModifierModel modifierModel = overrides.modifierModels.get(entry.id());
           if (modifierModel != null) {
             // indexes from [0,modelIndexes) are passed to this model
             // if below the range, make the index model relative
@@ -239,7 +239,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
         Set<ModifierId> hidden = ModifierSetWorktableRecipe.getModifierSet(tool.getPersistentData(), TConstruct.getResource("invisible_modifiers"));
         for (int i = modifiers.size() - 1; i >= 0; i--) {
           ModifierEntry entry = modifiers.get(i);
-          ModifierId modifier = entry.getModifier().getId();
+          ModifierId modifier = entry.id();
           if (!hidden.contains(modifier)) {
             ModifierModel model = modifierModels.get(modifier);
             if (model != null) {
@@ -660,7 +660,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       ImmutableList.Builder<Object> builder = ImmutableList.builder();
       Set<ModifierId> hidden = ModifierSetWorktableRecipe.getModifierSet(tool.getPersistentData(), TConstruct.getResource("invisible_modifiers"));
       for (ModifierEntry entry : modifiers) {
-        ModifierId id = entry.getId();
+        ModifierId id = entry.id();
         if (!hidden.contains(id)) {
           ModifierModel model = modifierModels.get(id);
           if (model != null) {

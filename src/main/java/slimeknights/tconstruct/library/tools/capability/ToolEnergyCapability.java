@@ -26,7 +26,7 @@ public record ToolEnergyCapability(Supplier<? extends IToolStackView> tool) impl
   /** Persistent data key for fetching the current energy */
   public static final ResourceLocation ENERGY_KEY = TConstruct.getResource("energy");
   /** Include this module in a modifier adding energy capacity or functionality to ensure capacity changes are properly cleaned up */
-  public static final ModifierModule ENERGY_HANDLER = new ModifierTraitModule(TinkerModifiers.energyHandler.getId(), 1, true);
+  public static final ModifierModule ENERGY_HANDLER = new ModifierTraitModule(TinkerModifiers.energyHandler.id(), 1, true);
 
   /** Gets the energy capacity for the given tool */
   public static int getMaxEnergy(IToolStackView tool) {

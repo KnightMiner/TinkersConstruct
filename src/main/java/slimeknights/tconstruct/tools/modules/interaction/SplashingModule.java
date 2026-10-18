@@ -74,7 +74,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
   @Override
   public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     // melee items get spilling via attack, non melee interact to use it
-    if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty()) {
         FluidEffects recipe = FluidEffectManager.INSTANCE.find(fluid.getFluid());
@@ -123,7 +123,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
               }
 
               // damage the tool, we charge for the multiplier and for the number of targets hit
-              ToolDamageUtil.damageAnimated(tool, Mth.ceil(numTargets * level), player, hand, modifier.getId());
+              ToolDamageUtil.damageAnimated(tool, Mth.ceil(numTargets * level), player, hand, modifier.id());
             }
           }
 
@@ -144,7 +144,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
 
   @Override
   public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
-    if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty()) {
         FluidEffects recipe = FluidEffectManager.INSTANCE.find(fluid.getFluid());
@@ -195,7 +195,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
 
               // damage the tool, we charge for the multiplier and for the number of targets hit
               ItemStack stack = context.getItemInHand();
-              if (ToolDamageUtil.damage(tool, Mth.ceil(numTargets * level), player, stack, modifier.getId()) && player != null) {
+              if (ToolDamageUtil.damage(tool, Mth.ceil(numTargets * level), player, stack, modifier.id()) && player != null) {
                 player.broadcastBreakEvent(source.getSlot(context.getHand()));
               }
             }

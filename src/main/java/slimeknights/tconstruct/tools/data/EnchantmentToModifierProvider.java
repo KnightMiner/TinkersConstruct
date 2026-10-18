@@ -71,7 +71,7 @@ public class EnchantmentToModifierProvider extends AbstractEnchantmentToModifier
     addCompat(ModifierIds.killager);
     addCompat(ModifierIds.magnetic);
     addCompat(ModifierIds.necrotic);
-    addCompat(TinkerModifiers.severing.getId());
+    addCompat(TinkerModifiers.severing.id());
     addCompat(ModifierIds.stepUp);
     addCompat(ModifierIds.soulbound);
     addCompat(ModifierIds.trueshot);

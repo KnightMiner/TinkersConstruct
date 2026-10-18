@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.modifiers.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.minecraft.tags.TagKey;
 import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.TConstruct;
@@ -16,13 +17,13 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class LazyModifier implements Supplier<Modifier>, IdAwareObject {
   /** ID of the modifier to fetch */
-  @Getter
+  @Getter @Accessors(fluent = true)
   protected final ModifierId id;
   /** Cached value for the modifier */
   protected Modifier result;
 
   public LazyModifier(Modifier modifier) {
-    this.id = modifier.getId();
+    this.id = modifier.id();
     this.result = modifier;
   }
 
@@ -61,7 +62,7 @@ public class LazyModifier implements Supplier<Modifier>, IdAwareObject {
 
   /** Checks if the modifier is in the given tag */
   public boolean is(TagKey<Modifier> tag) {
-    return ModifierManager.isInTag(getId(), tag);
+    return ModifierManager.isInTag(id(), tag);
   }
 
   @Override

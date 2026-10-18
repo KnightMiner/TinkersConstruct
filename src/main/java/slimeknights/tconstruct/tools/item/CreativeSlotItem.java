@@ -129,7 +129,7 @@ public class CreativeSlotItem extends Item {
           }
 
           // if no slot remain in the creative modifier, remove it
-          ModifierId creative = TinkerModifiers.creativeSlot.getId();
+          ModifierId creative = TinkerModifiers.creativeSlot.id();
           int currentLevel = tool.getModifierLevel(creative);
           if (slots.isEmpty()) {
             // if no slots exist anymore, remove the creative modifier

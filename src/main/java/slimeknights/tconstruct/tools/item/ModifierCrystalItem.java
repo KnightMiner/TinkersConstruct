@@ -203,8 +203,8 @@ public class ModifierCrystalItem extends Item {
   /** Gets all variants of this item */
   public static void addVariants(Consumer<ItemStack> items) {
     ModifierRecipeLookup.getRecipeModifierList().forEach(modifier -> {
-      if (!ModifierManager.isInTag(modifier.getId(), Modifiers.EXTRACT_MODIFIER_BLACKLIST)) {
-        items.accept(withModifier(modifier.getId()));
+      if (!ModifierManager.isInTag(modifier.id(), Modifiers.EXTRACT_MODIFIER_BLACKLIST)) {
+        items.accept(withModifier(modifier.id()));
       }
     });
   }

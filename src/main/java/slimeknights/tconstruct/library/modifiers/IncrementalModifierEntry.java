@@ -131,8 +131,8 @@ public class IncrementalModifierEntry extends ModifierEntry {
 
   @Override
   public ModifierEntry merge(ModifierEntry other) {
-    if (!this.getId().equals(other.getId())) {
-      throw new IllegalArgumentException("Modifiers do not match, have " + getId() + " but was given " + other.getId());
+    if (!this.id().equals(other.id())) {
+      throw new IllegalArgumentException("Modifiers do not match, have " + id() + " but was given " + other.id());
     }
     // we sum logical level instead of level as if we are both incremental, that will drop the level by 1
     // add amount will automatically no-op if other is not incremental
@@ -158,7 +158,7 @@ public class IncrementalModifierEntry extends ModifierEntry {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     IncrementalModifierEntry entry = (IncrementalModifierEntry)o;
-    return this.matches(entry.getId()) && level == entry.level && this.amount == entry.amount && this.needed == entry.needed;
+    return this.matches(entry.id()) && level == entry.level && this.amount == entry.amount && this.needed == entry.needed;
   }
 
   @Override
@@ -168,7 +168,7 @@ public class IncrementalModifierEntry extends ModifierEntry {
 
   @Override
   public String toString() {
-    return "IncrementalModifierEntry{" + modifier.getId() + ",level=" + level + ",amount=" + amount + '/' + needed + '}';
+    return "IncrementalModifierEntry{" + modifier.id() + ",level=" + level + ",amount=" + amount + '/' + needed + '}';
   }
 
 

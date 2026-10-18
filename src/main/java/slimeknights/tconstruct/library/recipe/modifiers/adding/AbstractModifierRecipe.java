@@ -64,7 +64,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   /* Fields */
   protected static final LoadableField<Ingredient,AbstractModifierRecipe> TOOLS_FIELD = IngredientLoadable.DISALLOW_EMPTY.requiredField("tools", r -> r.toolRequirement);
   protected static final LoadableField<Integer,AbstractModifierRecipe> MAX_TOOL_SIZE_FIELD = IntLoadable.FROM_ONE.defaultField("max_tool_size", ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE, r -> r.maxToolSize);
-  protected static final LoadableField<ModifierId,AbstractModifierRecipe> RESULT_FIELD = ModifierId.PARSER.requiredField("result", r -> r.result.getId());
+  protected static final LoadableField<ModifierId,AbstractModifierRecipe> RESULT_FIELD = ModifierId.PARSER.requiredField("result", r -> r.result.id());
   protected static final LoadableField<IntRange,AbstractModifierRecipe> LEVEL_FIELD = ModifierEntry.VALID_LEVEL.defaultField("level", r -> r.level);
   protected static final LoadableField<SlotCount,AbstractModifierRecipe> SLOTS_FIELD = SlotCount.LOADABLE.nullableField("slots", r -> r.slots);
   protected static final LoadableField<Boolean,AbstractModifierRecipe> ALLOW_CRYSTAL_FIELD = BooleanLoadable.INSTANCE.defaultField("allow_crystal", true, r -> r.allowCrystal);
@@ -134,7 +134,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
       Stream<ItemStack> stream = Arrays.stream(this.toolRequirement.getItems());
       // if we check the trait level, then filter out any tools that would never be able to use this recipe
       if (checkTraitLevel) {
-        ModifierId result = this.result.getId();
+        ModifierId result = this.result.id();
         int max = this.level.max();
         stream = stream.filter(stack -> {
           if (stack.getItem() instanceof IModifiable modifiable) {
@@ -202,7 +202,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
     // add variant info for the sake of rebalanced
     ModDataNBT persistentData = new ModDataNBT();
     if (!variant.isEmpty()) {
-      persistentData.putString(result.getId(), variant);
+      persistentData.putString(result.id(), variant);
     }
     // build volatile data, will read that for slot info
     ToolDataNBT volatileData = new ToolDataNBT();
@@ -254,7 +254,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
 
   /** Checks if the inventory contains a crystal */
   protected boolean matchesCrystal(ITinkerStationContainer container) {
-    return allowCrystal && matchesCrystal(container, result.getId());
+    return allowCrystal && matchesCrystal(container, result.id());
   }
 
   /** Validates that the given level is a valid result */
@@ -291,7 +291,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
 
   /** Gets the new level after applying this recipe */
   protected int getNewLevel(IToolStackView tool) {
-    return (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getLevel(result.getId()) + 1;
+    return (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getLevel(result.id()) + 1;
   }
 
   /**

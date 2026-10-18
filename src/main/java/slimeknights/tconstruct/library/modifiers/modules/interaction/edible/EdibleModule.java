@@ -66,7 +66,7 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   public static final PercentToolStat COUNTER_CHANCE = new PercentToolStat(new ToolStatId(TConstruct.MOD_ID, "edible_counter_chance"), 0xFFF0A8A4, 0, 0, 1, VALID_TOOLS);
 
   /** Module for adding a modifier with this module to the tool */
-  public static final ModifierModule EDIBLE_TRAIT = new ModifierTraitModule(TinkerModifiers.edible.getId(), 1, true);
+  public static final ModifierModule EDIBLE_TRAIT = new ModifierTraitModule(TinkerModifiers.edible.id(), 1, true);
 
   @Override
   public RecordLoadable<EdibleModule> getLoader() {
@@ -81,7 +81,7 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK && !tool.isBroken() && player.canEat(false) && tool.getStats().getInt(HUNGER) > 0) {
-      GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+      GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
     }
     return InteractionResult.PASS;

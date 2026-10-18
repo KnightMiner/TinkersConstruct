@@ -137,7 +137,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
 
   @Override
   public FluidStack drain(IToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
-    modifier.getId();
+    modifier.id();
     if (!resource.isEmpty()) {
       // ensure we have something and it matches the request
       FluidStack current = helper.getFluid(tool);
@@ -161,7 +161,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
 
   @Override
   public FluidStack drain(IToolStackView tool, ModifierEntry modifier, int maxDrain, FluidAction action) {
-    modifier.getId();
+    modifier.id();
     if (maxDrain > 0) {
       // ensure we have something and it matches the request
       FluidStack current = helper.getFluid(tool);

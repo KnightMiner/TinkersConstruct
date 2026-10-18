@@ -96,7 +96,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
 
   /** Gets the matching entry on the tool */
   private ModifierEntry getEntry(IToolStackView tool) {
-    return (checkTraitLevel() ? tool.getModifiers() : tool.getUpgrades()).getEntry(getDisplayResult().getId());
+    return (checkTraitLevel() ? tool.getModifiers() : tool.getUpgrades()).getEntry(getDisplayResult().id());
   }
 
   @Override
@@ -154,7 +154,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
    * Adds the modifier to the given tool.
    */
   default void applyModifier(ToolStack tool) {
-    ModifierId result = getDisplayResult().getId();
+    ModifierId result = getDisplayResult().id();
     if (isIncremental()) {
       ModifierEntry entry = getEntry(tool);
       // if we have a partial level, just make it a full level

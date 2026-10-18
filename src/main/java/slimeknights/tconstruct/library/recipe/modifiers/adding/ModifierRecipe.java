@@ -157,7 +157,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
     }
 
     // add modifier
-    tool.addModifier(result.getId(), 1);
+    tool.addModifier(result.id(), 1);
 
     // ensure no modifier problems
     Component toolValidation = tool.tryValidate();

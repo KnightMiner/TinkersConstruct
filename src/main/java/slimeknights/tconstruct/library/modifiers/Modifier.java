@@ -106,13 +106,13 @@ public class Modifier implements IdAwareObject {
   }
 
   @Override
-  public ModifierId getId() {
+  public ModifierId id() {
     return Objects.requireNonNull(id, "Modifier has null registry name");
   }
 
   /** Checks if the modifier is in the given tag */
   public final boolean is(TagKey<Modifier> tag) {
-    return ModifierManager.isInTag(this.getId(), tag);
+    return ModifierManager.isInTag(this.id(), tag);
   }
 
 

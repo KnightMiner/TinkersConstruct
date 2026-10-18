@@ -77,7 +77,7 @@ public class OverslimeRecipeExtension implements ICraftingCategoryExtension {
     IFocus<ItemStack> focus = focuses.getItemStackFocuses().findFirst().orElse(null);
     if (focus != null && focus.getRole() != RecipeIngredientRole.OUTPUT) {
       ItemStack focusStack = focus.getTypedValue().getIngredient();
-      if (focusStack.is(TinkerTags.Items.DURABILITY) && ModifierUtil.getModifierLevel(focusStack, TinkerModifiers.overslime.getId()) > 0) {
+      if (focusStack.is(TinkerTags.Items.DURABILITY) && ModifierUtil.getModifierLevel(focusStack, TinkerModifiers.overslime.id()) > 0) {
         inputStacks = List.of(List.of(focusStack.copyWithCount(1)), ingredient);
         ItemStack result = focusStack.copyWithCount(1);
         ToolStack tool = ToolStack.from(result);

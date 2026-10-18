@@ -61,7 +61,7 @@ public record BannerModifierModel(@Nullable ResourceLocation smallPrefix, @Nulla
 
   @Override
   public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
-    return tool.getPersistentData().getInt(BannerModule.cacheKey(modifier.getId()));
+    return tool.getPersistentData().getInt(BannerModule.cacheKey(modifier.id()));
   }
 
   @Override
@@ -69,7 +69,7 @@ public record BannerModifierModel(@Nullable ResourceLocation smallPrefix, @Nulla
     ResourceLocation prefix = isLarge ? largePrefix : smallPrefix;
     if (prefix != null) {
       IModDataView modData = tool.getPersistentData();
-      ResourceLocation key = BannerModule.patternKey(modifier.getId());
+      ResourceLocation key = BannerModule.patternKey(modifier.id());
       if (modData.contains(key, CompoundTag.TAG_LIST)) {
         ListTag list = modData.getList(key, ListTag.TAG_COMPOUND);
         List<BakedQuad> quads = new ArrayList<>(list.size());

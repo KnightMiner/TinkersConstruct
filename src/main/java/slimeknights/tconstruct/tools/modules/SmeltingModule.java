@@ -174,7 +174,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
         if (time == 0) {
           time = NO_RECIPE;
           stack = ItemStack.of(entry);
-          recipe = findRecipe(recipeType, stack, level, modifier.getId());
+          recipe = findRecipe(recipeType, stack, level, modifier.id());
           if (recipe != null) {
             time = recipe.getCookingTime();
           }
@@ -204,7 +204,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
             if (recipe == null) {
               stack = ItemStack.of(entry);
               if (!stack.isEmpty()) {
-                recipe = findRecipe(recipeType, stack, level, modifier.getId());
+                recipe = findRecipe(recipeType, stack, level, modifier.id());
               }
             }
             // if we have a recipe, time to cook

@@ -113,7 +113,7 @@ public class ModifierUsageCommand {
     }
     // if requested, filter out all
     if (filter == ModifierUsages.UNUSED) {
-      modifierStream = modifierStream.filter(modifier -> !ModifierRecipeLookup.isRecipeModifier(modifier.getId()) && !materialTraits.contains(modifier) && !toolTraits.contains(modifier));
+      modifierStream = modifierStream.filter(modifier -> !ModifierRecipeLookup.isRecipeModifier(modifier.id()) && !materialTraits.contains(modifier) && !toolTraits.contains(modifier));
     }
 
     // start building the table for output
@@ -142,20 +142,20 @@ public class ModifierUsageCommand {
     logOutput.append(System.lineSeparator());
 
     // for all the modifiers (sorted), add table rows
-    Collection<Modifier> finalList = modifierStream.sorted(Comparator.comparing(Modifier::getId)).toList();
+    Collection<Modifier> finalList = modifierStream.sorted(Comparator.comparing(Modifier::id)).toList();
     finalList.forEach(modifier -> {
       // determine which recipes use this by slot type
       List<String> recipeUsages = SlotType.getAllSlotTypes().stream()
-                                          .filter(type -> ModifierRecipeLookup.isRecipeModifier(type, modifier.getId()))
+                                          .filter(type -> ModifierRecipeLookup.isRecipeModifier(type, modifier.id()))
                                           .map(SlotType::getName)
                                           .collect(Collectors.toList());
       String recipes;
       if (recipeUsages.isEmpty()) {
-        recipes = ModifierRecipeLookup.isRecipeModifier(null, modifier.getId()) ? "slotless" : "";
+        recipes = ModifierRecipeLookup.isRecipeModifier(null, modifier.id()) ? "slotless" : "";
       } else {
         recipes = String.join(", ", recipeUsages);
       }
-      table.add(new ModifierUsageRow(modifier.getId(), recipes, toolTraits.contains(modifier), materialTraits.contains(modifier)));
+      table.add(new ModifierUsageRow(modifier.id(), recipes, toolTraits.contains(modifier), materialTraits.contains(modifier)));
     });
 
     // finally, output the table

@@ -29,7 +29,7 @@ public class SwappableModifierRecipeBuilder extends ModifierRecipeBuilder {
 
   /** Creates a new builder */
   public static SwappableModifierRecipeBuilder modifier(LazyModifier modifier, String value) {
-    return modifier(modifier.getId(), value);
+    return modifier(modifier.id(), value);
   }
 
   /** @deprecated Min level is always 1 for swappable. */

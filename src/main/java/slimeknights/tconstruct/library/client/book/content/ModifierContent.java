@@ -89,7 +89,7 @@ public class ModifierContent extends PageContent {
   /** Creates a new page using the given modifier description */
   public ModifierContent(Modifier modifier) {
     this.modifier = modifier;
-    this.modifierID = modifier.getId().toString();
+    this.modifierID = modifier.id().toString();
     this.text = new TextData[] {new TextData(ForgeI18n.getPattern(modifier.getTranslationKey() + ".description"))};
     this.effects = new String[0];
     this.more_text_space = true;

@@ -17,6 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -68,10 +69,10 @@ import static slimeknights.tconstruct.TConstruct.getResource;
 @EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class TinkerClient {
   /** Called during mod construct to handle any client side logic that needs to run during the constructor */
-  public TinkerClient() {
+  public TinkerClient(IEventBus modEventBus) {
     TinkerBook.initBook();
     // needs to register listeners early enough for minecraft to load
-    ModifierIconManager.init();
+    ModifierIconManager.init(modEventBus);
     MaterialRenderInfoLoader.init();
 
     // add the recipe cache invalidator to the client

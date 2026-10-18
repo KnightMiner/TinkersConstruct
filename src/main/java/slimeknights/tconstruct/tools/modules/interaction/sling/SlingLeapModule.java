@@ -91,7 +91,7 @@ public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround
 
         if (!level.isClientSide) {
           level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), Sounds.SLIME_SLING.getSound(), entity.getSoundSource(), 1, 1);
-          ToolDamageUtil.damageAnimated(tool, 1, entity, entity.getUsedItemHand(), modifier.getId());
+          ToolDamageUtil.damageAnimated(tool, 1, entity, entity.getUsedItemHand(), modifier.id());
         }
         // only need player for exhaustion, cooldowns, and drill attack
         if (entity instanceof Player player) {
@@ -100,7 +100,7 @@ public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround
             player.getCooldowns().addCooldown(tool.getItem(), 3);
           }
           // if supported, perform drill attack if the modifier is available
-          if (ModifierManager.isInTag(modifier.getId(), TinkerTags.Modifiers.DRILL_ATTACKS) && ModifierUtil.canPerformAction(tool, TinkerToolActions.DRILL_ATTACK)) {
+          if (ModifierManager.isInTag(modifier.id(), TinkerTags.Modifiers.DRILL_ATTACKS) && ModifierUtil.canPerformAction(tool, TinkerToolActions.DRILL_ATTACK)) {
             player.startAutoSpinAttack(20);
           }
         }

@@ -125,7 +125,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK) {
       if (slurp(TANK_HELPER.getFluid(tool), modifier, player, player, FluidAction.SIMULATE) > 0) {
-        GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+        GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
         return InteractionResult.CONSUME;
       }
     }
@@ -150,7 +150,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
     if (notActive && useTime == 0) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty() && slurp(fluid, modifier, entity, asPlayer(entity), FluidAction.SIMULATE) > 0) {
-        tool.getPersistentData().putBoolean(modifier.getId(), true);
+        tool.getPersistentData().putBoolean(modifier.id(), true);
       }
     }
 
@@ -158,10 +158,10 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
     int duration = getUseDuration(tool, modifier);
     if (notActive && useTime == duration) {
       finishDrinking(tool, modifier, entity, true);
-      tool.getPersistentData().remove(modifier.getId());
+      tool.getPersistentData().remove(modifier.id());
     }
     // if we have not finished drinking, and we can drink, play effects
-    else if (useTime < duration && useTime % 4 == 0 && (!notActive || tool.getPersistentData().getBoolean(modifier.getId()))) {
+    else if (useTime < duration && useTime % 4 == 0 && (!notActive || tool.getPersistentData().getBoolean(modifier.id()))) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty()) {
         addFluidParticles(entity, fluid, 5);
@@ -178,7 +178,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
     if (useDuration - timeLeft == getUseDuration(tool, modifier)) {
       finishDrinking(tool, modifier, entity, modifier != activeModifier);
     }
-    tool.getPersistentData().remove(modifier.getId());
+    tool.getPersistentData().remove(modifier.id());
   }
 
 
@@ -188,7 +188,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (keyModifier == TooltipKey.NORMAL) {
       if (slurp(TANK_HELPER.getFluid(tool), modifier, player, player, FluidAction.SIMULATE) > 0) {
-        tool.getPersistentData().putInt(modifier.getId(), player.tickCount + duration.compute(modifier.getEffectiveLevel()));
+        tool.getPersistentData().putInt(modifier.id(), player.tickCount + duration.compute(modifier.getEffectiveLevel()));
         return true;
       }
     }
@@ -197,7 +197,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
 
   @Override
   public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
-    tool.getPersistentData().remove(modifier.getId());
+    tool.getPersistentData().remove(modifier.id());
   }
 
   @Override
@@ -206,7 +206,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
     // modifier list changing is a good heuristic for tool changing, avoids deleting during the slurp
     Level level = context.getLevel();
     if (!level.isClientSide && (replacement == null || replacement.getItem() != tool.getItem() || !replacement.getModifiers().equals(tool.getModifiers()))) {
-      tool.getPersistentData().remove(modifier.getId());
+      tool.getPersistentData().remove(modifier.id());
     }
   }
 
@@ -214,7 +214,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     if (isCorrectSlot && tool.hasTag(TinkerTags.Items.WORN_ARMOR)) {
       ModDataNBT persistentData = tool.getPersistentData();
-      int finishTime = persistentData.getInt(modifier.getId());
+      int finishTime = persistentData.getInt(modifier.id());
       if (finishTime > 0) {
         // how long we have left?
         int timeLeft = finishTime - holder.tickCount;
@@ -223,7 +223,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
           finishDrinking(tool, modifier, holder, true);
 
           // stop drinking
-          persistentData.remove(modifier.getId());
+          persistentData.remove(modifier.id());
         }
         // sound is only every 4 ticks
         else if (timeLeft % 4 == 0) {

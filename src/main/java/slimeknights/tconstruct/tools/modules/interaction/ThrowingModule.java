@@ -75,7 +75,7 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
       }
       // use attack speed together with drawspeed to ensure you are not making insanely slow weapons and throwing to bypass
       tool.getPersistentData().putInt(KEY_DRAWTIME, (int)Math.ceil(20f / speed));
-      GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, hand);
+      GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
     }
     return InteractionResult.PASS;

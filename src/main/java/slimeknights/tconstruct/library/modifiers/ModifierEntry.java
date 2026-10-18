@@ -38,12 +38,12 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Loadable instance for parsing. Does not handle incremental, we currently disallow incremental as traits */
   public static final RecordLoadable<ModifierEntry> LOADABLE = RecordLoadable.create(
-    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::getId),
+    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::id),
     IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
     ModifierEntry::new);
   /** Loadable instance for parsing with optional modifiers. If the boolean is set, modifier does not error when missing. */
   public static final RecordLoadable<ModifierEntry> OPTIONAL_LOADABLE = RecordLoadable.create(
-    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::getId),
+    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::id),
     IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
     BooleanLoadable.INSTANCE.defaultField("optional", false, false, e -> e.getLazyModifier() instanceof OptionalModifier),
     (id, level, optional) -> {
@@ -77,8 +77,8 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
   }
 
   /** Gets the contained modifier ID, prevents resolving the lazy modifier if not needed */
-  public ModifierId getId() {
-    return modifier.getId();
+  public ModifierId id() {
+    return modifier.id();
   }
 
   /** Gets the contained modifier */
@@ -159,8 +159,8 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
    * @return  New merged modifier
    */
   public ModifierEntry merge(ModifierEntry other) {
-    if (!this.getId().equals(other.getId())) {
-      throw new IllegalArgumentException("Modifiers do not match, have " + getId() + " but was given " + other.getId());
+    if (!this.id().equals(other.id())) {
+      throw new IllegalArgumentException("Modifiers do not match, have " + id() + " but was given " + other.id());
     }
     // we know we are not incremental, so the only thing to merge is our level with their level
     // this automatically handles other being incremental
@@ -172,12 +172,12 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Checks if this entry matches the given modifier */
   public boolean matches(ModifierId id) {
-    return modifier.getId().equals(id);
+    return modifier.id().equals(id);
   }
 
   /** Checks if this entry matches the given modifier */
   public boolean matches(Modifier modifier) {
-    return matches(modifier.getId());
+    return matches(modifier.id());
   }
 
   /** Checks if the modifier is in the given tag */
@@ -195,7 +195,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
       return Integer.compare(priority2, priority1);
     }
     // fallback to ID path, approximates localized name so we get mostly alphabetical sort in the tooltip
-    return mod1.getId().getPath().compareTo(mod2.getId().getPath());
+    return mod1.id().getPath().compareTo(mod2.id().getPath());
   }
 
 
@@ -217,7 +217,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
   /** Writes this tag to NBT */
   public CompoundTag serializeToNBT() {
     CompoundTag tag = new CompoundTag();
-    tag.putString(TAG_MODIFIER, modifier.getId().toString());
+    tag.putString(TAG_MODIFIER, modifier.id().toString());
     tag.putInt(TAG_LEVEL, level);
     return tag;
   }
@@ -230,7 +230,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ModifierEntry entry = (ModifierEntry)o;
-    return this.matches(entry.getId()) && level == entry.level;
+    return this.matches(entry.id()) && level == entry.level;
   }
 
   @Override
@@ -240,6 +240,6 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   @Override
   public String toString() {
-    return "ModifierEntry{" + modifier.getId() + ",level=" + level + '}';
+    return "ModifierEntry{" + modifier.id() + ",level=" + level + '}';
   }
 }

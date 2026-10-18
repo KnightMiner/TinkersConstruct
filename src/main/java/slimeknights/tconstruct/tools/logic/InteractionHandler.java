@@ -294,7 +294,7 @@ public class InteractionHandler {
             // store data so we know when interaction started
             TinkerDataCapability.Holder data = TinkerDataCapability.getData(player);
             if (data != null) {
-              data.computeIfAbsent(INTERACT_KEY).put(slotType, new ArmorInteractData(entry.getId(), player.tickCount));
+              data.computeIfAbsent(INTERACT_KEY).put(slotType, new ArmorInteractData(entry.id(), player.tickCount));
             }
             break;
           }

@@ -61,7 +61,7 @@ public enum BannerModule implements ModifierModule, DisplayNameModifierHook, Too
   @Override
   public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     // color the tooltip the color of the first pattern
-    ListTag patterns = tool.getPersistentData().getList(patternKey(entry.getId()), ListTag.TAG_COMPOUND);
+    ListTag patterns = tool.getPersistentData().getList(patternKey(entry.id()), ListTag.TAG_COMPOUND);
     if (!patterns.isEmpty()) {
       return name.copy().withStyle(name.getStyle().withColor(DyeColor.byId(patterns.getCompound(0).getInt(KEY_DYE)).getTextColor()));
     }
@@ -73,7 +73,7 @@ public enum BannerModule implements ModifierModule, DisplayNameModifierHook, Too
     // add all patterns in a tinker station when holding
     if (tooltipFlag == TinkerTooltipFlags.TINKER_STATION) {
       if (tooltipKey == TooltipKey.SHIFT) {
-        ListTag patterns = tool.getPersistentData().getList(patternKey(modifier.getId()), ListTag.TAG_COMPOUND);
+        ListTag patterns = tool.getPersistentData().getList(patternKey(modifier.id()), ListTag.TAG_COMPOUND);
         for (int i = 0; i < patterns.size(); i++) {
           CompoundTag tag = patterns.getCompound(i);
           DyeColor dye = DyeColor.byId(tag.getInt(KEY_DYE));

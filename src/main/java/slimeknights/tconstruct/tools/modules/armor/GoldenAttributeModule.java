@@ -126,7 +126,7 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
     if (context.getChangedSlot().isArmor()) {
       IToolStackView newTool = context.getReplacementTool();
       // when replacing with a helmet that lacks this modifier, remove bonus
-      if (newTool == null || newTool.getModifierLevel(modifier.getId()) == 0) {
+      if (newTool == null || newTool.getModifierLevel(modifier.id()) == 0) {
         TinkerDataCapability.Holder data = context.getDataHolder();
         if (data != null) {
           data.remove(dataKey);

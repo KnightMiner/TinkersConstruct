@@ -57,7 +57,7 @@ public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean enti
     // deal damage to the bow if it added glowing to its arrow
     // don't damage fishing hooks though, we will do that on hit
     if (primary && damage > 0) {
-      ToolDamageUtil.damageLauncher(tool, damage, shooter, projectile, modifier.getId());
+      ToolDamageUtil.damageLauncher(tool, damage, shooter, projectile, modifier.id());
     }
   }
 
@@ -66,7 +66,7 @@ public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean enti
     if (entities) {
       TinkerCommons.glow.get().addGlow(projectile.level(), hit.getEntity().blockPosition(), Direction.DOWN);
       if (damage > 0) {
-        ModifierUtil.updateFishingRod(projectile, damage, false, modifier.getId());
+        ModifierUtil.updateFishingRod(projectile, damage, false, modifier.id());
       }
     }
     return false;
@@ -77,7 +77,7 @@ public record ProjectilePlaceGlowModule(int damage, boolean blocks, boolean enti
     if (blocks) {
       Direction direction = hit.getDirection();
       if (TinkerCommons.glow.get().addGlow(projectile.level(), hit.getBlockPos().relative(direction), direction.getOpposite())) {
-        ModifierUtil.updateFishingRod(projectile, damage, true, modifier.getId());
+        ModifierUtil.updateFishingRod(projectile, damage, true, modifier.id());
         ReusableProjectile.discard(projectile);
       }
     }

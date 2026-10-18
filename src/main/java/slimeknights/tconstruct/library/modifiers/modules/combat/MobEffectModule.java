@@ -354,7 +354,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
           }
           // consume durability
           if (applied && durabilityUsage > 0) {
-            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.getId());
+            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.id());
           }
         }
       }

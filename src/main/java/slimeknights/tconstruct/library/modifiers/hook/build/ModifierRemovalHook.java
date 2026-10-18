@@ -55,7 +55,7 @@ public interface ModifierRemovalHook {
   static Component onRemoved(IToolStackView original, IToolStackView updated) {
     for (ModifierEntry entry : original.getModifierList()) {
       ModifierRemovalHook hook = entry.getModifier().getHooks().getOrNull(ModifierHooks.REMOVE);
-      if (hook != null && updated.getModifierLevel(entry.getId()) == 0) {
+      if (hook != null && updated.getModifierLevel(entry.id()) == 0) {
         Component error = hook.onRemoved(updated, entry.getModifier());
         if (error != null) {
           return error;

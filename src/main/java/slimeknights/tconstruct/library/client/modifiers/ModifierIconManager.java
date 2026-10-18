@@ -13,9 +13,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.eventbus.api.IEventBus;
 import slimeknights.mantle.data.listener.IEarlySafeManagerReloadListener;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.tconstruct.TConstruct;
@@ -45,13 +44,12 @@ public class ModifierIconManager implements IEarlySafeManagerReloadListener {
   public static final ModifierIconManager INSTANCE = new ModifierIconManager();
 
   /** Map of icons for each modifier */
-  private static Map<ModifierId,List<ResourceLocation>> modifierIcons = Collections.emptyMap();
+  private static Map<ModifierId,List<ResourceLocation>> modifierIcons = Map.of();
 
   /**
-   * Initializes this manager, registering it relevant event busses
+   * Initializes this manager, registering it relevant event buses
    */
-  public static void init() {
-    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+  public static void init(IEventBus bus) {
     bus.addListener(ModifierIconManager::onResourceManagerRegister);
   }
 
@@ -121,7 +119,7 @@ public class ModifierIconManager implements IEarlySafeManagerReloadListener {
   public static void renderIcon(GuiGraphics graphics, Modifier modifier, int x, int y, int z, int size) {
     TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
 
-    List<ResourceLocation> icons = modifierIcons.getOrDefault(modifier.getId(), Collections.emptyList());
+    List<ResourceLocation> icons = modifierIcons.getOrDefault(modifier.id(), List.of());
     if (!icons.isEmpty()) {
       for (ResourceLocation icon : icons) {
         graphics.blit(x, y, z, size, size, atlas.getSprite(icon));

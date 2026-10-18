@@ -115,7 +115,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
   public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable().copy();
 
-    ModifierId key = TinkerModifiers.banner.getId();
+    ModifierId key = TinkerModifiers.banner.id();
 
     // locate the banner
     ItemStack banner = ItemStack.EMPTY;
@@ -269,7 +269,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
       }
       // build tools with modifier
       List<ModifierEntry> results = List.of(RESULT);
-      ModifierId key = RESULT.getId();
+      ModifierId key = RESULT.id();
       // apply a default pattern to the result tools for the sake of offbrand JEI. You will never see it in real JEI
       DyeColor defaultColor = clearInput.isEmpty() ? DyeColor.WHITE : null;
       ListTag defaultPatterns = getBannerPatterns(banners.get(0));
@@ -327,7 +327,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
     @Override
     public void applyModifier(ToolStack tool) {
       // you aren't really going to see this tool, but offbrand recipe viewers may not call the other hook
-      ModifierId modifier = TinkerModifiers.banner.getId();
+      ModifierId modifier = TinkerModifiers.banner.id();
       BannerModule.copyPatterns(tool.getPersistentData(), modifier, clearInput.isEmpty() ? DyeColor.WHITE : null, getBannerPatterns(banners.get(0)));
 
       // add the modifier if missing
@@ -352,7 +352,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
         // if clear, skip the color. Still better that we have a BannerItem though
         DyeColor dye = clearInput.isEmpty() ? banner.getColor() : null;
         ToolStack tool = ToolStack.copyFrom(toolStack);
-        ModifierId modifier = RESULT.getId();
+        ModifierId modifier = RESULT.id();
         BannerModule.copyPatterns(tool.getPersistentData(), modifier, dye, patterns);
 
         // add the modifier if missing

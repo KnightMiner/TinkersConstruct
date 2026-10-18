@@ -132,7 +132,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
             TANK_HELPER.setFluid(tool, fluid);
           }
           // stop using doesn't know the slot, so just figure it out
-          ToolDamageUtil.damageAnimated(tool, shots, entity, modifier.getId());
+          ToolDamageUtil.damageAnimated(tool, shots, entity, modifier.id());
         }
       }
     }
@@ -146,7 +146,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
       // launch if the fluid has effects, cannot simulate as we don't know the target yet
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (fluid.getAmount() >= modifier.getLevel() && FluidEffectManager.INSTANCE.find(fluid.getFluid()).hasEffects()) {
-        GeneralInteractionModifierHook.startUsingWithDrawtime(tool, modifier.getId(), player, hand, 1.5f);
+        GeneralInteractionModifierHook.startUsingWithDrawtime(tool, modifier.id(), player, hand, 1.5f);
         return InteractionResult.SUCCESS;
       }
     }
@@ -173,7 +173,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
       if (fluid.getAmount() >= modifier.getLevel() && FluidEffectManager.INSTANCE.find(fluid.getFluid()).hasEffects()) {
         int time = HelmetChargingEffect.startUsingHelmet(tool, player, 1.5f);
         // mark the stack with the end time so we know how long to run particles
-        tool.getPersistentData().putInt(modifier.getId(), player.tickCount + time);
+        tool.getPersistentData().putInt(modifier.id(), player.tickCount + time);
         return true;
       }
     }
@@ -186,7 +186,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
       if (chargeTime > 0 && !player.level().isClientSide) {
         spit(tool, modifier, player, chargeTime);
       }
-      tool.getPersistentData().remove(modifier.getId());
+      tool.getPersistentData().remove(modifier.id());
     }
   }
 
@@ -194,7 +194,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     if (isCorrectSlot && tool.hasTag(TinkerTags.Items.WORN_ARMOR)) {
       ModDataNBT persistentData = tool.getPersistentData();
-      int finishTime = persistentData.getInt(modifier.getId());
+      int finishTime = persistentData.getInt(modifier.id());
       if (finishTime > 0) {
         // how long we have left?
         int timeLeft = finishTime - holder.tickCount;
@@ -203,7 +203,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
           holder.playSound(SoundEvents.PLAYER_BREATH, 0.5F, holder.getRandom().nextFloat() * 0.1f + 0.9f);
           SlurpingModule.addFluidParticles(holder, TANK_HELPER.getFluid(tool), 16);
           // stop animation
-          persistentData.remove(modifier.getId());
+          persistentData.remove(modifier.id());
         }
         // sound is only every 4 ticks
         else if (timeLeft % 4 == 0) {

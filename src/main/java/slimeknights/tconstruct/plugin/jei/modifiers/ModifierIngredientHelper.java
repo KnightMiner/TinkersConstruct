@@ -32,19 +32,20 @@ public class ModifierIngredientHelper implements IIngredientHelper<ModifierEntry
     return entry.getDisplayName().getString();
   }
 
+  @SuppressWarnings("removal")  // required API
   @Override
   public String getUniqueId(ModifierEntry entry, UidContext context) {
-    return entry.getId().toString();
+    return entry.id().toString();
   }
 
   @Override
   public Object getUid(ModifierEntry entry, UidContext context) {
-    return entry.getId();
+    return entry.id();
   }
 
   @Override
   public ResourceLocation getResourceLocation(ModifierEntry entry) {
-    return entry.getId();
+    return entry.id();
   }
 
   @Override
@@ -58,13 +59,13 @@ public class ModifierIngredientHelper implements IIngredientHelper<ModifierEntry
     if (entry == null) {
       return "null";
     }
-    return entry.getId().toString();
+    return entry.id().toString();
   }
 
   @Override
-  public ItemStack getCheatItemStack(ModifierEntry ingredient) {
-    if (!ModifierManager.isInTag(ingredient.getId(), TinkerTags.Modifiers.EXTRACT_MODIFIER_BLACKLIST)) {
-      return ModifierCrystalItem.withModifier(ingredient.getId());
+  public ItemStack getCheatItemStack(ModifierEntry entry) {
+    if (!ModifierManager.isInTag(entry.id(), TinkerTags.Modifiers.EXTRACT_MODIFIER_BLACKLIST)) {
+      return ModifierCrystalItem.withModifier(entry.id());
     }
     return ItemStack.EMPTY;
   }
@@ -99,12 +100,12 @@ public class ModifierIngredientHelper implements IIngredientHelper<ModifierEntry
 
   @Override
   public Stream<ResourceLocation> getTagStream(ModifierEntry entry) {
-    return ModifierManager.getTagKeys(entry.getId()).map(TagKey::location);
+    return ModifierManager.getTagKeys(entry.id()).map(TagKey::location);
   }
 
   @Override
   public boolean isHiddenFromRecipeViewersByTags(ModifierEntry entry) {
-    return ModifierManager.isInTag(entry.getId(), Modifiers.HIDDEN_FROM_RECIPE_VIEWERS);
+    return ModifierManager.isInTag(entry.id(), Modifiers.HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
   @Override
@@ -119,7 +120,7 @@ public class ModifierIngredientHelper implements IIngredientHelper<ModifierEntry
   /* Other misc methods */
 
   @Override
-  public Iterable<Integer> getColors(ModifierEntry ingredient) {
-    return List.of(0xFF000000 | ingredient.getModifier().getColor());
+  public Iterable<Integer> getColors(ModifierEntry entry) {
+    return List.of(0xFF000000 | entry.getModifier().getColor());
   }
 }

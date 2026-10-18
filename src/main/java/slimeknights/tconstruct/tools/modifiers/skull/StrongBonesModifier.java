@@ -45,7 +45,7 @@ public class StrongBonesModifier extends SingleLevelModifier {
     // TODO 1.20: can use the new cure effects to make this work in any slot
     ItemStack helmet = living.getItemBySlot(EquipmentSlot.HEAD);
     boolean didSomething = false;
-    int level = ModifierUtil.getModifierLevel(helmet, TinkerModifiers.strongBones.getId());
+    int level = ModifierUtil.getModifierLevel(helmet, TinkerModifiers.strongBones.id());
     if (level > 0) {
       MobEffectInstance effect = new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, flat + eachLevel * level);
       effect.getCurativeItems().clear();

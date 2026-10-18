@@ -47,7 +47,7 @@ public interface TrimModifierModel extends ModifierModel {
   @Nullable
   @Override
   default Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
-    String key = tool.getPersistentData().getString(TrimModule.materialKey(modifier.getId()));
+    String key = tool.getPersistentData().getString(TrimModule.materialKey(modifier.id()));
     if (key.isEmpty()) {
       return null;
     }
@@ -67,7 +67,7 @@ public interface TrimModifierModel extends ModifierModel {
   @Override
   default void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     // material must be set
-    String materialId = tool.getPersistentData().getString(TrimModule.materialKey(modifier.getId()));
+    String materialId = tool.getPersistentData().getString(TrimModule.materialKey(modifier.id()));
     if (!materialId.isEmpty()) {
       // cache must exist. May not in deprecated model for non-empty, or in regular for large tools
       Map<String, TrimTexture> cache = getCache(isLarge);

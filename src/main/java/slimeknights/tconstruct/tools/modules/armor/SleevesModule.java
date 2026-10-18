@@ -60,7 +60,7 @@ public enum SleevesModule implements ModifierModule, GeneralInteractionModifierH
 
   @Override
   public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
-    if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       if (!player.isCrouching()) {
         InventoryModifierHook inventory = modifier.getHook(ToolInventoryCapability.HOOK);
         int selected = tool.getPersistentData().getInt(SELECTED_SLOT);

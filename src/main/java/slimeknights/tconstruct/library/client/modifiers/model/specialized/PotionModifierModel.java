@@ -48,7 +48,7 @@ public class PotionModifierModel implements SimpleModifierModel {
   @Nullable
   @Override
   public Object getCacheKey(IToolStackView tool, ModifierEntry entry) {
-    ModifierId modifier = entry.getId();
+    ModifierId modifier = entry.id();
     return new CacheKey(modifier, tool.getPersistentData().getString(modifier));
   }
 
@@ -57,7 +57,7 @@ public class PotionModifierModel implements SimpleModifierModel {
   public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     Material texture = isLarge ? large : small;
     if (texture != null) {
-      ResourceLocation key = modifier.getId();
+      ResourceLocation key = modifier.id();
       IModDataView toolData = tool.getPersistentData();
       if (toolData.contains(key, Tag.TAG_STRING)) {
         ResourceLocation id = ResourceLocation.tryParse(toolData.getString(key));

@@ -21,7 +21,7 @@ public class ModifierRepairRecipeBuilder extends AbstractRecipeBuilder<ModifierR
   private final int repairAmount;
 
   public static ModifierRepairRecipeBuilder repair(LazyModifier modifier, Ingredient ingredient, int repairAmount) {
-    return repair(modifier.getId(), ingredient, repairAmount);
+    return repair(modifier.id(), ingredient, repairAmount);
   }
 
   @Override

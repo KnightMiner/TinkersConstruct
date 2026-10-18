@@ -78,12 +78,12 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
 
   @Override
   public InteractionResult afterEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
-    if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source) && target instanceof Creeper creeper) {
+    if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source) && target instanceof Creeper creeper) {
       Level level = player.level();
       level.playSound(player, creeper.getX(), creeper.getY(), creeper.getZ(), SoundEvents.FLINTANDSTEEL_USE, creeper.getSoundSource(), 1.0F, level.random.nextFloat() * 0.4F + 0.8F);
       if (!level.isClientSide) {
         creeper.ignite();
-        ToolDamageUtil.damageAnimated(tool, 1, player, source.getSlot(hand), modifier.getId());
+        ToolDamageUtil.damageAnimated(tool, 1, player, source.getSlot(hand), modifier.id());
       }
       return InteractionResult.sidedSuccess(level.isClientSide);
     }
@@ -119,7 +119,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
 
   @Override
   public InteractionResult beforeBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
-    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
     if (context.getLevel().getBlockState(context.getClickedPos()).is(BlockTags.CANDLE_CAKES)) {
@@ -130,7 +130,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
 
   @Override
   public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
-    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
     Player player = context.getPlayer();
@@ -163,7 +163,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
     EquipmentSlot slotType = source.getSlot(context.getHand());
     if (!targetingFire) {
       didIgnite = ignite(world, pos, state, sideHit, horizontalFacing, player);
-      if (didIgnite && ToolDamageUtil.damage(tool, 1, player, stack, modifier.getId())) {
+      if (didIgnite && ToolDamageUtil.damage(tool, 1, player, stack, modifier.id())) {
         if (player != null) {
           player.broadcastBreakEvent(slotType);
         }
@@ -174,7 +174,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
     for (BlockPos target : targets) {
       if (ignite(world, target, world.getBlockState(target), sideHit, horizontalFacing, player)) {
         didIgnite = true;
-        if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.getId())) {
+        if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.id())) {
           if (player != null) {
             player.broadcastBreakEvent(slotType);
           }
@@ -191,7 +191,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
   public Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     // if we have left click modifiers active, ensure we don't break the block on left click
     // otherwise our newly placed block is immediately removed
-    if (context.getState().is(Blocks.FIRE) && tool.hasTag(TinkerTags.Items.INTERACTABLE_LEFT) && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), InteractionSource.LEFT_CLICK)) {
+    if (context.getState().is(Blocks.FIRE) && tool.hasTag(TinkerTags.Items.INTERACTABLE_LEFT) && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), InteractionSource.LEFT_CLICK)) {
       return false;
     }
     return null;

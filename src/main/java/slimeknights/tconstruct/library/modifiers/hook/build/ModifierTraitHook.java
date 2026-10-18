@@ -57,7 +57,7 @@ public interface ModifierTraitHook {
       if (hook != null) {
         // if this modifier is already on the stack, ignore it to avoid infinite recursion
         if (currentStack.contains(modifier)) {
-          TConstruct.LOG.error("Encountered {} as a child of itself, previous stack {}", modifier.getId(), currentStack);
+          TConstruct.LOG.error("Encountered {} as a child of itself, previous stack {}", modifier.id(), currentStack);
         } else {
           // not on the stack? add it, then recursively add traits
           currentStack.add(modifier);

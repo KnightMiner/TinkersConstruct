@@ -64,7 +64,7 @@ public interface ModifierModel extends IHaveLoader {
    */
   @Nullable
   default Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
-    return modifier == ModifierEntry.EMPTY ? null : modifier.getId();
+    return modifier == ModifierEntry.EMPTY ? null : modifier.id();
   }
 
   /**

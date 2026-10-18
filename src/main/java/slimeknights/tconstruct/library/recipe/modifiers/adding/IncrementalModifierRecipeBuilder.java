@@ -41,7 +41,7 @@ public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuil
    * @return  Recipe for 1 level of the modifier
    */
   public static IncrementalModifierRecipeBuilder modifier(LazyModifier modifier) {
-    return modifier(modifier.getId());
+    return modifier(modifier.id());
   }
 
 

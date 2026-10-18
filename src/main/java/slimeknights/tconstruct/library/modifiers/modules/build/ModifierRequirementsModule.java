@@ -119,7 +119,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
 
     /** Sets the translation key from a modifier ID */
     public Builder modifierKey(LazyModifier id) {
-      this.translationKey = Util.makeTranslationKey("modifier", id.getId()) + ".requirements";
+      this.translationKey = Util.makeTranslationKey("modifier", id.id()) + ".requirements";
       return this;
     }
 

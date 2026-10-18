@@ -33,8 +33,8 @@ import java.util.Map;
 /** Handles fetching textures for armor trims */
 public record TrimArmorTextureSupplier(ModifierId modifier, ResourceLocation patternKey, ResourceLocation materialKey) implements ArmorTextureSupplier {
   /** Default instant using the tinkers modifier */
-  public static TrimArmorTextureSupplier INSTANCE = new TrimArmorTextureSupplier(TinkerModifiers.trim.getId());
-  public static final RecordLoadable<TrimArmorTextureSupplier> LOADER = RecordLoadable.create(ModifierId.PARSER.defaultField("modifier", TinkerModifiers.trim.getId(), TrimArmorTextureSupplier::modifier), TrimArmorTextureSupplier::new);
+  public static TrimArmorTextureSupplier INSTANCE = new TrimArmorTextureSupplier(TinkerModifiers.trim.id());
+  public static final RecordLoadable<TrimArmorTextureSupplier> LOADER = RecordLoadable.create(ModifierId.PARSER.defaultField("modifier", TinkerModifiers.trim.id(), TrimArmorTextureSupplier::modifier), TrimArmorTextureSupplier::new);
 
   /* Caches */
   private static final Map<String,ArmorTexture> ARMOR_CACHE = new HashMap<>();

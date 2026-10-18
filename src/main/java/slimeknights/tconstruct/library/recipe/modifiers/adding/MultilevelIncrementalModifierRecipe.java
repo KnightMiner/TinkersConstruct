@@ -43,7 +43,7 @@ public class MultilevelIncrementalModifierRecipe extends IncrementalModifierReci
     ToolStack tool = inv.getTinkerable();
 
     // fetch the amount from the modifier, will be 0 if we have a full level
-    ModifierId modifier = result.getId();
+    ModifierId modifier = result.id();
     boolean crystal = matchesCrystal(inv);
     ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getEntry(modifier);
     boolean isNewLevel = crystal || entry.getAmount(0) <= 0;

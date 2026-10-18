@@ -39,7 +39,7 @@ import static slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorkta
 public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   private static final Component TITLE = TConstruct.makeTranslation("recipe", "toggle_interaction.title");
   private static final Component DESCRIPTION = TConstruct.makeTranslation("recipe", "toggle_interaction.description");
-  private static final Predicate<ModifierEntry> FILTER = entry -> ModifierManager.isInTag(entry.getId(), TinkerTags.Modifiers.DUAL_INTERACTION);
+  private static final Predicate<ModifierEntry> FILTER = entry -> ModifierManager.isInTag(entry.id(), TinkerTags.Modifiers.DUAL_INTERACTION);
   /** Loader instance */
   public static final RecordLoadable<ToggleInteractionWorktableRecipe> LOADER = RecordLoadable.create(ContextKey.ID.requiredField(), TOOL_FIELD, INPUTS_FIELD, ToggleInteractionWorktableRecipe::new);
 
@@ -83,7 +83,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
     ListTag rightList = persistentData.get(InteractionSource.RIGHT_CLICK.getKey(), LIST_GETTER);
 
     // try removing from both lists
-    ModifierId id = modifier.getId();
+    ModifierId id = modifier.id();
     boolean removed = ModifierSetWorktableRecipe.isInSet(leftList, id, true) | ModifierSetWorktableRecipe.isInSet(rightList, id, true);
     // if we removed from a list, clear out empty lists
     if (removed) {

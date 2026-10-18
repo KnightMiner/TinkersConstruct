@@ -39,7 +39,7 @@ public enum ModifierBookmarkIngredientRenderer implements IIngredientRenderer<Mo
     list.add(Component.translatable(WRAPPER_KEY, Component.translatable(entry.getModifier().getTranslationKey())));
     list.addAll(entry.getModifier().getDescriptionList());
     if (flag.isAdvanced()) {
-      list.add((Component.literal(entry.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+      list.add((Component.literal(entry.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
     return list;
   }
@@ -50,7 +50,7 @@ public enum ModifierBookmarkIngredientRenderer implements IIngredientRenderer<Mo
     tooltip.add(Component.translatable(WRAPPER_KEY, Component.translatable(entry.getModifier().getTranslationKey())));
     tooltip.addAll(entry.getModifier().getDescriptionList());
     if (flag.isAdvanced()) {
-      tooltip.add((Component.literal(entry.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+      tooltip.add((Component.literal(entry.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
   }
 }

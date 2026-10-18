@@ -53,7 +53,7 @@ public record SlingForceModule(IJsonPredicate<LivingEntity> target, IJsonPredica
 
   @Override
   public float modifySlingForce(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
-  if (this.condition.matches(tool, modifier) && this.target.matches(target) && this.holder.matches(holder) && this.sling.matches(slingSource.getId())) {
+  if (this.condition.matches(tool, modifier) && this.target.matches(target) && this.holder.matches(holder) && this.sling.matches(slingSource.id())) {
       return formula.apply(tool, modifier, holder, force, multiplier);
     }
     return force;

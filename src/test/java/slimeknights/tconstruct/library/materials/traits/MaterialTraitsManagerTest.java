@@ -146,11 +146,11 @@ class MaterialTraitsManagerTest extends BaseMcTest {
     assertThat(defaultTraits).hasSize(2);
     ModifierEntry trait = defaultTraits.get(0);
     assertThat(trait.getLazyModifier() instanceof OptionalModifier).isTrue();
-    assertThat(trait.getId()).isEqualTo(ModifierFixture.TEST_MODIFIER_1.getId());
+    assertThat(trait.id()).isEqualTo(ModifierFixture.TEST_MODIFIER_1.id());
     assertThat(trait.getLevel()).isEqualTo(3);
     trait = defaultTraits.get(1);
     assertThat(trait.getLazyModifier() instanceof OptionalModifier).isFalse();
-    assertThat(trait.getId()).isEqualTo(ModifierFixture.TEST_MODIFIER_2.getId());
+    assertThat(trait.id()).isEqualTo(ModifierFixture.TEST_MODIFIER_2.id());
     assertThat(trait.getLevel()).isEqualTo(4);
 
     // ensure an unused stat type returns the default list
@@ -163,11 +163,11 @@ class MaterialTraitsManagerTest extends BaseMcTest {
     assertThat(traitsForStatType).hasSize(2);
     trait = traitsForStatType.get(0);
     assertThat(trait.getLazyModifier() instanceof OptionalModifier).isFalse();
-    assertThat(trait.getId()).isEqualTo(ModifierFixture.TEST_MODIFIER_1.getId());
+    assertThat(trait.id()).isEqualTo(ModifierFixture.TEST_MODIFIER_1.id());
     assertThat(trait.getLevel()).isEqualTo(1);
     trait = traitsForStatType.get(1);
     assertThat(trait.getLazyModifier() instanceof OptionalModifier).isTrue();
-    assertThat(trait.getId()).isEqualTo(ModifierFixture.TEST_MODIFIER_2.getId());
+    assertThat(trait.id()).isEqualTo(ModifierFixture.TEST_MODIFIER_2.id());
     assertThat(trait.getLevel()).isEqualTo(2);
   }
 

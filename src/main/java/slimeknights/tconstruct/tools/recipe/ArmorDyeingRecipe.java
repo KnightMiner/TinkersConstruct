@@ -70,7 +70,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
     ToolStack tool = inv.getTinkerable().copy();
 
     ModDataNBT persistentData = tool.getPersistentData();
-    ModifierId key = TinkerModifiers.dyed.getId();
+    ModifierId key = TinkerModifiers.dyed.id();
     int nr = 0, nb = 0, ng = 0;
     int brightness = 0;
     int count = 0;
@@ -185,7 +185,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
       this.dyes = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, color.getTag()).map(ItemStack::new).toList();
       this.variant = Component.translatable("color.minecraft." + color.getSerializedName());
 
-      ResourceLocation modID = RESULT.getId();
+      ResourceLocation modID = RESULT.id();
       this.tintColor = Util.getColor(color);
       List<ModifierEntry> results = List.of(RESULT);
       toolWithModifier = tools.stream().map(stack -> IDisplayModifierRecipe.withModifiers(stack, DEFAULT_TOOL_STACK_SIZE, results, data -> data.putInt(modID, tintColor))).toList();
@@ -234,7 +234,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
     @Override
     public void applyModifier(ToolStack tool) {
       // store into tool NBT
-      ModifierId modifier = TinkerModifiers.dyed.getId();
+      ModifierId modifier = TinkerModifiers.dyed.id();
       ModDataNBT persistentData = tool.getPersistentData();
       if (persistentData.contains(modifier, Tag.TAG_INT)) {
         int color = persistentData.getInt(modifier);

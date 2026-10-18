@@ -68,7 +68,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
     this.sizedTool = toolRequirement;
     this.leftovers = leftovers;
     this.modifierPredicate = modifierPredicate;
-    this.entryPredicate = mod -> modifierPredicate.matches(mod.getId());
+    this.entryPredicate = mod -> modifierPredicate.matches(mod.id());
   }
 
   /** Gets the base key for the title translation */
@@ -117,7 +117,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
 
     // salvage
     ToolStack tool = original.copy();
-    ModifierId modifierId = entry.getId();
+    ModifierId modifierId = entry.id();
     ItemStack originalStack = inv.getTinkerableStack();
     ModifierSalvage salvage = ModifierRecipeLookup.getSalvage(originalStack, tool, modifierId, entry.getLevel());
 

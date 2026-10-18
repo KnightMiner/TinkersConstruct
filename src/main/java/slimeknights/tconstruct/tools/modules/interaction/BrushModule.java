@@ -74,7 +74,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
     Player player = context.getPlayer();
     // must have a player, and no entity in the way
     if (source == InteractionSource.RIGHT_CLICK && player != null && calculateHitResult(player).getType() == HitResult.Type.BLOCK) {
-      GeneralInteractionModifierHook.startUsing(tool, modifier.getId(), player, context.getHand());
+      GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, context.getHand());
     }
     return InteractionResult.CONSUME;
   }
@@ -156,7 +156,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
           }
 
           // apply all tool damage, and stop using if needed
-          if (damage > 0 && !level.isClientSide && ToolDamageUtil.damageAnimated(tool, damage, entity, hand, modifier.getId())) {
+          if (damage > 0 && !level.isClientSide && ToolDamageUtil.damageAnimated(tool, damage, entity, hand, modifier.id())) {
             entity.stopUsingItem();
           }
         }

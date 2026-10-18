@@ -65,7 +65,7 @@ public class ExtractModifierRecipe extends ModifierRemovalRecipe {
     super.updateInputs(result, inv, selected, isServer);
     if (isServer) {
       // just 1 crystal in this version as just 1 level was removed
-      inv.giveItem(ModifierCrystalItem.withModifier(selected.getId()));
+      inv.giveItem(ModifierCrystalItem.withModifier(selected.id()));
     }
   }
 

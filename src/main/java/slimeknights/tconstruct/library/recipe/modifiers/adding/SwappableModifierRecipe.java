@@ -50,7 +50,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   public static final RecordLoadable<SwappableModifierRecipe> LOADER = RecordLoadable.create(
     ContextKey.ID.requiredField(),
     INPUTS_FIELD, TOOLS_FIELD, MAX_TOOL_SIZE_FIELD,
-    new MergingField<>(ModifierId.PARSER.requiredField("name", r -> r.result.getId()), "result", MissingMode.DISALLOWED),
+    new MergingField<>(ModifierId.PARSER.requiredField("name", r -> r.result.id()), "result", MissingMode.DISALLOWED),
     new MergingField<>(StringLoadable.DEFAULT.requiredField("value", r -> r.value), "result", MissingMode.DISALLOWED),
     VariantFormatter.LOADER.defaultField("variant_formatter", VariantFormatter.DEFAULT, r -> r.variantFormatter),
     SLOTS_FIELD, ALLOW_CRYSTAL_FIELD,
@@ -76,7 +76,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     ToolStack tool = inv.getTinkerable();
 
     // if the tool has the modifier already, can skip most requirements
-    ModifierId modifier = result.getId();
+    ModifierId modifier = result.id();
 
     boolean needsModifier;
     int level = tool.getUpgrades().getLevel(modifier);
@@ -111,7 +111,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
     // add modifier if needed
     if (needsModifier) {
-      tool.addModifier(result.getId(), 1);
+      tool.addModifier(result.id(), 1);
     } else {
       tool.rebuildStats();
     }
@@ -135,7 +135,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Override
   public List<ItemStack> getToolWithModifier() {
     if (toolWithModifier == null) {
-      ResourceLocation id = result.getId();
+      ResourceLocation id = result.id();
       ModifierEntry result = getDisplayResult();
       toolWithModifier = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiersForResult(result, result), data -> data.putString(id, value))).collect(Collectors.toList());
     }
@@ -154,7 +154,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Nullable
   @Override
   public Component canApply(IToolStackView tool) {
-    ModifierId result = this.result.getId();
+    ModifierId result = this.result.id();
     // only check slots if we lack the modifier
     if (tool.getUpgrades().getLevel(result) == 0) {
       return checkSlots(tool, getSlots());
@@ -168,7 +168,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
   @Override
   public void applyModifier(ToolStack tool) {
-    ModifierId result = this.result.getId();
+    ModifierId result = this.result.id();
     // only add the modifier if we lack it
     if (tool.getUpgrades().getLevel(result) == 0) {
       super.applyModifier(tool);

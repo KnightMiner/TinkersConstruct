@@ -136,7 +136,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
     }
 
     // yeah, its hardcoded, I cannot see a need to not hardcode this, request it if you need it
-    boolean sinistral = hand == InteractionHand.MAIN_HAND && tool.getModifierLevel(TinkerModifiers.sinistral.getId()) > 0;
+    boolean sinistral = hand == InteractionHand.MAIN_HAND && tool.getModifierLevel(TinkerModifiers.sinistral.id()) > 0;
 
     // no ammo? not charged
     ModDataNBT persistentData = tool.getPersistentData();

@@ -94,7 +94,7 @@ public record RestoreLostHealthModule(LevelingValue percent, LevelingInt effectL
           // extra damage for running based on level
           int durabilityUsage = this.durabilityUsage.compute(level);
           if (durabilityUsage > 0) {
-            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.getId());
+            ToolDamageUtil.damageAnimated(tool, durabilityUsage, defender, slotType, modifier.id());
           }
         }
       }

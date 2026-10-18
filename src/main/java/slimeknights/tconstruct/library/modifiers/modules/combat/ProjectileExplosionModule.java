@@ -109,7 +109,7 @@ public record ProjectileExplosionModule(LevelingValue radius, float eflnBonus, L
 
         // damage fishing rods, since they are supposed to damage on retrieve
         // if you need this for your custom projectile, let us know and we can dehardcode it
-        ModifierUtil.updateFishingRod(projectile, 2 + 3 * modifier.getLevel(), true, modifier.getId());
+        ModifierUtil.updateFishingRod(projectile, 2 + 3 * modifier.getLevel(), true, modifier.id());
 
         // discard projectile, we are done here
         projectile.discard();

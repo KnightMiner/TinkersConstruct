@@ -78,7 +78,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     ToolStack tool = inv.getTinkerable();
 
     // fetch the amount from the modifier, will be 0 if we have a full level
-    ModifierId modifier = result.getId();
+    ModifierId modifier = result.id();
     boolean crystal = matchesCrystal(inv);
     ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getEntry(modifier);
     boolean isNewLevel = crystal || entry.getAmount(0) <= 0;
@@ -134,7 +134,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
 
     // fetch the differences
     ToolStack inputTool = inv.getTinkerable();
-    ModifierId modifier = this.result.getId();
+    ModifierId modifier = this.result.id();
     ModifierEntry inputEntry = inputTool.getUpgrades().getEntry(modifier);
     ModifierEntry resultEntry = result.getTool().getUpgrades().getEntry(modifier);
 

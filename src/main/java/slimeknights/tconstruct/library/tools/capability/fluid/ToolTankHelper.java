@@ -33,7 +33,7 @@ public class ToolTankHelper {
   /** Default tank helper for setting fluids */
   public static final ToolTankHelper TANK_HELPER = new ToolTankHelper(CAPACITY_STAT, TConstruct.getResource("tank_fluid"));
   /** Module ensuring the tool has the tank */
-  public static final ModifierModule TANK_HANDLER = new ModifierTraitModule(TinkerModifiers.tankHandler.getId(), 1, true);
+  public static final ModifierModule TANK_HANDLER = new ModifierTraitModule(TinkerModifiers.tankHandler.id(), 1, true);
 
   /** Loadable instance for JSON */
   public static final NamedComponentRegistry<ToolTankHelper> LOADABLE = new NamedComponentRegistry<>("Unknown Tool Tank Helper");

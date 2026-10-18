@@ -68,10 +68,10 @@ public enum InteractionSource {
 
   /** Adds the format string to the modifier name */
   public static Component formatModifierName(IToolStackView tool, Modifier modifier, Component originalName) {
-    if (ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.LEFT_CLICK.getKey(), modifier.getId())) {
+    if (ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.LEFT_CLICK.getKey(), modifier.id())) {
       return modifier.applyStyle(Component.translatable(ATTACK_FORMAT, originalName));
     }
-    if (ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.RIGHT_CLICK.getKey(), modifier.getId())) {
+    if (ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.RIGHT_CLICK.getKey(), modifier.id())) {
       return modifier.applyStyle(Component.translatable(INTERACT_FORMAT, originalName));
     }
     return originalName;

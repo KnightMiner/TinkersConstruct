@@ -95,7 +95,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
         Vec3 oldPosition = attacker.position();
         if (tryTeleport(modifier, attacker, target.getX(), target.getY(), target.getZ())) {
           tryTeleport(modifier, target, oldPosition.x, oldPosition.y, oldPosition.z);
-          ToolDamageUtil.damageAnimated(tool, 2, attacker, context.getSlotType(), modifier.getId());
+          ToolDamageUtil.damageAnimated(tool, 2, attacker, context.getSlotType(), modifier.id());
         }
       }
     }
@@ -107,7 +107,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
       BlockPos pos = context.getPos();
       LivingEntity living = context.getLiving();
       if (tryTeleport(modifier, living, pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f)) {
-        ToolDamageUtil.damageAnimated(tool, 2, living, EquipmentSlot.MAINHAND, modifier.getId());
+        ToolDamageUtil.damageAnimated(tool, 2, living, EquipmentSlot.MAINHAND, modifier.id());
       }
     }
   }
@@ -118,7 +118,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
     if (context.getClickedPos().equals(pos)) {
       LivingEntity living = context.getPlayer();
       if (living != null && tryTeleport(modifier, living, pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f)) {
-        ToolDamageUtil.damageAnimated(tool, 2, living, context.getHand(), modifier.getId());
+        ToolDamageUtil.damageAnimated(tool, 2, living, context.getHand(), modifier.id());
       }
     }
   }
@@ -135,7 +135,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
       Vec3 oldPosition = attacker.position();
       if (attacker.level() == projectile.level() && tryTeleport(modifier, attacker, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ()) && target != null) {
         if (tryTeleport(modifier, target, oldPosition.x, oldPosition.y, oldPosition.z)) {
-          ModifierUtil.updateFishingRod(projectile, 10, false, modifier.getId());
+          ModifierUtil.updateFishingRod(projectile, 10, false, modifier.id());
         }
       }
     }
@@ -172,7 +172,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   @Override
   public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (primary) {
-      ToolDamageUtil.damageLauncher(tool, 10, shooter, projectile, modifier.getId());
+      ToolDamageUtil.damageLauncher(tool, 10, shooter, projectile, modifier.id());
     } else {
       persistentData.putBoolean(SECONDARY_ARROW, true);
     }

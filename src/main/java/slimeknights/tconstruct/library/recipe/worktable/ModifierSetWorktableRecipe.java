@@ -83,7 +83,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
     this.title = Component.translatable(rootKey + ".title");
     this.description = Component.translatable(rootKey + ".description");
     this.modifierPredicate = modifierPredicate;
-    this.entryFilter = entry -> modifierPredicate.matches(entry.getId());
+    this.entryFilter = entry -> modifierPredicate.matches(entry.id());
     this.allowTraits = allowTraits;
   }
 
@@ -113,7 +113,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
     }
     IToolStackView tool = inv.getTinkerable();
     Set<ModifierId> existing = getModifierSet(tool.getPersistentData(), dataKey);
-    Predicate<ModifierEntry> applicable = entry -> existing.contains(entry.getId()) != addToSet;
+    Predicate<ModifierEntry> applicable = entry -> existing.contains(entry.id()) != addToSet;
     return getModifiers(inv).stream().filter(this.entryFilter).filter(applicable).toList();
   }
 
@@ -123,9 +123,9 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
     ModDataNBT persistentData = tool.getPersistentData();
     // get or create the tag
     ListTag tagList = persistentData.get(dataKey, LIST_GETTER);
-    String value = modifier.getId().toString();
+    String value = modifier.id().toString();
     // try to find the selected modifier
-    boolean found = isInSet(tagList, modifier.getId(), !addToSet);
+    boolean found = isInSet(tagList, modifier.id(), !addToSet);
     // if removing and removed the last entry, remove the list
     if (!addToSet && tagList.isEmpty()) {
       persistentData.remove(dataKey);

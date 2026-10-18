@@ -43,7 +43,7 @@ public interface BlockTransformModule extends ModifierModule, BlockInteractionMo
   @Override
   default InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     // tool must not be broken
-    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.getId(), source)) {
+    if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
 
@@ -72,7 +72,7 @@ public interface BlockTransformModule extends ModifierModule, BlockInteractionMo
       }
 
       // if the tool breaks or it was a campfire, we are done
-      if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.getId())) {
+      if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.id())) {
         if (player != null) {
           player.broadcastBreakEvent(slotType);
         }
@@ -108,7 +108,7 @@ public interface BlockTransformModule extends ModifierModule, BlockInteractionMo
             }
 
             // stop if the tool broke
-            if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.getId())) {
+            if (ToolDamageUtil.damage(tool, 1, player, stack, modifier.id())) {
               if (player != null) {
                 player.broadcastBreakEvent(context.getHand());
               }
