@@ -60,7 +60,7 @@ public class FluidEffectInjectingTransformer extends BookTransformer {
           continue;
         }
         // skip effects with no fluids - usually means empty tag for compat
-        List<FluidStack> fluids = effect.ingredient().getFluids();
+        List<FluidStack> fluids = effect.fluids().display();
         if (fluids.isEmpty()) {
           return;
         }

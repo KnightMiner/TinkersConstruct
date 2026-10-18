@@ -25,12 +25,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.ForgeHooks;
-import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import slimeknights.mantle.util.CombatHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.TinkerEffects;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
@@ -114,17 +114,11 @@ public class ToolAttackUtil {
     return criticalModifier;
   }
 
-  /**
-   * Gets a living entity from the given entity, getting the parent if needed
-   * @param entity  Entity instance
-   * @return  Living entity, or null if its not living
-   */
+  /** @deprecated use {@link EntityTargetPredicate#resolveParent(Entity)} */
+  @Deprecated(forRemoval = true)
   @Nullable
   public static LivingEntity getLivingEntity(Entity entity) {
-    if (entity instanceof PartEntity<?> part) {
-      entity = part.getParent();
-    }
-    return entity instanceof LivingEntity living ? living : null;
+    return EntityTargetPredicate.resolveParent(entity);
   }
 
   /** Core logic for attacking, meant to be called from {@link Item#onLeftClickEntity(ItemStack, Player, Entity)} */
@@ -435,7 +429,7 @@ public class ToolAttackUtil {
    */
   @SuppressWarnings("UnusedReturnValue") // API
   public static boolean hurtNoInvulnerableTime(Entity target, DamageSource source, float damage) {
-    return hurtNoInvulnerableTime(target, getLivingEntity(target), source, damage);
+    return hurtNoInvulnerableTime(target, EntityTargetPredicate.resolveParent(target), source, damage);
   }
 
   /**

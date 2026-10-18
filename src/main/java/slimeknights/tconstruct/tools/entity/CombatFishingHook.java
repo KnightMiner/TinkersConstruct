@@ -34,6 +34,7 @@ import slimeknights.mantle.util.CombatHelper;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.TinkerEffects;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -231,7 +232,7 @@ public class CombatFishingHook extends FishingHook implements ProjectileWithKnoc
         }
         float damage = getDamage();
         DamageSource source = CombatHelper.damageSource(TinkerEffects.needsEnderferenceOverride(target) ? TinkerDamageTypes.MELEE_FISHING_HOOK : TinkerDamageTypes.FISHING_HOOK, this, owner);
-        LivingEntity targetLiving = ToolAttackUtil.getLivingEntity(target);
+        LivingEntity targetLiving = EntityTargetPredicate.resolveParent(target);
         // don't want to apply default knockback, we will apply our own later in the opposite direction
         AttributeInstance knockback = ToolAttackUtil.disableKnockback(targetLiving);
         // actually hurt the entity

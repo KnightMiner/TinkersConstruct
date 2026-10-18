@@ -14,6 +14,7 @@ import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
@@ -90,6 +91,8 @@ public class TinkerLoadables {
 
   /** Effect cures for potions */
   public static final Loadable<EffectCure> EFFECT_CURE = new CodecLoadable.Direct<>(EffectCure.CODEC, EffectCure.STREAM_CODEC);
+  /** Enchantment lists for block breaking */
+  public static final Loadable<ItemEnchantments> ENCHANTMENTS = new CodecLoadable.Registry<>(ItemEnchantments.CODEC, ItemEnchantments.STREAM_CODEC);
 
   /* Loot tables */
   /** Loadable for a loot entry instance */

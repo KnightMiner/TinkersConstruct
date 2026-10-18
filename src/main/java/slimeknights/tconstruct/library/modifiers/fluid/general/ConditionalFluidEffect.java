@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.modifiers.fluid.general;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -10,8 +11,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
-import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
-import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.fluid.EffectLevel;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;
@@ -39,11 +39,11 @@ public interface ConditionalFluidEffect<C extends FluidEffectContext> extends Fl
   }
 
   /** Conditional block effect */
-  record Block(IJsonPredicate<BlockState> block, FluidEffect<? super FluidEffectContext.Block> effect) implements ConditionalFluidEffect<FluidEffectContext.Block> {
-    public static final RecordLoadable<Block> LOADER = RecordLoadable.create(
+  record BlockContext(IJsonPredicate<BlockState> block, FluidEffect<? super FluidEffectContext.Block> effect) implements ConditionalFluidEffect<FluidEffectContext.Block> {
+    public static final RecordLoadable<BlockContext> LOADER = RecordLoadable.create(
       BlockPredicate.LOADER.defaultField("block", e -> e.block),
       FluidEffect.BLOCK_EFFECTS.requiredField("effect", e -> e.effect),
-      Block::new);
+      BlockContext::new);
 
     @Override
     public boolean canApply(FluidEffectContext.Block context) {
@@ -51,26 +51,36 @@ public interface ConditionalFluidEffect<C extends FluidEffectContext> extends Fl
     }
 
     @Override
-    public RecordLoadable<Block> getLoader() {
+    public RecordLoadable<BlockContext> getLoader() {
       return LOADER;
     }
   }
 
-  /** Conditional block effect */
-  record Entity(IJsonPredicate<LivingEntity> target, FluidEffect<? super FluidEffectContext.Entity> effect) implements ConditionalFluidEffect<FluidEffectContext.Entity> {
-    public static final RecordLoadable<Entity> LOADER = RecordLoadable.create(
-      LivingEntityPredicate.LOADER.defaultField("target", e -> e.target),
-      FluidEffect.ENTITY_EFFECTS.requiredField("effect", e -> e.effect),
-      Entity::new);
+  /** Common logic between both entity implementations. */
+  record EntityContext(EntityTargetPredicate target, FluidEffect<? super FluidEffectContext.Entity> effect) implements ConditionalFluidEffect<FluidEffectContext.Entity> {
+    public static final RecordLoadable<EntityContext> LOADER = RecordLoadable.create(
+      EntityTargetPredicate.LOADABLE.directField(EntityContext::target),
+      FluidEffect.ENTITY_EFFECTS.requiredField("effect", EntityContext::effect),
+      EntityContext::new);
 
-    @Override
-    public boolean canApply(FluidEffectContext.Entity context) {
-      return TinkerPredicate.matches(target, context.getLivingTarget());
+    /** Conditions on a direct target */
+    public static EntityContext direct(IJsonPredicate<Entity> target, FluidEffect<? super FluidEffectContext.Entity> effect) {
+      return new EntityContext(EntityTargetPredicate.direct(target), effect);
+    }
+
+    /** Conditions on a living target */
+    public static EntityContext living(IJsonPredicate<LivingEntity> target, FluidEffect<? super FluidEffectContext.Entity> effect) {
+      return new EntityContext(EntityTargetPredicate.living(target), effect);
     }
 
     @Override
-    public RecordLoadable<Entity> getLoader() {
+    public RecordLoadable<EntityContext> getLoader() {
       return LOADER;
+    }
+
+    @Override
+    public boolean canApply(FluidEffectContext.Entity context) {
+      return target.matches(context.getTarget(), context.getLivingTarget());
     }
   }
 }

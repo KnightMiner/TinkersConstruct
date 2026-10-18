@@ -88,7 +88,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
         int shots = this.shots.compute(modifier.getEffectiveLevel());
         // amount is the amount per projectile, total cost is amount times level
         // if its 0, that means we have only a couple mb left
-        int amount = Math.min(fluid.getAmount(), (int)(recipe.getAmount(fluid.getFluid()) * power) * shots) / shots;
+        int amount = Math.min(fluid.getAmount(), (int)(recipe.amount() * power) * shots) / shots;
         if (amount > 0) {
           // other stats now that we know we are shooting
           // velocity determines how far it goes, does not impact damage unlike bows

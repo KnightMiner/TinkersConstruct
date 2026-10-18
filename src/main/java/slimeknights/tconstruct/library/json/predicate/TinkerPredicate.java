@@ -72,6 +72,7 @@ public class TinkerPredicate {
   }
 
   /** Helper for dealing with the common case of matching an entity with a living entity predicate. */
+  @Deprecated(forRemoval = true)
   public static boolean matches(IJsonPredicate<LivingEntity> predicate, @Nullable Entity entity) {
     return predicate == LivingEntityPredicate.ANY || entity instanceof LivingEntity living && predicate.matches(living);
   }

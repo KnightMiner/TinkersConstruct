@@ -1,23 +1,23 @@
 package slimeknights.tconstruct.library.modifiers.fluid;
 
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import slimeknights.tconstruct.library.json.FluidStackSet;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext.Block;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext.Entity;
 
 import java.util.List;
 
 /** Data class to connect fluids to fluid effects */
-public record FluidEffects(FluidIngredient ingredient, List<FluidEffect<? super FluidEffectContext.Block>> blockEffects, List<FluidEffect<? super FluidEffectContext.Entity>> entityEffects, boolean hidden) {
+public record FluidEffects(FluidStackSet fluids, List<FluidEffect<? super FluidEffectContext.Block>> blockEffects, List<FluidEffect<? super FluidEffectContext.Entity>> entityEffects, boolean hidden) {
   public static final RecordLoadable<FluidEffects> LOADABLE = RecordLoadable.create(
-    FluidIngredient.LOADABLE.requiredField("fluid", e -> e.ingredient),
+    FluidStackSet.LOADABLE.directField(e -> e.fluids),
     FluidEffect.BLOCK_EFFECTS.list(0).defaultField("block_effects", List.of(), e -> e.blockEffects),
     FluidEffect.ENTITY_EFFECTS.list(0).defaultField("entity_effects", List.of(), e -> e.entityEffects),
     BooleanLoadable.INSTANCE.defaultField("hidden", false, false, e -> e.hidden),
@@ -31,19 +31,28 @@ public record FluidEffects(FluidIngredient ingredient, List<FluidEffect<? super 
   /* Fluid */
 
   /**
-   * Checks if the recipe matches the given fluid
+   * Checks if the recipe matches the given fluid, ignoring amount and components.
    * @param fluid  Fluid to test
    * @return  True if this recipe handles the given fluid
    */
+  public boolean matches(Holder<Fluid> fluid) {
+    return this.fluids.contains(fluid);
+  }
+
+  /**
+   * Checks if the recipe matches the given fluid, ignoring amount and components.
+   * @param fluid  Fluid to test
+   * @return  True if this recipe handles the given fluid
+   */
+  @SuppressWarnings("deprecation")
   public boolean matches(Fluid fluid) {
-    return ingredient.test(fluid);
+    return this.fluids.contains(fluid.builtInRegistryHolder());
   }
 
-  /** Gets the amount of fluid needed for a single level */
-  public int getAmount(Fluid fluid) {
-    return ingredient.getAmount(fluid);
+  /** Gets the amount of fluid consumed to use this effect. */
+  public int amount() {
+    return fluids.amount();
   }
-
 
   /* Effects present */
 
@@ -71,7 +80,7 @@ public record FluidEffects(FluidIngredient ingredient, List<FluidEffect<? super 
 
   /** Runs the effects for a generic context */
   private <C extends FluidEffectContext> int apply(FluidStack fluid, float level, C context, List<FluidEffect<? super C>> effects, FluidAction action) {
-    int amountPerLevel = getAmount(fluid.getFluid());
+    int amountPerLevel = amount();
     float scale;
     if (fluid.getAmount() >= amountPerLevel * level) {
       scale = level;
@@ -115,10 +124,5 @@ public record FluidEffects(FluidIngredient ingredient, List<FluidEffect<? super 
   }
 
   /** Entry for storage in the manager */
-  public record Entry(ResourceLocation name, FluidEffects effects) {
-    public static final RecordLoadable<Entry> LOADABLE = RecordLoadable.create(
-      Loadables.RESOURCE_LOCATION.requiredField("name", Entry::name),
-      FluidEffects.LOADABLE.requiredField("effects", Entry::effects),
-      Entry::new);
-  }
+  public record Entry(ResourceLocation name, FluidEffects effects) {}
 }

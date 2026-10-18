@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.modifiers.fluid;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -20,10 +21,11 @@ public record UpdateFluidEffectsPacket(List<FluidEffects.Entry> fluids) implemen
     public UpdateFluidEffectsPacket decode(RegistryFriendlyByteBuf buffer) {
       int size = buffer.readVarInt();
       List<FluidEffects.Entry> entries = new ArrayList<>(size);
+      RegistryAccess registries = buffer.registryAccess();
       for (int i = 0; i < size; i++) {
         ResourceLocation key = buffer.readResourceLocation();
         try {
-          FluidEffects effects = FluidEffects.LOADABLE.decode(buffer, FluidEffectManager.contextBuilder(key).build());
+          FluidEffects effects = FluidEffects.LOADABLE.decode(buffer, FluidEffectManager.contextBuilder(registries, key).build());
           entries.add(new FluidEffects.Entry(key, effects));
         } catch (RuntimeException e) {
           // put exception in the log with a bit more info

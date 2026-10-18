@@ -7,19 +7,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -91,18 +90,20 @@ public abstract class FluidEffectContext {
   public boolean breakRestricted() {
     // TODO: consider whether its worth fetching break tags from the player's held item. Problem is context doesn't know which hand triggered this, and via projectiles it may change
     // TODO: do we need to check the client game mode?
-    return player != null && !player.mayBuild() && player instanceof ServerPlayer serverPlayer && serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE;
+    return player != null && !player.mayBuild() && player instanceof ServerPlayer serverPlayer && serverPlayer.gameMode.getGameModeForPlayer().isBlockPlacingRestricted();
   }
 
   /** If true, this context is not allowed to place blocks at the given position */
   public boolean placeRestricted(ItemStack stack) {
-    return player != null && !player.mayBuild() && !stack.hasAdventureModePlaceTagForBlock(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, getBlockPos(), false));
+    return player != null && !player.mayBuild() && !stack.canPlaceOnBlockInAdventureMode(new BlockInWorld(level, getBlockPos(), false));
   }
 
   /** Context for fluid effects targeting an entity */
   @Getter
   public static class Entity extends FluidEffectContext {
+    /** Gets the direct target of this effect. */
     private final net.minecraft.world.entity.Entity target;
+    /** Gets the living target of this effect. Might be the parent of the direct target. */
     @Nullable
     private final LivingEntity livingTarget;
     @Getter
@@ -223,7 +224,7 @@ public abstract class FluidEffectContext {
 
     /** Creates an entity context */
     public Entity target(net.minecraft.world.entity.Entity target) {
-      return target(target, asLiving(target));
+      return target(target, EntityTargetPredicate.resolveParent(target));
     }
 
     /** Creates an entity context */

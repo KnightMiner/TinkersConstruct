@@ -4,25 +4,25 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.field.ContextKey;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.utils.JsonUtils;
+import slimeknights.tconstruct.library.json.FluidStackSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +46,7 @@ public class FluidEffectManager extends SimpleJsonResourceReloadListener {
   private final Map<Fluid,FluidEffects> cache = new ConcurrentHashMap<>();
 
   /** Empty spilling fluid instance */
-  private static final FluidEffects EMPTY = new FluidEffects(FluidIngredient.EMPTY, List.of(), List.of(), true);
-
-  /** Condition context for recipe loading */
-  private IContext conditionContext = IContext.EMPTY;
+  private static final FluidEffects EMPTY = new FluidEffects(FluidStackSet.of(HolderSet.empty(), 0), List.of(), List.of(), true);
 
   private FluidEffectManager() {
     super(JsonHelper.DEFAULT_GSON, FOLDER);
@@ -57,19 +54,18 @@ public class FluidEffectManager extends SimpleJsonResourceReloadListener {
 
   /** For internal use only */
   public void init() {
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, this::addDataPackListeners);
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, e -> JsonUtils.syncPackets(e, new UpdateFluidEffectsPacket(this.fluids)));
+    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::addDataPackListeners);
+    NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new UpdateFluidEffectsPacket(this.fluids)));
   }
 
   /** Adds the managers as datapack listeners */
   private void addDataPackListeners(final AddReloadListenerEvent event) {
     event.addListener(this);
-    conditionContext = event.getConditionContext();
   }
 
   /** Creates context for modifier parsing */
-  public static TypedMapBuilder contextBuilder(ResourceLocation key) {
-    return TypedMapBuilder.builder().put(ContextKey.ID, key).put(ContextKey.DEBUG, "Fluid Effect " + key);
+  public static TypedMapBuilder contextBuilder(HolderLookup.Provider registries, ResourceLocation key) {
+    return ContextKey.lookupContext(registries).put(ContextKey.ID, key).put(ContextKey.DEBUG, "Fluid Effect " + key);
   }
 
   @Override
@@ -78,16 +74,18 @@ public class FluidEffectManager extends SimpleJsonResourceReloadListener {
 
     // load spilling from JSON
     List<FluidEffects.Entry> fluids = new ArrayList<>(splashList.size());
+    HolderLookup.Provider registries = getRegistryLookup();
+    IContext conditionContext = getContext();
     for (Entry<ResourceLocation,JsonElement> entry : splashList.entrySet()) {
       ResourceLocation key = entry.getKey();
       try {
         JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), "fluid_effect");
 
         // want to parse condition without parsing effects, as the effect serializer may be missing
-        if (!CraftingHelper.processConditions(json, "conditions", conditionContext)) {
+        if (!JsonHelper.processConditions(json, "conditions", conditionContext)) {
           continue;
         }
-        fluids.add(new FluidEffects.Entry(key, FluidEffects.LOADABLE.deserialize(json, contextBuilder(key).put(ContextKey.CONDITION_CONTEXT, conditionContext).build())));
+        fluids.add(new FluidEffects.Entry(key, FluidEffects.LOADABLE.deserialize(json, contextBuilder(registries, key).put(ContextKey.CONDITION_CONTEXT, conditionContext).build())));
       } catch (JsonSyntaxException e) {
         TConstruct.LOG.error("Failed to load fluid effect {}", key, e);
       }

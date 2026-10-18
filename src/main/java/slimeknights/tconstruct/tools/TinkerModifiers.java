@@ -513,8 +513,8 @@ public final class TinkerModifiers extends TinkerModule {
   void registerSerializers(RegisterEvent event) {
     if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
       // combinations
-      FluidEffect.BLOCK_EFFECTS.register(getResource("conditional"), ConditionalFluidEffect.Block.LOADER);
-      FluidEffect.ENTITY_EFFECTS.register(getResource("conditional"), ConditionalFluidEffect.Entity.LOADER);
+      FluidEffect.BLOCK_EFFECTS.register(getResource("conditional"), ConditionalFluidEffect.BlockContext.LOADER);
+      FluidEffect.ENTITY_EFFECTS.register(getResource("conditional"), ConditionalFluidEffect.EntityContext.LOADER);
       FluidEffect.BLOCK_EFFECTS.register(getResource("scaling"), ScalingFluidEffect.BLOCK_LOADER);
       FluidEffect.ENTITY_EFFECTS.register(getResource("scaling"), ScalingFluidEffect.ENTITY_LOADER);
       FluidEffect.BLOCK_EFFECTS.register(getResource("alternatives"), AlternativesFluidEffect.BLOCK_LOADER);

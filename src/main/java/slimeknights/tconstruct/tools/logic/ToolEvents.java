@@ -51,6 +51,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.events.TinkerToolEvent.ToolHarvestEvent;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -70,7 +71,6 @@ import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
 import slimeknights.tconstruct.library.tools.helper.ArmorUtil;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
@@ -534,7 +534,7 @@ public class ToolEvents {
           // yes, hardcoded to enderference, if you need your own enderference for whatever reason, talk to us
           Entity entity = entityHit.getEntity();
           // extract a living target as that is the most common need
-          LivingEntity target = ToolAttackUtil.getLivingEntity(entity);
+          LivingEntity target = EntityTargetPredicate.resolveParent(entity);
           if (TinkerEffects.canHitWithProjectile(target) || nbt.getBoolean(TinkerEffects.ENDERFERENCE_KEY)) {
 
             // if its a piercing arrow, skip modifier effects when at the piercing limit, arrow is going to skip the hit

@@ -24,6 +24,7 @@ import slimeknights.mantle.util.CombatHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
 import slimeknights.tconstruct.library.TinkerEffects;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -120,7 +121,7 @@ public class ToolAttackContext {
 
   /** Creates a new context targeting the given entity */
   public ToolAttackContext withAOETarget(Entity target) {
-    return withAOETarget(target, ToolAttackUtil.getLivingEntity(target));
+    return withAOETarget(target, EntityTargetPredicate.resolveParent(target));
   }
 
   /** Creates a new context targeting the given entity */
@@ -200,7 +201,7 @@ public class ToolAttackContext {
 
     /** Sets the target, automatically checking if its living */
     public Builder target(Entity entity) {
-      return target(entity, ToolAttackUtil.getLivingEntity(entity));
+      return target(entity, EntityTargetPredicate.resolveParent(entity));
     }
 
     /** Sets the target as a living entity */

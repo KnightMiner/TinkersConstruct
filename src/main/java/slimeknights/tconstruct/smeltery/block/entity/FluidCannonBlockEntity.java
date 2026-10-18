@@ -138,7 +138,7 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
         // if we could not apply the fluid to the block, make a projectile provided its not blocked
         if (!targetState.isFaceSturdy(level, target, facing.getOpposite())) {
           // setup projectile
-          int amount = Math.min(fluid.getAmount(), (int)(recipe.getAmount(fluid.getFluid()) * power));
+          int amount = Math.min(fluid.getAmount(), (int)(recipe.amount() * power));
           FluidEffectProjectile projectile = new FluidEffectProjectile(level, worldPosition, facing, new FluidStack(fluid, amount), power);
 
           // setup projectile target - numbers based on arrow dispenser behavior
