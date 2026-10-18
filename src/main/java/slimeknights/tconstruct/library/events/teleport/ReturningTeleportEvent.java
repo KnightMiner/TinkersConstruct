@@ -2,10 +2,8 @@ package slimeknights.tconstruct.library.events.teleport;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
-import net.neoforged.neoforge.eventbus.api.Cancelable;
 
-/** Event fired when {@link slimeknights.tconstruct.shared.TinkerEffects#returning} teleport triggers */
-@Cancelable
+/** Event fired when {@link slimeknights.tconstruct.library.TinkerEffects#returning} teleport triggers */
 public class ReturningTeleportEvent extends EntityTeleportEvent {
   public ReturningTeleportEvent(LivingEntity entity, double targetX, double targetY, double targetZ) {
     super(entity, targetX, targetY, targetZ);

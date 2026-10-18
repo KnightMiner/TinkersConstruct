@@ -12,6 +12,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import slimeknights.mantle.util.CombatHelper;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -29,7 +30,6 @@ import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.modules.armor.CounterModule;
 
 import javax.annotation.Nullable;
@@ -55,7 +55,7 @@ public class LaceratingModifier extends Modifier implements ProjectileHitModifie
   /** Applies the effect to the target */
   private static void applyEffect(LivingEntity target, int level, int looting, @Nullable Entity cause) {
     int duration = level * 2 * 20;
-    MobEffectInstance existing = target.getEffect(TinkerEffects.bleeding.get());
+    MobEffectInstance existing = target.getEffect(TinkerEffects.bleeding);
     if (existing != null && existing.getAmplifier() == looting) {
       duration += existing.getDuration();
     } else {
@@ -63,7 +63,7 @@ public class LaceratingModifier extends Modifier implements ProjectileHitModifie
       // skip when already present so we continue on the same clock and don't repeat a damage
       duration += 19;
     }
-    target.addEffect(new MobEffectInstance(TinkerEffects.bleeding.get(), duration, looting), cause);
+    target.addEffect(new MobEffectInstance(TinkerEffects.bleeding, duration, looting), cause);
   }
 
 

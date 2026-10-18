@@ -19,8 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import slimeknights.mantle.util.CombatHelper;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.entity.ProjectileWithPower;
-import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 /** Custom implementation of {@link net.minecraft.world.entity.projectile.SmallFireball} for the sake of modifiers. */

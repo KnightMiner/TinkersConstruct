@@ -5,20 +5,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.TinkerEffect;
 import slimeknights.tconstruct.library.events.teleport.ReturningTeleportEvent;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.utils.TeleportHelper;
 
-public class ReturningEffect extends TinkerEffect {
+public class ReturningEffect extends MobEffect {
   private static final ResourceLocation KEY = TConstruct.getResource("returning");
   public ReturningEffect() {
-    super(MobEffectCategory.NEUTRAL, 0xa92dff, true);
+    super(MobEffectCategory.NEUTRAL, 0xa92dff);
     NeoForge.EVENT_BUS.addListener(MobEffectEvent.Added.class, this::onAdded);
   }
 

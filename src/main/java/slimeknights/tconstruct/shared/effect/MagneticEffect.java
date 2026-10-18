@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.shared.effect;
 
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -7,24 +8,24 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import slimeknights.tconstruct.common.TinkerEffect;
 
 import java.util.List;
 
 /** Effect that draws items towards the player. */
-public class MagneticEffect extends TinkerEffect {
+public class MagneticEffect extends MobEffect {
   public MagneticEffect() {
-    super(MobEffectCategory.BENEFICIAL, 0x720000, false);
+    super(MobEffectCategory.BENEFICIAL, 0x720000);
   }
 
   @Override
-  public boolean isDurationEffectTick(int duration, int amplifier) {
+  public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
     return (duration & 1) == 0;
   }
 
   @Override
-  public void applyEffectTick(LivingEntity entity, int amplifier) {
+  public boolean applyEffectTick(LivingEntity entity, int amplifier) {
     applyMagnet(entity, amplifier);
+    return true;
   }
 
   /** Performs the magnetic effect. */

@@ -23,12 +23,12 @@ import net.minecraft.world.level.Level;
 import slimeknights.mantle.util.CombatHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
-import slimeknights.tconstruct.shared.TinkerEffects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

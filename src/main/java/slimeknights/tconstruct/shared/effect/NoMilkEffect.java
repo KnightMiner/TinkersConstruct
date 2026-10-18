@@ -1,23 +1,20 @@
 package slimeknights.tconstruct.shared.effect;
 
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.item.ItemStack;
-import slimeknights.tconstruct.common.TinkerEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.neoforged.neoforge.common.EffectCure;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Effect that cannot be cured with milk
- * TODO 1.21: move to {@link slimeknights.tconstruct.shared.effect}
  */
-public class NoMilkEffect extends TinkerEffect {
-  public NoMilkEffect(MobEffectCategory typeIn, int color, boolean show) {
-    super(typeIn, color, show);
+public class NoMilkEffect extends MobEffect {
+  public NoMilkEffect(MobEffectCategory typeIn, int color) {
+    super(typeIn, color);
   }
 
   @Override
-  public List<ItemStack> getCurativeItems() {
-    return new ArrayList<>();
-  }
+  public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {}
 }

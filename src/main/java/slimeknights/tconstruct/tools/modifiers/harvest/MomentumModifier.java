@@ -1,6 +1,8 @@
 package slimeknights.tconstruct.tools.modifiers.harvest;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,8 +13,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.Vec3;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.TinkerEffect;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -51,13 +53,13 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
 
   /** Gets the bonus for the modifier */
   private static float getBonus(LivingEntity living, ToolType type, ModifierEntry modifier) {
-    return modifier.getEffectiveLevel() * (TinkerEffect.getLevel(living, TinkerModifiers.momentumEffect.get(type)));
+    return modifier.getEffectiveLevel() * (TinkerEffects.getLevel(living, TinkerModifiers.momentumEffect.getHolder(type)));
   }
 
   /** Applies the effect to the target */
   private static void applyEffect(LivingEntity living, ToolType type, int duration, int maxLevel) {
-    TinkerEffect effect = TinkerModifiers.momentumEffect.get(type);
-    int amplifier = Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + 1);
+    Holder<MobEffect> effect = TinkerModifiers.momentumEffect.getHolder(type);
+    int amplifier = Math.min(maxLevel, TinkerEffects.getAmplifier(living, effect) + 1);
     living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }
 

@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.tools.modules.armor;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -12,7 +13,7 @@ import net.minecraft.world.item.TooltipFlag;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.TinkerEffect;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -65,9 +66,9 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
       int level = SlotInChargeModule.getLevel(context.getTinkerData(), SLOT_KEY, slotType);
       if (level > 0) {
         // step 1: reduce damage based on the current effect level
-        MobEffect effect = TinkerModifiers.momentumEffect.get(ToolType.ARMOR);
+        Holder<MobEffect> effect = TinkerModifiers.momentumEffect.getHolder(ToolType.ARMOR);
         LivingEntity entity = context.getEntity();
-        amount -= TinkerEffect.getLevel(entity, effect);
+        amount -= TinkerEffects.getLevel(entity, effect);
 
         // step 2: apply momentum based on damage taken
         int reduction = (int)(percent.compute(level) * amount);
@@ -86,7 +87,7 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
       TooltipModifierHook.addPercentBoost(modifier.getModifier(), PROTECTION, this.percent.compute(modifier.getLevel()), tooltip);
     } else {
       // if we have a player, use the current effect level for reduction display
-      int level = TinkerEffect.getLevel(player, TinkerModifiers.momentumEffect.get(ToolType.ARMOR));
+      int level = TinkerEffects.getLevel(player, TinkerModifiers.momentumEffect.getHolder(ToolType.ARMOR));
       if (level > 0) {
         TooltipModifierHook.addFlatBoost(modifier.getModifier(), PROTECTION, this.percent.compute(modifier.getLevel()), tooltip);
       }

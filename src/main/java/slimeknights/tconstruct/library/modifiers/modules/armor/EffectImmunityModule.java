@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.modifiers.modules.armor;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -23,14 +24,13 @@ import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Module for armor modifiers that makes the wearer immune to a mob effect
  */
-public record EffectImmunityModule(MobEffect effect, LevelingInt maxLevel, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLevel, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MobDisguiseModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
-  public static final ComputableDataKey<Multiset<MobEffect>> EFFECT_IMMUNITY = TConstruct.createKey("effect_immunity", HashMultiset::create);
+  public static final ComputableDataKey<Multiset<Holder<MobEffect>>> EFFECT_IMMUNITY = TConstruct.createKey("effect_immunity", HashMultiset::create);
   private static final LevelingInt ANY_LEVEL = LevelingInt.flat(255);
   public static final RecordLoadable<EffectImmunityModule> LOADER = RecordLoadable.create(
     Loadables.MOB_EFFECT.requiredField("effect", EffectImmunityModule::effect),
@@ -38,20 +38,12 @@ public record EffectImmunityModule(MobEffect effect, LevelingInt maxLevel, Modif
     ModifierCondition.TOOL_FIELD,
     EffectImmunityModule::new);
 
-  public EffectImmunityModule(MobEffect effect, LevelingInt maxLevel) {
+  public EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLevel) {
     this(effect, maxLevel, ModifierCondition.ANY_TOOL);
   }
 
-  public EffectImmunityModule(MobEffect effect) {
+  public EffectImmunityModule(Holder<MobEffect> effect) {
     this(effect, ANY_LEVEL);
-  }
-
-  public EffectImmunityModule(Supplier<? extends MobEffect> effect, LevelingInt maxLevel) {
-    this(effect.get(), maxLevel);
-  }
-
-  public EffectImmunityModule(Supplier<? extends MobEffect> effect) {
-    this(effect.get());
   }
 
   @Override
@@ -79,7 +71,7 @@ public record EffectImmunityModule(MobEffect effect, LevelingInt maxLevel, Modif
     if (!tool.isBroken() && ArmorLevelModule.validSlot(tool, context.getChangedSlot(), TinkerTags.Items.HELD_ARMOR) && condition.matches(tool, modifier)) {
       TinkerDataCapability.Holder data = context.getDataHolder();
       if (data != null) {
-        Multiset<MobEffect> effects = data.get(EFFECT_IMMUNITY);
+        Multiset<Holder<MobEffect>> effects = data.get(EFFECT_IMMUNITY);
         if (effects != null) {
           effects.remove(effect, maxLevel.compute(modifier));
         }

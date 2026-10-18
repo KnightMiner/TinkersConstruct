@@ -1,6 +1,8 @@
 package slimeknights.tconstruct.tools.modifiers.melee;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +11,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.tconstruct.common.TinkerEffect;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -45,13 +47,13 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
     } else if (type == ToolType.MELEE_UNARMED) {
       type = ToolType.MELEE;
     }
-    return TinkerEffect.getLevel(attacker, TinkerModifiers.insatiableEffect.get(type));
+    return TinkerEffects.getLevel(attacker, TinkerModifiers.insatiableEffect.getHolder(type));
   }
 
   /** Applies the effect to the target */
   public static void applyEffect(LivingEntity living, ToolType type, int duration, int add, int maxLevel) {
-    TinkerEffect effect = TinkerModifiers.insatiableEffect.get(type);
-    int amplifier = Math.min(maxLevel, TinkerEffect.getAmplifier(living, effect) + add);
+    Holder<MobEffect> effect = TinkerModifiers.insatiableEffect.getHolder(type);
+    int amplifier = Math.min(maxLevel, TinkerEffects.getAmplifier(living, effect) + add);
     living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }
 

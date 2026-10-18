@@ -7,13 +7,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
-import slimeknights.tconstruct.common.TinkerEffect;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
@@ -23,7 +23,6 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.shared.TinkerEffects;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -45,8 +44,8 @@ public class ModifierLootingHandler {
     }
     init = true;
     // we overwrite looting values from vanilla in a couple cases, but mod effects that globally boost looting should still boost us
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, ModifierLootingHandler::onLooting);
-    MinecraftForge.EVENT_BUS.addListener(ModifierLootingHandler::onLeaveServer);
+    NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, ModifierLootingHandler::onLooting);
+    NeoForge.EVENT_BUS.addListener(ModifierLootingHandler::onLeaveServer);
   }
 
   /**
@@ -78,7 +77,7 @@ public class ModifierLootingHandler {
 
     // bleeding kills use the level of the effect for looting
     if (damageSource.is(TinkerDamageTypes.BLEEDING)) {
-      event.setLootingLevel(Math.max(0, TinkerEffect.getAmplifier(target, TinkerEffects.bleeding.get())));
+      event.setLootingLevel(Math.max(0, TinkerEffects.getAmplifier(target, TinkerEffects.bleeding)));
       return;
     }
 

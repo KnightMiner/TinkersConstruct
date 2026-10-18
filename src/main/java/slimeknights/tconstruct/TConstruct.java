@@ -46,6 +46,7 @@ import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.TinkerData;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.TinkerItemDisplays;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
@@ -61,7 +62,6 @@ import slimeknights.tconstruct.plugin.craftingtweaks.CraftingTweaksPlugin;
 import slimeknights.tconstruct.plugin.jsonthings.JsonThingsPlugin;
 import slimeknights.tconstruct.shared.TinkerAttributes;
 import slimeknights.tconstruct.shared.TinkerCommons;
-import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tables.TinkerTables;
@@ -105,12 +105,12 @@ public class TConstruct {
     TinkerModule.initRegisters(modEventBus);
     TinkerAttributes.init(modEventBus);
     TinkerData.register(modEventBus);
+    TinkerEffects.register(modEventBus);
     TinkerRecipeTypes.init(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());
     modEventBus.register(new TinkerMaterials());
-    modEventBus.register(new TinkerEffects());
     modEventBus.register(new TinkerGadgets());
     // world
     modEventBus.register(new TinkerWorld());

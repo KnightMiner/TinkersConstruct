@@ -14,17 +14,17 @@ import slimeknights.tconstruct.tools.modifiers.melee.LaceratingModifier;
  */
 public class BleedingEffect extends NoMilkEffect {
   public BleedingEffect() {
-    super(MobEffectCategory.HARMFUL, 0xa80000, true);
+    super(MobEffectCategory.HARMFUL, 0xa80000);
   }
 
   @Override
-  public boolean isDurationEffectTick(int tick, int level) {
+  public boolean shouldApplyEffectTickThisTick(int tick, int amplifier) {
     // every half second
     return tick > 0 && tick % 20 == 0;
   }
 
   @Override
-  public void applyEffectTick(LivingEntity target, int level) {
+  public boolean applyEffectTick(LivingEntity target, int level) {
     // attribute to player kill
     LivingEntity lastAttacker = target.getLastHurtMob();
     DamageSource source = TinkerDamageTypes.source(target.level().registryAccess(), TinkerDamageTypes.BLEEDING, lastAttacker);
@@ -38,5 +38,6 @@ public class BleedingEffect extends NoMilkEffect {
     if (target.level() instanceof ServerLevel serverLevel) {
       serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), 1, 0.1, 0, 0.1, 0.2);
     }
+    return true;
   }
 }

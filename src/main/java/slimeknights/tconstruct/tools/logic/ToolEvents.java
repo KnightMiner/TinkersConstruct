@@ -33,8 +33,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -44,13 +44,12 @@ import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.eventbus.api.Event.Result;
 import net.neoforged.neoforge.eventbus.api.EventPriority;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.TinkerEffect;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
+import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.events.TinkerToolEvent.ToolHarvestEvent;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -80,7 +79,6 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
 import slimeknights.tconstruct.shared.TinkerAttributes;
-import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.network.SyncProjectileModifiersPacket;
 
@@ -90,9 +88,8 @@ import java.util.Objects;
 /**
  * Event subscriber for tool events
  */
-@EventBusSubscriber(modid = TConstruct.MOD_ID, bus = Bus.FORGE)
+@EventBusSubscriber(modid = TConstruct.MOD_ID)
 public class ToolEvents {
-  @SuppressWarnings("removal")
   @SubscribeEvent
   static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
     Player player = event.getEntity();
@@ -319,14 +316,14 @@ public class ToolEvents {
 
     // conducting - boosts damage from fire
     if (source.is(TinkerTags.DamageTypes.FIRE_PROTECTION)) {
-      int level = TinkerEffect.getLevel(entity, TinkerEffects.conductive);
+      int level = TinkerEffects.getLevel(entity, TinkerEffects.conductive);
       if (level > 0) {
         originalDamage *= (float) Math.pow(2, level);
       }
     }
     // venom - boosts damage from magic
     if (source.is(TinkerTags.DamageTypes.MAGIC_PROTECTION)) {
-      int level = TinkerEffect.getLevel(entity, TinkerEffects.venom);
+      int level = TinkerEffects.getLevel(entity, TinkerEffects.venom);
       if (level > 0) {
         originalDamage *= (float) Math.pow(2, level);
       }
@@ -510,9 +507,10 @@ public class ToolEvents {
   /** Syncs arrow modifier list to the client */
   @SubscribeEvent
   static void projectileSync(PlayerEvent.StartTracking event) {
+    // TODO: only sync if we actually have modifiers
     Entity entity = event.getTarget();
     if (entity instanceof Projectile) {
-      TinkerNetwork.getInstance().sendTo(new SyncProjectileModifiersPacket(entity), event.getEntity());
+      PacketHelper.sendToPlayer(event.getEntity(), new SyncProjectileModifiersPacket(entity));
     }
   }
 

@@ -17,14 +17,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.common.RegistryLoadable;
+import slimeknights.mantle.data.loadable.common.CodecLoadable;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.mantle.data.loadable.registry.RegistryLoadable;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -38,7 +39,6 @@ import slimeknights.tconstruct.library.utils.GsonLoadable;
 
 import java.util.Set;
 
-@SuppressWarnings("deprecation")
 public class TinkerLoadables {
   /* Enums */
   public static final StringLoadable<Operation> OPERATION = new EnumLoadable<>(Operation.class);
@@ -87,6 +87,9 @@ public class TinkerLoadables {
     }
     throw error.create("Attempt to serialize unregistered tier " + tier);
   });
+
+  /** Effect cures for potions */
+  public static final Loadable<EffectCure> EFFECT_CURE = new CodecLoadable.Direct<>(EffectCure.CODEC, EffectCure.STREAM_CODEC);
 
   /* Loot tables */
   /** Loadable for a loot entry instance */

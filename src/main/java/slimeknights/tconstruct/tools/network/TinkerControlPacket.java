@@ -12,7 +12,7 @@ import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.network.ISimplePacket;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.shared.TinkerEffects;
+import slimeknights.tconstruct.shared.effect.AntigravityEffect;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
 
@@ -76,7 +76,7 @@ public enum TinkerControlPacket implements ISimplePacket {
     Player player = context.player();
     switch (this) {
       case DOUBLE_JUMP -> DoubleJumpHandler.extraJump(player);
-      case ANTIGRAVITY_JUMP -> TinkerEffects.antigravity.get().antigravityJump(player);
+      case ANTIGRAVITY_JUMP -> AntigravityEffect.antigravityJump(player);
       case START_HELMET_INTERACT, START_HELMET_INTERACT_SHIFT, START_HELMET_INTERACT_CONTROL,
            START_HELMET_INTERACT_ALT -> InteractionHandler.startArmorInteract(player, EquipmentSlot.HEAD, this.modifier);
       case STOP_HELMET_INTERACT -> InteractionHandler.stopArmorInteract(player, EquipmentSlot.HEAD);
