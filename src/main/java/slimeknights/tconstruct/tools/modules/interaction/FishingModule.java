@@ -20,7 +20,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.armor.EquipmentChangeModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
@@ -37,17 +37,17 @@ import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
-import slimeknights.tconstruct.tools.TinkerToolActions;
+import slimeknights.tconstruct.tools.TinkerItemAbilities;
 import slimeknights.tconstruct.tools.entity.CombatFishingHook;
 import slimeknights.tconstruct.tools.entity.CombatFishingHook.GrappleType;
 
 import java.util.List;
 
 /** Module implementing fishing behavior */
-public enum FishingModule implements ModifierModule, GeneralInteractionModifierHook, ToolActionModifierHook, EquipmentChangeModifierHook {
+public enum FishingModule implements ModifierModule, GeneralInteractionModifierHook, ItemAbilityModifierHook, EquipmentChangeModifierHook {
   INSTANCE;
 
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FishingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.TOOL_ACTION, ModifierHooks.EQUIPMENT_CHANGE);
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FishingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.ITEM_ABILITY, ModifierHooks.EQUIPMENT_CHANGE);
   public static final ResourceLocation HOOK_MATERIAL = TConstruct.getResource("hook_material");
   public static final RecordLoadable<FishingModule> LOADER = new SingletonLoader<>(INSTANCE);
 
@@ -62,8 +62,8 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility toolAction) {
-    return toolAction == ItemAbilities.FISHING_ROD_CAST;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return ability == ItemAbilities.FISHING_ROD_CAST;
   }
 
   @Override
@@ -101,11 +101,11 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
           ModifierNBT modifiers = tool.getModifiers();
           EntityModifierCapability.getCapability(hook).setModifiers(modifiers);
           // apply grapple or drill
-          if (ModifierUtil.canPerformAction(tool, TinkerToolActions.GRAPPLE_HOOK)) {
-            hook.setGrapple(ModifierUtil.canPerformAction(tool, TinkerToolActions.DRILL_ATTACK) ? GrappleType.DRILL : GrappleType.DASH);
+          if (ModifierUtil.canPerformAction(tool, TinkerItemAbilities.GRAPPLE_HOOK)) {
+            hook.setGrapple(ModifierUtil.canPerformAction(tool, TinkerItemAbilities.DRILL_ATTACK) ? GrappleType.DRILL : GrappleType.DASH);
           }
           // apply collecting
-          if (ModifierUtil.canPerformAction(tool, TinkerToolActions.ITEM_HOOK)) {
+          if (ModifierUtil.canPerformAction(tool, TinkerItemAbilities.ITEM_HOOK)) {
             hook.setCollecting();
           }
 

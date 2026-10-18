@@ -106,21 +106,21 @@ import slimeknights.tconstruct.library.modifiers.modules.armor.AdjustDamageModul
 import slimeknights.tconstruct.library.modifiers.modules.armor.BlockDamageSourceModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.CoverGroundWalkerModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.EffectImmunityModule;
+import slimeknights.tconstruct.library.modifiers.modules.armor.ItemAbilityWalkerTransformModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.MaxArmorAttributeModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.MobDisguiseModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.ProtectionModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.ReplaceBlockWalkerModule;
-import slimeknights.tconstruct.library.modifiers.modules.armor.ToolActionWalkerTransformModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.AttributeModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.BlockItemProviderModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ConditionalStatModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.InfinityModule;
+import slimeknights.tconstruct.library.modifiers.modules.behavior.ItemAbilitiesModule;
+import slimeknights.tconstruct.library.modifiers.modules.behavior.ItemAbilityTransformModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.MaterialRepairModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ReduceToolDamageModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.RepairFactorModule;
 import slimeknights.tconstruct.library.modifiers.modules.behavior.ShowOffhandModule;
-import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionTransformModule;
-import slimeknights.tconstruct.library.modifiers.modules.behavior.ToolActionsModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.EnchantmentModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.ModifierRequirementsModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.ModifierSlotModule;
@@ -577,15 +577,15 @@ public final class TinkerModifiers extends TinkerModule {
       ModifierModule.LOADER.register(getResource("protection"), ProtectionModule.LOADER);
       ModifierModule.LOADER.register(getResource("adjust_damage"), AdjustDamageModule.LOADER);
       ModifierModule.LOADER.register(getResource("replace_fluid"), ReplaceBlockWalkerModule.LOADER);
-      ModifierModule.LOADER.register(getResource("tool_action_walk_transform"), ToolActionWalkerTransformModule.LOADER);
+      ModifierModule.LOADER.register(getResource("item_ability_walk_transform"), ItemAbilityWalkerTransformModule.LOADER);
       // behavior
       ModifierModule.LOADER.register(getResource("attribute"), AttributeModule.LOADER);
       ModifierModule.LOADER.register(getResource("reduce_tool_damage"), ReduceToolDamageModule.LOADER);
       ModifierModule.LOADER.register(getResource("repair_factor"), RepairFactorModule.LOADER);
       ModifierModule.LOADER.register(getResource("material_repair"), MaterialRepairModule.LOADER);
       ModifierModule.LOADER.register(getResource("show_offhand"), ShowOffhandModule.LOADER);
-      ModifierModule.LOADER.register(getResource("tool_actions"), ToolActionsModule.LOADER);
-      ModifierModule.LOADER.register(getResource("tool_action_transform"), ToolActionTransformModule.LOADER);
+      ModifierModule.LOADER.register(getResource("item_abilities"), ItemAbilitiesModule.LOADER);
+      ModifierModule.LOADER.register(getResource("item_ability_transform"), ItemAbilityTransformModule.LOADER);
       // edible
       ModifierModule.LOADER.register(getResource("edible"), EdibleModule.LOADER);
       ModifierModule.LOADER.register(getResource("edible_consume_durability"), EdibleConsumeDurabilityModule.LOADER);

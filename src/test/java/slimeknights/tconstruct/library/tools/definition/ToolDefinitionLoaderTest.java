@@ -5,8 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import slimeknights.mantle.util.JsonHelper;
@@ -21,10 +21,10 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilitiesModule;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.MultiplyStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionToolHook;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
@@ -64,7 +64,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
     RegistrationFixture.register(ToolModule.LOADER, "part_stats", PartStatsModule.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "modifier_slots", ToolSlotsModule.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "traits", ToolTraitsModule.LOADER);
-    RegistrationFixture.register(ToolModule.LOADER, "actions", ToolActionsModule.LOADER);
+    RegistrationFixture.register(ToolModule.LOADER, "actions", ItemAbilitiesModule.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "is_effective", IsEffectiveModule.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "circle", CircleAOEIterator.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "sweep", SweepWeaponAttack.LOADER);
@@ -110,17 +110,17 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
     // traits
     List<ModifierEntry> traits = TestHelper.getTraits(data);
     assertThat(traits).hasSize(2);
-    assertThat(traits.get(0).getId()).isEqualTo(ModifierFixture.TEST_1);
+    assertThat(traits.get(0).id()).isEqualTo(ModifierFixture.TEST_1);
     assertThat(traits.get(0).getLevel()).isEqualTo(1);
-    assertThat(traits.get(1).getId()).isEqualTo(ModifierFixture.TEST_2);
+    assertThat(traits.get(1).id()).isEqualTo(ModifierFixture.TEST_2);
     assertThat(traits.get(1).getLevel()).isEqualTo(3);
     // actions
-    ToolActionToolHook actions = data.getHook(ToolHooks.TOOL_ACTION);
-    assertThat(actions).isInstanceOf(ToolActionsModule.class);
-    assertThat(((ToolActionsModule) actions).actions()).hasSize(2);
+    ItemAbilityToolHook actions = data.getHook(ToolHooks.ITEM_ABILITY);
+    assertThat(actions).isInstanceOf(ItemAbilitiesModule.class);
+    assertThat(((ItemAbilitiesModule) actions).abilities()).hasSize(2);
     IToolStackView tool = mock(IToolStackView.class);
-    assertThat(data.getHook(ToolHooks.TOOL_ACTION).canPerformAction(tool, ToolActions.AXE_DIG)).isTrue();
-    assertThat(data.getHook(ToolHooks.TOOL_ACTION).canPerformAction(tool, ToolAction.get("custom_action"))).isTrue();
+    assertThat(data.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbilities.AXE_DIG)).isTrue();
+    assertThat(data.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbility.get("custom_action"))).isTrue();
     // harvest
     IsEffectiveToolHook harvestLogic = data.getHook(ToolHooks.IS_EFFECTIVE);
     assertThat(harvestLogic).isInstanceOf(IsEffectiveModule.class);
@@ -153,7 +153,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
   @Test
   void noParts_minimal() {
     ToolDefinition minimalNoParts = ToolDefinition.create(TConstruct.getResource("minimal_no_parts"));
-    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(minimalNoParts.getId().getPath());
+    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(minimalNoParts.id().getPath());
     ToolDefinitionLoader.getInstance().apply(splashList, mock(ResourceManager.class), mock(ProfilerFiller.class));
 
     ToolDefinitionData data = minimalNoParts.getData();
@@ -167,7 +167,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
   void noParts_full() {
     ToolDefinition noPartsFull = ToolDefinition.create(TConstruct.getResource("full_no_parts"));
 
-    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(noPartsFull.getId().getPath());
+    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(noPartsFull.id().getPath());
     ToolDefinitionLoader.getInstance().apply(splashList, mock(ResourceManager.class), mock(ProfilerFiller.class));
 
     ToolDefinitionData data = noPartsFull.getData();
@@ -216,7 +216,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
   @Test
   void meleeHarvest_full() {
     ToolDefinition fullWithParts = ToolDefinition.create(TConstruct.getResource("full_with_parts"));
-    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(fullWithParts.getId().getPath());
+    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(fullWithParts.id().getPath());
     ToolDefinitionLoader.getInstance().apply(splashList, mock(ResourceManager.class), mock(ProfilerFiller.class));
 
     ToolDefinitionData data = fullWithParts.getData();
@@ -242,7 +242,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
   void meleeHarvest_missingParts_defaults() {
     ToolDefinition needPartsHasNone = ToolDefinition.create(TConstruct.getResource("need_parts_has_none"));
     needPartsHasNone.setData(getWrongData()); // set to wrong data to ensure something changes
-    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(needPartsHasNone.getId().getPath());
+    Map<ResourceLocation,JsonElement> splashList = fileLoader.loadFilesAsSplashlist(needPartsHasNone.id().getPath());
     ToolDefinitionLoader.getInstance().apply(splashList, mock(ResourceManager.class), mock(ProfilerFiller.class));
     assertThat(needPartsHasNone.getData()).isSameAs(ToolDefinitionData.EMPTY);
   }

@@ -10,7 +10,7 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionToolHook;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolStatsHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
@@ -105,8 +105,8 @@ public class ToolHooks {
     REBALANCED_TRAIT = register("rebalanced_trait", ToolTraitHook.class, merger, defaultInstance);
     TRIM_TRAIT = register("trim_trait", ToolTraitHook.class, merger, defaultInstance);
   }
-  /** Hook for checking if a tool can perform a given action. */
-  public static final ModuleHook<ToolActionToolHook> TOOL_ACTION = register("tool_actions", ToolActionToolHook.class, ToolActionToolHook.AnyMerger::new, (tool, action) -> false);
+  /** Hook for checking if a tool has a given ability. */
+  public static final ModuleHook<ItemAbilityToolHook> ITEM_ABILITY = register("item_ability", ItemAbilityToolHook.class, ItemAbilityToolHook.AnyMerger::new, (tool, action) -> false);
 
 
   /* Mining */

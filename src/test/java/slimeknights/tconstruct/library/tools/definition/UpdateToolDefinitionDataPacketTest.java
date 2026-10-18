@@ -2,10 +2,12 @@ package slimeknights.tconstruct.library.tools.definition;
 
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
@@ -19,10 +21,10 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilitiesModule;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.MultiplyStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionToolHook;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
@@ -65,7 +67,7 @@ class UpdateToolDefinitionDataPacketTest extends BaseMcTest {
     RegistrationFixture.register(ToolModule.LOADER, "circle", CircleAOEIterator.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "sweep", SweepWeaponAttack.LOADER);
     RegistrationFixture.register(ToolModule.LOADER, "traits", ToolTraitsModule.LOADER);
-    RegistrationFixture.register(ToolModule.LOADER, "actions", ToolActionsModule.LOADER);
+    RegistrationFixture.register(ToolModule.LOADER, "actions", ItemAbilitiesModule.LOADER);
   }
 
   @Test
@@ -88,7 +90,7 @@ class UpdateToolDefinitionDataPacketTest extends BaseMcTest {
       .module(ToolSlotsModule.builder().slots(SlotType.UPGRADE, 5).slots(SlotType.ABILITY, 8).build())
       // traits
       .module(ToolTraitsModule.builder().trait(ModifierFixture.TEST_1, 10).build())
-      .module(ToolActionsModule.of(ToolActions.AXE_DIG, ToolActions.SHOVEL_FLATTEN))
+      .module(ItemAbilitiesModule.of(ItemAbilities.AXE_DIG, ItemAbilities.SHOVEL_FLATTEN))
       // behavior
       .module(new IsEffectiveModule(BlockPredicate.set(Blocks.GRANITE), true))
       .module(new CircleAOEIterator(7, true))
@@ -96,13 +98,13 @@ class UpdateToolDefinitionDataPacketTest extends BaseMcTest {
       .build();
 
     // send a packet over the buffer
-    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+    RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY, ConnectionType.OTHER);
     UpdateToolDefinitionDataPacket packetToEncode = new UpdateToolDefinitionDataPacket(ImmutableMap.of(EMPTY_ID, empty, FILLED_ID, filled));
-    packetToEncode.encode(buffer);
-    UpdateToolDefinitionDataPacket decoded = new UpdateToolDefinitionDataPacket(buffer);
+    UpdateToolDefinitionDataPacket.CODEC.encode(buffer, packetToEncode);
+    UpdateToolDefinitionDataPacket decoded = UpdateToolDefinitionDataPacket.CODEC.decode(buffer);
 
     // parse results
-    Map<ResourceLocation,ToolDefinitionData> parsedMap = decoded.getDataMap();
+    Map<ResourceLocation,ToolDefinitionData> parsedMap = decoded.dataMap();
     assertThat(parsedMap).hasSize(2);
 
     // first validate empty
@@ -170,16 +172,16 @@ class UpdateToolDefinitionDataPacketTest extends BaseMcTest {
     // traits
     List<ModifierEntry> traits = TestHelper.getTraits(parsed);
     assertThat(traits).hasSize(1);
-    assertThat(traits.get(0).getModifier()).isEqualTo(ModifierFixture.TEST_MODIFIER_1);
-    assertThat(traits.get(0).getLevel()).isEqualTo(10);
+    assertThat(traits.getFirst().getModifier()).isEqualTo(ModifierFixture.TEST_MODIFIER_1);
+    assertThat(traits.getFirst().getLevel()).isEqualTo(10);
 
     // actions
-    ToolActionToolHook actionModule = parsed.getHook(ToolHooks.TOOL_ACTION);
-    assertThat(actionModule).isInstanceOf(ToolActionsModule.class);
-    assertThat(((ToolActionsModule) actionModule).actions()).hasSize(2);
+    ItemAbilityToolHook actionModule = parsed.getHook(ToolHooks.ITEM_ABILITY);
+    assertThat(actionModule).isInstanceOf(ItemAbilitiesModule.class);
+    assertThat(((ItemAbilitiesModule) actionModule).abilities()).hasSize(2);
     IToolStackView tool = mock(IToolStackView.class);
-    assertThat(parsed.getHook(ToolHooks.TOOL_ACTION).canPerformAction(tool, ToolActions.AXE_DIG)).isTrue();
-    assertThat(parsed.getHook(ToolHooks.TOOL_ACTION).canPerformAction(tool, ToolActions.SHOVEL_FLATTEN)).isTrue();
+    assertThat(parsed.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbilities.AXE_DIG)).isTrue();
+    assertThat(parsed.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbilities.SHOVEL_FLATTEN)).isTrue();
 
     // harvest
     IsEffectiveToolHook harvestLogic = parsed.getHook(ToolHooks.IS_EFFECTIVE);

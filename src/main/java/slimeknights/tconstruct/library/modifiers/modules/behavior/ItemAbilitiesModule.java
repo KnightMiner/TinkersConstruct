@@ -1,12 +1,12 @@
 package slimeknights.tconstruct.library.modifiers.modules.behavior;
 
 import com.google.common.collect.ImmutableSet;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
@@ -20,24 +20,24 @@ import java.util.Set;
 /**
  * Module that allows a modifier to perform tool actions
  */
-public record ToolActionsModule(Set<ToolAction> actions, ModifierCondition<IToolStackView> condition) implements ToolActionModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolActionsModule>defaultHooks(ModifierHooks.TOOL_ACTION);
-  public static final RecordLoadable<ToolActionsModule> LOADER = RecordLoadable.create(
-    Loadables.TOOL_ACTION.set().requiredField("tool_actions", ToolActionsModule::actions),
+public record ItemAbilitiesModule(Set<ItemAbility> abilities, ModifierCondition<IToolStackView> condition) implements ItemAbilityModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilitiesModule>defaultHooks(ModifierHooks.ITEM_ABILITY);
+  public static final RecordLoadable<ItemAbilitiesModule> LOADER = RecordLoadable.create(
+    Loadables.ITEM_ABILITY.set().requiredField("abilities", ItemAbilitiesModule::abilities),
     ModifierCondition.TOOL_FIELD,
-    ToolActionsModule::new);
+    ItemAbilitiesModule::new);
 
-  public ToolActionsModule(ToolAction... actions) {
+  public ItemAbilitiesModule(ItemAbility... actions) {
     this(ImmutableSet.copyOf(actions), ModifierCondition.ANY_TOOL);
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
-    return condition.matches(tool, modifier) && actions.contains(toolAction);
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return condition.matches(tool, modifier) && abilities.contains(ability);
   }
 
   @Override
-  public RecordLoadable<ToolActionsModule> getLoader() {
+  public RecordLoadable<ItemAbilitiesModule> getLoader() {
     return LOADER;
   }
 

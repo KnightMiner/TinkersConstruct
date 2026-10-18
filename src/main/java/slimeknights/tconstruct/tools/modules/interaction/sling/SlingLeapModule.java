@@ -25,7 +25,7 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
-import slimeknights.tconstruct.tools.TinkerToolActions;
+import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
 /**
  * Module adding velocity to the player. Implements {@link slimeknights.tconstruct.tools.data.ModifierIds#flinging} and {@link slimeknights.tconstruct.tools.data.ModifierIds#flinging}.
@@ -100,7 +100,7 @@ public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround
             player.getCooldowns().addCooldown(tool.getItem(), 3);
           }
           // if supported, perform drill attack if the modifier is available
-          if (ModifierManager.isInTag(modifier.id(), TinkerTags.Modifiers.DRILL_ATTACKS) && ModifierUtil.canPerformAction(tool, TinkerToolActions.DRILL_ATTACK)) {
+          if (ModifierManager.isInTag(modifier.id(), TinkerTags.Modifiers.DRILL_ATTACKS) && ModifierUtil.canPerformAction(tool, TinkerItemAbilities.DRILL_ATTACK)) {
             player.startAutoSpinAttack(20);
           }
         }

@@ -23,13 +23,13 @@ import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.BlockInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
@@ -45,21 +45,18 @@ import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
+import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
 /** Module starting a fire at the targeted position on interact. */
-public enum PlaceFireModule implements ModifierModule, EntityInteractionModifierHook, BlockInteractionModifierHook, ToolActionModifierHook, RemoveBlockModifierHook {
+public enum PlaceFireModule implements ModifierModule, EntityInteractionModifierHook, BlockInteractionModifierHook, ItemAbilityModifierHook, RemoveBlockModifierHook {
   INSTANCE;
 
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<PlaceFireModule>defaultHooks(ModifierHooks.ENTITY_INTERACT, ModifierHooks.BLOCK_INTERACT, ModifierHooks.TOOL_ACTION, ModifierHooks.REMOVE_BLOCK);
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<PlaceFireModule>defaultHooks(ModifierHooks.ENTITY_INTERACT, ModifierHooks.BLOCK_INTERACT, ModifierHooks.ITEM_ABILITY, ModifierHooks.REMOVE_BLOCK);
   public static final RecordLoadable<PlaceFireModule> LOADER = new SingletonLoader<>(INSTANCE);
-  /** Generic action for the sake of people who want compat but do not want to request a specific action */
-  private static final ToolAction LIGHT_FIRE = ToolAction.get("light_fire");
-  /** Compat with mods adding custom campfires */
-  private static final ToolAction LIGHT_CAMPFIRE = ToolAction.get("light_campfire");
 
   @Override
   public RecordLoadable<PlaceFireModule> getLoader() {
@@ -72,8 +69,8 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
-    return toolAction == LIGHT_CAMPFIRE || toolAction == LIGHT_FIRE;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return ability == TinkerItemAbilities.LIGHT_CAMPFIRE || ability == TinkerItemAbilities.LIGHT_FIRE;
   }
 
   @Override

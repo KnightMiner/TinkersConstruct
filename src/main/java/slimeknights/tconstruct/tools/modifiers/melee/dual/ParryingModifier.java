@@ -6,22 +6,22 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.UseAnim;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
-public class ParryingModifier extends OffhandAttackModifier implements ToolActionModifierHook {
+public class ParryingModifier extends OffhandAttackModifier implements ItemAbilityModifierHook {
   @Override
   protected void registerHooks(Builder hookBuilder) {
     super.registerHooks(hookBuilder);
-    hookBuilder.addHook(this, ModifierHooks.TOOL_ACTION);
+    hookBuilder.addHook(this, ModifierHooks.ITEM_ABILITY);
   }
 
   @Override
@@ -67,7 +67,7 @@ public class ParryingModifier extends OffhandAttackModifier implements ToolActio
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
-    return toolAction == ToolActions.SHIELD_BLOCK;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return ability == ItemAbilities.SHIELD_BLOCK;
   }
 }

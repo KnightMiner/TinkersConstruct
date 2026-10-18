@@ -11,15 +11,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.IForgeShearable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.eventbus.api.Event.Result;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.events.TinkerToolEvent.ToolShearEvent;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteractionModifierHook;
@@ -40,8 +40,8 @@ import slimeknights.tconstruct.library.utils.Util;
 import java.util.List;
 
 /** Module implementing shearing on kamas, scythes, and swords */
-public record ShearsModule(float flatBonus, float perLevelBonus, float expandedBonus, ModifierCondition<IToolStackView> condition) implements ModifierModule, EntityInteractionModifierHook, ToolActionModifierHook, ConditionalModule<IToolStackView> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ShearsModule>defaultHooks(ModifierHooks.ENTITY_INTERACT, ModifierHooks.TOOL_ACTION);
+public record ShearsModule(float flatBonus, float perLevelBonus, float expandedBonus, ModifierCondition<IToolStackView> condition) implements ModifierModule, EntityInteractionModifierHook, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ShearsModule>defaultHooks(ModifierHooks.ENTITY_INTERACT, ModifierHooks.ITEM_ABILITY);
   public static final RecordLoadable<ShearsModule> LOADER = RecordLoadable.create(
     FloatLoadable.FROM_ZERO.defaultField("flat", 0f, ShearsModule::flatBonus),
     FloatLoadable.FROM_ZERO.defaultField("per_level", 0f, ShearsModule::perLevelBonus),
@@ -64,12 +64,12 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return condition.matches(tool, modifier) && (
-      toolAction == ToolActions.SHEARS_DIG ||
-      toolAction == ToolActions.SHEARS_HARVEST ||
-      toolAction == ToolActions.SHEARS_CARVE ||
-      toolAction == ToolActions.SHEARS_DISARM);
+      ability == ItemAbilities.SHEARS_DIG ||
+      ability == ItemAbilities.SHEARS_HARVEST ||
+      ability == ItemAbilities.SHEARS_CARVE ||
+      ability == ItemAbilities.SHEARS_DISARM);
   }
 
   /** Runs the hook after shearing an entity */

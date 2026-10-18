@@ -2,11 +2,11 @@ package slimeknights.tconstruct.fixture;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionDataBuilder;
-import slimeknights.tconstruct.library.tools.definition.module.build.ToolActionsModule;
+import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilitiesModule;
 import slimeknights.tconstruct.library.tools.definition.module.material.PartStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveModule;
 import slimeknights.tconstruct.test.TestHelper;
@@ -23,7 +23,7 @@ public final class ToolDefinitionFixture {
                                                       .part(MaterialItemFixture.MATERIAL_ITEM_HEAD)
                                                       .part(MaterialItemFixture.MATERIAL_ITEM_HANDLE)
                                                       .part(MaterialItemFixture.MATERIAL_ITEM_EXTRA).build())
-                               .module(ToolActionsModule.of(ToolActions.PICKAXE_DIG))
+                               .module(ItemAbilitiesModule.of(ItemAbilities.PICKAXE_DIG))
                                .module(new IsEffectiveModule(BlockPredicate.set(Blocks.STONE), true))
                                .smallToolStartingSlots()
                                .build());

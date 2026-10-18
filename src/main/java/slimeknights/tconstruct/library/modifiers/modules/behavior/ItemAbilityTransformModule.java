@@ -12,14 +12,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.BlockTransformModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
@@ -34,15 +34,15 @@ import java.util.List;
 /**
  * Module which transforms a block using a tool action
  */
-public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boolean requireGround, int eventId, ModifierCondition<IToolStackView> condition) implements BlockTransformModule, ToolActionModifierHook, ConditionalModule<IToolStackView> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolActionTransformModule>defaultHooks(ModifierHooks.BLOCK_INTERACT, ModifierHooks.TOOL_ACTION, ModifierHooks.AOE_HIGHLIGHT);
-  public static final RecordLoadable<ToolActionTransformModule> LOADER = RecordLoadable.create(
-    Loadables.TOOL_ACTION.requiredField("tool_action", ToolActionTransformModule::action),
-    Loadables.SOUND_EVENT.requiredField("sound", ToolActionTransformModule::sound),
-    BooleanLoadable.INSTANCE.requiredField("require_ground", ToolActionTransformModule::requireGround),
-    IntLoadable.FROM_MINUS_ONE.defaultField("event_id", -1, ToolActionTransformModule::eventId),
+public record ItemAbilityTransformModule(ItemAbility ability, SoundEvent sound, boolean requireGround, int eventId, ModifierCondition<IToolStackView> condition) implements BlockTransformModule, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilityTransformModule>defaultHooks(ModifierHooks.BLOCK_INTERACT, ModifierHooks.ITEM_ABILITY, ModifierHooks.AOE_HIGHLIGHT);
+  public static final RecordLoadable<ItemAbilityTransformModule> LOADER = RecordLoadable.create(
+    Loadables.ITEM_ABILITY.requiredField("ability", ItemAbilityTransformModule::ability),
+    Loadables.SOUND_EVENT.requiredField("sound", ItemAbilityTransformModule::sound),
+    BooleanLoadable.INSTANCE.requiredField("require_ground", ItemAbilityTransformModule::requireGround),
+    IntLoadable.FROM_MINUS_ONE.defaultField("event_id", -1, ItemAbilityTransformModule::eventId),
     ModifierCondition.TOOL_FIELD,
-    ToolActionTransformModule::new);
+    ItemAbilityTransformModule::new);
 
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
@@ -50,13 +50,13 @@ public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boo
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
-    return condition.matches(tool, modifier) && this.action == toolAction;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return condition.matches(tool, modifier) && this.ability == ability;
   }
 
   @Override
   public boolean shouldHighlight(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
-    return condition.matches(tool, modifier) && state.getToolModifiedState(Util.offset(context, offset), action, true) != null;
+    return condition.matches(tool, modifier) && state.getToolModifiedState(Util.offset(context, offset), ability, true) != null;
   }
 
   @Override
@@ -76,7 +76,7 @@ public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boo
 
     // normal action transform
     Player player = context.getPlayer();
-    BlockState transformed = original.getToolModifiedState(context, action, false);
+    BlockState transformed = original.getToolModifiedState(context, ability, false);
     if (transformed != null) {
       if (playSound) {
         level.playSound(player, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -89,7 +89,7 @@ public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boo
         if (requireGround) {
           level.destroyBlock(above, true);
         }
-        BlockTransformModifierHook.afterTransformBlock(tool, context, original, pos, action);
+        BlockTransformModifierHook.afterTransformBlock(tool, context, original, pos, ability);
       }
       return true;
     }
@@ -97,20 +97,20 @@ public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boo
   }
 
   @Override
-  public RecordLoadable<ToolActionTransformModule> getLoader() {
+  public RecordLoadable<ItemAbilityTransformModule> getLoader() {
     return LOADER;
   }
 
 
   /* Builder */
 
-  public static Builder builder(ToolAction action, SoundEvent sound) {
-    return new Builder(action, sound);
+  public static Builder builder(ItemAbility ability, SoundEvent sound) {
+    return new Builder(ability, sound);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Builder extends ModuleBuilder.Stack<Builder> {
-    private final ToolAction action;
+    private final ItemAbility ability;
     private final SoundEvent sound;
     private boolean requireGround;
     /**
@@ -129,8 +129,8 @@ public record ToolActionTransformModule(ToolAction action, SoundEvent sound, boo
     }
 
     /** Builds the module */
-    public ToolActionTransformModule build() {
-      return new ToolActionTransformModule(action, sound, requireGround, eventId, condition);
+    public ItemAbilityTransformModule build() {
+      return new ItemAbilityTransformModule(ability, sound, requireGround, eventId, condition);
     }
   }
 }

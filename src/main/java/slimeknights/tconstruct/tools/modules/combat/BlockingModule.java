@@ -4,13 +4,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.UseAnim;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
@@ -21,10 +21,10 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import java.util.List;
 
 /** Module implementing {@link slimeknights.tconstruct.tools.data.ModifierIds#blocking} */
-public enum BlockingModule implements ModifierModule, GeneralInteractionModifierHook, ToolActionModifierHook {
+public enum BlockingModule implements ModifierModule, GeneralInteractionModifierHook, ItemAbilityModifierHook {
   INSTANCE;
 
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<BlockingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.TOOL_ACTION);
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<BlockingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.ITEM_ABILITY);
   public static final RecordLoadable<BlockingModule> LOADER = new SingletonLoader<>(INSTANCE);
 
   @Override
@@ -44,8 +44,8 @@ public enum BlockingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry entry, ToolAction toolAction) {
-    return toolAction == ToolActions.SHIELD_BLOCK;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry entry, ItemAbility ability) {
+    return ability == ItemAbilities.SHIELD_BLOCK;
   }
 
   @Override

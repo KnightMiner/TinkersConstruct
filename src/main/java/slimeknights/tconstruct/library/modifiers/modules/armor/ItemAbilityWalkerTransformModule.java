@@ -14,14 +14,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolActionModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
@@ -38,23 +38,23 @@ import java.util.List;
 
 /**
  * Boot module that transforms walked on blocks using a tool action
- * @param action     Transforming action
+ * @param ability    Transforming action
  * @param sound      Sound to play when transforming
  * @param radius     Radius to cover
  * @param condition  Standard module condition
  */
-public record ToolActionWalkerTransformModule(ToolAction action, SoundEvent sound, LevelingValue radius, ModifierCondition<IToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<MutableUseOnContext>, ToolActionModifierHook, ConditionalModule<IToolStackView> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolActionWalkerTransformModule>defaultHooks(ModifierHooks.BOOT_WALK, ModifierHooks.TOOL_ACTION);
-  public static final RecordLoadable<ToolActionWalkerTransformModule> LOADER = RecordLoadable.create(
-    Loadables.TOOL_ACTION.requiredField("tool_action", ToolActionWalkerTransformModule::action),
-    Loadables.SOUND_EVENT.requiredField("sound", ToolActionWalkerTransformModule::sound),
-    LevelingValue.LOADABLE.requiredField("radius", ToolActionWalkerTransformModule::radius),
+public record ItemAbilityWalkerTransformModule(ItemAbility ability, SoundEvent sound, LevelingValue radius, ModifierCondition<IToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<MutableUseOnContext>, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilityWalkerTransformModule>defaultHooks(ModifierHooks.BOOT_WALK, ModifierHooks.ITEM_ABILITY);
+  public static final RecordLoadable<ItemAbilityWalkerTransformModule> LOADER = RecordLoadable.create(
+    Loadables.ITEM_ABILITY.requiredField("ability", ItemAbilityWalkerTransformModule::ability),
+    Loadables.SOUND_EVENT.requiredField("sound", ItemAbilityWalkerTransformModule::sound),
+    LevelingValue.LOADABLE.requiredField("radius", ItemAbilityWalkerTransformModule::radius),
     ModifierCondition.TOOL_FIELD,
-    ToolActionWalkerTransformModule::new);
+    ItemAbilityWalkerTransformModule::new);
   
-  /** @apiNote Internal constructor, use {@link #builder(ToolAction, SoundEvent)} */
+  /** @apiNote Internal constructor, use {@link #builder(ItemAbility, SoundEvent)} */
   @Internal
-  public ToolActionWalkerTransformModule {}
+  public ItemAbilityWalkerTransformModule {}
 
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
@@ -67,8 +67,8 @@ public record ToolActionWalkerTransformModule(ToolAction action, SoundEvent soun
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ToolAction toolAction) {
-    return condition.matches(tool, modifier) && toolAction == this.action;
+  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+    return condition.matches(tool, modifier) && ability == this.ability;
   }
 
   @Override
@@ -91,7 +91,7 @@ public record ToolActionWalkerTransformModule(ToolAction action, SoundEvent soun
       context.setOffsetPos(mutable);
       // transform the block
       BlockState original = world.getBlockState(mutable);
-      BlockState transformed = original.getToolModifiedState(context, action, false);
+      BlockState transformed = original.getToolModifiedState(context, ability, false);
       if (transformed != null) {
         world.setBlock(mutable, transformed, Block.UPDATE_ALL_IMMEDIATE);
         world.destroyBlock(target, true);
@@ -103,7 +103,7 @@ public record ToolActionWalkerTransformModule(ToolAction action, SoundEvent soun
   }
 
   @Override
-  public RecordLoadable<ToolActionWalkerTransformModule> getLoader() {
+  public RecordLoadable<ItemAbilityWalkerTransformModule> getLoader() {
     return LOADER;
   }
   
@@ -111,18 +111,18 @@ public record ToolActionWalkerTransformModule(ToolAction action, SoundEvent soun
   /* Builder */
 
   /** Creates a builder instance */
-  public static Builder builder(ToolAction action, SoundEvent sound) {
-    return new Builder(action, sound);
+  public static Builder builder(ItemAbility ability, SoundEvent sound) {
+    return new Builder(ability, sound);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class Builder extends ModuleBuilder.Stack<Builder> implements LevelingValue.Builder<ToolActionWalkerTransformModule> {
-    private final ToolAction action;
+  public static class Builder extends ModuleBuilder.Stack<Builder> implements LevelingValue.Builder<ItemAbilityWalkerTransformModule> {
+    private final ItemAbility ability;
     private final SoundEvent sound;
 
     @Override
-    public ToolActionWalkerTransformModule amount(float flat, float eachLevel) {
-      return new ToolActionWalkerTransformModule(action, sound, new LevelingValue(flat, eachLevel), condition);
+    public ItemAbilityWalkerTransformModule amount(float flat, float eachLevel) {
+      return new ItemAbilityWalkerTransformModule(ability, sound, new LevelingValue(flat, eachLevel), condition);
     }
   }
 }

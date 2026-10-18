@@ -19,8 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -200,14 +200,14 @@ public final class ModifierUtil {
   }
 
   /** Checks if a tool can perform the given action */
-  public static boolean canPerformAction(IToolStackView tool, ToolAction action) {
+  public static boolean canPerformAction(IToolStackView tool, ItemAbility ability) {
     if (!tool.isBroken()) {
       // can the tool do this action inherently?
-      if (tool.getHook(ToolHooks.TOOL_ACTION).canPerformAction(tool, action)) {
+      if (tool.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ability)) {
         return true;
       }
       for (ModifierEntry entry : tool.getModifierList()) {
-        if (entry.getHook(ModifierHooks.TOOL_ACTION).canPerformAction(tool, entry, action)) {
+        if (entry.getHook(ModifierHooks.ITEM_ABILITY).canPerformAction(tool, entry, ability)) {
           return true;
         }
       }
@@ -220,7 +220,7 @@ public final class ModifierUtil {
    * Allows your tool to block while charging up.
    */
   public static UseAnim blockWhileCharging(IToolStackView tool, UseAnim fallback) {
-    return canPerformAction(tool, ToolActions.SHIELD_BLOCK) ? UseAnim.BLOCK : fallback;
+    return canPerformAction(tool, ItemAbilities.SHIELD_BLOCK) ? UseAnim.BLOCK : fallback;
   }
 
   /** Calculates inaccuracy from the conditional tool stat. */
@@ -263,9 +263,9 @@ public final class ModifierUtil {
       ItemStack stack = living.getMainHandItem();
       InteractionHand hand = InteractionHand.MAIN_HAND;
       // must be able to cast
-      if (!stack.canPerformAction(ToolActions.FISHING_ROD_CAST)) {
+      if (!stack.canPerformAction(ItemAbilities.FISHING_ROD_CAST)) {
         stack = living.getOffhandItem();
-        if (!stack.canPerformAction(ToolActions.FISHING_ROD_CAST)) {
+        if (!stack.canPerformAction(ItemAbilities.FISHING_ROD_CAST)) {
           return null;
         }
         hand = InteractionHand.OFF_HAND;

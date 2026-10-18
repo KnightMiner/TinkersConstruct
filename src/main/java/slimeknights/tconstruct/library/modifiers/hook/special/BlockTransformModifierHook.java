@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.special;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -19,9 +19,9 @@ public interface BlockTransformModifierHook {
    * @param context  Item use context, corresponds to the original targeted position
    * @param state    State before it was transformed
    * @param pos      Position of block that was transformed, may be different from the context
-   * @param action   Action that was performed
+   * @param ability  Action that was performed
    */
-  void afterTransformBlock(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockState state, BlockPos pos, ToolAction action);
+  void afterTransformBlock(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockState state, BlockPos pos, ItemAbility ability);
 
   /**
    * Runs the hook after transforming a block
@@ -29,20 +29,20 @@ public interface BlockTransformModifierHook {
    * @param context Item use context, corresponds to the original targeted position
    * @param state   State before it was transformed
    * @param pos     Position of block that was transformed, may be different from the context
-   * @param action  Action that was performed
+   * @param ability Ability that was performed
    */
-  static void afterTransformBlock(IToolStackView tool, UseOnContext context, BlockState state, BlockPos pos, ToolAction action) {
+  static void afterTransformBlock(IToolStackView tool, UseOnContext context, BlockState state, BlockPos pos, ItemAbility ability) {
     for (ModifierEntry entry : tool.getModifierList()) {
-      entry.getHook(ModifierHooks.BLOCK_TRANSFORM).afterTransformBlock(tool, entry, context, state, pos, action);
+      entry.getHook(ModifierHooks.BLOCK_TRANSFORM).afterTransformBlock(tool, entry, context, state, pos, ability);
     }
   }
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<BlockTransformModifierHook> modules) implements BlockTransformModifierHook {
     @Override
-    public void afterTransformBlock(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockState state, BlockPos pos, ToolAction action) {
+    public void afterTransformBlock(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockState state, BlockPos pos, ItemAbility ability) {
       for (BlockTransformModifierHook module : modules) {
-        module.afterTransformBlock(tool, modifier, context, state, pos, action);
+        module.afterTransformBlock(tool, modifier, context, state, pos, ability);
       }
     }
   }

@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.shared.TinkerCommons;
 
@@ -78,8 +78,8 @@ public class WeatheringPlatformBlock extends PlatformBlock implements Weathering
 
   @Nullable
   @Override
-  public BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-    if (ToolActions.AXE_SCRAPE.equals(toolAction)) {
+  public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility ability, boolean simulate) {
+    if (ability == ItemAbilities.AXE_SCRAPE) {
       WeatherState prev = getPrevious(age);
       if (prev != null) {
         return TinkerCommons.copperPlatform.get(prev).withPropertiesOf(state);
