@@ -19,17 +19,17 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
 import slimeknights.mantle.registration.object.EnumObject;
-import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.ModifierTagProvider;
@@ -340,36 +340,36 @@ import static slimeknights.tconstruct.TConstruct.getResource;
 public final class TinkerModifiers extends TinkerModule {
   private static final ModifierDeferredRegister MODIFIERS = ModifierDeferredRegister.create(TConstruct.MOD_ID);
 
-  public TinkerModifiers() {
-    ModifierManager.INSTANCE.init();
+  public TinkerModifiers(IEventBus modEventBus) {
+    ModifierManager.INSTANCE.init(modEventBus);
     DynamicModifier.init();
     FluidEffectManager.INSTANCE.init();
-    MODIFIERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+    MODIFIERS.register(modEventBus);
     TinkerDataKeys.init();
   }
 
   /*
    * Items
    */
-  public static final ItemObject<Item> silkyCloth = ITEMS.register("silky_cloth", ITEM_PROPS);
-  public static final ItemObject<Item> dragonScale = ITEMS.register("dragon_scale", () -> new DragonScaleItem(new Item.Properties().rarity(Rarity.RARE)));
+  public static final DeferredItem<Item> silkyCloth = ITEMS.register("silky_cloth", ITEM_PROPS);
+  public static final DeferredItem<Item> dragonScale = ITEMS.register("dragon_scale", () -> new DragonScaleItem(new Item.Properties().rarity(Rarity.RARE)));
   // durability reinforcements
-  public static final ItemObject<Item> emeraldReinforcement = ITEMS.register("emerald_reinforcement", ITEM_PROPS);
-  public static final ItemObject<Item> slimesteelReinforcement = ITEMS.register("slimesteel_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> emeraldReinforcement = ITEMS.register("emerald_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> slimesteelReinforcement = ITEMS.register("slimesteel_reinforcement", ITEM_PROPS);
   // armor reinforcements
-  public static final ItemObject<Item> ironReinforcement = ITEMS.register("iron_reinforcement", ITEM_PROPS);
-  public static final ItemObject<Item> searedReinforcement = ITEMS.register("seared_reinforcement", ITEM_PROPS);
-  public static final ItemObject<Item> goldReinforcement = ITEMS.register("gold_reinforcement", ITEM_PROPS);
-  public static final ItemObject<Item> cobaltReinforcement = ITEMS.register("cobalt_reinforcement", ITEM_PROPS);
-  public static final ItemObject<Item> obsidianReinforcement = ITEMS.register("obsidian_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> ironReinforcement = ITEMS.register("iron_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> searedReinforcement = ITEMS.register("seared_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> goldReinforcement = ITEMS.register("gold_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> cobaltReinforcement = ITEMS.register("cobalt_reinforcement", ITEM_PROPS);
+  public static final DeferredItem<Item> obsidianReinforcement = ITEMS.register("obsidian_reinforcement", ITEM_PROPS);
   // special
-  public static final ItemObject<Item> modifierCrystal = ITEMS.register("modifier_crystal", () -> new ModifierCrystalItem(new Item.Properties().stacksTo(16)));
-  public static final ItemObject<CreativeSlotItem> creativeSlotItem = ITEMS.register("creative_slot", () -> new CreativeSlotItem(ITEM_PROPS));
+  public static final DeferredItem<Item> modifierCrystal = ITEMS.register("modifier_crystal", () -> new ModifierCrystalItem(new Item.Properties().stacksTo(16)));
+  public static final DeferredItem<CreativeSlotItem> creativeSlotItem = ITEMS.register("creative_slot", () -> new CreativeSlotItem(ITEM_PROPS));
 
   // entity
-  public static final RegistryObject<EntityType<FluidEffectProjectile>> fluidSpitEntity = ENTITIES.register("fluid_spit", () ->
+  public static final DeferredHolder<EntityType<?>,EntityType<FluidEffectProjectile>> fluidSpitEntity = ENTITIES.register("fluid_spit", () ->
     EntityType.Builder.<FluidEffectProjectile>of(FluidEffectProjectile::new, MobCategory.MISC).sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).setShouldReceiveVelocityUpdates(false));
-  public static final RegistryObject<EntityType<CustomFireball>> fireball = ENTITIES.register("fireball", () -> EntityType.Builder.<CustomFireball>of(CustomFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4).updateInterval(10));
+  public static final DeferredHolder<EntityType<?>,EntityType<CustomFireball>> fireball = ENTITIES.register("fireball", () -> EntityType.Builder.<CustomFireball>of(CustomFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4).updateInterval(10));
 
   /*
    * Modifiers
@@ -830,7 +830,7 @@ public final class TinkerModifiers extends TinkerModule {
     boolean server = event.includeServer();
     generator.addProvider(server, new ModifierProvider(packOutput));
     generator.addProvider(server, new ModifierRecipeProvider(packOutput));
-    generator.addProvider(server, new FluidEffectProvider(packOutput));
+    generator.addProvider(server, new FluidEffectProvider(packOutput, event.getLookupProvider()));
     generator.addProvider(server, new ModifierTagProvider(packOutput, event.getExistingFileHelper()));
     generator.addProvider(server, new EnchantmentToModifierProvider(packOutput));
   }

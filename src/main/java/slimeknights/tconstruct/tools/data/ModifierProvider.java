@@ -784,7 +784,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.speedy).addModule(AttributeModule.builder(Attributes.MOVEMENT_SPEED, Operation.MULTIPLY_TOTAL).slots(armorMainHand).eachLevel(0.1f));
     buildModifier(ModifierIds.leaping)
       .addModule(AttributeModule.builder(TinkerAttributes.JUMP_BOOST, Operation.ADDITION).eachLevel(1))
-      .addModule(AttributeModule.builder(TinkerAttributes.SAFE_FALL_DISTANCE, Operation.ADDITION).eachLevel(1));
+      .addModule(AttributeModule.builder(Attributes.SAFE_FALL_DISTANCE, Operation.ADDITION).eachLevel(1));
     buildModifier(ModifierIds.swiftSneak).addModule(EnchantmentModule.builder(Enchantments.SWIFT_SNEAK).constant());
     // TODO: consider higher levels keeping more of the inventory
     buildModifier(ModifierIds.soulBelt).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ArmorLevelModule(TinkerDataKeys.SOUL_BELT, true, null)).addModule(ModifierRequirementsModule.builder().modifierKey(ModifierIds.soulBelt).requireModifier(ModifierIds.soulbound, 1).build());
@@ -1065,7 +1065,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       // goes from -15% to -25%
       .addModule(AttributeModule.builder(ForgeMod.ENTITY_GRAVITY.get(), Operation.MULTIPLY_TOTAL).tooltipStyle(TooltipStyle.PERCENT).amount(-0.05f, -0.1f))
-      .addModule(AttributeModule.builder(TinkerAttributes.SAFE_FALL_DISTANCE.get(), Operation.ADDITION).eachLevel(1));
+      .addModule(AttributeModule.builder(Attributes.SAFE_FALL_DISTANCE, Operation.ADDITION).eachLevel(1));
     buildModifier(ModifierIds.godspeed)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       // goes from +2.5% to +4%
@@ -1602,7 +1602,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new ModifierTraitModule(ModifierIds.pocket, 1, false));
     buildModifier(ModifierIds.dragonfall).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(AttributeModule.builder(TinkerAttributes.CRITICAL_DAMAGE, Operation.ADDITION).tooltipStyle(TooltipStyle.PERCENT).eachLevel(0.1f))
-      .addModule(AttributeModule.builder(TinkerAttributes.SAFE_FALL_DISTANCE, Operation.ADDITION).eachLevel(2));
+      .addModule(AttributeModule.builder(Attributes.SAFE_FALL_DISTANCE, Operation.ADDITION).eachLevel(2));
     buildModifier(ModifierIds.dreambound).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(AttributeModule.builder(TinkerAttributes.JUMP_COUNT, Operation.ADDITION).flat(1))
       .addModule(AttributeModule.builder(ForgeMod.ENTITY_GRAVITY, Operation.MULTIPLY_TOTAL).exactLevel(1).tooltipStyle(TooltipStyle.PERCENT).flat(0.15f));

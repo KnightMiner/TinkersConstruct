@@ -46,8 +46,6 @@ public class TinkerAttributes {
   // stat bonuses
   /** Bonus jump height in blocks */
   public static final DeferredHolder<Attribute,Attribute> JUMP_BOOST = ATTRIBUTES.register("generic.jump_boost").sync().ranged(0, 0, 100);
-  /** Distance you can safely fall without damage */
-  public static final DeferredHolder<Attribute,Attribute> SAFE_FALL_DISTANCE = ATTRIBUTES.register("generic.safe_fall_distance").sync().ranged(0, -10, 100);
   /** Number of jumps the player may perform, used by the double jump modifier. */
   public static final DeferredHolder<Attribute,Attribute> JUMP_COUNT = ATTRIBUTES.register("player.jump_count").sync().ranged(1, 1, 100);
 
@@ -80,7 +78,6 @@ public class TinkerAttributes {
     addToAll(event, PROTECTION_CAP);
     addToAll(event, CHRYSOPHILITE);
     addToAll(event, JUMP_BOOST);
-    addToAll(event, SAFE_FALL_DISTANCE);
     addToAll(event, CROUCH_DAMAGE_MULTIPLIER);
     addToAll(event, KNOCKBACK_MULTIPLIER);
     addToAll(event, GOOD_EFFECT_DURATION);

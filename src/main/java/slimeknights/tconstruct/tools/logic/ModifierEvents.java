@@ -126,16 +126,6 @@ public class ModifierEvents {
     }
   }
 
-  /** Reduce fall distance for fall damage */
-  @SubscribeEvent
-  static void onLivingFall(LivingFallEvent event) {
-    LivingEntity entity = event.getEntity();
-    double boost = entity.getAttributeValue(TinkerAttributes.SAFE_FALL_DISTANCE);
-    if (boost != 0) {
-      event.setDistance((float) Math.max(event.getDistance() - boost, 0));
-    }
-  }
-
   /** Called on jumping to boost the jump height of the entity */
   @SubscribeEvent
   public static void onLivingJump(LivingJumpEvent event) {
