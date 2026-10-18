@@ -90,7 +90,7 @@ public class TinkerLoadables {
   });
 
   /** Effect cures for potions */
-  public static final Loadable<EffectCure> EFFECT_CURE = new CodecLoadable.Direct<>(EffectCure.CODEC, EffectCure.STREAM_CODEC);
+  public static final StringLoadable<EffectCure> EFFECT_CURE = StringLoadable.DEFAULT.flatXmap(EffectCure::get, EffectCure::name);
   /** Enchantment lists for block breaking */
   public static final Loadable<ItemEnchantments> ENCHANTMENTS = new CodecLoadable.Registry<>(ItemEnchantments.CODEC, ItemEnchantments.STREAM_CODEC);
 
