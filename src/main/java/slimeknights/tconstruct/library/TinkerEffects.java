@@ -27,7 +27,6 @@ import slimeknights.mantle.registration.deferred.PotionDeferredRegister.PotionTy
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
-import slimeknights.tconstruct.shared.TinkerAttributes;
 import slimeknights.tconstruct.shared.block.SlimeType;
 import slimeknights.tconstruct.shared.effect.AntigravityEffect;
 import slimeknights.tconstruct.shared.effect.BleedingEffect;

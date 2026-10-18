@@ -3,8 +3,10 @@ package slimeknights.tconstruct.tools.modules;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.EffectCures;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -19,7 +21,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import java.util.List;
 
-/** Module to reduce duration of effects on unequip. Used to prevent an exploit with {@link slimeknights.tconstruct.shared.TinkerAttributes#GOOD_EFFECT_DURATION} */
+/** Module to reduce duration of effects on unequip. Used to prevent an exploit with {@link TinkerAttributes#GOOD_EFFECT_DURATION} */
 public record ReduceEffectOnUnequipModule(MobEffectCategory category, LevelingValue percent, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ReduceEffectOnUnequipModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final RecordLoadable<ReduceEffectOnUnequipModule> LOADER = RecordLoadable.create(
@@ -47,7 +49,7 @@ public record ReduceEffectOnUnequipModule(MobEffectCategory category, LevelingVa
       if (percent != 0) {
         // iterate all matching effects, updating the duration
         for (MobEffectInstance instance : entity.getActiveEffects()) {
-          if (!instance.isInfiniteDuration() && instance.getEffect().getCategory() == this.category && !instance.getCurativeItems().isEmpty()) {
+          if (!instance.isInfiniteDuration() && instance.getEffect().value().getCategory() == this.category && instance.getCures().contains(EffectCures.MILK)) {
             instance.duration = Math.max(1, (int) (instance.duration * (1 - percent)));
           }
         }

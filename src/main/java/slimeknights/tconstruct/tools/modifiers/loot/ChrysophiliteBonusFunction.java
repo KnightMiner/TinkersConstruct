@@ -22,7 +22,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.tconstruct.shared.TinkerAttributes;
+import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import java.util.Set;

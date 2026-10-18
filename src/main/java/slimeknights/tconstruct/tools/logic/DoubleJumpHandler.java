@@ -13,8 +13,8 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
+import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.shared.TinkerAttributes;
 
 /** Logic to run the double jump attribute */
 @EventBusSubscriber(modid = TConstruct.MOD_ID)

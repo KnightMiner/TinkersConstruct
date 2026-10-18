@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.shared;
+package slimeknights.tconstruct.library;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +15,6 @@ import slimeknights.tconstruct.common.config.Config;
 
 /**
  * Handles registrations of all attributes added by tinkers
- * TODO: relocate to library
  */
 public class TinkerAttributes {
   private TinkerAttributes() {}
