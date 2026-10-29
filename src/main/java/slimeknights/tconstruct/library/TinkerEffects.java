@@ -23,6 +23,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.registration.MantleAttributes;
 import slimeknights.mantle.registration.deferred.EnumDeferredRegister;
 import slimeknights.mantle.registration.deferred.PotionDeferredRegister;
 import slimeknights.mantle.registration.deferred.PotionDeferredRegister.PotionType;
@@ -56,9 +57,9 @@ public class TinkerEffects extends TinkerModule {
 
   // slimy potions
   public static final DeferredHolder<MobEffect,MobEffect> experienced = MOB_EFFECTS.register("experienced", id -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x82c873)
-    .addAttributeModifier(TinkerAttributes.EXPERIENCE_MULTIPLIER, id, 0.25f, Operation.ADD_MULTIPLIED_BASE));
+    .addAttributeModifier(MantleAttributes.EXPERIENCE_MULTIPLIER, id, 0.25f, Operation.ADD_MULTIPLIED_BASE));
   public static final DeferredHolder<MobEffect,MobEffect> ricochet = MOB_EFFECTS.register("ricochet", id -> new MobEffect(MobEffectCategory.NEUTRAL, 0x01cbcd)
-    .addAttributeModifier(TinkerAttributes.KNOCKBACK_MULTIPLIER, id, 0.5f, Operation.ADD_MULTIPLIED_BASE));
+    .addAttributeModifier(MantleAttributes.KNOCKBACK_MULTIPLIER, id, 0.5f, Operation.ADD_MULTIPLIED_BASE));
   public static final DeferredHolder<MobEffect,MobEffect> enderference = MOB_EFFECTS.register("enderference", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xD37CFF));
   /** Projectile persistent data key to allow ranged modifiers to hit endermen. */
   public static final ResourceLocation ENDERFERENCE_KEY = enderference.getId();

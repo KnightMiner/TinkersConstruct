@@ -54,7 +54,6 @@ import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.eventbus.api.Event.Result;
 import net.neoforged.neoforge.eventbus.api.EventPriority;
 import slimeknights.mantle.registration.MantleData;
@@ -90,7 +89,6 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
 import slimeknights.tconstruct.shared.effect.MagneticEffect;
-import slimeknights.tconstruct.tools.data.ModifierIds;
 import slimeknights.tconstruct.tools.modules.ranged.RestrictAngleModule;
 
 import java.util.List;
@@ -111,10 +109,6 @@ public class ModifierEvents {
   @SubscribeEvent
   static void onKnockback(LivingKnockBackEvent event) {
     LivingEntity entity = event.getEntity();
-    double knockback = entity.getAttributeValue(TinkerAttributes.KNOCKBACK_MULTIPLIER);
-    if (knockback != 1) {
-      event.setStrength((float) (event.getStrength() * knockback));
-    }
     // handle crystalstrike
     TinkerDataCapability.Holder data = TinkerDataCapability.getData(entity);
     if (data != null) {
@@ -225,16 +219,6 @@ public class ModifierEvents {
   /* Experience */
 
   @SubscribeEvent
-  static void beforeBlockBreak(BreakEvent event) {
-    Player player = event.getPlayer();
-    // directly use modifier for held to ensure the correct hand applies
-    // TODO: can we make hand datapack configurable?
-    double bonus = player.getAttributeValue(TinkerAttributes.EXPERIENCE_MULTIPLIER)
-                 + ModifierUtil.getModifierLevel(player.getMainHandItem(), ModifierIds.experienced) * 0.5f;
-    event.setExpToDrop((int)(event.getExpToDrop() * bonus));
-  }
-
-  @SubscribeEvent
   static void onExperienceDrop(LivingExperienceDropEvent event) {
     // boost entity experience if they are under the effects of experienced
     LivingEntity entity = event.getEntity();
@@ -243,9 +227,6 @@ public class ModifierEvents {
 
     // always add armor boost, unfortunately no good way to stop shield stuff here
     Player player = event.getAttackingPlayer();
-    if (player != null) {
-      multiplier += player.getAttributeValue(TinkerAttributes.EXPERIENCE_MULTIPLIER);
-    }
     // if the target was killed by an experienced arrow, use that level
     TinkerDataCapability.Holder data = TinkerDataCapability.getData(entity);
     Float projectileBoost = data != null ? data.get(PROJECTILE_EXPERIENCE) : null;
@@ -296,7 +277,7 @@ public class ModifierEvents {
       // use two different stats based on whether the effect is beneficial
       boolean beneficial = newEffect.getEffect().isBeneficial();
       LivingEntity entity = event.getEntity();
-      double multiplier = entity.getAttributeValue(beneficial ? TinkerAttributes.GOOD_EFFECT_DURATION.get() : TinkerAttributes.BAD_EFFECT_DURATION.get());
+      double multiplier = entity.getAttributeValue(beneficial ? TinkerAttributes.GOOD_EFFECT_DURATION : TinkerAttributes.BAD_EFFECT_DURATION);
       if (multiplier != 1) {
         // adjust duration as requested
         newEffect.duration = Math.max(1, (int)(newEffect.getDuration() * multiplier));
@@ -313,7 +294,7 @@ public class ModifierEvents {
       return;
     }
     // can the entity bounce?
-    if (living.getAttributeValue(TinkerAttributes.BOUNCY.get()) < 1) {
+    if (living.getAttributeValue(TinkerAttributes.BOUNCY) < 1) {
       return;
     }
 

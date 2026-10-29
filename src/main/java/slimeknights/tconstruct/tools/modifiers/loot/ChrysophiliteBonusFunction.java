@@ -64,7 +64,7 @@ public class ChrysophiliteBonusFunction extends LootItemConditionalFunction {
   @Override
   protected ItemStack run(ItemStack stack, LootContext context) {
     if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity entity) {
-      int level = (int) entity.getAttributeValue(TinkerAttributes.CHRYSOPHILITE.get());
+      int level = (int) entity.getAttributeValue(TinkerAttributes.CHRYSOPHILITE);
       if (!includeBase) {
         level--;
       }
@@ -81,7 +81,7 @@ public class ChrysophiliteBonusFunction extends LootItemConditionalFunction {
   }
 
   @Override
-  public LootItemFunctionType getType() {
+  public LootItemFunctionType<ChrysophiliteBonusFunction> getType() {
     return TinkerModifiers.chrysophiliteBonusFunction.get();
   }
 
