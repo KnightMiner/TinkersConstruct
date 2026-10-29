@@ -30,7 +30,6 @@ import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;
@@ -47,12 +46,12 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
     } else if (type == ToolType.MELEE_UNARMED) {
       type = ToolType.MELEE;
     }
-    return TinkerEffects.getLevel(attacker, TinkerModifiers.insatiableEffect.getHolder(type));
+    return TinkerEffects.getLevel(attacker, TinkerEffects.insatiableEffect.getHolder(type));
   }
 
   /** Applies the effect to the target */
   public static void applyEffect(LivingEntity living, ToolType type, int duration, int add, int maxLevel) {
-    Holder<MobEffect> effect = TinkerModifiers.insatiableEffect.getHolder(type);
+    Holder<MobEffect> effect = TinkerEffects.insatiableEffect.getHolder(type);
     int amplifier = Math.min(maxLevel, TinkerEffects.getAmplifier(living, effect) + add);
     living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }

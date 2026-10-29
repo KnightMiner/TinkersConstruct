@@ -26,6 +26,7 @@ import slimeknights.mantle.item.tooltip.TooltipItem;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
+import slimeknights.tconstruct.library.TinkerEffects;
 
 import java.util.function.Consumer;
 
@@ -107,6 +108,7 @@ public class PiggyBackPackItem extends TooltipItem {
     if (!toRide.isVehicle() && count < MAX_ENTITY_STACK) {
       // todo: possibly throw off all passengers of the target
       if (target.startRiding(toRide, true)) {
+        // TODO: should this use the attachment?
         if (player instanceof ServerPlayer sPlayer) {
           sPlayer.connection.send(new ClientboundSetPassengersPacket(player));
         }
@@ -145,7 +147,7 @@ public class PiggyBackPackItem extends TooltipItem {
   public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
     if (entityIn instanceof LivingEntity livingEntity && livingEntity.getItemBySlot(EquipmentSlot.CHEST) == stack && entityIn.isVehicle()) {
       int amplifier = this.getEntitiesCarriedCount(livingEntity) - 1;
-      livingEntity.addEffect(new MobEffectInstance(TinkerGadgets.carryEffect, 2, amplifier, true, false, true));
+      livingEntity.addEffect(new MobEffectInstance(TinkerEffects.carry, 2, amplifier, true, false, true));
     }
   }
 

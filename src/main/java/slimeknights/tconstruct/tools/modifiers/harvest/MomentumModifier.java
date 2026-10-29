@@ -31,7 +31,6 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;
@@ -53,12 +52,12 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
 
   /** Gets the bonus for the modifier */
   private static float getBonus(LivingEntity living, ToolType type, ModifierEntry modifier) {
-    return modifier.getEffectiveLevel() * (TinkerEffects.getLevel(living, TinkerModifiers.momentumEffect.getHolder(type)));
+    return modifier.getEffectiveLevel() * (TinkerEffects.getLevel(living, TinkerEffects.momentumEffect.getHolder(type)));
   }
 
   /** Applies the effect to the target */
   private static void applyEffect(LivingEntity living, ToolType type, int duration, int maxLevel) {
-    Holder<MobEffect> effect = TinkerModifiers.momentumEffect.getHolder(type);
+    Holder<MobEffect> effect = TinkerEffects.momentumEffect.getHolder(type);
     int amplifier = Math.min(maxLevel, TinkerEffects.getAmplifier(living, effect) + 1);
     living.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, true));
   }

@@ -23,7 +23,6 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Tin
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.modifiers.melee.InsatiableModifier;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
@@ -69,7 +68,7 @@ public enum KineticModule implements ModifierModule, OnAttackedModifierHook, Too
     float bonus = modifier.getLevel();
     if (player != null && tooltipKey == TooltipKey.SHIFT) {
       // armor does not scale the effect level for its bonus
-      bonus = TinkerEffects.getLevel(player, TinkerModifiers.insatiableEffect.getHolder(ToolType.ARMOR));
+      bonus = TinkerEffects.getLevel(player, TinkerEffects.insatiableEffect.getHolder(ToolType.ARMOR));
     }
     if (bonus > 0) {
       TooltipModifierHook.addFlatBoost(modifier.getModifier(), TooltipModifierHook.statName(modifier.getModifier(), ToolStats.ATTACK_DAMAGE), bonus, tooltip);

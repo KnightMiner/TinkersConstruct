@@ -29,7 +29,6 @@ import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;
@@ -66,7 +65,7 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
       int level = SlotInChargeModule.getLevel(context.getTinkerData(), SLOT_KEY, slotType);
       if (level > 0) {
         // step 1: reduce damage based on the current effect level
-        Holder<MobEffect> effect = TinkerModifiers.momentumEffect.getHolder(ToolType.ARMOR);
+        Holder<MobEffect> effect = TinkerEffects.momentumEffect.getHolder(ToolType.ARMOR);
         LivingEntity entity = context.getEntity();
         amount -= TinkerEffects.getLevel(entity, effect);
 
@@ -87,7 +86,7 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
       TooltipModifierHook.addPercentBoost(modifier.getModifier(), PROTECTION, this.percent.compute(modifier.getLevel()), tooltip);
     } else {
       // if we have a player, use the current effect level for reduction display
-      int level = TinkerEffects.getLevel(player, TinkerModifiers.momentumEffect.getHolder(ToolType.ARMOR));
+      int level = TinkerEffects.getLevel(player, TinkerEffects.momentumEffect.getHolder(ToolType.ARMOR));
       if (level > 0) {
         TooltipModifierHook.addFlatBoost(modifier.getModifier(), PROTECTION, this.percent.compute(modifier.getLevel()), tooltip);
       }

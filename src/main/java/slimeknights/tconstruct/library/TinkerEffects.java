@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.library;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -22,18 +23,23 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.registration.deferred.EnumDeferredRegister;
 import slimeknights.mantle.registration.deferred.PotionDeferredRegister;
 import slimeknights.mantle.registration.deferred.PotionDeferredRegister.PotionType;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
+import slimeknights.tconstruct.gadgets.item.PiggyBackPackItem.CarryPotionEffect;
 import slimeknights.tconstruct.shared.block.SlimeType;
 import slimeknights.tconstruct.shared.effect.AntigravityEffect;
 import slimeknights.tconstruct.shared.effect.BleedingEffect;
 import slimeknights.tconstruct.shared.effect.MagneticEffect;
+import slimeknights.tconstruct.shared.effect.NoMilkEffect;
 import slimeknights.tconstruct.shared.effect.RepulsiveEffect;
 import slimeknights.tconstruct.shared.effect.ReturningEffect;
+import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
 import slimeknights.tconstruct.tools.modifiers.skull.SelfDestructiveModifier.SelfDestructiveEffect;
+import slimeknights.tconstruct.tools.stats.ToolType;
 import slimeknights.tconstruct.world.TinkerWorld;
 
 import javax.annotation.Nullable;
@@ -43,6 +49,7 @@ import javax.annotation.Nullable;
  */
 @EventBusSubscriber(modid = TConstruct.MOD_ID)
 public class TinkerEffects extends TinkerModule {
+  private static final EnumDeferredRegister<MobEffect> MOB_EFFECTS = new EnumDeferredRegister<>(Registries.MOB_EFFECT, TConstruct.MOD_ID);
   private static final PotionDeferredRegister POTIONS = new PotionDeferredRegister(TConstruct.MOD_ID);
 
   private TinkerEffects() {}
@@ -80,9 +87,37 @@ public class TinkerEffects extends TinkerModule {
   public static final EnumObject<PotionType,Potion> levitationPotion = POTIONS.registerTypes("levitation", MobEffects.LEVITATION, 15 * 20, 0).withStrong().withLong(40 * 20, 0).build();
   public static final EnumObject<PotionType,Potion> enderferencePotion = POTIONS.registerTypes(enderference, 90 * 20, 0).withLong().build();
 
+  // gadgets
+  /** Mob effect used by {@link slimeknights.tconstruct.gadgets.TinkerGadgets#piggyBackpack} to slow you while carrying and update the carried mobs client side. */
+  @Internal
+  public static final DeferredHolder<MobEffect, CarryPotionEffect> carry = MOB_EFFECTS.register("carry", CarryPotionEffect::new);
+
+  // modifiers
+  /** Effect for rendering the helmet charging icon in the GUI */
+  public static final DeferredHolder<MobEffect, HelmetChargingEffect> helmetCharging = MOB_EFFECTS.register("helmet_charging", HelmetChargingEffect::new);
+  /** Cooldown after using a fireball on a helmet in {@link slimeknights.tconstruct.tools.modules.interaction.FireballModule}. TODO: make more generic, helmet/leggings cooldown */
+  @Internal
+  public static final DeferredHolder<MobEffect,MobEffect> fireballCooldownEffect = MOB_EFFECTS.register("fireball_cooldown", () -> new NoMilkEffect(MobEffectCategory.HARMFUL, 0xFC9600));
+  /** Used by {@link slimeknights.tconstruct.tools.modifiers.skull.StrongBonesModifier} to boost the effect of other modifiers when drinking milk. TODO: probably no longer needed */
+  public static final DeferredHolder<MobEffect,MobEffect> calcifiedEffect = MOB_EFFECTS.register("calcified", () -> new NoMilkEffect(MobEffectCategory.BENEFICIAL, -1));
+  /** Used by {@link slimeknights.tconstruct.tools.modifiers.harvest.MomentumModifier} and {@link slimeknights.tconstruct.tools.modules.armor.RecurrentProtectionModule} to track the recent usages. */
+  @Internal
+  public static final EnumObject<ToolType,MobEffect> momentumEffect = MOB_EFFECTS.registerEnum("momentum", ToolType.NO_MELEE, type -> new NoMilkEffect(MobEffectCategory.BENEFICIAL, 0x60496b));
+  /** Used by {@link slimeknights.tconstruct.tools.modifiers.melee.InsatiableModifier} and {@link slimeknights.tconstruct.tools.modules.armor.KineticModule} to track the recent usages. */
+  @Internal
+  public static final EnumObject<ToolType,MobEffect> insatiableEffect = MOB_EFFECTS.registerEnum("insatiable", new ToolType[] {ToolType.MELEE, ToolType.RANGED, ToolType.ARMOR}, (id, type) -> {
+    MobEffect effect = new NoMilkEffect(MobEffectCategory.BENEFICIAL, 0x9261cc);
+    if (type == ToolType.ARMOR) {
+      effect.addAttributeModifier(Attributes.ATTACK_DAMAGE, id, 1, Operation.ADD_VALUE);
+    }
+    return effect;
+  });
+
+
   /** Registers this class with the event bus. */
   @Internal
   public static void register(IEventBus bus) {
+    MOB_EFFECTS.register(bus);
     POTIONS.register(bus);
   }
 
