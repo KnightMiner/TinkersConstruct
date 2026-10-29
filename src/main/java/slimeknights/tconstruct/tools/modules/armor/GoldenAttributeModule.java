@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -43,13 +45,11 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 /**
  * Module that applies an attribute conditioned on the amount of gold the player is wearing.
  * Used for {@link slimeknights.tconstruct.tools.data.ModifierIds#goldGuard} and {@link slimeknights.tconstruct.tools.data.ModifierIds#chrysophilite} */
-public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> dataKey, Attribute attribute, UUID uuid, Operation operation, LevelingValue amount, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<TotalGold> dataKey, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<GoldenAttributeModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<GoldenAttributeModule> LOADER = RecordLoadable.create(
     new AttributeUniqueField<>(GoldenAttributeModule::unique),
@@ -60,13 +60,9 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
     ModifierCondition.TOOL_FIELD,
     GoldenAttributeModule::new);
 
-  /** @apiNote Internal constructor, use {@link #builder(Attribute, Operation)} */
+  /** @apiNote Internal constructor, use {@link #builder(Holder, Operation)} */
   @Internal
   public GoldenAttributeModule {}
-
-  private GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> dataKey, Attribute attribute, Operation operation, LevelingValue amount, ModifierCondition<IToolStackView> condition) {
-    this(unique, dataKey, attribute, UUID.nameUUIDFromBytes(unique.getBytes()), operation, amount, condition);
-  }
 
   @Override
   public RecordLoadable<GoldenAttributeModule> getLoader() {
@@ -80,7 +76,7 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
 
   /** Checks that health is not over max */
   private void checkHealth(LivingEntity living, AttributeInstance instance) {
-    if (attribute == Attributes.MAX_HEALTH) {
+    if (attribute.equals(Attributes.MAX_HEALTH)) {
       float newMax = (float) instance.getValue();
       if (living.getHealth() > newMax) {
         living.setHealth(newMax);
@@ -93,10 +89,10 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
     // update attribute
     AttributeInstance instance = living.getAttribute(attribute);
     if (instance != null) {
-      if (instance.getModifier(uuid) != null) {
-        instance.removeModifier(uuid);
+      if (instance.getModifier(unique) != null) {
+        instance.removeModifier(unique);
       }
-      instance.addTransientModifier(new AttributeModifier(uuid, unique, amount.compute(totalGold), operation));
+      instance.addTransientModifier(new AttributeModifier(unique, amount.compute(totalGold), operation));
       checkHealth(living, instance);
     }
   }
@@ -134,7 +130,7 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
         LivingEntity living = context.getEntity();
         AttributeInstance instance = living.getAttribute(attribute);
         if (instance != null) {
-          instance.removeModifier(uuid);
+          instance.removeModifier(unique);
           checkHealth(living, instance);
         }
       }
@@ -162,14 +158,14 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
     if (player != null && tooltipKey == TooltipKey.SHIFT) {
       AttributeInstance instance = player.getAttribute(attribute);
       if (instance != null) {
-        AttributeModifier modifier = instance.getModifier(uuid);
+        AttributeModifier modifier = instance.getModifier(unique);
         if (modifier != null) {
-          amount = (float) modifier.getAmount();
+          amount = (float) modifier.amount();
         }
       }
     }
     if (amount != 0) {
-      TooltipModifierHook.addFlatBoost(entry.getModifier(), Component.translatable(attribute.getDescriptionId()), amount, tooltip);
+      TooltipModifierHook.addFlatBoost(entry.getModifier(), Component.translatable(attribute.value().getDescriptionId()), amount, tooltip);
     }
   }
 
@@ -233,21 +229,17 @@ public record GoldenAttributeModule(String unique, TinkerDataKey<TotalGold> data
   /* Builder */
 
   /** Creates a new builder instance */
-  public static Builder builder(Attribute attribute, Operation operation) {
+  public static Builder builder(Holder<Attribute> attribute, Operation operation) {
     return new Builder(attribute, operation);
-  }
-
-  public static Builder builder(Supplier<Attribute> attribute, Operation operation) {
-    return new Builder(attribute.get(), operation);
   }
 
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
   public static class Builder extends ModuleBuilder.Stack<Builder>  implements LevelingValue.Builder<GoldenAttributeModule> {
-    protected final Attribute attribute;
+    protected final Holder<Attribute> attribute;
     protected final Operation operation;
-    protected String unique = "";
+    protected ResourceLocation unique = null;
 
     @Override
     public GoldenAttributeModule amount(float flat, float eachLevel) {

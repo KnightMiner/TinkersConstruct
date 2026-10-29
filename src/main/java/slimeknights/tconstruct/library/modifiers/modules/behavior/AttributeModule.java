@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.modifiers.modules.behavior;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -43,14 +44,12 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 /**
  * Module to add an attribute to a tool.
  */
-public record AttributeModule(String unique, Attribute attribute, Operation operation, ToolFormula formula, UUID[] slotUUIDs, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements AttributesModifierHook, ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, ToolFormula formula, ResourceLocation[] slotIDs, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements AttributesModifierHook, ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
   /** Default variables */
   private static final String[] VARIABLES = { "level" };
   /** Loader for the variables */
@@ -65,27 +64,27 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
     Loadables.ATTRIBUTE.requiredField("attribute", AttributeModule::attribute),
     TinkerLoadables.OPERATION.requiredField("operation", AttributeModule::operation),
     VARIABLE_LOADER.directField(AttributeModule::formula),
-    TinkerLoadables.EQUIPMENT_SLOT_SET.requiredField("slots", m -> uuidsToSlots(m.slotUUIDs)),
+    TinkerLoadables.EQUIPMENT_SLOT_SET.requiredField("slots", m -> idsToSlots(m.slotIDs)),
     TooltipStyle.LOADABLE.defaultField("tooltip_style", TooltipStyle.ATTRIBUTE, AttributeModule::tooltipStyle),
     ModifierCondition.TOOL_FIELD,
-    (unique, attribute, operation, amount, slots, tooltipStyle, condition) -> new AttributeModule(unique, attribute, operation, amount, slotsToUUIDs(unique, slots), tooltipStyle, condition));
+    (unique, attribute, operation, amount, slots, tooltipStyle, condition) -> new AttributeModule(unique, attribute, operation, amount, slotsToIDs(unique, slots), tooltipStyle, condition));
 
   /** Gets the UUID from a name */
-  public static UUID getUUID(String name, EquipmentSlot slot) {
-    return UUID.nameUUIDFromBytes((name + "." + slot.getName()).getBytes());
+  public static ResourceLocation getID(ResourceLocation base, EquipmentSlot slot) {
+    return base.withSuffix('_' + slot.getSerializedName());
   }
 
   /** Converts a list of slots to an array of UUIDs at each index */
-  public static UUID[] slotsToUUIDs(String name, Collection<EquipmentSlot> slots) {
-    UUID[] slotUUIDs = new UUID[6];
+  public static ResourceLocation[] slotsToIDs(ResourceLocation name, Collection<EquipmentSlot> slots) {
+    ResourceLocation[] slotIDs = new ResourceLocation[slots.size()];
     for (EquipmentSlot slot : slots) {
-      slotUUIDs[slot.getFilterFlag()] = getUUID(name, slot);
+      slotIDs[slot.getFilterFlag()] = getID(name, slot);
     }
-    return slotUUIDs;
+    return slotIDs;
   }
 
   /** Maps the UUID array to a set for serializing */
-  public static Set<EquipmentSlot> uuidsToSlots(UUID[] uuids) {
+  public static Set<EquipmentSlot> idsToSlots(ResourceLocation[] uuids) {
     Set<EquipmentSlot> set = EnumSet.noneOf(EquipmentSlot.class);
     for (EquipmentSlot slot : EquipmentSlot.values()) {
       if (uuids[slot.getFilterFlag()] != null) {
@@ -95,22 +94,22 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
     return set;
   }
 
-  /** @apiNote Internal constructor, use {@link #builder(Attribute, Operation)} */
+  /** @apiNote Internal constructor, use {@link #builder(Holder, Operation)} */
   @Internal
   public AttributeModule {}
 
   /** Gets the UUID for this slot */
   @Nullable
-  private UUID getUUID(EquipmentSlot slot) {
-    return slotUUIDs[slot.getFilterFlag()];
+  private ResourceLocation getID(EquipmentSlot slot) {
+    return slotIDs[slot.getFilterFlag()];
   }
 
   /** Creates an attribute for the given slot */
   @Nullable
   private AttributeModifier createModifier(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slot) {
-    UUID uuid = getUUID(slot);
-    if (uuid != null) {
-      return new AttributeModifier(uuid, unique + "." + slot.getName(), formula.apply(tool, modifier), operation);
+    ResourceLocation id = getID(slot);
+    if (id != null) {
+      return new AttributeModifier(id, formula.apply(tool, modifier), operation);
     }
     return null;
   }
@@ -120,7 +119,7 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
     if (condition.matches(tool, modifier)) {
       AttributeModifier attributeModifier = createModifier(tool, modifier, slot);
       if (attributeModifier != null) {
-        consumer.accept(attribute, attributeModifier);
+        consumer.accept(attribute.value(), attributeModifier);
       }
     }
   }
@@ -135,7 +134,7 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
         AttributeModifier attributeModifier = createModifier(tool, modifier, context.getChangedSlot());
         if (attributeModifier != null) {
           // for safety, remove it already there
-          instance.removeModifier(attributeModifier.getId());
+          instance.removeModifier(attributeModifier.id());
           instance.addTransientModifier(attributeModifier);
         }
       }
@@ -145,22 +144,22 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
   @Override
   public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier)) {
-      UUID uuid = getUUID(context.getChangedSlot());
-      if (uuid != null) {
+      ResourceLocation id = getID(context.getChangedSlot());
+      if (id != null) {
         AttributeInstance instance = context.getEntity().getAttribute(attribute);
         if (instance != null) {
-          instance.removeModifier(uuid);
+          instance.removeModifier(id);
         }
       }
     }
   }
 
   /** Adds the tooltip for the given attribute */
-  public static void addTooltip(Modifier modifier, Attribute attribute, Operation operation, TooltipStyle tooltipStyle, float amount, @Nullable UUID uuid, @Nullable Player player, List<Component> tooltip) {
+  public static void addTooltip(Modifier modifier, Holder<Attribute> attribute, Operation operation, TooltipStyle tooltipStyle, float amount, @Nullable ResourceLocation id, @Nullable Player player, List<Component> tooltip) {
     switch (tooltipStyle) {
-      case ATTRIBUTE -> TooltipUtil.addAttribute(attribute, operation, amount, uuid, player, tooltip);
-      case BOOST -> TooltipModifierHook.addFlatBoost(modifier, Component.translatable(attribute.getDescriptionId()), amount, tooltip);
-      case PERCENT -> TooltipModifierHook.addPercentBoost(modifier, Component.translatable(attribute.getDescriptionId()), amount, tooltip);
+      case ATTRIBUTE -> TooltipUtil.addAttribute(attribute, operation, amount, id, player, tooltip);
+      case BOOST -> TooltipModifierHook.addFlatBoost(modifier, Component.translatable(attribute.value().getDescriptionId()), amount, tooltip);
+      case PERCENT -> TooltipModifierHook.addPercentBoost(modifier, Component.translatable(attribute.value().getDescriptionId()), amount, tooltip);
     }
   }
 
@@ -199,26 +198,22 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
 
 
   /** Creates a new builder instance */
-  public static Builder builder(Attribute attribute, Operation operation) {
+  public static Builder builder(Holder<Attribute> attribute, Operation operation) {
     return new Builder(attribute, operation);
-  }
-
-  public static Builder builder(Supplier<Attribute> attribute, Operation operation) {
-    return new Builder(attribute.get(), operation);
   }
 
   @Accessors(fluent = true)
   public static class Builder extends VariableFormula.Builder<Builder,AttributeModule,ToolVariable> {
-    protected final Attribute attribute;
+    protected final Holder<Attribute> attribute;
     protected final Operation operation;
     @Setter
-    protected String unique = "";
+    protected ResourceLocation unique = null;
     private EquipmentSlot[] slots = EquipmentSlot.values();
     /** Tooltip style override. If set, switches from item stack attributes to equipment change attributes and shows modifier style tooltips. */
     @Setter
     private TooltipStyle tooltipStyle = TooltipStyle.ATTRIBUTE;
 
-    protected Builder(Attribute attribute, Operation operation) {
+    protected Builder(Holder<Attribute> attribute, Operation operation) {
       super(VARIABLES);
       this.attribute = attribute;
       this.operation = operation;
@@ -228,13 +223,6 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
     public Builder slots(EquipmentSlot... slots) {
       this.slots = slots;
       return this;
-    }
-
-    /**
-     * Sets the unique string using a resource location
-     */
-    public Builder uniqueFrom(ResourceLocation id) {
-      return unique(id.getNamespace() + ".modifier." + id.getPath());
     }
 
     /** @deprecated use {@link #tooltipStyle(TooltipStyle)} */
@@ -247,7 +235,7 @@ public record AttributeModule(String unique, Attribute attribute, Operation oper
 
     @Override
     protected AttributeModule build(ModifierFormula formula) {
-      return new AttributeModule(unique, attribute, operation, new ToolFormula(formula, variables), slotsToUUIDs(unique, List.of(slots)), tooltipStyle, condition);
+      return new AttributeModule(unique, attribute, operation, new ToolFormula(formula, variables), slotsToIDs(unique, List.of(slots)), tooltipStyle, condition);
     }
   }
 }

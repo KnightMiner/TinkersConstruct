@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -33,18 +34,16 @@ import slimeknights.tconstruct.library.modifiers.modules.technical.MaxArmorLevel
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
-import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Holder;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 /** Module that sets an attribute value on the entity based on the largest level equipped. TODO: tooltip value on max piece. */
-public record MaxArmorAttributeModule(String unique, Attribute attribute, Operation operation, LevelingValue amount, UUID uuid, ComputableDataKey<ModifierMaxLevel> maxLevel, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements EquipmentChangeModifierHook, ModifierModule, MaxArmorLevelModule, TooltipModifierHook {
+public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ComputableDataKey<ModifierMaxLevel> maxLevel, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements EquipmentChangeModifierHook, ModifierModule, MaxArmorLevelModule, TooltipModifierHook {
   public static final RecordLoadable<MaxArmorAttributeModule> LOADER = RecordLoadable.create(
     new AttributeUniqueField<>(MaxArmorAttributeModule::unique),
     Loadables.ATTRIBUTE.requiredField("attribute", MaxArmorAttributeModule::attribute),
@@ -56,12 +55,12 @@ public record MaxArmorAttributeModule(String unique, Attribute attribute, Operat
     ModifierCondition.TOOL_FIELD,
     MaxArmorAttributeModule::new);
 
-  /** @apiNote Internal constructor, use {@link #builder(Attribute, Operation)} */
+  /** @apiNote Internal constructor, use {@link #builder(Holder, Operation)} */
   @Internal
   public MaxArmorAttributeModule {}
 
-  private MaxArmorAttributeModule(String unique, Attribute attribute, Operation operation, LevelingValue amount, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) {
-    this(unique, attribute, operation, amount, UUID.nameUUIDFromBytes(unique.getBytes()), MaxArmorLevelModule.createKey(Loadables.ATTRIBUTE.getKey(attribute)), allowBroken, heldTag, tooltipStyle, condition);
+  private MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) {
+    this(unique, attribute, operation, amount, MaxArmorLevelModule.createKey(Loadables.ATTRIBUTE.getKey(attribute)), allowBroken, heldTag, tooltipStyle, condition);
   }
 
   @Override
@@ -75,13 +74,13 @@ public record MaxArmorAttributeModule(String unique, Attribute attribute, Operat
   }
 
   @Override
-  public void updateValue(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, Holder data, float newLevel, float oldLevel) {
+  public void updateValue(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, TinkerDataCapability.Holder data, float newLevel, float oldLevel) {
     AttributeInstance instance = context.getEntity().getAttribute(attribute);
     if (instance != null) {
-      instance.removeModifier(uuid);
+      instance.removeModifier(unique);
       float attributeValue = amount.computeForLevel(newLevel);
       if (attributeValue != 0) {
-        instance.addTransientModifier(new AttributeModifier(uuid, unique, attributeValue, operation));
+        instance.addTransientModifier(new AttributeModifier(unique, attributeValue, operation));
       }
     }
   }
@@ -91,7 +90,7 @@ public record MaxArmorAttributeModule(String unique, Attribute attribute, Operat
     if (MaxArmorLevelModule.shouldAddTooltip(this, tool, modifier, player)) {
       float value = amount.computeForLevel(modifier.getEffectiveLevel());
       if (value != 0) {
-        AttributeModule.addTooltip(modifier.getModifier(), attribute, operation, tooltipStyle, value, uuid, player, tooltip);
+        AttributeModule.addTooltip(modifier.getModifier(), attribute, operation, tooltipStyle, value, unique, player, tooltip);
       }
     }
   }
@@ -99,22 +98,17 @@ public record MaxArmorAttributeModule(String unique, Attribute attribute, Operat
 
   /* Builder */
   
-  public static Builder builder(Attribute attribute, Operation operation) {
+  public static Builder builder(Holder<Attribute> attribute, Operation operation) {
     return new Builder(attribute, operation);
   }
-
-  public static Builder builder(Supplier<Attribute> attribute, Operation operation) {
-    return new Builder(attribute.get(), operation);
-  }
-
 
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Builder extends ModuleBuilder.Stack<Builder> implements LevelingValue.Builder<MaxArmorAttributeModule> {
-    private final Attribute attribute;
+    private final Holder<Attribute> attribute;
     private final Operation operation;
-    protected String unique = "";
+    protected ResourceLocation unique = null;
     private boolean allowBroken = false;
     @Nullable
     private TagKey<Item> heldTag;
@@ -123,13 +117,6 @@ public record MaxArmorAttributeModule(String unique, Attribute attribute, Operat
     public Builder allowBroken() {
       this.allowBroken = true;
       return this;
-    }
-
-    /**
-     * Sets the unique string using a resource location
-     */
-    public Builder uniqueFrom(ResourceLocation id) {
-      return unique(id.getNamespace() + ".modifier." + id.getPath());
     }
 
     @Override
