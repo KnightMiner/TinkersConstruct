@@ -2,15 +2,15 @@ package slimeknights.tconstruct.smeltery.block.entity.module;
 
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.IOreRate;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRate;
 import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
 
 public class ByproductMeltingModuleInventory extends MeltingModuleInventory {
-  public ByproductMeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, IOreRate oreRate, int size) {
+  public ByproductMeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, OreRate oreRate, int size) {
     super(parent, fluidHandler, oreRate, size);
   }
 
-  public ByproductMeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, IOreRate oreRate) {
+  public ByproductMeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, OreRate oreRate) {
     super(parent, fluidHandler, oreRate);
   }
 

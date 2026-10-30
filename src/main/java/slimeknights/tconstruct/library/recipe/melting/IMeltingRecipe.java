@@ -14,40 +14,40 @@ import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 /**
  * Common interface for all melting recipes
  */
-public interface IMeltingRecipe extends ICustomOutputRecipe<IMeltingContainer> {
+public interface IMeltingRecipe extends ICustomOutputRecipe<MeltingRecipeInput> {
   /**
    * Gets a new instance of the output stack for this recipe
    * @param inv  Input inventory
    * @return  Output stack
    */
-  FluidStack getOutput(IMeltingContainer inv);
+  FluidStack getOutput(MeltingRecipeInput inv);
 
   /**
    * Gets the minimum temperature to melt this item
    * @param inv  Inventory instance
    * @return  Recipe temperature
    */
-  int getTemperature(IMeltingContainer inv);
+  int getTemperature(MeltingRecipeInput inv);
 
   /**
    * Gets the time this recipe takes in 1/5th second increments. Smeltery updates every 4 ticks
    * @param inv  Inventory instance
    * @return  Recipe time
    */
-  int getTime(IMeltingContainer inv);
+  int getTime(MeltingRecipeInput inv);
 
   /**
    * Adds recipe byproducts into the given inventory, used in the foundry, but not all smelteries
    * @param inv      Input inventory
    * @param handler  Fluid handler to fill with the byproduct
    */
-  default void handleByproducts(IMeltingContainer inv, IFluidHandler handler) {}
+  default void handleByproducts(MeltingRecipeInput inv, IFluidHandler handler) {}
 
   /* Recipe data */
 
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipes.MELTING.get();
+    return TinkerRecipes.meltingType.get();
   }
 
   @Override

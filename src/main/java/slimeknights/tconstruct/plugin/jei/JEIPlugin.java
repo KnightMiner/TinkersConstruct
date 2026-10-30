@@ -252,12 +252,12 @@ public class JEIPlugin implements IModPlugin {
     MeltingFuelHandler.setMeltngFuels(fuels);
     register.addRecipes(TConstructJEIConstants.FUEL, fuels);
     // register melting recipes
-    List<IDisplayableMeltingRecipe> meltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.MELTING.get(), IDisplayableMeltingRecipe.class);
+    List<IDisplayableMeltingRecipe> meltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.meltingType.get(), IDisplayableMeltingRecipe.class);
     register.addRecipes(TConstructJEIConstants.MELTING, meltingRecipes);
     register.addRecipes(TConstructJEIConstants.FOUNDRY, meltingRecipes);
 
     // entity melting
-    List<EntityMeltingRecipe> entityMeltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.ENTITY_MELTING.get(), EntityMeltingRecipe.class);
+    List<EntityMeltingRecipe> entityMeltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.entityMeltingType.get(), EntityMeltingRecipe.class);
     // generate a "default" recipe for all other entity types
     entityMeltingRecipes.add(new DefaultEntityMeltingRecipe(entityMeltingRecipes));
     register.addRecipes(TConstructJEIConstants.ENTITY_MELTING, entityMeltingRecipes);

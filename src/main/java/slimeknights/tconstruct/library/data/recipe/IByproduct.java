@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.data.recipe;
 
 import slimeknights.mantle.recipe.helper.FluidOutput;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.OreRateType;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRateType;
 
 /** Interface for a byproduct for datagen, not required but makes parameters easier */
 public interface IByproduct {

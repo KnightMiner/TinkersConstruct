@@ -2,7 +2,6 @@ package slimeknights.tconstruct.library.recipe.melting;
 
 import lombok.Getter;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -10,14 +9,13 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.tconstruct.smeltery.TinkerSmeltery;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,16 +27,14 @@ import java.util.stream.Stream;
  */
 public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe {
   /* Reusable fields */
-  protected static final LoadableField<Ingredient, MeltingRecipe> INPUT = IngredientLoadable.DISALLOW_EMPTY.requiredField("ingredient", MeltingRecipe::getInput);
-  protected static final LoadableField<FluidOutput, MeltingRecipe> OUTPUT = FluidOutput.Loadable.REQUIRED.requiredField("result", r -> r.output);
+  protected static final LoadableField<Ingredient, MeltingRecipe> INPUT = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("ingredient", MeltingRecipe::getInput);
+  protected static final LoadableField<FluidOutput, MeltingRecipe> OUTPUT = FluidOutput.REQUIRED_LOADABLE.requiredField("result", r -> r.output);
   protected static final LoadableField<Integer, MeltingRecipe> TEMPERATURE = IntLoadable.FROM_ZERO.requiredField("temperature", MeltingRecipe::getTemperature);
   protected static final LoadableField<Integer, MeltingRecipe> TIME = IntLoadable.FROM_ONE.requiredField("time", MeltingRecipe::getTime);
-  protected static final LoadableField<List<FluidOutput>, MeltingRecipe> BYPRODUCTS = FluidOutput.Loadable.REQUIRED.list(0).defaultField("byproducts", List.of(), r -> r.byproducts);
+  protected static final LoadableField<List<FluidOutput>, MeltingRecipe> BYPRODUCTS = FluidOutput.REQUIRED_LOADABLE.list(0).defaultField("byproducts", List.of(), r -> r.byproducts);
   /** Loader instance */
-  public static final RecordLoadable<MeltingRecipe> LOADER = RecordLoadable.create(ContextKey.ID.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP, INPUT, OUTPUT, TEMPERATURE, TIME, BYPRODUCTS, MeltingRecipe::new);
+  public static final RecordLoadable<MeltingRecipe> LOADER = RecordLoadable.create(LoadableRecipeSerializer.RECIPE_GROUP, INPUT, OUTPUT, TEMPERATURE, TIME, BYPRODUCTS, MeltingRecipe::new);
 
-  @Getter
-  private final ResourceLocation id;
   @Getter
   protected final String group;
   @Getter
@@ -52,8 +48,7 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
   protected final List<FluidOutput> byproducts;
   protected List<List<FluidStack>> outputWithByproducts;
 
-  public MeltingRecipe(ResourceLocation id, String group, Ingredient input, FluidOutput output, int temperature, int time, List<FluidOutput> byproducts) {
-    this.id = id;
+  public MeltingRecipe(String group, Ingredient input, FluidOutput output, int temperature, int time, List<FluidOutput> byproducts) {
     this.group = group;
     this.input = input;
     this.output = output;
@@ -64,22 +59,22 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
   }
 
   @Override
-  public boolean matches(IMeltingContainer inv, Level world) {
-    return input.test(inv.getStack());
+  public boolean matches(MeltingRecipeInput inv, Level world) {
+    return input.test(inv.getItem());
   }
 
   @Override
-  public int getTemperature(IMeltingContainer inv) {
+  public int getTemperature(MeltingRecipeInput inv) {
     return temperature;
   }
 
   @Override
-  public int getTime(IMeltingContainer inv) {
+  public int getTime(MeltingRecipeInput inv) {
     return time;
   }
 
   @Override
-  public FluidStack getOutput(IMeltingContainer inv) {
+  public FluidStack getOutput(MeltingRecipeInput inv) {
     return output.copy();
   }
 
@@ -90,11 +85,11 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerSmeltery.meltingSerializer.get();
+    return TinkerRecipes.itemMelting.get();
   }
 
   @Override
-  public void handleByproducts(IMeltingContainer inv, IFluidHandler handler) {
+  public void handleByproducts(MeltingRecipeInput inv, IFluidHandler handler) {
     // fill byproducts until we run out of space or byproducts
     for (FluidOutput fluid : byproducts) {
       handler.fill(fluid.copy(), FluidAction.EXECUTE);
@@ -103,11 +98,6 @@ public class MeltingRecipe implements IMeltingRecipe, IDisplayableMeltingRecipe 
 
 
   /* JEI */
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
-  }
 
   @Override
   public List<ItemStack> getInputs() {

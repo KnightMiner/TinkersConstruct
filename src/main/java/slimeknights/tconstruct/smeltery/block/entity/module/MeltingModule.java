@@ -2,17 +2,18 @@ package slimeknights.tconstruct.smeltery.block.entity.module;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.tconstruct.common.network.InventorySlotSyncPacket;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer;
 import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import java.util.function.Predicate;
  * This class represents a single item slot that can melt into a liquid
  */
 @RequiredArgsConstructor
-public class MeltingModule implements IMeltingContainer, ContainerData {
+public class MeltingModule implements MeltingRecipeInput, ContainerData {
   public static final int NO_SPACE = -1;
 
   private static final String TAG_CURRENT_TIME = "time";
@@ -37,7 +38,7 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
   /** Function that accepts fluid output from this module */
   private final Predicate<IMeltingRecipe> outputFunction;
   /** Function that boosts the ores based on the rate type */
-  private final IOreRate oreRate;
+  private final OreRate oreRate;
   /** Slot index for updates */
   private final int slotIndex;
 
@@ -56,10 +57,10 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
 
   /** Current item in this slot */
   @Getter
-  private ItemStack stack = ItemStack.EMPTY;
+  private ItemStack item = ItemStack.EMPTY;
 
   @Override
-  public IOreRate getOreRate() {
+  public OreRate getOreRate() {
     return oreRate;
   }
 
@@ -76,25 +77,25 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
    * Sets the contents of this module
    * @param newStack  New stack
    */
-  public void setStack(ItemStack newStack) {
+  public void setItem(ItemStack newStack) {
     // send a slot update to the client when items change, so we can update the TESR
     Level world = parent.getLevel();
-    if (slotIndex != -1 && world != null && !world.isClientSide && !ItemStack.matches(stack, newStack)) {
-      TinkerNetwork.getInstance().sendToClientsAround(new InventorySlotSyncPacket(newStack, slotIndex, parent.getBlockPos()), world, parent.getBlockPos());
+    if (slotIndex != -1 && world != null && !world.isClientSide && !ItemStack.matches(item, newStack)) {
+      PacketHelper.sendToPlayersTrackingPosition(world, parent.getBlockPos(), new InventorySlotSyncPacket(newStack, slotIndex, parent.getBlockPos()));
     }
 
     // clear progress if setting to empty or the items do not match
     if (newStack.isEmpty()) {
       resetRecipe();
-    } else if (this.stack.isEmpty() || !ItemHandlerHelper.canItemStacksStack(this.stack, newStack)) {
+    } else if (this.item.isEmpty() || !ItemStack.isSameItemSameComponents(this.item, newStack)) {
       currentTime = 0;
     }
 
     // update stack and heat required
-    this.stack = newStack;
+    this.item = newStack;
     int newTime = 0;
     int newTemp = 0;
-    if(!stack.isEmpty()) {
+    if(!item.isEmpty()) {
       IMeltingRecipe recipe = findRecipe();
       if (recipe != null) {
         newTime = recipe.getTime(this) * 10;
@@ -115,7 +116,7 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
   public boolean canHeatItem(int temperature) {
     // must have a recipe and an item
     if (requiredTime > 0) {
-      if (stack.isEmpty()) {
+      if (item.isEmpty()) {
         resetRecipe();
         return false;
       }
@@ -176,9 +177,9 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
       return last;
     }
     // if that fails, try to find a new recipe
-    Optional<IMeltingRecipe> newRecipe = world.getRecipeManager().getRecipeFor(TinkerRecipes.MELTING.get(), this, world);
+    Optional<RecipeHolder<IMeltingRecipe>> newRecipe = world.getRecipeManager().getRecipeFor(TinkerRecipes.meltingType.get(), this, world);
     if (newRecipe.isPresent()) {
-      lastRecipe = newRecipe.get();
+      lastRecipe = newRecipe.get().value();
       return lastRecipe;
     }
     return null;
@@ -196,7 +197,7 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
 
     // try filling the output tank, if successful empty the slot
     if (outputFunction.test(recipe)) {
-      setStack(ItemStack.EMPTY);
+      setItem(ItemStack.EMPTY);
       return true;
     }
 
@@ -208,10 +209,10 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
    * Writes this module to NBT
    * @return  Module in NBT
    */
-  public CompoundTag writeToTag() {
+  public CompoundTag writeToTag(HolderLookup.Provider registries) {
     CompoundTag nbt = new CompoundTag();
-    if (!stack.isEmpty()) {
-      stack.save(nbt);
+    if (!item.isEmpty()) {
+      nbt = (CompoundTag) item.save(registries, nbt);
       nbt.putInt(TAG_CURRENT_TIME, currentTime);
       nbt.putInt(TAG_REQUIRED_TIME, requiredTime);
       nbt.putInt(TAG_REQUIRED_TEMP, requiredTemp);
@@ -223,9 +224,9 @@ public class MeltingModule implements IMeltingContainer, ContainerData {
    * Reads this module from NBT
    * @param nbt  NBT
    */
-  public void readFromTag(CompoundTag nbt) {
-    stack = ItemStack.of(nbt);
-    if (!stack.isEmpty()) {
+  public void readFromTag(CompoundTag nbt, HolderLookup.Provider registries) {
+    item = ItemStack.parseOptional(registries, nbt);
+    if (!item.isEmpty()) {
       currentTime = nbt.getInt(TAG_CURRENT_TIME);
       requiredTime = nbt.getInt(TAG_REQUIRED_TIME);
       requiredTemp = nbt.getInt(TAG_REQUIRED_TEMP);

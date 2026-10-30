@@ -10,9 +10,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.fluids.FluidStack;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.tconstruct.common.config.Config;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.OreRateType;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRateType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class DisplayMeltingRecipe implements IDisplayableMeltingRecipe {
-  private final ResourceLocation recipeId;
   private final List<ItemStack> inputs;
   private final List<FluidStack> outputs;
   private final List<List<FluidStack>> outputWithByproducts;
@@ -41,8 +41,13 @@ public class DisplayMeltingRecipe implements IDisplayableMeltingRecipe {
   /* Builder */
 
   /** Creates a new builder instance */
+  public static Builder id(ResourceLocation id, List<ResourceLocation> parent) {
+    return new Builder(id, parent);
+  }
+
+  /** Creates a new builder instance */
   public static Builder id(ResourceLocation id) {
-    return new Builder(id);
+    return id(id, List.of(id));
   }
 
   @Setter
@@ -50,6 +55,7 @@ public class DisplayMeltingRecipe implements IDisplayableMeltingRecipe {
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Builder {
     private final ResourceLocation id;
+    private final List<ResourceLocation> parent;
     private List<ItemStack> inputs;
     /** List of output options. Size should match {@link #inputs(List)} for focus linking. */
     private List<FluidStack> outputs;
@@ -125,7 +131,7 @@ public class DisplayMeltingRecipe implements IDisplayableMeltingRecipe {
     }
 
     /** Builds the final display recipe */
-    public IDisplayableMeltingRecipe build() {
+    public NamedRecipe<IDisplayableMeltingRecipe> build() {
       if (inputs.isEmpty()) throw new IllegalStateException("Casts cannot be empty");
       if (outputs.isEmpty()) throw new IllegalStateException("Fluids cannot be empty");
       List<List<FluidStack>> outputsWithByproducts = new ArrayList<>(byproducts.size() + 1);
@@ -141,7 +147,7 @@ public class DisplayMeltingRecipe implements IDisplayableMeltingRecipe {
       if (time == 0) {
         time = outputs.stream().mapToInt(fluid -> IMeltingRecipe.calcTimeForAmount(temperature, fluid.getAmount())).max().orElse(1);
       }
-      return new DisplayMeltingRecipe(id, inputs, outputs, outputsWithByproducts, temperature, time, oreType, timeDynamic);
+      return NamedRecipe.of(id, parent, new DisplayMeltingRecipe(inputs, outputs, outputsWithByproducts, temperature, time, oreType, timeDynamic));
     }
   }
 }

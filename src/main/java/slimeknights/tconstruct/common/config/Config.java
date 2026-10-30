@@ -9,8 +9,8 @@ import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.EnumValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.IOreRate;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.OreRateType;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRateType;
 import slimeknights.tconstruct.library.utils.Orientation2D;
 import slimeknights.tconstruct.world.TinkerHeadType;
 
@@ -417,7 +417,7 @@ public class Config {
   }
 
   /** Configuration for an ore rate, such as melter or foundry */
-  public static class OreRate implements IOreRate {
+  public static class OreRate implements MeltingRecipeInput.OreRate {
     private final ConfigValue<Integer> nuggetsPerMetal;
     private final ConfigValue<Integer> shardsPerGem;
 

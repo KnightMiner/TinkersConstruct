@@ -1,18 +1,18 @@
 package slimeknights.tconstruct.library.recipe.melting;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.mantle.recipe.container.ISingleStackContainer;
+import slimeknights.mantle.recipe.input.SingleItemInput;
 
 /** Interface for melting inventories */
-public interface IMeltingContainer extends ISingleStackContainer {
+public interface MeltingRecipeInput extends SingleItemInput {
   /**
    * Gets the logic to boost an ore with the ore rate
    * @return  Nuggets per ore
    */
-  IOreRate getOreRate();
+  OreRate getOreRate();
 
   /** Ore rate logic in a melting container */
-  interface IOreRate {
+  interface OreRate {
     /** Boosts the given integer by the rate */
     int applyOreBoost(OreRateType rate, int amount);
 
@@ -21,7 +21,7 @@ public interface IMeltingContainer extends ISingleStackContainer {
       if (rate == OreRateType.DEFAULT || rate == OreRateType.NONE) {
         return forceCopy ? fluid.copy() : fluid;
       }
-      return new FluidStack(fluid, applyOreBoost(rate, fluid.getAmount()));
+      return fluid.copyWithAmount(applyOreBoost(rate, fluid.getAmount()));
     }
   }
 

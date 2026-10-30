@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.registration.deferred.IngredientDeferredRegister;
 import slimeknights.mantle.registration.deferred.RecipeTypeDeferredRegister;
 import slimeknights.mantle.registration.holder.DeferredIngredient;
+import slimeknights.mantle.registration.holder.DeferredRecipeSerializer;
 import slimeknights.mantle.registration.holder.DeferredRecipeType;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.registration.CastingRecipeSerializers;
@@ -20,7 +21,11 @@ import slimeknights.tconstruct.library.recipe.ingredient.MaterialValueIngredient
 import slimeknights.tconstruct.library.recipe.ingredient.NoContainerIngredient;
 import slimeknights.tconstruct.library.recipe.ingredient.ToolHookIngredient;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
+import slimeknights.tconstruct.library.recipe.melting.DamageableMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.melting.MaterialMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipe;
+import slimeknights.tconstruct.library.recipe.melting.OreMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
@@ -55,10 +60,18 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<ICastingRecipe> CASTING_BASIN = TYPES.registerType("casting_basin");
   public static final DeferredRecipeType<ICastingRecipe> CASTING_TABLE = TYPES.registerType("casting_table");
   // smeltery
-  public static final DeferredRecipeType<IMeltingRecipe> MELTING = TYPES.registerType("melting");
-  public static final DeferredRecipeType<EntityMeltingRecipe> ENTITY_MELTING = TYPES.registerType("entity_melting");
   public static final DeferredRecipeType<MeltingFuel> FUEL = TYPES.registerType("fuel");
   public static final DeferredRecipeType<AlloyRecipe> ALLOYING = TYPES.registerType("alloying");
+  // melting
+  public static final DeferredRecipeType<IMeltingRecipe> meltingType = TYPES.registerType("melting");
+  public static final DeferredRecipeSerializer<MeltingRecipe> itemMelting = SERIALIZERS.registerLoadable("melting", MeltingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<OreMeltingRecipe> oreMelting = SERIALIZERS.registerLoadable("ore_melting", OreMeltingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<DamageableMeltingRecipe> damageableMelting = SERIALIZERS.registerLoadable("damageable_melting", DamageableMeltingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MaterialMeltingRecipe> materialMeltingSerializer = SERIALIZERS.registerLoadable("material_melting", MaterialMeltingRecipe.LOADER);
+  // entity melting
+  public static final DeferredRecipeType<EntityMeltingRecipe> entityMeltingType = TYPES.registerType("entity_melting");
+  public static final DeferredRecipeSerializer<EntityMeltingRecipe> entityMelting = SERIALIZERS.registerLoadable("entity_melting", EntityMeltingRecipe.LOADER);
+
   // molding
   public static final DeferredRecipeType<MoldingRecipe> moldingTableType = TYPES.registerType("molding_table");
   public static final DeferredRecipeType<MoldingRecipe> moldingBasinType = TYPES.registerType("molding_basin");

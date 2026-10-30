@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.smeltery.block.entity.module;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -9,10 +10,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
-import slimeknights.tconstruct.library.recipe.melting.IMeltingContainer.IOreRate;
 import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRate;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
   /** If true, module cannot be resized */
   private final boolean strictSize;
   /** Number of nuggets to produce when melting an ore */
-  private final IOreRate oreRate;
+  private final OreRate oreRate;
 
   /**
    * Creates a new inventory with a fixed size
@@ -51,7 +51,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
    * @param oreRate        Ore rate
    * @param size           Size
    */
-  public MeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, IOreRate oreRate, int size) {
+  public MeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, OreRate oreRate, int size) {
     this.parent = parent;
     this.fluidHandler = fluidHandler;
     this.modules = new MeltingModule[size];
@@ -65,7 +65,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
    * @param fluidHandler   Tank for output
    * @param oreRate        Ore rate
    */
-  public MeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, IOreRate oreRate) {
+  public MeltingModuleInventory(MantleBlockEntity parent, IFluidHandler fluidHandler, OreRate oreRate) {
     this(parent, fluidHandler, oreRate, 0);
   }
 
@@ -166,8 +166,8 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
     // if shrinking, drop extra items
     if (newSize < modules.length) {
       for (int i = newSize; i < modules.length; i++) {
-        if (modules[i] != null && !modules[i].getStack().isEmpty()) {
-          stackConsumer.accept(modules[i].getStack());
+        if (modules[i] != null && !modules[i].getItem().isEmpty()) {
+          stackConsumer.accept(modules[i].getItem());
         }
       }
     }
@@ -180,13 +180,12 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
 
   /* Item handling */
 
-  @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
     if (validSlot(slot)) {
       // don't create the slot, just reading
       if (modules[slot] != null) {
-        return modules[slot].getStack();
+        return modules[slot].getItem();
       }
     }
     return ItemStack.EMPTY;
@@ -198,14 +197,14 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
     if (validSlot(slot)) {
       if (stack.isEmpty()) {
         if (modules[slot] != null) {
-          modules[slot].setStack(ItemStack.EMPTY);
+          modules[slot].setItem(ItemStack.EMPTY);
         }
       } else {
         // validate size
         if (stack.getCount() > 1) {
           stack.setCount(1);
         }
-        getModule(slot).setStack(stack);
+        getModule(slot).setItem(stack);
       }
     }
   }
@@ -222,11 +221,11 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
 
     // if the slot is empty, we can insert. Ignores stack sizes at this time, assuming always 1
     MeltingModule module = getModule(slot);
-    boolean canInsert = module.getStack().isEmpty();
+    boolean canInsert = module.getItem().isEmpty();
     if (!simulate && canInsert) {
-      setStackInSlot(slot, ItemHandlerHelper.copyStackWithSize(stack, 1));
+      setStackInSlot(slot, stack.copyWithCount(1));
     }
-    return canInsert ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - 1) : stack;
+    return canInsert ? stack.copyWithCount(stack.getCount() - 1) : stack;
   }
 
   @Nonnull
@@ -311,12 +310,12 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
    * Writes this module to Tag
    * @return  Module in Tag
    */
-  public CompoundTag writeToTag() {
+  public CompoundTag writeToTag(HolderLookup.Provider registries) {
     CompoundTag nbt = new CompoundTag();
     ListTag list = new ListTag();
     for (int i = 0; i < modules.length; i++) {
-      if (modules[i] != null && !modules[i].getStack().isEmpty()) {
-        CompoundTag moduleTag = modules[i].writeToTag();
+      if (modules[i] != null && !modules[i].getItem().isEmpty()) {
+        CompoundTag moduleTag = modules[i].writeToTag(registries);
         moduleTag.putByte(TAG_SLOT, (byte)i);
         list.add(moduleTag);
       }
@@ -332,7 +331,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
    * Reads this inventory from Tag
    * @param nbt  Tag compound
    */
-  public void readFromTag(CompoundTag nbt) {
+  public void readFromTag(CompoundTag nbt, HolderLookup.Provider registries) {
     if (!strictSize) {
       int newSize = nbt.getByte(TAG_SIZE) & 255;
       if (newSize != modules.length) {
@@ -342,7 +341,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
     // remove old data
     for (MeltingModule module : modules) {
       if (module != null) {
-        module.setStack(ItemStack.EMPTY);
+        module.setItem(ItemStack.EMPTY);
       }
     }
 
@@ -352,7 +351,7 @@ public class MeltingModuleInventory implements IItemHandlerModifiable {
       if (item.contains(TAG_SLOT, Tag.TAG_BYTE)) {
         int slot = item.getByte(TAG_SLOT) & 255;
         if (validSlot(slot)) {
-          getModule(slot).readFromTag(item);
+          getModule(slot).readFromTag(item, registries);
         }
       }
     }
