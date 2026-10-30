@@ -60,8 +60,10 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<ICastingRecipe> CASTING_BASIN = TYPES.registerType("casting_basin");
   public static final DeferredRecipeType<ICastingRecipe> CASTING_TABLE = TYPES.registerType("casting_table");
   // smeltery
-  public static final DeferredRecipeType<MeltingFuel> FUEL = TYPES.registerType("fuel");
   public static final DeferredRecipeType<AlloyRecipe> ALLOYING = TYPES.registerType("alloying");
+  // fuel
+  public static final DeferredRecipeType<MeltingFuel> fuelType = TYPES.registerType("fuel");
+  public static final DeferredRecipeSerializer<MeltingFuel> fuel = SERIALIZERS.registerLoadable("melting_fuel", MeltingFuel.LOADER);
   // melting
   public static final DeferredRecipeType<IMeltingRecipe> meltingType = TYPES.registerType("melting");
   public static final DeferredRecipeSerializer<MeltingRecipe> itemMelting = SERIALIZERS.registerLoadable("melting", MeltingRecipe.LOADER);

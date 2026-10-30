@@ -15,11 +15,9 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
-import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.tconstruct.library.modifiers.hook.armor.OnAttackedModifierHook;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
-import slimeknights.tconstruct.library.recipe.fuel.MeltingFuelLookup;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeLookup;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
 
@@ -60,8 +58,9 @@ public class TinkerPredicate {
   /** Predicate matching meltable items */
   public static ItemPredicate CAN_MELT_ITEM = ItemPredicate.simple(MeltingRecipeLookup::canMelt);
 
-  /** Predicate matching fluids registered as a smeltery fuel */
-  public static FluidPredicate FUEL = FluidPredicate.simple(MeltingFuelLookup::isFuel);
+  // TODO: is this practical anymore? perhaps do one not component sensitive?
+  /* Predicate matching fluids registered as a smeltery fuel */
+  // public static FluidPredicate FUEL = FluidPredicate.simple(MeltingFuelLookup::isFuel);
 
   /** Helper for dealing with the common case of nullable entities, often used when they are entity but not living. */
   public static boolean matches(IJsonPredicate<LivingEntity> predicate, @Nullable LivingEntity entity) {

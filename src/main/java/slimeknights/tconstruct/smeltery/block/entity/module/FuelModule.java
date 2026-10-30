@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.common.util.NonNullConsumer;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -84,7 +83,7 @@ public abstract class FuelModule implements ContainerData {
    * @return  Recipe
    */
   @Nullable
-  protected MeltingFuel findRecipe(Fluid fluid) {
+  protected MeltingFuel findRecipe(FluidStack fluid) {
     if (lastRecipe != null && lastRecipe.matches(fluid)) {
       return lastRecipe;
     }
@@ -125,12 +124,12 @@ public abstract class FuelModule implements ContainerData {
    */
   protected int tryLiquidFuel(IFluidHandler handler, boolean consume) {
     FluidStack fluid = handler.getFluidInTank(0);
-    MeltingFuel recipe = findRecipe(fluid.getFluid());
+    MeltingFuel recipe = findRecipe(fluid);
     if (recipe != null) {
-      int amount = recipe.getAmount(fluid.getFluid());
+      int amount = recipe.getAmount(fluid);
       if (fluid.getAmount() >= amount) {
         if (consume) {
-          FluidStack drained = handler.drain(new FluidStack(fluid, amount), FluidAction.EXECUTE);
+          FluidStack drained = handler.drain(fluid.copyWithAmount(amount), FluidAction.EXECUTE);
           if (drained.getAmount() != amount) {
             TConstruct.LOG.error("Invalid amount of fuel drained from tank");
           }

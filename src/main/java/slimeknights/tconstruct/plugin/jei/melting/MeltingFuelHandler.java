@@ -85,7 +85,7 @@ public class MeltingFuelHandler {
     List<ItemStack> fuels = new ArrayList<>(allStacks.size());
     Object2IntMap<Object> newFuels = new Object2IntOpenHashMap<>(allStacks.size());
     itemHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-    RecipeType<?> fuel = TinkerRecipes.FUEL.get();
+    RecipeType<?> fuel = TinkerRecipes.fuelType.get();
     for (ItemStack stack : allStacks) {
       try {
         int burnTime = ForgeHooks.getBurnTime(stack, fuel);

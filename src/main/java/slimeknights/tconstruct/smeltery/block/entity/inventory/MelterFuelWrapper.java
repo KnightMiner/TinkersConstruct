@@ -1,11 +1,9 @@
 package slimeknights.tconstruct.smeltery.block.entity.inventory;
 
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import slimeknights.tconstruct.library.recipe.fuel.IFluidContainer;
+import slimeknights.tconstruct.library.recipe.SingleFluidInput;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 
 import java.lang.ref.WeakReference;
@@ -14,7 +12,7 @@ import java.util.Optional;
 /**
  * Fluid tank wrapper that weakly references a tank from a neighbor
  */
-public class MelterFuelWrapper implements IFluidContainer {
+public class MelterFuelWrapper implements SingleFluidInput {
   private final WeakReference<IFluidTank> tank;
 
   public MelterFuelWrapper(IFluidTank tank) {
@@ -30,11 +28,10 @@ public class MelterFuelWrapper implements IFluidContainer {
   }
 
   @Override
-  public Fluid getFluid() {
+  public FluidStack getFluid() {
     return Optional.ofNullable(tank.get())
                    .map(IFluidTank::getFluid)
-                   .map(FluidStack::getFluid)
-                   .orElse(Fluids.EMPTY);
+                   .orElse(FluidStack.EMPTY);
   }
 
   /* Melter methods */

@@ -1,10 +1,10 @@
 package slimeknights.tconstruct.library.recipe.fuel;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.material.Fluid;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackLinkedSet;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
@@ -20,14 +20,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeltingFuelLookup {
   /** Dummy fuel instance sine caches don't support caching null */
-  @SuppressWarnings("removal")
-  private static final MeltingFuel EMPTY = new MeltingFuel(new ResourceLocation("missingno"), FluidIngredient.EMPTY, 0, 0, 0);
+  private static final MeltingFuel EMPTY = new MeltingFuel(null, 0, 0, 0);
   /** Temperature for solid fuels in the heater */
   private static MeltingFuel SOLID = EMPTY;
   /** List of all recipes */
   private static final List<MeltingFuel> RECIPES = new ArrayList<>();
   /** Mapping from fluid to fuel */
-  private static final SimpleCache<Fluid,MeltingFuel> CACHE = new SimpleCache<>(fluid -> {
+  private static final SimpleCache<FluidStack,MeltingFuel> CACHE = new SimpleCache<>(new Object2ObjectOpenCustomHashMap<>(FluidStackLinkedSet.TYPE_AND_COMPONENTS), fluid -> {
     for (MeltingFuel recipe : RECIPES) {
       if (recipe.matches(fluid)) {
         return recipe;
@@ -52,17 +51,17 @@ public class MeltingFuelLookup {
       return;
     }
     LISTENER.checkClear();
-    if (fuel.getInput() != FluidIngredient.EMPTY) {
+    if (fuel.getInput() != null) {
       RECIPES.add(fuel);
     } else if (SOLID == EMPTY) {
       SOLID = fuel;
     } else {
-      TConstruct.LOG.warn("Multiple fuel recipes for solid fuel. This usually indicates a datapack error and may cause desyncs. Original {}, latest {}", SOLID.getId(), fuel.getId());
+      TConstruct.LOG.warn("Multiple fuel recipes for solid fuel. This usually indicates a datapack error and may cause desyncs. Original {}, latest {}", SOLID, fuel);
     }
   }
 
   /** Checks if the given fluid is a fuel */
-  public static boolean isFuel(Fluid fluid) {
+  public static boolean isFuel(FluidStack fluid) {
     return CACHE.apply(fluid) != EMPTY;
   }
 
@@ -77,7 +76,7 @@ public class MeltingFuelLookup {
    * @return  Recipe, or null if no recipe for this type
    */
   @Nullable
-  public static MeltingFuel findFuel(Fluid fluid) {
+  public static MeltingFuel findFuel(FluidStack fluid) {
     MeltingFuel recipe = CACHE.apply(fluid);
     if (recipe == EMPTY) {
       return null;

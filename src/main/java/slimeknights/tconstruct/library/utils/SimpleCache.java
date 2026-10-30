@@ -12,8 +12,12 @@ import java.util.function.Function;
  */
 @RequiredArgsConstructor
 public class SimpleCache<K,V> implements Function<K,V> {
-  private final Map<K,V> cache = new ConcurrentHashMap<>();
+  private final Map<K,V> cache;
   private final Function<K,V> ifAbsent;
+
+  public SimpleCache(Function<K,V> ifAbsent) {
+    this(new ConcurrentHashMap<>(), ifAbsent);
+  }
 
   @Override
   public V apply(K key) {

@@ -248,7 +248,7 @@ public class JEIPlugin implements IModPlugin {
     // melting
     // need to register the fuels before the categories so they are available
     MeltingFuelHandler.registerSolidFuels(register.getIngredientManager());
-    List<MeltingFuel> fuels = RecipeHelper.getRecipes(manager, TinkerRecipes.FUEL.get(), MeltingFuel.class);
+    List<MeltingFuel> fuels = RecipeHelper.getRecipes(manager, TinkerRecipes.fuelType.get(), MeltingFuel.class);
     MeltingFuelHandler.setMeltngFuels(fuels);
     register.addRecipes(TConstructJEIConstants.FUEL, fuels);
     // register melting recipes

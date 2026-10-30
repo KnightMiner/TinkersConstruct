@@ -59,7 +59,6 @@ import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingRe
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.PartSwapCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.ToolCastingRecipe;
-import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.ClearGlassPaneBlock;
@@ -419,8 +418,6 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<MaterialFluidRecipe>> materialFluidRecipe = RECIPE_SERIALIZERS.register("material_fluid", () -> LoadableRecipeSerializer.of(MaterialFluidRecipe.LOADER));
   public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PartSwapCastingRecipe>> basinPartSwappingSerializer = RECIPE_SERIALIZERS.register("basin_casting_part_swapping", () -> LoadableRecipeSerializer.of(PartSwapCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
   public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PartSwapCastingRecipe>> tablePartSwappingSerializer = RECIPE_SERIALIZERS.register("table_casting_part_swapping", () -> LoadableRecipeSerializer.of(PartSwapCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  // melting
-  public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<MeltingFuel>> fuelSerializer = RECIPE_SERIALIZERS.register("melting_fuel", () -> LoadableRecipeSerializer.of(MeltingFuel.LOADER));
   // alloying
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<AlloyRecipe>> alloyingSerializer = RECIPE_SERIALIZERS.register("alloy", () -> LoadableRecipeSerializer.of(AlloyRecipe.LOADER));
 
