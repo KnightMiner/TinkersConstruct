@@ -17,7 +17,7 @@ import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.mantle.util.WeakConsumerWrapper;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.recipe.alloying.IMutableAlloyTank;
+import slimeknights.tconstruct.library.recipe.alloying.MutableAlloyRecipeInput;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
@@ -27,7 +27,7 @@ import java.util.Map;
  * Alloy tank that takes inputs from neighboring blocks
  */
 @RequiredArgsConstructor
-public class MixerAlloyTank implements IMutableAlloyTank {
+public class MixerAlloyRecipeInput implements MutableAlloyRecipeInput {
   // parameters
   /** Handler parent */
   private final MantleBlockEntity parent;

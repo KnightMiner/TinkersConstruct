@@ -1,11 +1,12 @@
 package slimeknights.tconstruct.smeltery.block.entity.module.alloying;
 
 import lombok.RequiredArgsConstructor;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
-import slimeknights.tconstruct.library.recipe.alloying.IMutableAlloyTank;
+import slimeknights.tconstruct.library.recipe.alloying.MutableAlloyRecipeInput;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SingleAlloyingModule implements IAlloyingModule {
   private final MantleBlockEntity parent;
-  private final IMutableAlloyTank alloyTank;
+  private final MutableAlloyRecipeInput alloyTank;
   private AlloyRecipe lastRecipe;
 
   /** Gets a nonnull world instance from the parent */
@@ -33,12 +34,10 @@ public class SingleAlloyingModule implements IAlloyingModule {
     // fetch the first recipe that matches the inputs and fits in the tank
     // means if for some reason two recipes both are vaiud, the tank contents can be used to choose
     Optional<AlloyRecipe> recipe = world.getRecipeManager()
-                                        .byType(TinkerRecipes.ALLOYING.get())
-                                        .values().stream()
-                                        .filter(r -> r instanceof AlloyRecipe)
-                                        .map(r -> (AlloyRecipe) r)
-                                        .filter(r -> alloyTank.canFit(r.getOutput(), 0) && r.canPerform(alloyTank))
-                                        .findAny();
+      .byType(TinkerRecipes.alloyingType.get())
+      .stream().map(RecipeHolder::value)
+      .filter(r -> alloyTank.canFit(r.getOutput(), 0) && r.canPerform(alloyTank))
+      .findAny();
     // if found, cache and return
     if (recipe.isPresent()) {
       lastRecipe = recipe.get();

@@ -28,7 +28,7 @@ import slimeknights.tconstruct.smeltery.block.controller.ControllerBlock;
 import slimeknights.tconstruct.smeltery.block.controller.MelterBlock;
 import slimeknights.tconstruct.smeltery.block.entity.ITankBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.module.SolidFuelModule;
-import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyTank;
+import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyRecipeInput;
 import slimeknights.tconstruct.smeltery.block.entity.module.alloying.SingleAlloyingModule;
 import slimeknights.tconstruct.smeltery.menu.AlloyerContainerMenu;
 
@@ -55,7 +55,7 @@ public class AlloyerBlockEntity extends NameableBlockEntity implements ITankBloc
   // modules
   /** Logic for a mixer alloying */
   @Getter
-  private final MixerAlloyTank alloyTank = new MixerAlloyTank(this, tank);
+  private final MixerAlloyRecipeInput alloyTank = new MixerAlloyRecipeInput(this, tank);
   /** Base alloy logic */
   private final SingleAlloyingModule alloyingModule = new SingleAlloyingModule(this, alloyTank);
   /** Fuel handling logic */

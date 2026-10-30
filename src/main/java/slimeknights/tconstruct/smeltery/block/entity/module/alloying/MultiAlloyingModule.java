@@ -4,8 +4,8 @@ import net.minecraft.world.level.Level;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
-import slimeknights.tconstruct.library.recipe.alloying.IAlloyTank;
-import slimeknights.tconstruct.library.recipe.alloying.IMutableAlloyTank;
+import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipeInput;
+import slimeknights.tconstruct.library.recipe.alloying.MutableAlloyRecipeInput;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 /** Module to handle running alloys via a fluid handler, can alloy multiple recipes at once */
 public class MultiAlloyingModule implements IAlloyingModule {
   private final MantleBlockEntity parent;
-  private final IAlloyTank alloyTank;
+  private final AlloyRecipeInput alloyTank;
 
   /** List of recipes that succeeded last time in {@link #doAlloy()}, only these will be used for the next iteration */
   @Nullable
@@ -26,7 +26,7 @@ public class MultiAlloyingModule implements IAlloyingModule {
   /** Predicates for common behaviors */
   private final Predicate<AlloyRecipe> canPerform, performRecipe;
 
-  public MultiAlloyingModule(MantleBlockEntity parent, IMutableAlloyTank alloyTank) {
+  public MultiAlloyingModule(MantleBlockEntity parent, MutableAlloyRecipeInput alloyTank) {
     this.parent = parent;
     this.alloyTank = alloyTank;
     this.canPerform = recipe -> recipe.canPerform(alloyTank);
@@ -47,7 +47,7 @@ public class MultiAlloyingModule implements IAlloyingModule {
    */
   private List<AlloyRecipe> getRecipes() {
     if (lastRecipes == null) {
-      lastRecipes = getLevel().getRecipeManager().getRecipesFor(TinkerRecipes.ALLOYING.get(), alloyTank, getLevel());
+      lastRecipes = getLevel().getRecipeManager().getRecipesFor(TinkerRecipes.alloyingType.get(), alloyTank, getLevel());
     }
     return lastRecipes;
   }

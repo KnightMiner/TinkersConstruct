@@ -10,7 +10,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.GuiUtil;
 import slimeknights.tconstruct.smeltery.block.entity.controller.AlloyerBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.module.FuelModule;
-import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyTank;
+import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyRecipeInput;
 import slimeknights.tconstruct.smeltery.client.screen.module.GuiFuelModule;
 import slimeknights.tconstruct.smeltery.client.screen.module.GuiTankModule;
 import slimeknights.tconstruct.smeltery.menu.AlloyerContainerMenu;
@@ -44,7 +44,7 @@ public class AlloyerScreen extends AbstractContainerScreen<AlloyerContainerMenu>
   private void updateTanks() {
     AlloyerBlockEntity te = menu.getTile();
     if (te != null) {
-      MixerAlloyTank alloyTank = te.getAlloyTank();
+      MixerAlloyRecipeInput alloyTank = te.getAlloyTank();
       int numTanks = alloyTank.getTanks();
       GuiTankModule[] tanks = new GuiTankModule[numTanks];
       int max = Math.min(numTanks, 5); // only support 5 tanks, any more is impossible

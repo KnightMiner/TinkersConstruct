@@ -263,7 +263,7 @@ public class JEIPlugin implements IModPlugin {
     register.addRecipes(TConstructJEIConstants.ENTITY_MELTING, entityMeltingRecipes);
 
     // alloying
-    register.addRecipes(TConstructJEIConstants.ALLOY, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.ALLOYING.get(), AlloyRecipe.class));
+    register.addRecipes(TConstructJEIConstants.ALLOY, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.alloyingType.get(), AlloyRecipe.class));
 
     // molding
     List<MoldingRecipe> moldingRecipes = new ArrayList<>();

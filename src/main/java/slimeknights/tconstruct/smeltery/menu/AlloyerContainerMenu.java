@@ -24,7 +24,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.shared.inventory.TriggeringBaseContainerMenu;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.entity.controller.AlloyerBlockEntity;
-import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyTank;
+import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MixerAlloyRecipeInput;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -42,7 +42,7 @@ public class AlloyerContainerMenu extends TriggeringBaseContainerMenu<AlloyerBlo
       // refresh cache of neighboring tanks
       Level world = alloyer.getLevel();
       if (world != null && world.isClientSide) {
-        MixerAlloyTank alloyTank = alloyer.getAlloyTank();
+        MixerAlloyRecipeInput alloyTank = alloyer.getAlloyTank();
         for (Direction direction : Direction.values()) {
           if (direction != Direction.DOWN) {
             alloyTank.refresh(direction, true);

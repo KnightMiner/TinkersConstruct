@@ -14,7 +14,7 @@ import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.controller.ControllerBlock;
 import slimeknights.tconstruct.smeltery.block.entity.module.MeltingModuleInventory;
 import slimeknights.tconstruct.smeltery.block.entity.module.alloying.MultiAlloyingModule;
-import slimeknights.tconstruct.smeltery.block.entity.module.alloying.SmelteryAlloyTank;
+import slimeknights.tconstruct.smeltery.block.entity.module.alloying.SmelteryAlloyRecipeInput;
 import slimeknights.tconstruct.smeltery.block.entity.multiblock.HeatingStructureMultiblock;
 import slimeknights.tconstruct.smeltery.block.entity.multiblock.HeatingStructureMultiblock.StructureData;
 import slimeknights.tconstruct.smeltery.block.entity.multiblock.SmelteryMultiblock;
@@ -30,7 +30,7 @@ public class SmelteryBlockEntity extends HeatingStructureBlockEntity {
   private static final Component NAME = TConstruct.makeTranslation("gui", "smeltery");
 
   /** Module handling alloys */
-  private final SmelteryAlloyTank alloyTank = new SmelteryAlloyTank(tank);
+  private final SmelteryAlloyRecipeInput alloyTank = new SmelteryAlloyRecipeInput(tank);
   @Getter
   private final MultiAlloyingModule alloyingModule = new MultiAlloyingModule(this, alloyTank);
 

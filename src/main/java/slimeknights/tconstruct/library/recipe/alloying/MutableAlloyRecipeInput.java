@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.recipe.alloying;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /** Extension of IAlloyTank for the sake of receiving outputs and consuming inputs */
-public interface IMutableAlloyTank extends IAlloyTank {
+public interface MutableAlloyRecipeInput extends AlloyRecipeInput {
   /**
    * Actually drains the fluid from the tank
    * @param tank        Tank index being drained
