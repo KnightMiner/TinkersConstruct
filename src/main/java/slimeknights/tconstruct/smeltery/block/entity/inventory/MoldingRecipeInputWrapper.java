@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import slimeknights.tconstruct.library.recipe.molding.IMoldingContainer;
+import slimeknights.tconstruct.library.recipe.molding.MoldingRecipeInput;
 
 /** Wrapper around an item handler for the sake of use as a molding inventory */
 @RequiredArgsConstructor
-public class MoldingContainerWrapper implements IMoldingContainer {
+public class MoldingRecipeInputWrapper implements MoldingRecipeInput {
   private final IItemHandler handler;
   private final int slot;
 

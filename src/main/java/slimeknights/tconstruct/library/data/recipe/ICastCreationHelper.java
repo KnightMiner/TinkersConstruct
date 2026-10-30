@@ -54,12 +54,12 @@ public interface ICastCreationHelper extends IRecipeHelper {
       .save(consumer, location(folder + "gold/" + name));
     // make sand casts via molding in the casting table
     MoldingRecipeBuilder.moldingTable(cast.getSand())
-      .setMaterial(TinkerTags.Items.SAND_CASTS)
-      .setPattern(input, false)
+      .material(TinkerTags.Items.SAND_CASTS)
+      .pattern(input, false)
       .save(consumer, location(folder + "sand/molding/" + name));
     MoldingRecipeBuilder.moldingTable(cast.getRedSand())
-      .setMaterial(TinkerTags.Items.RED_SAND_CASTS)
-      .setPattern(input, false)
+      .material(TinkerTags.Items.RED_SAND_CASTS)
+      .pattern(input, false)
       .save(consumer, location(folder + "red_sand/molding/" + name));
     // make sand casts in the part builder
     ResourceLocation pattern = cast.getName();

@@ -39,7 +39,7 @@ public class MoldingRecipeCategory extends AbstractRecipeCategory<MoldingRecipe>
   public void createRecipeExtras(IRecipeExtrasBuilder builder, MoldingRecipe recipe, IFocusGroup focuses) {
     builder.addRecipeArrowWidget().setPosition(24, 23);
     builder.addDrawableWidget(recipe.getPattern().isEmpty() ? upArrow : downArrow).setPosition(8, 17);
-    IDrawable block = recipe.getType() == TinkerRecipes.MOLDING_BASIN.get() ? basin : table;
+    IDrawable block = recipe.getType() == TinkerRecipes.moldingBasinType.get() ? basin : table;
     builder.addDrawableWidget(block).setPosition(3, 40);
 
     // if no mold, we "pickup" the item, so draw no table

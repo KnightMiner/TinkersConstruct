@@ -8,6 +8,8 @@ import slimeknights.mantle.registration.deferred.RecipeTypeDeferredRegister;
 import slimeknights.mantle.registration.holder.DeferredIngredient;
 import slimeknights.mantle.registration.holder.DeferredRecipeType;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.common.registration.CastingRecipeSerializers;
+import slimeknights.tconstruct.common.registration.RecipeSerializerDeferredRegisterExtension;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 import slimeknights.tconstruct.library.recipe.entitymelting.EntityMeltingRecipe;
@@ -29,14 +31,15 @@ import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe
  * Handles registration and access for all Tinkers' Construct recipe types, recipe serializers, and ingredient types.
  */
 public class TinkerRecipes {
-  /** Deferred instance */
   private static final RecipeTypeDeferredRegister TYPES = new RecipeTypeDeferredRegister(TConstruct.MOD_ID);
+  private static final RecipeSerializerDeferredRegisterExtension SERIALIZERS = new RecipeSerializerDeferredRegisterExtension(TConstruct.MOD_ID);
   private static final IngredientDeferredRegister INGREDIENTS = new IngredientDeferredRegister(TConstruct.MOD_ID);
 
   /** Initializes the deferred registers */
   @Internal
   public static void init(IEventBus bus) {
     TYPES.register(bus);
+    SERIALIZERS.register(bus);
     INGREDIENTS.register(bus);
   }
 
@@ -45,17 +48,24 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<ITinkerStationRecipe> TINKER_STATION = TYPES.registerType("tinker_station");
   public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
 
+  /*
+   * smeltery
+   */
   // casting
   public static final DeferredRecipeType<ICastingRecipe> CASTING_BASIN = TYPES.registerType("casting_basin");
   public static final DeferredRecipeType<ICastingRecipe> CASTING_TABLE = TYPES.registerType("casting_table");
-  public static final DeferredRecipeType<MoldingRecipe> MOLDING_TABLE = TYPES.registerType("molding_table");
-  public static final DeferredRecipeType<MoldingRecipe> MOLDING_BASIN = TYPES.registerType("molding_basin");
-
   // smeltery
   public static final DeferredRecipeType<IMeltingRecipe> MELTING = TYPES.registerType("melting");
   public static final DeferredRecipeType<EntityMeltingRecipe> ENTITY_MELTING = TYPES.registerType("entity_melting");
   public static final DeferredRecipeType<MeltingFuel> FUEL = TYPES.registerType("fuel");
   public static final DeferredRecipeType<AlloyRecipe> ALLOYING = TYPES.registerType("alloying");
+  // molding
+  public static final DeferredRecipeType<MoldingRecipe> moldingTableType = TYPES.registerType("molding_table");
+  public static final DeferredRecipeType<MoldingRecipe> moldingBasinType = TYPES.registerType("molding_basin");
+  public static final CastingRecipeSerializers<MoldingRecipe> molding = new CastingRecipeSerializers<>(
+    SERIALIZERS.registerLoadable("molding_table", MoldingRecipe.LOADER, moldingTableType),
+    SERIALIZERS.registerLoadable("molding_basin", MoldingRecipe.LOADER, moldingBasinType)
+  );
 
   // modifiers
   public static final DeferredRecipeType<SeveringRecipe> SEVERING = TYPES.registerType("severing");

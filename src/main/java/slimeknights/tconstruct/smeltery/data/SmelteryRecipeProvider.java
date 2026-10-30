@@ -153,10 +153,10 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
 
     // pick up sand casts from the table
     MoldingRecipeBuilder.moldingTable(TinkerSmeltery.blankSandCast)
-                        .setMaterial(TinkerTags.Items.SAND_CASTS)
+                        .material(TinkerTags.Items.SAND_CASTS)
                         .save(consumer, location("smeltery/sand_cast_pickup"));
     MoldingRecipeBuilder.moldingTable(TinkerSmeltery.blankRedSandCast)
-                        .setMaterial(TinkerTags.Items.RED_SAND_CASTS)
+                        .material(TinkerTags.Items.RED_SAND_CASTS)
                         .save(consumer, location("smeltery/red_sand_cast_pickup"));
 
     ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TinkerSmeltery.endFluidCannon)

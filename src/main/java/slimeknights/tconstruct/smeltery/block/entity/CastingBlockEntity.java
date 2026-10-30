@@ -45,7 +45,7 @@ import slimeknights.tconstruct.shared.block.entity.TableBlockEntity;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.AbstractCastingBlock;
 import slimeknights.tconstruct.smeltery.block.entity.inventory.CastingContainerWrapper;
-import slimeknights.tconstruct.smeltery.block.entity.inventory.MoldingContainerWrapper;
+import slimeknights.tconstruct.smeltery.block.entity.inventory.MoldingRecipeInputWrapper;
 import slimeknights.tconstruct.smeltery.block.entity.tank.CastingFluidHandler;
 import slimeknights.tconstruct.smeltery.network.FluidUpdatePacket;
 
@@ -103,7 +103,7 @@ public abstract class CastingBlockEntity extends TableBlockEntity implements Wor
   /** Recipe type for molding recipes, may be basin or table */
   private final RecipeType<MoldingRecipe> moldingType;
   /** Inventory to use for molding recipes */
-  private final MoldingContainerWrapper moldingInventory;
+  private final MoldingRecipeInputWrapper moldingInventory;
   /** Cache recipe to reduce time during recipe lookups. Not saved to Tag */
   private MoldingRecipe lastMoldingRecipe;
   /** Last redstone state of the block */
@@ -119,7 +119,7 @@ public abstract class CastingBlockEntity extends TableBlockEntity implements Wor
     this.castingType = castingType;
     this.moldingType = moldingType;
     this.castingInventory = new CastingContainerWrapper(this);
-    this.moldingInventory = new MoldingContainerWrapper(itemHandler, INPUT);
+    this.moldingInventory = new MoldingRecipeInputWrapper(itemHandler, INPUT);
   }
 
   @Override
@@ -613,13 +613,13 @@ public abstract class CastingBlockEntity extends TableBlockEntity implements Wor
 
   public static class Basin extends CastingBlockEntity {
     public Basin(BlockPos pos, BlockState state) {
-      super(TinkerSmeltery.basin.get(), pos, state, TinkerRecipes.CASTING_BASIN.get(), TinkerRecipes.MOLDING_BASIN.get(), TinkerTags.Items.BASIN_EMPTY_CASTS);
+      super(TinkerSmeltery.basin.get(), pos, state, TinkerRecipes.CASTING_BASIN.get(), TinkerRecipes.moldingBasinType.get(), TinkerTags.Items.BASIN_EMPTY_CASTS);
     }
   }
 
   public static class Table extends CastingBlockEntity {
     public Table(BlockPos pos, BlockState state) {
-      super(TinkerSmeltery.table.get(), pos, state, TinkerRecipes.CASTING_TABLE.get(), TinkerRecipes.MOLDING_TABLE.get(), TinkerTags.Items.TABLE_EMPTY_CASTS);
+      super(TinkerSmeltery.table.get(), pos, state, TinkerRecipes.CASTING_TABLE.get(), TinkerRecipes.moldingTableType.get(), TinkerTags.Items.TABLE_EMPTY_CASTS);
     }
   }
 
