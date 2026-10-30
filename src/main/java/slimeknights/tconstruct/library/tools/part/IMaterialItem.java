@@ -108,6 +108,19 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
 
   /**
    * Gets the given item stack with this material applied
+   * @param item      Item instance
+   * @param material  Material
+   * @return  Stack with material, or original stack if not a material item
+   */
+  static ItemStack withMaterial(ItemLike item, MaterialVariantId material) {
+    if (item.asItem() instanceof IMaterialItem materialItem) {
+      return materialItem.withMaterial(material);
+    }
+    return ItemStack.EMPTY;
+  }
+
+  /**
+   * Gets the given item stack with this material applied
    * @param stack     Stack instance
    * @param material  Material
    * @return  Stack with material, or original stack if not a material item
@@ -117,6 +130,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
     if (item instanceof IMaterialItem materialItem) {
       return materialItem.setMaterial(stack.copy(), material);
     }
+    // TODO: return empty if not a material item?
     return stack;
   }
 
