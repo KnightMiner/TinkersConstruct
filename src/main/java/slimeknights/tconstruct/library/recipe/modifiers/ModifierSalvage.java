@@ -16,7 +16,7 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -84,7 +84,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<Container> {
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.DATA.get();
+    return TinkerRecipes.DATA.get();
   }
 
   /** @deprecated Use {@link #matches(ItemStack, IToolStackView, int)} */

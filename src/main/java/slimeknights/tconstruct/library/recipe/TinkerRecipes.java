@@ -19,13 +19,13 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
 
 /**
- * Class containing all of Tinkers Construct recipe types
+ * Handles registration and access for all Tinkers' Construct recipe types, recipe serializers, and ingredient types.
  */
-public class TinkerRecipeTypes {
+public class TinkerRecipes {
   /** Deferred instance */
   private static final RecipeTypeDeferredRegister TYPES = new RecipeTypeDeferredRegister(TConstruct.MOD_ID);
 
-  /** Initializes the deferred register */
+  /** Initializes the deferred registers */
   @Internal
   public static void init(IEventBus bus) {
     TYPES.register(bus);

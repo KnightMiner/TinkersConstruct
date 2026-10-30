@@ -17,7 +17,7 @@ import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.mantle.inventory.EmptyItemHandler;
 import slimeknights.mantle.util.WeakConsumerWrapper;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuelLookup;
 import slimeknights.tconstruct.library.utils.Util;
@@ -69,7 +69,7 @@ public class SolidFuelModule extends FuelModule {
   private int trySolidFuel(IItemHandler handler, boolean consume) {
     for (int i = 0; i < handler.getSlots(); i++) {
       ItemStack stack = handler.getStackInSlot(i);
-      int time = ForgeHooks.getBurnTime(stack, TinkerRecipeTypes.FUEL.get()) / 4;
+      int time = ForgeHooks.getBurnTime(stack, TinkerRecipes.FUEL.get()) / 4;
       if (time > 0) {
         MeltingFuel solid = MeltingFuelLookup.getSolid();
         if (consume) {

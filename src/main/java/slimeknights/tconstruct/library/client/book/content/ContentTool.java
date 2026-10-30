@@ -37,7 +37,7 @@ import slimeknights.mantle.util.html.HtmlGroup;
 import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
@@ -175,7 +175,7 @@ public class ContentTool extends PageContent {
         }
       } else {
         // fetch the tool building recipe for extra ingredients
-        ToolBuildingRecipe toolBuilding = level.getRecipeManager().byType(TinkerRecipeTypes.TINKER_STATION.get()).values().stream()
+        ToolBuildingRecipe toolBuilding = level.getRecipeManager().byType(TinkerRecipes.TINKER_STATION.get()).values().stream()
           // only fetch recipes with the correct tool and that have the same number of parts - fixes issues with tools having multiple recipes
           .filter(r -> r instanceof ToolBuildingRecipe toolRecipe && toolRecipe.getOutput() == tool)
           .map(r -> ((ToolBuildingRecipe) r))

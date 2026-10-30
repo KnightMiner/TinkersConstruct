@@ -13,7 +13,7 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock.TankType;
 
@@ -100,7 +100,7 @@ public class MeltingFuel implements ICustomOutputRecipe<IFluidContainer> {
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.FUEL.get();
+    return TinkerRecipes.FUEL.get();
   }
 
   @Override

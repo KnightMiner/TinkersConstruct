@@ -38,7 +38,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
 import slimeknights.tconstruct.shared.block.entity.TableBlockEntity;
@@ -613,13 +613,13 @@ public abstract class CastingBlockEntity extends TableBlockEntity implements Wor
 
   public static class Basin extends CastingBlockEntity {
     public Basin(BlockPos pos, BlockState state) {
-      super(TinkerSmeltery.basin.get(), pos, state, TinkerRecipeTypes.CASTING_BASIN.get(), TinkerRecipeTypes.MOLDING_BASIN.get(), TinkerTags.Items.BASIN_EMPTY_CASTS);
+      super(TinkerSmeltery.basin.get(), pos, state, TinkerRecipes.CASTING_BASIN.get(), TinkerRecipes.MOLDING_BASIN.get(), TinkerTags.Items.BASIN_EMPTY_CASTS);
     }
   }
 
   public static class Table extends CastingBlockEntity {
     public Table(BlockPos pos, BlockState state) {
-      super(TinkerSmeltery.table.get(), pos, state, TinkerRecipeTypes.CASTING_TABLE.get(), TinkerRecipeTypes.MOLDING_TABLE.get(), TinkerTags.Items.TABLE_EMPTY_CASTS);
+      super(TinkerSmeltery.table.get(), pos, state, TinkerRecipes.CASTING_TABLE.get(), TinkerRecipes.MOLDING_TABLE.get(), TinkerTags.Items.TABLE_EMPTY_CASTS);
     }
   }
 

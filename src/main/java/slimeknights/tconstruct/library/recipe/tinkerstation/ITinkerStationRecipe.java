@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import slimeknights.mantle.recipe.ICommonRecipe;
 import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
@@ -23,7 +23,7 @@ public interface ITinkerStationRecipe extends ICommonRecipe<ITinkerStationContai
 
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipeTypes.TINKER_STATION.get();
+    return TinkerRecipes.TINKER_STATION.get();
   }
 
   /** If true, this recipe matches the given inputs, ignoring current tool state */

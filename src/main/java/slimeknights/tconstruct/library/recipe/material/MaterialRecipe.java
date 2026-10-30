@@ -19,7 +19,7 @@ import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.tables.TinkerTables;
 
 import java.util.Arrays;
@@ -85,7 +85,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<ISingleStackContainer
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.MATERIAL.get();
+    return TinkerRecipes.MATERIAL.get();
   }
 
   @Override

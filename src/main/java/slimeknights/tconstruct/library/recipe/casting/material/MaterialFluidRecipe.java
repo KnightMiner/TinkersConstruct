@@ -17,7 +17,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.ICastingContainer;
 import slimeknights.tconstruct.library.recipe.material.IDisplayMaterialRecipe;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
@@ -97,7 +97,7 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<ICastingContaine
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.DATA.get();
+    return TinkerRecipes.DATA.get();
   }
 
   @Override

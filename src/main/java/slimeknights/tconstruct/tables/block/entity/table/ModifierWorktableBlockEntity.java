@@ -14,7 +14,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.shared.inventory.ConfigurableInvWrapperCapability;
@@ -139,7 +139,7 @@ public class ModifierWorktableBlockEntity extends RetexturedTableBlockEntity imp
         return updateRecipe(lastRecipe);
       }
       // look for a new recipe, if it matches cache it
-      Optional<IModifierWorktableRecipe> recipe = level.getRecipeManager().getRecipeFor(TinkerRecipeTypes.MODIFIER_WORKTABLE.get(), inventoryWrapper, level);
+      Optional<IModifierWorktableRecipe> recipe = level.getRecipeManager().getRecipeFor(TinkerRecipes.MODIFIER_WORKTABLE.get(), inventoryWrapper, level);
       if (recipe.isPresent()) {
         return updateRecipe(recipe.get());
       }

@@ -8,7 +8,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.library.recipe.FluidValues;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
 /**
@@ -47,7 +47,7 @@ public interface IMeltingRecipe extends ICustomOutputRecipe<IMeltingContainer> {
 
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipeTypes.MELTING.get();
+    return TinkerRecipes.MELTING.get();
   }
 
   @Override

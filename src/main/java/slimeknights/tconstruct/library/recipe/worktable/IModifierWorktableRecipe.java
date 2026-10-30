@@ -9,7 +9,7 @@ import slimeknights.mantle.recipe.ICommonRecipe;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public interface IModifierWorktableRecipe extends ICommonRecipe<ITinkerableContainer> {
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipeTypes.MODIFIER_WORKTABLE.get();
+    return TinkerRecipes.MODIFIER_WORKTABLE.get();
   }
 
   /** If true, this recipe matches the given inputs, does not consider the modifier button yet */

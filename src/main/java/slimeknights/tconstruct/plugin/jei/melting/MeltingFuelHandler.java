@@ -16,7 +16,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class MeltingFuelHandler {
     List<ItemStack> fuels = new ArrayList<>(allStacks.size());
     Object2IntMap<Object> newFuels = new Object2IntOpenHashMap<>(allStacks.size());
     itemHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-    RecipeType<?> fuel = TinkerRecipeTypes.FUEL.get();
+    RecipeType<?> fuel = TinkerRecipes.FUEL.get();
     for (ItemStack stack : allStacks) {
       try {
         int burnTime = ForgeHooks.getBurnTime(stack, fuel);

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.network.BlockEntityPacket;
 import slimeknights.mantle.network.ISimplePacket;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
@@ -42,7 +42,7 @@ public record UpdateTinkerStationRecipePacket(BlockPos pos, ResourceLocation rec
     Player player = context.player();
     Level level = context.player().level();
     // start by fetching the recipe, no further work if it's missing
-    RecipeHolder<ITinkerStationRecipe> recipe = level.getRecipeManager().byKeyTyped(TinkerRecipeTypes.TINKER_STATION.get(), this.recipe);
+    RecipeHolder<ITinkerStationRecipe> recipe = level.getRecipeManager().byKeyTyped(TinkerRecipes.TINKER_STATION.get(), this.recipe);
     if (recipe == null) {
       TConstruct.LOG.error("Failed to update Tinker Station Recipe at {}: unknown recipe {}", pos, recipe);
       return;

@@ -8,7 +8,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import slimeknights.mantle.recipe.ICommonRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
 import slimeknights.tconstruct.tables.TinkerTables;
 
@@ -71,7 +71,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
 
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipeTypes.PART_BUILDER.get();
+    return TinkerRecipes.PART_BUILDER.get();
   }
 
   @Override

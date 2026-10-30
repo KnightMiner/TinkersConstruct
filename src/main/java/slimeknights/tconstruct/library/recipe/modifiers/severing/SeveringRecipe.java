@@ -17,7 +17,7 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.recipe.container.IEmptyContainer;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 /**
@@ -81,7 +81,7 @@ public class SeveringRecipe implements ICustomOutputRecipe<IEmptyContainer> {
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.SEVERING.get();
+    return TinkerRecipes.SEVERING.get();
   }
 
   /** @deprecated use {@link #matches(EntityType)}*/

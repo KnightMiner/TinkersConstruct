@@ -15,7 +15,7 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
 import java.util.BitSet;
@@ -195,7 +195,7 @@ public class AlloyRecipe implements ICustomOutputRecipe<IAlloyTank> {
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipeTypes.ALLOYING.get();
+    return TinkerRecipes.ALLOYING.get();
   }
 
   @Override
