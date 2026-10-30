@@ -14,8 +14,8 @@ import net.neoforged.neoforge.common.crafting.conditions.ModLoadedCondition;
 import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.tconstruct.library.json.loot.equipment.MobEquipment;
-import slimeknights.tconstruct.library.json.loot.equipment.MobEquipmentManager;
+import slimeknights.tconstruct.library.loot.equipment.MobEquipment;
+import slimeknights.tconstruct.library.loot.equipment.MobEquipmentManager;
 
 import java.util.HashMap;
 import java.util.List;

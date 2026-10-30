@@ -16,7 +16,6 @@ import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.crafting.CraftingHelper;
@@ -34,7 +33,6 @@ import slimeknights.tconstruct.common.data.tags.MaterialTagProvider;
 import slimeknights.tconstruct.library.client.data.material.GeneratorPartTextureJsonGenerator;
 import slimeknights.tconstruct.library.client.data.material.MaterialPaletteDebugGenerator;
 import slimeknights.tconstruct.library.client.data.material.MaterialPartTextureGenerator;
-import slimeknights.tconstruct.library.json.loot.AddToolDataFunction;
 import slimeknights.tconstruct.library.json.predicate.tool.HasMaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasStatTypePredicate;
@@ -177,9 +175,6 @@ public final class TinkerTools extends TinkerModule {
       .withTabsBefore(TinkerCommons.tabGeneral.getId())
       .withSearchBar()
       .build());
-
-  /** Loot function type for tool add data */
-  public static final RegistryObject<LootItemFunctionType> lootAddToolData = LOOT_FUNCTIONS.register("add_tool_data", () -> new LootItemFunctionType(AddToolDataFunction.SERIALIZER));
 
   /*
    * Items

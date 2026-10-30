@@ -66,7 +66,7 @@ import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.GeodeItemObject;
 import slimeknights.tconstruct.common.registration.GeodeItemObject.BudSize;
-import slimeknights.tconstruct.library.json.loot.equipment.MobEquipmentManager;
+import slimeknights.tconstruct.library.loot.equipment.MobEquipmentManager;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerMaterials;

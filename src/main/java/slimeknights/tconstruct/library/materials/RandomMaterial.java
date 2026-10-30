@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.library.materials;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,8 @@ import lombok.experimental.Accessors;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import slimeknights.mantle.data.codec.LoadableCodec;
 import slimeknights.mantle.data.loadable.LegacyLoadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
@@ -44,6 +46,8 @@ import static slimeknights.tconstruct.TConstruct.getResource;
 public abstract class RandomMaterial implements IHaveLoader {
   /** Loader for random materials */
   public static final GenericLoaderRegistry<RandomMaterial> LOADER = new GenericLoaderRegistry<>("Random Material", false);
+  /** Codec for using in loot tables */
+  public static final Codec<RandomMaterial> CODEC = new LoadableCodec<>(LOADER);
 
   /** If true, this has been initialized */
   private static boolean initialized = false;

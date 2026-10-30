@@ -52,8 +52,8 @@ import slimeknights.mantle.registration.deferred.PotionDeferredRegister.PotionTy
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.data.BaseRecipeProvider;
-import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.registration.GeodeItemObject;
 import slimeknights.tconstruct.common.registration.GeodeItemObject.BudSize;
 import slimeknights.tconstruct.fluids.TinkerFluids;

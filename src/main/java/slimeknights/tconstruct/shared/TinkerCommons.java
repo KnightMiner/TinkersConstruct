@@ -1,6 +1,8 @@
 package slimeknights.tconstruct.shared;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -22,13 +24,14 @@ import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
@@ -41,21 +44,20 @@ import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
+import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.data.model.ModelSpriteProvider;
 import slimeknights.tconstruct.common.data.model.TinkerBlockStateProvider;
 import slimeknights.tconstruct.common.data.model.TinkerItemModelProvider;
 import slimeknights.tconstruct.common.data.model.TinkerSpriteSourceProvider;
 import slimeknights.tconstruct.common.data.render.RenderFluidProvider;
 import slimeknights.tconstruct.common.data.render.RenderItemProvider;
-import slimeknights.tconstruct.common.json.BlockOrEntityCondition;
-import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
-import slimeknights.tconstruct.library.json.loot.HasLootContextSetCondition;
 import slimeknights.tconstruct.library.json.predicate.BlockVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.EntityVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.HarvestTierPredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
+import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.recipe.ingredient.BlockTagIngredient;
 import slimeknights.tconstruct.library.recipe.ingredient.InstrumentIngredient;
 import slimeknights.tconstruct.library.recipe.ingredient.NoContainerIngredient;
@@ -82,6 +84,8 @@ import slimeknights.tconstruct.shared.item.TinkerBookItem.BookType;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.TinkerModifiers;
+
+import java.util.Objects;
 
 import static slimeknights.tconstruct.TConstruct.getResource;
 
@@ -147,11 +151,6 @@ public final class TinkerCommons extends TinkerModule {
 
   public static final RegistryObject<ParticleType<FluidParticleData>> fluidParticle = PARTICLE_TYPES.register("fluid", FluidParticleData.Type::new);
 
-  /* Loot conditions */
-  public static final RegistryObject<LootItemConditionType> lootConfig = LOOT_CONDITIONS.register(ConfigEnabledCondition.ID.getPath(), () -> new LootItemConditionType(ConfigEnabledCondition.SERIALIZER));
-  public static final RegistryObject<LootItemConditionType> lootBlockOrEntity = LOOT_CONDITIONS.register("block_or_entity", () -> new LootItemConditionType(new BlockOrEntityCondition.ConditionSerializer()));
-  public static final RegistryObject<LootItemConditionType> hasLootContextSet = LOOT_CONDITIONS.register("has_context_set", () -> new LootItemConditionType(new HasLootContextSetCondition.Serializer()));
-
   /* Slime Balls are edible, believe it or not */
   public static final EnumObject<SlimeType, Item> slimeball = new EnumObject.Builder<SlimeType, Item>(SlimeType.class)
     .put(SlimeType.EARTH, () -> Items.SLIME_BALL)
@@ -172,11 +171,14 @@ public final class TinkerCommons extends TinkerModule {
 
   @SubscribeEvent
   void registerRecipeSerializers(RegisterEvent event) {
-    if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
+    if (event.getRegistryKey() == NeoForgeRegistries.Keys.CONDITION_CODECS) {
+      Registry<MapCodec<? extends ICondition>> registry = Objects.requireNonNull(event.getRegistry(NeoForgeRegistries.Keys.CONDITION_CODECS));
+      Registry.register(registry, TinkerLoot.config.getId(), ConfigEnabledCondition.CODEC);
+    }
+    else if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
       CraftingHelper.register(NoContainerIngredient.ID, NoContainerIngredient.Serializer.INSTANCE);
       CraftingHelper.register(BlockTagIngredient.Serializer.ID, BlockTagIngredient.Serializer.INSTANCE);
       CraftingHelper.register(InstrumentIngredient.ID, InstrumentIngredient.SERIALIZER);
-      CraftingHelper.register(ConfigEnabledCondition.SERIALIZER);
       CriteriaTriggers.register(CONTAINER_OPENED_TRIGGER);
 
       // mantle

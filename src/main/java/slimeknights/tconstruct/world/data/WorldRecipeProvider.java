@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import slimeknights.mantle.recipe.data.ICommonRecipeHelper;
 import slimeknights.tconstruct.common.data.BaseRecipeProvider;
-import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
+import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.registration.GeodeItemObject;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.SlimeType;

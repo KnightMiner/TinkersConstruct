@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.tconstruct.library.json.loot;
+package slimeknights.tconstruct.library.loot.tool;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

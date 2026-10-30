@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.tools.modifiers.loot;
+package slimeknights.tconstruct.library.loot.tool;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,6 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.loot.modifier.AbstractLootModifierBuilder.GenericLootModifierBuilder;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -28,6 +29,7 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import javax.annotation.Nonnull;
 
 /** Global loot modifier for modifiers */
+@Internal
 public class ModifierLootModifier extends LootModifier {
   public static final MapCodec<ModifierLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, ModifierLootModifier::new));
 

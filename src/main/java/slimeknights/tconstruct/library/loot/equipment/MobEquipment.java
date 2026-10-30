@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.json.loot.equipment;
+package slimeknights.tconstruct.library.loot.equipment;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.common.data.loot;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
@@ -10,22 +12,22 @@ import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunct
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemDamageFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.loot.AbstractLootTableInjectionProvider;
-import slimeknights.mantle.loot.LootTableInjection;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
+import slimeknights.mantle.loot.injection.AbstractLootTableInjectionProvider;
+import slimeknights.mantle.loot.injection.LootTableInjection;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.data.FakeRegistryEntry;
-import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
 import slimeknights.tconstruct.fluids.TinkerFluids;
-import slimeknights.tconstruct.library.json.loot.AddToolDataFunction;
-import slimeknights.tconstruct.library.json.loot.ToolPartLootEntry;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
+import slimeknights.tconstruct.library.loot.tool.AddToolDataFunction;
+import slimeknights.tconstruct.library.loot.tool.ToolPartLootEntry;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
@@ -34,15 +36,16 @@ import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.world.TinkerWorld;
 import slimeknights.tconstruct.world.block.FoliageType;
 
+import java.util.concurrent.CompletableFuture;
+
 /** Add all relevant loot to loot tables */
 public class LootTableInjectionProvider extends AbstractLootTableInjectionProvider {
-  public LootTableInjectionProvider(PackOutput packOutput) {
-    super(packOutput, TConstruct.MOD_ID);
+  public LootTableInjectionProvider(PackOutput packOutput, CompletableFuture<Provider> registries) {
+    super(packOutput, TConstruct.MOD_ID, registries);
   }
 
-  @SuppressWarnings("removal")
   @Override
-  protected void addTables() {
+  protected void addTables(HolderLookup.Provider provider) {
     // slimy foliage injections
     // earth/sky
     inject("slimy_foliage_dungeon", "chests/simple_dungeon", ConfigEnabledCondition.SLIMY_LOOT_CHESTS)
@@ -66,7 +69,7 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
                                  .apply(SetFluidLootFunction.builder(new FluidStack(TinkerFluids.blazingBlood.get(), FluidValues.LANTERN_CAPACITY)))
                                  .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                                  .build())
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.battlesign.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.battlesign)
                                  .setWeight(5)
                                  .apply(ancientToolData2)
                                  .build())
@@ -78,14 +81,14 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
     RandomMaterial randomTier1 = RandomMaterial.random().tier(0, 1).material(includeInLoot).build();
     RandomMaterial firstWithStat = RandomMaterial.firstWithStat(); // should be wood
     injectChest("spawn_bonus_chest")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.handAxe.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.handAxe)
                                  .setWeight(2)
                                  .apply(AddToolDataFunction.builder()
                                                            .addMaterial(randomTier1)
                                                            .addMaterial(firstWithStat)
                                                            .addMaterial(randomTier1))
                                  .build())
-      .addToPool("pool1", LootItem.lootTableItem(TinkerTools.pickaxe.get())
+      .addToPool("pool1", LootItem.lootTableItem(TinkerTools.pickaxe)
                                  .setWeight(2)
                                  .apply(AddToolDataFunction.builder()
                                                            .addMaterial(randomTier1)
@@ -95,27 +98,27 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
 
     // ruined portals give a free flint and brick, because you need one of course
     AddToolDataFunction.Builder buildData = AddToolDataFunction.builder();
-    injectChest("ruined_portal").addToPool("main", LootItem.lootTableItem(TinkerTools.flintAndBrick.get())
+    injectChest("ruined_portal").addToPool("main", LootItem.lootTableItem(TinkerTools.flintAndBrick)
                                                            .apply(buildData)
                                                            .setWeight(30).build());
     // nether fortress bridge is another place to get flint and brick
-    injectChest("nether_bridge").addToPool("main", LootItem.lootTableItem(TinkerTools.flintAndBrick.get())
+    injectChest("nether_bridge").addToPool("main", LootItem.lootTableItem(TinkerTools.flintAndBrick)
                                                            .apply(buildData)
                                                            .setWeight(5).build());
 
     // frypans just show up in some assorted locations
     injectChest("simple_dungeon")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan)
                                  .setWeight(10) // about as often as both diamond swords
                                  .apply(ancientToolData2)
                                  .build());
     injectChest("igloo_chest")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan)
                                  .setWeight(2) // common as a stone axe
                                  .apply(ancientToolData2)
                                  .build());
     inject("hero_of_the_armorer", "gameplay/hero_of_the_village/armorer_gift")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.meltingPan)
                                  .setWeight(1) // 1 in 5 chance of a melting pan compared to the chainmail
                                  .apply(ancientToolData2)
                                  .build());
@@ -123,33 +126,33 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
     // find warpicks in pillager outputs, 50% chance to replace the crossbow
     AddToolDataFunction.Builder ancientToolData3 = AddToolDataFunction.builder().addMaterial(random).addMaterial(random).addMaterial(random);
     injectChest("pillager_outpost")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick)
                                  .apply(ancientToolData3)
                                  .build());
     // also find them in mineshafts, same pool as iron picks
     injectChest("abandoned_mineshaft")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick)
                                  .setWeight(5) // about as often as both diamond swords
                                  .apply(ancientToolData3)
                                  .build());
     injectChest("woodland_mansion")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick)
                                  .setWeight(10) // about as often as both diamond swords
                                  .apply(ancientToolData3)
                                  .build());
     inject("hero_of_the_weaponsmith", "gameplay/hero_of_the_village/weaponsmith_gift")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.warPick)
                                  .setWeight(1) // makes it a 1 in 4 chance of a war pick
                                  .apply(ancientToolData3)
                                  .build());
 
     LootTableInjection.Builder bastion = injectChest("bastion_treasure")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.battlesign.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.battlesign)
                                  .setWeight(12) // about as often as both diamond swords
                                  .apply(ancientToolData2)
                                 .build());
     injectChest("bastion_other")
-      .addToPool("pool1", LootItem.lootTableItem(TinkerTools.battlesign.get())
+      .addToPool("pool1", LootItem.lootTableItem(TinkerTools.battlesign)
                                  .setWeight(3) // bit more common than an iron sword
                                  .apply(ancientToolData2)
                                  .apply(SetItemDamageFunction.setDamage(UniformGenerator.between(0.1f, 0.9f)))
@@ -168,19 +171,19 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
     // swashers are found in the ocean in all sorts of places, maybe there were pirates once
     LootItemConditionalFunction.Builder<?> setFluid = SetFluidLootFunction.builder(new FluidStack(Fluids.LAVA, FluidType.BUCKET_VOLUME));
     injectChest("buried_treasure")
-      .addToPool("pool3", LootItem.lootTableItem(TinkerTools.swasher.get())
+      .addToPool("pool3", LootItem.lootTableItem(TinkerTools.swasher)
                                   .setWeight(2) // 50% chance because the vanilla stuff in that table is trash anyways
                                   .apply(ancientToolData3)
                                   .apply(setFluid)
                                   .build());
     injectChest("shipwreck_treasure")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.swasher.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.swasher)
                                   .setWeight(10) // as common as gold, less common than emerald, twice as common as diamond
                                   .apply(ancientToolData3)
                                  .apply(setFluid)
                                   .build());
-    inject("fishing_treasure", new ResourceLocation("gameplay/fishing/treasure"))
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.swasher.get())
+    inject("fishing_treasure", ResourceLocation.withDefaultNamespace("gameplay/fishing/treasure"))
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.swasher)
                                  .setWeight(1) // all treasure from fishing is the same weight
                                  .apply(ancientToolData3)
                                  .apply(setFluid)
@@ -188,7 +191,7 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
 
     // fletchers give you some arrows
     inject("hero_of_the_fletcher", "gameplay/hero_of_the_village/fletcher_gift")
-      .addToPool("main", LootItem.lootTableItem(TinkerTools.arrow.get())
+      .addToPool("main", LootItem.lootTableItem(TinkerTools.arrow)
         .setWeight(10) // bit more rare than tipped arrows
         .apply(ancientToolData2)
         .build());
@@ -200,7 +203,7 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
       .setWeight(1) // TF tends to use 1 for its weight
       .apply(ancientToolData3)
       .build();
-    inject("labyrinth_room", new ResourceLocation(tf, "chests/labyrinth_room"), tfLoaded)
+    inject("labyrinth_room", ResourceLocation.fromNamespaceAndPath(tf, "chests/labyrinth_room"), tfLoaded)
       .addToPool("pool1", minotaurAxe)
       .addToPool("pool2", minotaurAxe);
   }

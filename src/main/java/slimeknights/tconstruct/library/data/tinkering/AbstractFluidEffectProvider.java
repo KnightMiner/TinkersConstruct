@@ -30,7 +30,7 @@ import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.tconstruct.common.TinkerDamageTypes;
-import slimeknights.tconstruct.common.json.ConfigEnabledCondition;
+import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.library.json.FluidStackSet;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;

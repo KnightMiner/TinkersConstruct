@@ -49,6 +49,7 @@ import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.TinkerItemDisplays;
+import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
@@ -105,6 +106,7 @@ public class TConstruct {
     TinkerModule.initRegisters(modEventBus);
     TinkerAttributes.init(modEventBus);
     TinkerData.register(modEventBus);
+    TinkerLoot.init(modEventBus);
     TinkerEffects.register(modEventBus);
     TinkerRecipeTypes.init(modEventBus);
 
@@ -186,8 +188,8 @@ public class TConstruct {
     // other datagen
     generator.addProvider(server, new TConstructLootTableProvider(packOutput));
     generator.addProvider(server, new AdvancementsProvider(packOutput));
-    generator.addProvider(server, new GlobalLootModifiersProvider(packOutput));
-    generator.addProvider(server, new LootTableInjectionProvider(packOutput));
+    generator.addProvider(server, new GlobalLootModifiersProvider(packOutput, lookupProvider));
+    generator.addProvider(server, new LootTableInjectionProvider(packOutput, lookupProvider));
     generator.addProvider(server, new ConfigurationDataProvider(packOutput));
     generator.addProvider(server, new FunctionProvider(packOutput));
   }

@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.modifiers;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.tconstruct.TConstruct;
@@ -7,12 +8,15 @@ import slimeknights.tconstruct.library.utils.IdParser;
 import slimeknights.tconstruct.library.utils.ResourceId;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /**
  * This is just a copy of ResourceLocation for type safety in modifier JSON.
  */
 public class ModifierId extends ResourceId {
   public static final IdParser<ModifierId> PARSER = new IdParser<>(ModifierId::new, "Modifier");
+  // TODO: reconsider how we do resource IDs
+  public static final Codec<ModifierId> CODEC = ResourceLocation.CODEC.xmap(ModifierId::new, Function.identity());
   /** ID of the default modifier. Used in a few contexts to indicate "no modifier" instead of using null. */
   public static final ModifierId EMPTY = new ModifierId(TConstruct.MOD_ID, "empty");
   /**
