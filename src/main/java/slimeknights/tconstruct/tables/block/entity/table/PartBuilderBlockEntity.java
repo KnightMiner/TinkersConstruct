@@ -22,7 +22,7 @@ import slimeknights.tconstruct.shared.inventory.ConfigurableInvWrapperCapability
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer.ILazyCrafter;
-import slimeknights.tconstruct.tables.block.entity.inventory.PartBuilderContainerWrapper;
+import slimeknights.tconstruct.tables.block.entity.inventory.PartBuilderInputWrapper;
 import slimeknights.tconstruct.tables.menu.PartBuilderContainerMenu;
 
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public class PartBuilderBlockEntity extends RetexturedTableBlockEntity implement
   private final LazyResultContainer craftingResult;
   /** Crafting inventory for the recipe calls */
   @Getter
-  private final PartBuilderContainerWrapper inventoryWrapper;
+  private final PartBuilderInputWrapper inventoryWrapper;
 
   /* Current buttons to display */
   @Nullable
@@ -62,7 +62,7 @@ public class PartBuilderBlockEntity extends RetexturedTableBlockEntity implement
     super(TinkerTables.partBuilderTile.get(), pos, state, NAME, 2);
     this.itemHandler = new ConfigurableInvWrapperCapability(this, false, false);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
-    this.inventoryWrapper = new PartBuilderContainerWrapper(this);
+    this.inventoryWrapper = new PartBuilderInputWrapper(this);
     this.craftingResult = new LazyResultContainer(this);
   }
 
@@ -82,7 +82,7 @@ public class PartBuilderBlockEntity extends RetexturedTableBlockEntity implement
       } else {
         record PatternRecipe(Pattern pattern, IPartBuilderRecipe recipe) {}
         // fetch all recipes that can match these inputs, the map ensures the patterns are unique
-        recipes = level.getRecipeManager().byType(TinkerRecipes.PART_BUILDER.get()).values().stream()
+        recipes = level.getRecipeManager().byType(TinkerRecipes.partBuilderType.get()).values().stream()
                        .filter(r -> r.partialMatch(inventoryWrapper))
                        .sorted(Comparator.comparing(Recipe::getId))
                        .flatMap(r -> r.getPatterns(inventoryWrapper).map(p -> new PatternRecipe(p, r)))

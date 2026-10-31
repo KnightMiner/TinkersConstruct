@@ -301,7 +301,7 @@ public class JEIPlugin implements IModPlugin {
       .sorted(Comparator.comparing(IDisplayMaterialRecipe::getMaterial)).toList());
 
     // part builder
-    register.addRecipes(TConstructJEIConstants.PART_BUILDER, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.PART_BUILDER.get(), IDisplayPartBuilderRecipe.class));
+    register.addRecipes(TConstructJEIConstants.PART_BUILDER, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.partBuilderType.get(), IDisplayPartBuilderRecipe.class));
 
     // modifier worktable
     register.addRecipes(TConstructJEIConstants.MODIFIER_WORKTABLE, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.MODIFIER_WORKTABLE.get(), IModifierWorktableRecipe.class)

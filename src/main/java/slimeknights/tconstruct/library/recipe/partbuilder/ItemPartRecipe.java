@@ -1,16 +1,14 @@
 package slimeknights.tconstruct.library.recipe.partbuilder;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -18,8 +16,8 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -28,16 +26,16 @@ import java.util.List;
 /**
  * Recipe to craft an ordinary item using the part builder.
  * Can be used for crafting with a material, or leave the material blank to just require the pattern item.
- * @see PartRecipe
+ * @see MaterialPartRecipe
+ * @see ItemPartRecipeBuilder
  */
 public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRecipe {
   public static final RecordLoadable<ItemPartRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
     MaterialVariantId.LOADABLE.defaultField("material", MaterialId.UNKNOWN, r -> r.material.getVariant()),
     Pattern.PARSER.requiredField("pattern", ItemPartRecipe::getPattern),
-    IngredientLoadable.DISALLOW_EMPTY.defaultField("pattern_item", DEFAULT_PATTERNS, r -> r.patternItem),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.defaultField("pattern_item", DEFAULT_PATTERNS, r -> r.patternItem),
     IntLoadable.FROM_ZERO.defaultField("cost", 0, ItemPartRecipe::getCost),
-    ItemOutput.Loadable.REQUIRED_STACK.requiredField("result", r -> r.result),
+    ItemOutput.REQUIRED_STACK_LOADABLE.requiredField("result", r -> r.result),
     ResourceLocationLoadable.DEFAULT.nullableField("title_key", r -> r.titleKey),
     ItemPartRecipe::new).validate((recipe, error) -> {
       if (recipe.cost == 0 && !recipe.material.isEmpty()) {
@@ -46,8 +44,6 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
       return recipe;
     });
 
-  @Getter
-  private final ResourceLocation id;
   @Getter
   private final MaterialVariant material;
   @Getter
@@ -62,10 +58,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   @Getter
   private final List<Component> information;
 
-  /** @apiNote use {@link ItemPartRecipeBuilder} */
-  @Internal
-  public ItemPartRecipe(ResourceLocation id, MaterialVariantId material, Pattern pattern, Ingredient patternItem, int cost, ItemOutput result, @Nullable ResourceLocation titleKey) {
-    this.id = id;
+  protected ItemPartRecipe(MaterialVariantId material, Pattern pattern, Ingredient patternItem, int cost, ItemOutput result, @Nullable ResourceLocation titleKey) {
     this.material = MaterialVariant.of(material);
     this.pattern = pattern;
     this.patternItem = patternItem;
@@ -89,13 +82,13 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   }
 
   @Override
-  public boolean partialMatch(IPartBuilderContainer inv) {
+  public boolean partialMatch(PartBuilderInput inv) {
     // first, must have a pattern
     if (!patternItem.test(inv.getPatternStack())) {
       return false;
     }
     // if there is a material item, it must have a valid material and be craftable
-    if (!inv.getStack().isEmpty()) {
+    if (!inv.getItem().isEmpty()) {
       // no material means we expect no stack in the material slot
       if (material.isEmpty()) {
         return false;
@@ -108,17 +101,17 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   }
 
   @Override
-  public boolean matches(IPartBuilderContainer inv, Level worldIn) {
+  public boolean matches(PartBuilderInput inv, Level level) {
     if (material.isEmpty()) {
-      return inv.getStack().isEmpty();
+      return inv.getItem().isEmpty();
     }
     IMaterialValue materialRecipe = inv.getMaterial();
     return materialRecipe != null && material.matchesVariant(materialRecipe.getMaterial())
-           && inv.getStack().getCount() >= materialRecipe.getItemsUsed(cost);
+           && inv.getItem().getCount() >= materialRecipe.getItemsUsed(cost);
   }
 
   @Override
-  public int getItemsUsed(IPartBuilderContainer inv) {
+  public int getItemsUsed(PartBuilderInput inv) {
     if (material.isEmpty()) {
       return 0;
     }
@@ -126,13 +119,13 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   }
 
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return result.get();
   }
 
   @Override
-  public ItemStack assemble(IPartBuilderContainer inv, RegistryAccess access) {
-    ItemStack result = getResultItem(access).copy();
+  public ItemStack assemble(PartBuilderInput inv, HolderLookup.Provider registries) {
+    ItemStack result = getResultItem(registries).copy();
     IMaterialValue materialRecipe = inv.getMaterial();
     if (materialRecipe != null) {
       // if no leftover, give them more parts provided we have the patterns for it
@@ -146,7 +139,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.itemPartBuilderSerializer.get();
+    return TinkerRecipes.itemPartBuilder.get();
   }
 
 
@@ -159,7 +152,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   }
 
   @Override
-  public List<Component> getText(IPartBuilderContainer inv) {
+  public List<Component> getText(PartBuilderInput inv) {
     return information;
   }
 
@@ -171,11 +164,6 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
 
   /* JEI */
   private List<ItemStack> materialItems;
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
-  }
 
   @Override
   public List<Pattern> getPatterns() {
@@ -194,7 +182,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
       if (material.isEmpty()) {
         materialItems = List.of();
       } else {
-        materialItems = List.copyOf(PartRecipe.getItems(material.getVariant(), cost));
+        materialItems = List.copyOf(MaterialPartRecipe.getItems(material.getVariant(), cost));
       }
     }
     return materialItems;

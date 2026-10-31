@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.recipe.casting.material.CompositeCastingR
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.ingredient.MaterialIngredient;
 import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipeBuilder;
-import slimeknights.tconstruct.library.recipe.partbuilder.PartRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipeBuilder;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
@@ -111,7 +111,7 @@ public interface IToolRecipeHelper extends ICastCreationHelper {
    */
   default void uncastablePart(Consumer<FinishedRecipe> consumer, IMaterialItem part, int cost, @Nullable MaterialStatsId castingStatConflict, String partFolder) {
     ResourceLocation id = id(part);
-    PartRecipeBuilder.partRecipe(part)
+    MaterialPartRecipeBuilder.part(part)
                      .setPattern(id)
                      .setPatternItem(Ingredient.of(TinkerTags.Items.DEFAULT_PATTERNS))
                      .setCost(cost)
@@ -154,7 +154,7 @@ public interface IToolRecipeHelper extends ICastCreationHelper {
   default void partRecipes(Consumer<FinishedRecipe> consumer, IMaterialItem part, CastItemObject cast, int cost, String partFolder, String castFolder) {
     ResourceLocation id = id(part);
     // Part Builder
-    PartRecipeBuilder.partRecipe(part)
+    MaterialPartRecipeBuilder.part(part)
                      .setPattern(id)
                      .setPatternItem(CompoundIngredient.of(Ingredient.of(TinkerTags.Items.DEFAULT_PATTERNS), Ingredient.of(cast.get())))
                      .setCost(cost)

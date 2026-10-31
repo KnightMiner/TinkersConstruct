@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Casting recipe that takes an arbitrary fluid of a given amount and set the material on the output based on that fluid
+ * Casting recipe that takes an arbitrary fluid of a given amount and set the material on the output based on that fluid.
+ * @see slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipe
  */
 public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe implements MultiNamedRecipe<IDisplayableCastingRecipe> {
   protected static final LoadableField<IMaterialItem,MaterialCastingRecipe> RESULT_FIELD = TinkerLoadables.MATERIAL_ITEM.requiredField("result", r -> r.result);

@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.recipe.partbuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -11,15 +11,13 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
-import java.util.function.Consumer;
-
-/** Builder for a material item part crafting recipe in {@link PartRecipe}. */
+/** Builder for a material item part crafting recipe in {@link MaterialPartRecipe}. */
 @Setter
 @Accessors(chain = true)
-@RequiredArgsConstructor(staticName = "partRecipe")
-public class PartRecipeBuilder extends AbstractRecipeBuilder<PartRecipeBuilder> {
-  private final IMaterialItem output;
-  private final int outputAmount;
+@RequiredArgsConstructor(staticName = "part")
+public class MaterialPartRecipeBuilder extends AbstractRecipeBuilder<MaterialPartRecipeBuilder> {
+  private final IMaterialItem result;
+  private final int resultCount;
   private int cost = 1;
   private Pattern pattern = null;
   private Ingredient patternItem = IPartBuilderRecipe.DEFAULT_PATTERNS;
@@ -30,34 +28,34 @@ public class PartRecipeBuilder extends AbstractRecipeBuilder<PartRecipeBuilder> 
    * @param output  Output item
    * @return  Builder instance
    */
-  public static PartRecipeBuilder partRecipe(IMaterialItem output) {
-    return partRecipe(output, 1);
+  public static MaterialPartRecipeBuilder part(IMaterialItem output) {
+    return part(output, 1);
   }
 
   /** Sets the pattern in the builder */
-  public PartRecipeBuilder setPattern(Pattern pattern) {
+  public MaterialPartRecipeBuilder setPattern(Pattern pattern) {
     this.pattern = pattern;
     return this;
   }
 
   /** Sets the pattern in the builder */
-  public PartRecipeBuilder setPattern(ResourceLocation pattern) {
+  public MaterialPartRecipeBuilder setPattern(ResourceLocation pattern) {
     return setPattern(new Pattern(pattern));
   }
 
   /** Sets the pattern to match the given item */
-  public PartRecipeBuilder setPattern(ItemLike pattern) {
+  public MaterialPartRecipeBuilder setPattern(ItemLike pattern) {
     return setPattern(Pattern.fromItem(pattern));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumerIn) {
-    this.save(consumerIn, Loadables.ITEM.getKey(this.output.asItem()));
+  public void save(RecipeOutput output) {
+    this.save(output, Loadables.ITEM.getKey(this.result.asItem()));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumerIn, ResourceLocation id) {
-    if (this.outputAmount <= 0) {
+  public void save(RecipeOutput output, ResourceLocation id) {
+    if (this.resultCount <= 0) {
       throw new IllegalStateException("recipe " + id + " must output at least 1");
     }
     if (this.cost <= 0) {
@@ -67,6 +65,6 @@ public class PartRecipeBuilder extends AbstractRecipeBuilder<PartRecipeBuilder> 
       throw new IllegalStateException("recipe " + id + " has no pattern associated with it");
     }
     ResourceLocation advancementId = this.buildOptionalAdvancement(id, "parts");
-    consumerIn.accept(new LoadableFinishedRecipe<>(new PartRecipe(id, group, pattern, patternItem, cost, allowUncraftable, output, outputAmount), PartRecipe.LOADER, advancementId));
+    output(id, new MaterialPartRecipe(group, pattern, patternItem, cost, allowUncraftable, result, resultCount), buildOptionalAdvancement(output, id, "parts"));
   }
 }

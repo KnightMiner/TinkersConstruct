@@ -1,8 +1,7 @@
 package slimeknights.tconstruct.library.recipe.partbuilder.recycle;
 
-import lombok.Getter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -10,20 +9,20 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.partbuilder.DisplayPartRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRecipe;
-import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderContainer;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
+import slimeknights.tconstruct.library.recipe.partbuilder.PartBuilderInput;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,10 +30,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import static slimeknights.tconstruct.tables.recipe.PartBuilderToolRecycle.NO_MODIFIERS;
+import static slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycle.NO_MODIFIERS;
 
-/** Recipe for recycling a vanilla tool or a tinkers tool with no materials in the part builder */
-public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDisplayPartBuilderRecipe> {
+/**
+ * Recipe for recycling a vanilla tool or a tinkers tool with no materials in the part builder.
+ * @see PartBuilderToolRecycle
+ * @see PartBuilderRecycleBuilder
+ */
+public class PartBuilderRecycle implements IPartBuilderRecipe, MultiNamedRecipe<IDisplayPartBuilderRecipe> {
   /** Title for the screen */
   private static final Component RECYCLING = TConstruct.makeTranslation("recipe", "recycling");
   /** General instructions for recycling */
@@ -46,21 +49,17 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
 
   /** Loader instance */
   public static final RecordLoadable<PartBuilderRecycle> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("tool", r -> r.tool),
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("pattern", r -> r.pattern),
-    Pattern.PARSER.mapWithValues(ItemOutput.Loadable.REQUIRED_STACK).requiredField("results", r -> r.results),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tool", r -> r.tool),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("pattern", r -> r.pattern),
+    Pattern.PARSER.mapWithValues(ItemOutput.REQUIRED_STACK_LOADABLE).requiredField("results", r -> r.results),
     PartBuilderRecycle::new);
 
-  @Getter
-  private final ResourceLocation id;
   private final Ingredient tool;
   private final Ingredient pattern;
   private final Map<Pattern,ItemOutput> results;
   private final int resultCount;
 
-  public PartBuilderRecycle(ResourceLocation id, Ingredient tool, Ingredient pattern, Map<Pattern,ItemOutput> results) {
-    this.id = id;
+  protected PartBuilderRecycle(Ingredient tool, Ingredient pattern, Map<Pattern,ItemOutput> results) {
     this.tool = tool;
     this.pattern = pattern;
     this.results = results;
@@ -68,7 +67,7 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public int getItemsUsed(IPartBuilderContainer inv) {
+  public int getItemsUsed(PartBuilderInput inv) {
     return 1;
   }
 
@@ -78,13 +77,13 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public Stream<Pattern> getPatterns(IPartBuilderContainer inv) {
+  public Stream<Pattern> getPatterns(PartBuilderInput inv) {
     return results.keySet().stream();
   }
 
   @Override
-  public boolean partialMatch(IPartBuilderContainer inv) {
-    return pattern.test(inv.getPatternStack()) && tool.test(inv.getStack());
+  public boolean partialMatch(PartBuilderInput inv) {
+    return pattern.test(inv.getPatternStack()) && tool.test(inv.getItem());
   }
 
   /** Scales the amount based on the tack damage */
@@ -97,14 +96,14 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public boolean matches(IPartBuilderContainer inv, Level level) {
-    ItemStack stack = inv.getStack();
+  public boolean matches(PartBuilderInput inv, Level level) {
+    ItemStack stack = inv.getItem();
     return partialMatch(inv) && getAmount(stack, resultCount) > 0 && stack.is(TinkerTags.Items.MODIFIABLE) ? !ModifierUtil.hasUpgrades(stack) : !stack.isEnchanted();
   }
 
   @Override
-  public ItemStack assemble(IPartBuilderContainer inv, RegistryAccess access, Pattern pattern) {
-    int maxCount = getAmount(inv.getStack(), resultCount);
+  public ItemStack assemble(PartBuilderInput inv, HolderLookup.Provider access, Pattern pattern) {
+    int maxCount = getAmount(inv.getItem(), resultCount);
     ItemOutput result = results.get(pattern);
     // should never happen
     if (result == null) {
@@ -114,9 +113,9 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public ItemStack getLeftover(IPartBuilderContainer inv, Pattern pattern) {
+  public ItemStack getLeftover(PartBuilderInput inv, Pattern pattern) {
     // maximum items to return
-    int maxCount = getAmount(inv.getStack(), resultCount);
+    int maxCount = getAmount(inv.getItem(), resultCount);
     ItemOutput result = results.get(pattern);
     if (result != null) {
       maxCount -= result.getCount();
@@ -134,7 +133,7 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.partBuilderDamageableRecycling.get();
+    return TinkerRecipes.partBuilderRecycle.get();
   }
 
 
@@ -145,10 +144,10 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
     return 0;
   }
 
-  /** @deprecated use {@link #assemble(IPartBuilderContainer, RegistryAccess, Pattern)} */
+  /** @deprecated use {@link #assemble(PartBuilderInput, HolderLookup.Provider, Pattern)}  */
   @Deprecated
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return ItemStack.EMPTY;
   }
 
@@ -162,8 +161,8 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public List<Component> getText(IPartBuilderContainer inv) {
-    ItemStack stack = inv.getStack();
+  public List<Component> getText(PartBuilderInput inv) {
+    ItemStack stack = inv.getItem();
     if (getAmount(stack, resultCount) <= 0) {
       return NOT_ENOUGH_DURABILITY;
     }
@@ -179,10 +178,10 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, IMultiRecipe<IDis
 
 
   /* JEI */
-  private List<IDisplayPartBuilderRecipe> displayRecipes;
+  private List<NamedRecipe<IDisplayPartBuilderRecipe>> displayRecipes;
 
   @Override
-  public List<IDisplayPartBuilderRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayPartBuilderRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       List<ItemStack> patternItems = List.of(pattern.getItems());
       displayRecipes = Arrays.stream(tool.getItems()).map(tool -> DisplayPartRecipe.id(id)

@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 
@@ -19,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class DisplayPartRecipe implements IDisplayPartBuilderRecipe {
-  /** ID of recipe; should generally match a real recipe JSON */
-  private final ResourceLocation recipeId;
   /** Material variant for name display */
   private final List<MaterialVariant> materials;
   /** Display title override. */
@@ -42,17 +41,24 @@ public class DisplayPartRecipe implements IDisplayPartBuilderRecipe {
 
   /* Builder */
 
+  /** Creates a new builder for the given recipe ID and parent */
+  public static Builder id(ResourceLocation id, List<ResourceLocation> parent) {
+    return new Builder(id, parent);
+  }
+
   /** Creates a new builder for the given recipe ID */
   public static Builder id(ResourceLocation id) {
-    return new Builder(id);
+    return id(id, List.of(id));
   }
 
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor
   public static class Builder {
-    /** ID of recipe; should generally match a real recipe JSON */
+    /** ID of recipe; should generally match a real recipe JSON but may be different if {@link #parent} is set. */
     private final ResourceLocation id;
+    /** Actual recipe ID in JSON. */
+    private final List<ResourceLocation> parent;
     /** Material variant for name display */
     private List<MaterialVariant> materials = List.of();
     /** Title to display in JEI */
@@ -106,9 +112,9 @@ public class DisplayPartRecipe implements IDisplayPartBuilderRecipe {
     }
 
     /** Builds the display recipe */
-    public IDisplayPartBuilderRecipe build() {
+    public NamedRecipe<IDisplayPartBuilderRecipe> build() {
       if (results.isEmpty()) throw new IllegalStateException("Results cannot be empty");
-      return new DisplayPartRecipe(id, materials, title, tooltip, patterns, patternItems, cost, materialItems, results);
+      return NamedRecipe.of(id, parent, new DisplayPartRecipe(materials, title, tooltip, patterns, patternItems, cost, materialItems, results));
     }
   }
 }

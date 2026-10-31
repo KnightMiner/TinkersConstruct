@@ -42,6 +42,10 @@ import slimeknights.tconstruct.library.recipe.modifiers.severing.AgeableSevering
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
+import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipe;
+import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipe;
+import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycle;
+import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycle;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
@@ -68,7 +72,6 @@ public class TinkerRecipes {
   /** Internal recipe type for recipes that are not pulled by any specific crafting block */
   public static final DeferredRecipeType<Recipe<?>> dataType = TYPES.registerType("data");
 
-  public static final DeferredRecipeType<IPartBuilderRecipe> PART_BUILDER = TYPES.registerType("part_builder");
   public static final DeferredRecipeType<ITinkerStationRecipe> TINKER_STATION = TYPES.registerType("tinker_station");
   public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
 
@@ -78,6 +81,16 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<MaterialRecipe> materialType = TYPES.registerType("material");
   public static final DeferredRecipeSerializer<MaterialRecipe> materialItem = SERIALIZERS.registerLoadable("material", MaterialRecipe.LOADER);
   public static final DeferredRecipeSerializer<MaterialFluidRecipe> materialFluidRecipe = SERIALIZERS.registerLoadable("material_fluid", MaterialFluidRecipe.LOADER);
+
+  /*
+   * part builder
+   */
+  public static final DeferredRecipeType<IPartBuilderRecipe> partBuilderType = TYPES.registerType("part_builder");
+  // TODO: rename JSON ID?
+  public static final DeferredRecipeSerializer<MaterialPartRecipe> materialPartBuilder = SERIALIZERS.registerLoadable("part_builder", MaterialPartRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ItemPartRecipe> itemPartBuilder = SERIALIZERS.registerLoadable("item_part_builder", ItemPartRecipe.LOADER);
+  public static final DeferredRecipeSerializer<PartBuilderToolRecycle> partBuilderToolRecycle = SERIALIZERS.registerLoadable("part_builder_tool_recycling", PartBuilderToolRecycle.LOADER);
+  public static final DeferredRecipeSerializer<PartBuilderRecycle> partBuilderRecycle = SERIALIZERS.registerLoadable("part_builder_recycling", PartBuilderRecycle.LOADER);
 
   /*
    * smeltery

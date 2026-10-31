@@ -1,34 +1,36 @@
-package slimeknights.tconstruct.tables.recipe;
+package slimeknights.tconstruct.library.recipe.partbuilder.recycle;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRecipe;
-import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderContainer;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
+import slimeknights.tconstruct.library.recipe.partbuilder.PartBuilderInput;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
@@ -44,10 +46,10 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.MaterialItemCache;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,10 +58,11 @@ import java.util.stream.Stream;
 
 /**
  * Recipe to break a tool into tool parts.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.recipe.partbuilder.recycle}.
+ * @see PartBuilderRecycle
+ * @see PartBuilderToolRecycleBuilder
  */
-@RequiredArgsConstructor
-public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<IDisplayPartBuilderRecipe> {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRecipe<IDisplayPartBuilderRecipe> {
   /** Title for the screen */
   private static final Component TOOL_RECYCLING = TConstruct.makeTranslation("recipe", "tool_recycling");
   /** General instructions for recycling */
@@ -67,18 +70,15 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   /** Error for trying to recycle a tool that cannot be */
   public static final List<Component> NO_MODIFIERS = Collections.singletonList(TConstruct.makeTranslation("recipe", "tool_recycling.no_modifiers").withStyle(ChatFormatting.RED));
   /** Default tool field */
-  public static final SizedIngredient DEFAULT_TOOLS = SizedIngredient.fromTag(TinkerTags.Items.MULTIPART_TOOL);
+  public static final SizedIngredient DEFAULT_TOOLS = SizedIngredient.of(TinkerTags.Items.MULTIPART_TOOL, 1);
 
   /** Loader instance */
   public static final RecordLoadable<PartBuilderToolRecycle> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    SizedIngredient.LOADABLE.defaultField("tools", DEFAULT_TOOLS, true, r -> r.toolRequirement),
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("pattern", r -> r.pattern),
+    Loadables.SIZED_ITEM_INGREDIENT.defaultField("tools", DEFAULT_TOOLS, true, r -> r.toolRequirement),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("pattern", r -> r.pattern),
     TinkerLoadables.OPTIONAL_MATERIAL_ITEM.list(0).defaultField("parts", List.of(), r -> r.parts),
     PartBuilderToolRecycle::new);
 
-  @Getter
-  private final ResourceLocation id;
   private final SizedIngredient toolRequirement;
   private final Ingredient pattern;
   private final List<IMaterialItem> parts;
@@ -94,9 +94,9 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   }
 
   @Override
-  public Stream<Pattern> getPatterns(IPartBuilderContainer inv) {
+  public Stream<Pattern> getPatterns(PartBuilderInput inv) {
     // use the parts override if set
-    ItemStack tool = inv.getStack();
+    ItemStack tool = inv.getItem();
     List<? extends IMaterialItem> parts = getParts(IModifiable.getToolDefinition(tool.getItem()));
     MaterialIdNBT materials = MaterialIdNBT.from(tool);
     return IntStream.range(0, parts.size()).filter(i -> parts.get(i).canUseMaterial(materials.getMaterial(i).getId()))
@@ -110,23 +110,23 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   }
 
   @Override
-  public int getItemsUsed(IPartBuilderContainer inv) {
-    return toolRequirement.getAmountNeeded();
+  public int getItemsUsed(PartBuilderInput inv) {
+    return toolRequirement.count();
   }
 
   @Override
-  public boolean partialMatch(IPartBuilderContainer inv) {
-    return pattern.test(inv.getPatternStack()) && toolRequirement.test(inv.getStack());
+  public boolean partialMatch(PartBuilderInput inv) {
+    return pattern.test(inv.getPatternStack()) && toolRequirement.test(inv.getItem());
   }
 
   @Override
-  public boolean matches(IPartBuilderContainer inv, Level pLevel) {
-    return partialMatch(inv) && ToolStack.from(inv.getStack()).getUpgrades().isEmpty();
+  public boolean matches(PartBuilderInput inv, Level pLevel) {
+    return partialMatch(inv) && ToolStack.from(inv.getItem()).getUpgrades().isEmpty();
   }
 
   @Override
-  public ItemStack assemble(IPartBuilderContainer inv, RegistryAccess access, Pattern pattern) {
-    ToolStack tool = ToolStack.from(inv.getStack());
+  public ItemStack assemble(PartBuilderInput inv, HolderLookup.Provider access, Pattern pattern) {
+    ToolStack tool = ToolStack.from(inv.getItem());
     // find our parts list, either set or override
     ToolDefinition definition = tool.getDefinition();
     List<? extends IMaterialItem> parts = getParts(definition);
@@ -157,8 +157,8 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   }
 
   @Override
-  public ItemStack getLeftover(IPartBuilderContainer inv, Pattern pattern) {
-    ToolStack tool = ToolStack.from(inv.getStack());
+  public ItemStack getLeftover(PartBuilderInput inv, Pattern pattern) {
+    ToolStack tool = ToolStack.from(inv.getItem());
 
     // if the tool is damaged, we only have a chance of a second tool part
     int damage = tool.getDamage();
@@ -197,16 +197,16 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
     return parts.get(index).withMaterial(tool.getMaterial(indices.getInt(index)).getVariant());
   }
 
-  /** @deprecated use {@link IPartBuilderRecipe#assemble(IPartBuilderContainer, RegistryAccess, Pattern)} */
+  /** @deprecated use {@link IPartBuilderRecipe#assemble(PartBuilderInput, HolderLookup.Provider, Pattern)} */
   @Deprecated
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return ItemStack.EMPTY;
   }
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.partBuilderToolRecycling.get();
+    return TinkerRecipes.partBuilderToolRecycle.get();
   }
 
   @Nullable
@@ -216,13 +216,13 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   }
 
   @Override
-  public List<Component> getText(IPartBuilderContainer inv) {
-    return ModifierUtil.hasUpgrades(inv.getStack()) ? NO_MODIFIERS : INSTRUCTIONS;
+  public List<Component> getText(PartBuilderInput inv) {
+    return ModifierUtil.hasUpgrades(inv.getItem()) ? NO_MODIFIERS : INSTRUCTIONS;
   }
 
 
   /* JEI */
-  private List<IDisplayPartBuilderRecipe> displayRecipes;
+  private List<NamedRecipe<IDisplayPartBuilderRecipe>> displayRecipes;
 
   /** Gets the display parts for a given part list. */
   private static Object2IntMap<IMaterialItem> getDisplayParts(List<? extends IMaterialItem> parts) {
@@ -237,12 +237,12 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
   }
 
   @Override
-  public List<IDisplayPartBuilderRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayPartBuilderRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       // if we have a parts override, might as well only compute this map once
       Object2IntMap<IMaterialItem> partsOverride = parts.isEmpty() ? Object2IntMaps.emptyMap() : getDisplayParts(parts);
       List<ItemStack> patternItems = List.of(this.pattern.getItems());
-      displayRecipes = toolRequirement.getMatchingStacks().stream()
+      displayRecipes = Arrays.stream(toolRequirement.getItems())
         .<IDisplayPartBuilderRecipe>flatMap(stack -> {
           // if we have a parts override, use that instead of the tool parts
           Object2IntMap<IMaterialItem> parts = !partsOverride.isEmpty() ? partsOverride : getDisplayParts(ToolPartsHook.parts(IModifiable.getToolDefinition(stack.getItem())));
@@ -257,6 +257,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
             List.of(IModifiableDisplay.getDisplayStack(stack)),
             parts.object2IntEntrySet().stream().map(pi -> {
               ItemStack part = pi.getKey().withMaterialForDisplay(ToolBuildHandler.getRenderMaterial(pi.getIntValue()));
+              // TODO: new display tag
               part.getOrCreateTag().putBoolean(TooltipUtil.KEY_DISPLAY, true);
               return part;
             }).toList(),
@@ -270,7 +271,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
 
   @Getter
   @RequiredArgsConstructor
-  private class DisplayRecipe implements IDisplayPartBuilderRecipe {
+  private static class DisplayRecipe implements IDisplayPartBuilderRecipe {
     private final Object2IntMap<IMaterialItem> parts;
     private final List<Pattern> patterns;
     private final List<ItemStack> patternItems;
@@ -286,11 +287,6 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, IMultiRecipe<
     @Override
     public List<Component> getTooltip() {
       return INSTRUCTIONS;
-    }
-
-    @Override
-    public ResourceLocation getRecipeId() {
-      return id;
     }
 
     @Override

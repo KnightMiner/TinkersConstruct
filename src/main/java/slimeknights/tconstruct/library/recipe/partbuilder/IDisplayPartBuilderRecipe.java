@@ -2,7 +2,6 @@ package slimeknights.tconstruct.library.recipe.partbuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -13,9 +12,6 @@ import java.util.List;
 
 /** Part builder recipes that can show in JEI. */
 public interface IDisplayPartBuilderRecipe {
-  /** Gets the ID of this recipe, similar to {@link net.minecraft.world.item.crafting.Recipe#getId()} */
-  ResourceLocation getRecipeId();
-
   /** Gets the title to display above the recipe. If null, will try dynamically making the title based on the displayed material. */
   @Nullable
   default Component getDisplayTitle() {

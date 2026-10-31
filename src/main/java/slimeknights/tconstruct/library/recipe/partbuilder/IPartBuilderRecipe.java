@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.recipe.partbuilder;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -18,8 +18,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /** Common interface for part builder recipes */
-public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer> {
-  /** Default patterns in a part builder recipe, Forge has cache invalidation for vanilla, so this is fine as long as that persists */
+public interface IPartBuilderRecipe extends ICommonRecipe<PartBuilderInput> {
+  /** Default patterns in a part builder recipe, Forge has cache invalidation for vanilla, so this is fine as long as that persists. TODO: neo no longer has that */
   Ingredient DEFAULT_PATTERNS = Ingredient.of(TinkerTags.Items.DEFAULT_PATTERNS);
   /** Pattern to use for recipes that don't implement the standard pattern behavior */
   Pattern MISSING = new Pattern(TConstruct.MOD_ID, "missingno");
@@ -29,7 +29,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
   Pattern getPattern();
 
   /** Gets a stream of all patterns matching this recipe, allows one recipe to match on multiple patterns */
-  default Stream<Pattern> getPatterns(IPartBuilderContainer inv) {
+  default Stream<Pattern> getPatterns(PartBuilderInput inv) {
     return Stream.of(getPattern());
   }
 
@@ -49,21 +49,21 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
    * @param inv  Inventory instance
    * @return  True if the recipe matches the given pattern
    */
-  boolean partialMatch(IPartBuilderContainer inv);
+  boolean partialMatch(PartBuilderInput inv);
 
   /**
    * Gets the number of material items consumed by this recipe
    * @param inv  Crafting inventory
    * @return  Number of items consumed
    */
-  default int getItemsUsed(IPartBuilderContainer inv) {
+  default int getItemsUsed(PartBuilderInput inv) {
     return Optional.ofNullable(inv.getMaterial())
                    .map(mat -> mat.getItemsUsed(getCost()))
                    .orElse(1);
   }
 
   /** Assembles the result with the given pattern */
-  default ItemStack assemble(IPartBuilderContainer inv, RegistryAccess access, Pattern pattern) {
+  default ItemStack assemble(PartBuilderInput inv, HolderLookup.Provider access, Pattern pattern) {
     return assemble(inv, access);
   }
 
@@ -71,7 +71,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
 
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipes.PART_BUILDER.get();
+    return TinkerRecipes.partBuilderType.get();
   }
 
   @Override
@@ -80,7 +80,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
   }
 
   /** Gets the leftover from performing this recipe */
-  default ItemStack getLeftover(IPartBuilderContainer inventoryWrapper, Pattern pattern) {
+  default ItemStack getLeftover(PartBuilderInput inventoryWrapper, Pattern pattern) {
     IMaterialValue recipe = inventoryWrapper.getMaterial();
     if (recipe != null) {
       return recipe.getLeftover(getCost());
@@ -95,7 +95,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<IPartBuilderContainer>
   }
 
   /** Gets the text to display on the part builder screen */
-  default List<Component> getText(IPartBuilderContainer inv) {
+  default List<Component> getText(PartBuilderInput inv) {
     return List.of();
   }
 }

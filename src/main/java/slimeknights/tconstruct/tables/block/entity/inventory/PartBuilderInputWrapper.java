@@ -5,18 +5,18 @@ import net.minecraft.world.level.Level;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
-import slimeknights.tconstruct.library.recipe.TinkerRecipeTypes;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingLookup;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
 import slimeknights.tconstruct.library.recipe.material.MaterialValue;
-import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderContainer;
+import slimeknights.tconstruct.library.recipe.partbuilder.PartBuilderInput;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.tables.block.entity.table.PartBuilderBlockEntity;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class PartBuilderContainerWrapper implements IPartBuilderContainer {
+public class PartBuilderInputWrapper implements PartBuilderInput {
   private final PartBuilderBlockEntity builder;
   /** If true, the material recipe is out of date*/
   private boolean materialNeedsUpdate = true;
@@ -24,12 +24,12 @@ public class PartBuilderContainerWrapper implements IPartBuilderContainer {
   @Nullable
   private IMaterialValue material = null;
 
-  public PartBuilderContainerWrapper(PartBuilderBlockEntity builder) {
+  public PartBuilderInputWrapper(PartBuilderBlockEntity builder) {
     this.builder = builder;
   }
 
   @Override
-  public ItemStack getStack() {
+  public ItemStack getItem() {
     return builder.getItem(PartBuilderBlockEntity.MATERIAL_SLOT);
   }
 
@@ -54,7 +54,7 @@ public class PartBuilderContainerWrapper implements IPartBuilderContainer {
   public IMaterialValue getMaterial() {
     if (this.materialNeedsUpdate) {
       this.materialNeedsUpdate = false;
-      ItemStack stack = getStack();
+      ItemStack stack = getItem();
       if (stack.isEmpty()) {
         this.material = null;
       } else if (stack.is(TinkerTags.Items.TOOL_PARTS)) {
@@ -67,7 +67,7 @@ public class PartBuilderContainerWrapper implements IPartBuilderContainer {
         }
       } else {
         Level world = getWorld();
-        this.material = world.getRecipeManager().getRecipeFor(TinkerRecipeTypes.MATERIAL.get(), this, world).orElse(null);
+        this.material = world.getRecipeManager().getRecipeFor(TinkerRecipes.materialType.get(), this, world).orElse(null);
       }
     }
     return this.material;

@@ -28,9 +28,6 @@ import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.recipe.material.ShapedMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.material.ShapelessMaterialsRecipe;
-import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipe;
-import slimeknights.tconstruct.library.recipe.partbuilder.PartRecipe;
-import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycle;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.FixedMaterialSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialValueSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.PartSwappingOverrideRecipe;
@@ -63,7 +60,6 @@ import slimeknights.tconstruct.tables.menu.PartBuilderContainerMenu;
 import slimeknights.tconstruct.tables.menu.TinkerChestContainerMenu;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
 import slimeknights.tconstruct.tables.recipe.CraftingTableRepairKitRecipe;
-import slimeknights.tconstruct.tables.recipe.PartBuilderToolRecycle;
 import slimeknights.tconstruct.tables.recipe.TinkerStationDamagingRecipe;
 import slimeknights.tconstruct.tables.recipe.TinkerStationPartSwapping;
 import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
@@ -154,11 +150,7 @@ public final class TinkerTables extends TinkerModule {
   public static final RegistryObject<RecipeSerializer<ShapedMaterialsRecipe>> shapedMaterialsRecipeSerializer = RECIPE_SERIALIZERS.register("crafting_shaped_materials", ShapedMaterialsRecipe.Serializer::new);
   public static final RegistryObject<RecipeSerializer<ShapelessMaterialsRecipe>> shapelessMaterialsRecipeSerializer = RECIPE_SERIALIZERS.register("crafting_shapeless_materials", ShapelessMaterialsRecipe.Serializer::new);
   // part builder
-  public static final RegistryObject<RecipeSerializer<PartRecipe>> partRecipeSerializer = RECIPE_SERIALIZERS.register("part_builder", () -> LoadableRecipeSerializer.of(PartRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<ItemPartRecipe>> itemPartBuilderSerializer = RECIPE_SERIALIZERS.register("item_part_builder", () -> LoadableRecipeSerializer.of(ItemPartRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<PartBuilderToolRecycle>> partBuilderToolRecycling = RECIPE_SERIALIZERS.register("part_builder_tool_recycling", () -> LoadableRecipeSerializer.of(PartBuilderToolRecycle.LOADER));
-  public static final RegistryObject<RecipeSerializer<PartBuilderRecycle>> partBuilderDamageableRecycling = RECIPE_SERIALIZERS.register("part_builder_recycling", () -> LoadableRecipeSerializer.of(PartBuilderRecycle.LOADER));
-  // repair - standard
+ // repair - standard
   public static final RegistryObject<SimpleRecipeSerializer<TinkerStationRepairRecipe>> tinkerStationRepairSerializer = RECIPE_SERIALIZERS.register("tinker_station_repair", () -> new SimpleRecipeSerializer<>(TinkerStationRepairRecipe::new));
   public static final RegistryObject<SimpleRecipeSerializer<CraftingTableRepairKitRecipe>> craftingTableRepairSerializer = RECIPE_SERIALIZERS.register("crafting_table_repair", () -> new SimpleRecipeSerializer<>(CraftingTableRepairKitRecipe::new));
 

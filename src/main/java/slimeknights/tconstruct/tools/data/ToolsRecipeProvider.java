@@ -43,7 +43,7 @@ import slimeknights.tconstruct.library.recipe.ingredient.MaterialValueIngredient
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialsConsumerBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.ItemPartRecipeBuilder;
-import slimeknights.tconstruct.library.recipe.partbuilder.PartRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycleBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycleBuilder;
@@ -516,19 +516,19 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
     uncastablePart(consumer, TinkerToolParts.laces.get(), 2, null, partFolder);
     // arrow parts are just part builder, no composite currently
     Ingredient arrowPattern = CompoundIngredient.of(Ingredient.of(TinkerTags.Items.DEFAULT_PATTERNS), Ingredient.of(TinkerSmeltery.arrowCast));
-    PartRecipeBuilder.partRecipe(TinkerToolParts.arrowHead.get())
+    MaterialPartRecipeBuilder.part(TinkerToolParts.arrowHead.get())
       .setPattern(TinkerToolParts.arrowHead)
       .setPatternItem(arrowPattern)
       .setCost(1)
       .setAllowUncraftable(true)
       .save(consumer, location(partFolder + "builder/arrow_head"));
-    PartRecipeBuilder.partRecipe(TinkerToolParts.arrowShaft.get())
+    MaterialPartRecipeBuilder.part(TinkerToolParts.arrowShaft.get())
       .setPattern(TinkerToolParts.arrowShaft)
       .setPatternItem(arrowPattern)
       .setCost(1)
       .setAllowUncraftable(true)
       .save(consumer, location(partFolder + "builder/arrow_shaft"));
-    PartRecipeBuilder.partRecipe(TinkerToolParts.fletching.get())
+    MaterialPartRecipeBuilder.part(TinkerToolParts.fletching.get())
       .setPattern(TinkerToolParts.fletching)
       .setPatternItem(arrowPattern)
       .setCost(1)
