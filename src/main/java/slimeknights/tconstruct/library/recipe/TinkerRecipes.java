@@ -38,11 +38,16 @@ import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.MaterialMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.OreMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.severing.AgeableSeveringRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
+import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
+import slimeknights.tconstruct.tools.recipe.severing.SheepShearingRecipe;
+import slimeknights.tconstruct.tools.recipe.severing.SnowGolemBeheadingRecipe;
 
 /**
  * Handles registration and access for all Tinkers' Construct recipe types, recipe serializers, and ingredient types.
@@ -121,8 +126,16 @@ public class TinkerRecipes {
   public static final CastingRecipeSerializers<TippingCastingRecipe> toolTipping = SERIALIZERS.registerCastingSuffix("tool_tipping", TippingCastingRecipe.LOADER);
   public static final CastingRecipeSerializers<TipClearingCastingRecipe> toolTippedClearing = SERIALIZERS.registerCastingSuffix("tool_tip_clearing", TipClearingCastingRecipe.LOADER);
 
-  // modifiers
-  public static final DeferredRecipeType<SeveringRecipe> SEVERING = TYPES.registerType("severing");
+  // severing
+  public static final DeferredRecipeType<SeveringRecipe> severingType = TYPES.registerType("severing");
+  public static final DeferredRecipeSerializer<SeveringRecipe> severing = SERIALIZERS.registerLoadable("severing", SeveringRecipe.LOADER);
+  public static final DeferredRecipeSerializer<AgeableSeveringRecipe> ageableSevering = SERIALIZERS.registerLoadable("ageable_severing", AgeableSeveringRecipe.LOADER);
+  // special severing
+  public static final DeferredRecipeSerializer<PlayerBeheadingRecipe> playerBeheading = SERIALIZERS.registerLoadable("player_beheading", PlayerBeheadingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<SnowGolemBeheadingRecipe> snowGolemBeheading = SERIALIZERS.registerLoadable("snow_golem_beheading", SnowGolemBeheadingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MooshroomDemushroomingRecipe> mooshroomDemushrooming = SERIALIZERS.registerLoadable("mooshroom_demushrooming", MooshroomDemushroomingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<SheepShearingRecipe> sheepShearing = SERIALIZERS.registerLoadable("sheep_shearing", SheepShearingRecipe.LOADER);
+
 
   // ingredients
   /** Ingredient that only matches items with no container */

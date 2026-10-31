@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.recipe.modifiers.severing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import slimeknights.mantle.recipe.helper.RecipeHelper;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 
@@ -38,7 +38,8 @@ public class SeveringRecipeCache {
 
     // find all severing recipes for the entity
     List<SeveringRecipe> list = new ArrayList<>();
-    for (SeveringRecipe recipe : RecipeHelper.getRecipes(manager, TinkerRecipes.SEVERING.get(), SeveringRecipe.class)) {
+    for (RecipeHolder<SeveringRecipe> holder : manager.getAllRecipesFor(TinkerRecipes.severingType.get())) {
+      SeveringRecipe recipe = holder.value();
       if (recipe.matches(type)) {
         list.add(recipe);
       }

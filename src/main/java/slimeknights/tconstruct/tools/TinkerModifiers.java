@@ -173,8 +173,6 @@ import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelModifie
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeModifierRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.severing.AgeableSeveringRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairCraftingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairTinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
@@ -310,10 +308,6 @@ import slimeknights.tconstruct.tools.recipe.ModifierRemovalRecipe;
 import slimeknights.tconstruct.tools.recipe.ModifierSortingRecipe;
 import slimeknights.tconstruct.tools.recipe.TippedToolTransformRecipe;
 import slimeknights.tconstruct.tools.recipe.ToggleInteractionWorktableRecipe;
-import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
-import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
-import slimeknights.tconstruct.tools.recipe.severing.SheepShearingRecipe;
-import slimeknights.tconstruct.tools.recipe.severing.SnowGolemBeheadingRecipe;
 
 import static slimeknights.tconstruct.TConstruct.getResource;
 
@@ -450,15 +444,6 @@ public final class TinkerModifiers extends TinkerModule {
   public static final RegistryObject<RecipeSerializer<ModifierSetWorktableRecipe>> modifierSetWorktableSerializer = RECIPE_SERIALIZERS.register("modifier_set_worktable", () -> LoadableRecipeSerializer.of(ModifierSetWorktableRecipe.LOADER));
   public static final RegistryObject<RecipeSerializer<EnchantmentConvertingRecipe>> enchantmentConvertingSerializer = RECIPE_SERIALIZERS.register("enchantment_converting", () -> LoadableRecipeSerializer.of(EnchantmentConvertingRecipe.LOADER));
   public static final RegistryObject<RecipeSerializer<ToggleInteractionWorktableRecipe>> toggleInteractionSerializer = RECIPE_SERIALIZERS.register("toggle_interaction", () -> LoadableRecipeSerializer.of(ToggleInteractionWorktableRecipe.LOADER));
-
-  // severing
-  public static final RegistryObject<RecipeSerializer<SeveringRecipe>> severingSerializer = RECIPE_SERIALIZERS.register("severing", () -> LoadableRecipeSerializer.of(SeveringRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<AgeableSeveringRecipe>> ageableSeveringSerializer = RECIPE_SERIALIZERS.register("ageable_severing", () -> LoadableRecipeSerializer.of(AgeableSeveringRecipe.LOADER));
-  // special severing
-  public static final RegistryObject<RecipeSerializer<PlayerBeheadingRecipe>> playerBeheadingSerializer = RECIPE_SERIALIZERS.register("player_beheading", () -> LoadableRecipeSerializer.of(PlayerBeheadingRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<SnowGolemBeheadingRecipe>> snowGolemBeheadingSerializer = RECIPE_SERIALIZERS.register("snow_golem_beheading", () -> LoadableRecipeSerializer.of(SnowGolemBeheadingRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<MooshroomDemushroomingRecipe>> mooshroomDemushroomingSerializer = RECIPE_SERIALIZERS.register("mooshroom_demushrooming", () -> LoadableRecipeSerializer.of(MooshroomDemushroomingRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<SheepShearingRecipe>> sheepShearing = RECIPE_SERIALIZERS.register("sheep_shearing", () -> LoadableRecipeSerializer.of(SheepShearingRecipe.LOADER));
 
   /**
    * Loot

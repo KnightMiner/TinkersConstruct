@@ -285,7 +285,7 @@ public class JEIPlugin implements IModPlugin {
     register.addRecipes(TConstructJEIConstants.TOOL_MODIFICATION, FilteredRecipe.unfiltered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), IDisplayToolTinkering.class)));
 
     // beheading
-    register.addRecipes(TConstructJEIConstants.SEVERING, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.SEVERING.get(), SeveringRecipe.class));
+    register.addRecipes(TConstructJEIConstants.SEVERING, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.severingType.get(), SeveringRecipe.class));
 
     // tool building
     List<ToolBuildingRecipe> toolBuilding = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), ToolBuildingRecipe.class)

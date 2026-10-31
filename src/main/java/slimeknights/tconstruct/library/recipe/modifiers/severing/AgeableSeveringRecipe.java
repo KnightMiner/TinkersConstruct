@@ -1,28 +1,26 @@
 package slimeknights.tconstruct.library.recipe.modifiers.severing;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
-import slimeknights.tconstruct.tools.TinkerModifiers;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 
 public class AgeableSeveringRecipe extends SeveringRecipe {
   /** Loader instance */
   public static final RecordLoadable<AgeableSeveringRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(), ENTITY_FIELD,
-    ItemOutput.Loadable.REQUIRED_STACK.requiredField("adult_result", r -> r.output),
-    ItemOutput.Loadable.OPTIONAL_STACK.emptyField("child_result", r -> r.childOutput),
+    ENTITY_FIELD,
+    ItemOutput.REQUIRED_STACK_LOADABLE.requiredField("adult_result", r -> r.output),
+    ItemOutput.OPTIONAL_STACK_LOADABLE.defaultField("child_result", ItemOutput.EMPTY, false, r -> r.childOutput),
     BASE_CHANCE_FIELD, LOOTING_BONUS_FIELD,
     AgeableSeveringRecipe::new);
 
   private final ItemOutput childOutput;
-  public AgeableSeveringRecipe(ResourceLocation id, EntityIngredient ingredient, ItemOutput adultOutput, ItemOutput childOutput, float baseChance, float lootingBonus) {
-    super(id, ingredient, adultOutput, baseChance, lootingBonus);
+  public AgeableSeveringRecipe(EntityIngredient ingredient, ItemOutput adultOutput, ItemOutput childOutput, float baseChance, float lootingBonus) {
+    super(ingredient, adultOutput, baseChance, lootingBonus);
     this.childOutput = childOutput;
   }
 
@@ -36,6 +34,6 @@ public class AgeableSeveringRecipe extends SeveringRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.ageableSeveringSerializer.get();
+    return TinkerRecipes.ageableSevering.get();
   }
 }

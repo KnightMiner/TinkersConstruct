@@ -3,7 +3,8 @@ package slimeknights.tconstruct.library.recipe.modifiers.severing;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -12,7 +13,6 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
 
 /** Builder for entity melting recipes */
 @Setter
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(staticName = "severing")
 public class SeveringRecipeBuilder extends AbstractRecipeBuilder<SeveringRecipeBuilder> {
   private final EntityIngredient ingredient;
-  private final ItemOutput output;
+  private final ItemOutput result;
   private float baseChance = 0.05f;
   private float lootingBonus = 0.01f;
   @Nullable
@@ -47,17 +47,17 @@ public class SeveringRecipeBuilder extends AbstractRecipeBuilder<SeveringRecipeB
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer) {
-    save(consumer, Loadables.ITEM.getKey(output.get().getItem()));
+  public void save(RecipeOutput output) {
+    save(output, Loadables.ITEM.getKey(result.get().getItem()));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    ResourceLocation advancementId = this.buildOptionalAdvancement(id, "severing");
+  public void save(RecipeOutput output, ResourceLocation id) {
+    AdvancementHolder advancement = this.buildOptionalAdvancement(output, id, "severing");
     if (childOutput != null) {
-      consumer.accept(new LoadableFinishedRecipe<>(new AgeableSeveringRecipe(id, ingredient, output, childOutput, baseChance, lootingBonus), AgeableSeveringRecipe.LOADER, advancementId));
+      output.accept(id, new AgeableSeveringRecipe(ingredient, result, childOutput, baseChance, lootingBonus), advancement);
     } else {
-      consumer.accept(new LoadableFinishedRecipe<>(new SeveringRecipe(id, ingredient, output, baseChance, lootingBonus), SeveringRecipe.LOADER, advancementId));
+      output.accept(id, new SeveringRecipe(ingredient, result, baseChance, lootingBonus), advancement);
     }
   }
 }
