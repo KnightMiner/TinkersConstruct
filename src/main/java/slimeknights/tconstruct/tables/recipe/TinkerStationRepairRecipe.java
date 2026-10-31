@@ -2,10 +2,8 @@ package slimeknights.tconstruct.tables.recipe;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -15,14 +13,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlots;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
@@ -41,7 +40,6 @@ import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
 import java.util.ArrayList;
@@ -55,10 +53,9 @@ import java.util.stream.IntStream;
  * Recipe for repairing tools in the tinker station or anvil.
  * Handles calls to {@link slimeknights.tconstruct.library.modifiers.hook.behavior.MaterialRepairModifierHook} and {@link MaterialRepairToolHook}.
  * @see CraftingTableRepairKitRecipe
- * @see slimeknights.mantle.recipe.helper.SimpleFinishedRecipe
  */
 @RequiredArgsConstructor
-public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisplayCraftingTinkering> {
+public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNamedRecipe<IDisplayCraftingTinkering> {
   public static final Component TITLE = TConstruct.makeTranslation("recipe", "tool_repair");
   private static final Component TOOLTIP = TConstruct.makeTranslation("recipe", "tool_repair.tooltip");
   private static final List<Component> INFORMATION = List.of(TITLE, TConstruct.makeTranslation("recipe", "tool_repair.crafting_table").withStyle(ChatFormatting.GRAY));
@@ -66,9 +63,6 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   protected static final RecipeResult<LazyToolStack> FULLY_REPAIRED = RecipeResult.failure(REPAIRED);
   /** No action int consumer for recipe result */
   private static final IntConsumer NO_ACTION = i -> {};
-
-  @Getter
-  private final ResourceLocation id;
 
   /**
    * Gets the material for the given slot
@@ -250,27 +244,28 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.tinkerStationRepairSerializer.get();
+    return TinkerRecipes.tinkerStationRepair.get();
   }
 
 
   /* JEI */
 
-  private List<IDisplayCraftingTinkering> displayRecipes;
+  private List<NamedRecipe<IDisplayCraftingTinkering>> displayRecipes;
 
   @Override
-  public List<IDisplayCraftingTinkering> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayCraftingTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       CompoundTag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
       MaterialNBT displayMaterials = new MaterialNBT(IntStream.range(0, 5).mapToObj(i -> MaterialVariant.of(ToolBuildHandler.getRenderMaterial(i))).toList());
       IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
 
       // list of materials to try for repair
-      List<IDisplayCraftingTinkering> recipes = new ArrayList<>();
+      List<NamedRecipe<IDisplayCraftingTinkering>> recipes = new ArrayList<>();
+      List<ResourceLocation> parent = List.of(id);
       Set<Item> dynamicTools = new HashSet<>();
       List<ItemStack> dynamicToolStacks = new ArrayList<>();
       for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.DURABILITY)) {
-        if (holder.isBound() && holder.get() instanceof IModifiable modifiable) {
+        if (holder.isBound() && holder.value() instanceof IModifiable modifiable) {
           CompoundTag tag = new CompoundTag();
           ToolStack tool = ToolStack.from(modifiable.asItem(), modifiable.getToolDefinition(), tag);
           // assign display materials if needed
@@ -288,7 +283,6 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
 
           Set<MaterialId> repairMaterials = MaterialRepairToolHook.getRepairMaterials(tool);
           if (!repairMaterials.isEmpty()) {
-
             // if we have repair materials, find repair items
             List<ItemStack> inputs = new ArrayList<>();
             for (MaterialId repairMaterial : repairMaterials) {
@@ -301,7 +295,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
 
             // did we actually find anything? add a fixed recipe for those materials
             if (!inputs.isEmpty()) {
-              recipes.add(new FixedDisplayRecipe(id, modifiable.asItem(), List.copyOf(inputs), List.of(stack)));
+              recipes.add(NamedRecipe.of(id, parent, new FixedDisplayRecipe(modifiable.asItem(), List.copyOf(inputs), List.of(stack))));
               continue;
             }
           }
@@ -312,7 +306,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
       }
       // if we have anything that needs materials, add the dynamic display recipe
       if (!dynamicTools.isEmpty()) {
-        recipes.add(new DynamicDisplayRecipe(id, Set.copyOf(dynamicTools), List.copyOf(dynamicToolStacks)));
+        recipes.add(NamedRecipe.of(id, parent, new DynamicDisplayRecipe(Set.copyOf(dynamicTools), List.copyOf(dynamicToolStacks))));
       }
 
       // build the final recipes list
@@ -321,28 +315,12 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
     return displayRecipes;
   }
 
-  /** Used in JEI to override the crafting table ID for the display recipes. */
-  @Internal
-  public static void setCraftingId(List<IDisplayCraftingTinkering> recipes, ResourceLocation id) {
-    for (IDisplayCraftingTinkering recipe : recipes) {
-      if (recipe instanceof DisplayRecipe display) {
-        display.setId(id);
-      }
-    }
-  }
-
   /** Common logic for {@link FixedDisplayRecipe} and {@link DynamicDisplayRecipe} */
   @Getter
   private static abstract class DisplayRecipe implements IDisplayCraftingTinkering {
-    /** ID for crafting table tab */
-    @Setter
-    private ResourceLocation id;
-    private final ResourceLocation recipeId;
     private final List<ItemStack> toolWithoutModifier;
 
-    private DisplayRecipe(ResourceLocation id, List<ItemStack> toolWithoutModifier) {
-      this.id = id;
-      this.recipeId = id;
+    private DisplayRecipe(List<ItemStack> toolWithoutModifier) {
       this.toolWithoutModifier = toolWithoutModifier;
     }
 
@@ -441,8 +419,8 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   private static class FixedDisplayRecipe extends DisplayRecipe {
     private final Item tool;
     private final List<ItemStack> inputs;
-    public FixedDisplayRecipe(ResourceLocation id, Item tool, List<ItemStack> inputs, List<ItemStack> toolWithoutModifier) {
-      super(id, toolWithoutModifier);
+    public FixedDisplayRecipe(Item tool, List<ItemStack> inputs, List<ItemStack> toolWithoutModifier) {
+      super(toolWithoutModifier);
       this.tool = tool;
       this.inputs = inputs;
     }
@@ -462,8 +440,8 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   private static class DynamicDisplayRecipe extends DisplayRecipe {
     private final Set<Item> tools;
 
-    public DynamicDisplayRecipe(ResourceLocation id, Set<Item> tools, List<ItemStack> toolWithoutModifier) {
-      super(id, toolWithoutModifier);
+    public DynamicDisplayRecipe(Set<Item> tools, List<ItemStack> toolWithoutModifier) {
+      super(toolWithoutModifier);
       this.tools = tools;
     }
 

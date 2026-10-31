@@ -1,10 +1,9 @@
 package slimeknights.tconstruct.tables.recipe;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -14,6 +13,7 @@ import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.material.MaterialRepairToolHook;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -21,18 +21,19 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import javax.annotation.Nullable;
 
 /**
  * Recipe using repair kits in the crafting table.
  * @see TinkerStationRepairRecipe
- * @see slimeknights.mantle.recipe.helper.SimpleFinishedRecipe
  */
 public class CraftingTableRepairKitRecipe extends CustomRecipe {
-  public CraftingTableRepairKitRecipe(ResourceLocation id) {
-    super(id, CraftingBookCategory.EQUIPMENT);
+  /** Singleton recipe instance */
+  public static final CraftingTableRepairKitRecipe INSTANCE = new CraftingTableRepairKitRecipe();
+
+  private CraftingTableRepairKitRecipe() {
+    super(CraftingBookCategory.EQUIPMENT);
   }
 
   /**
@@ -52,10 +53,10 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
    * @return  Relevant inputs, or null if invalid
    */
   @Nullable
-  protected ToolRepair getRelevantInputs(CraftingContainer inv) {
+  protected ToolRepair getRelevantInputs(CraftingInput inv) {
     ItemStack tool = null;
     ItemStack repairKit = null;
-    for (int i = 0; i < inv.getContainerSize(); i++) {
+    for (int i = 0; i < inv.size(); i++) {
       ItemStack stack = inv.getItem(i);
       if (stack.isEmpty()) {
         continue;
@@ -85,7 +86,7 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
   }
 
   @Override
-  public boolean matches(CraftingContainer inv, Level worldIn) {
+  public boolean matches(CraftingInput inv, Level level) {
     // no match
     ToolRepair inputs = getRelevantInputs(inv);
     if (inputs == null) {
@@ -107,10 +108,10 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
+  public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
     ToolRepair inputs = getRelevantInputs(inv);
     if (inputs == null) {
-      TConstruct.LOG.error("Recipe repair on {} failed to find items after matching", getId());
+      TConstruct.LOG.error("Crafting table repair recipe on failed to find items after matching");
       return ItemStack.EMPTY;
     }
 
@@ -148,6 +149,6 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.craftingTableRepairSerializer.get();
+    return TinkerRecipes.craftingTableRepair.get();
   }
 }

@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.recipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
 import slimeknights.mantle.registration.deferred.IngredientDeferredRegister;
 import slimeknights.mantle.registration.deferred.RecipeTypeDeferredRegister;
 import slimeknights.mantle.registration.holder.DeferredIngredient;
@@ -55,6 +56,8 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartMateria
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartSwappingOverrideRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMaterialSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.tables.recipe.CraftingTableRepairKitRecipe;
+import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
 import slimeknights.tconstruct.tools.recipe.TippedToolTransformRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
@@ -83,6 +86,11 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
 
   /*
+   * crafting table
+   */
+  public static final DeferredRecipeSerializer<CraftingTableRepairKitRecipe> craftingTableRepair = SERIALIZERS.registerSerializer("crafting_table_repair", () -> SimpleRecipeSerializer.singleton(CraftingTableRepairKitRecipe.INSTANCE));
+
+  /*
    * materials
    */
   public static final DeferredRecipeType<MaterialRecipe> materialType = TYPES.registerType("material");
@@ -105,6 +113,8 @@ public class TinkerRecipes {
   public static final DeferredRecipeType<ITinkerStationRecipe> tinkerStationType = TYPES.registerType("tinker_station");
   public static final DeferredRecipeSerializer<ToolBuildingRecipe> toolBuilding = SERIALIZERS.registerLoadable("tool_building", ToolBuildingRecipe.LOADER);
   public static final DeferredRecipeSerializer<TippedToolTransformRecipe> tippedToolTransform = SERIALIZERS.registerLoadable("tipped_tool_transform", TippedToolTransformRecipe.LOADER);
+  // durability
+  public static final DeferredRecipeSerializer<TinkerStationRepairRecipe> tinkerStationRepair = SERIALIZERS.registerSerializer("tinker_station_repair", () -> SimpleRecipeSerializer.noArguments(TinkerStationRepairRecipe::new));
   public static final DeferredRecipeSerializer<TinkerStationDamagingRecipe> tinkerStationDamaging = SERIALIZERS.registerLoadable("tinker_station_damaging", TinkerStationDamagingRecipe.LOADER);
   // material swapping
   public static final DeferredRecipeSerializer<PartMaterialSwappingRecipe> partSwapping = SERIALIZERS.registerLoadable("part_material_swapping", PartMaterialSwappingRecipe.LOADER);
