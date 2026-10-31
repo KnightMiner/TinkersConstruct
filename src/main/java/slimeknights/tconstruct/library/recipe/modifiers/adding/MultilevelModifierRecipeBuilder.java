@@ -1,20 +1,22 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Modifier recipe that changes max level and slot behavior each level. Used for a single input recipe that has multiple slot requirements
+ * @see MultilevelModifierRecipe
+ * @see MultilevelIncrementalModifierRecipeBuilder
+ * @see IncrementalModifierRecipeBuilder
  */
 public class MultilevelModifierRecipeBuilder extends AbstractMultilevelModifierRecipeBuilder<MultilevelModifierRecipeBuilder> {
   // inputs
@@ -48,7 +50,7 @@ public class MultilevelModifierRecipeBuilder extends AbstractMultilevelModifierR
    * @return  Builder instance
    */
   public MultilevelModifierRecipeBuilder addInput(Ingredient ingredient) {
-    return addInput(SizedIngredient.of(ingredient));
+    return addInput(new SizedIngredient(ingredient, 1));
   }
 
   /**
@@ -58,7 +60,7 @@ public class MultilevelModifierRecipeBuilder extends AbstractMultilevelModifierR
    * @return  Builder instance
    */
   public MultilevelModifierRecipeBuilder addInput(ItemLike item, int amount) {
-    return addInput(SizedIngredient.fromItems(amount, item));
+    return addInput(SizedIngredient.of(item, amount));
   }
 
   /**
@@ -77,7 +79,7 @@ public class MultilevelModifierRecipeBuilder extends AbstractMultilevelModifierR
    * @return  Builder instance
    */
   public MultilevelModifierRecipeBuilder addInput(TagKey<Item> tag, int amount) {
-    return addInput(SizedIngredient.fromTag(tag, amount));
+    return addInput(SizedIngredient.of(tag, amount));
   }
 
   /**
@@ -93,14 +95,13 @@ public class MultilevelModifierRecipeBuilder extends AbstractMultilevelModifierR
   /* Saving */
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public void save(RecipeOutput output, ResourceLocation id) {
     if (inputs.isEmpty() && !allowCrystal) {
       throw new IllegalStateException("Must either have at least 1 input or allow crystal");
     }
     if (levels.isEmpty()) {
       throw new IllegalStateException("Must have at least 1 level");
     }
-    ResourceLocation advancementId = buildOptionalAdvancement(id, "modifiers");
-    consumer.accept(new LoadableFinishedRecipe<>(new MultilevelModifierRecipe(id, inputs, tools, maxToolSize, result, allowCrystal, levels, checkTraitLevel), MultilevelModifierRecipe.LOADER, advancementId));
+    output.accept(id, new MultilevelModifierRecipe(inputs, tools, maxToolSize, result, allowCrystal, levels, checkTraitLevel), buildOptionalAdvancement(output, id, "modifiers"));
   }
 }

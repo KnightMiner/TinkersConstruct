@@ -4,7 +4,6 @@ import com.google.common.collect.Streams;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
@@ -37,13 +36,6 @@ import java.util.stream.Stream;
 
 /** Common interface for modifier recipes that can show in JEI */
 public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerStationRecipe {
-  /** Gets the ID of this recipe. If this is a generated display recipe, uses the parent recipe ID */
-  @Override
-  @Nullable
-  default ResourceLocation getRecipeId() {
-    return null;
-  }
-
   /** Gets the modifier output of this recipe */
   ModifierEntry getDisplayResult();
 

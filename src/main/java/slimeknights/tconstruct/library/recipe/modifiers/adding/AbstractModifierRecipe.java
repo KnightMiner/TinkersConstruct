@@ -2,15 +2,14 @@ package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
@@ -50,19 +49,8 @@ import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayMo
 
 /** Shared logic between modifier and incremental modifier recipes */
 public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, IDisplayModifierRecipe {
-  /** Error for when the tool has does not have enough existing levels of this modifier, has a single parameter, modifier with level */
-  protected static final String KEY_MIN_LEVEL = IDisplayModifierRecipe.KEY_MIN_LEVEL;
-  protected static final String KEY_MIN_LEVEL_TRAITS = IDisplayModifierRecipe.KEY_MIN_LEVEL_TRAITS;
-  /** Error for when the tool is at the max modifier level */
-  protected static final String KEY_MAX_LEVEL = IDisplayModifierRecipe.KEY_MAX_LEVEL;
-  protected static final String KEY_MAX_LEVEL_TRAITS = IDisplayModifierRecipe.KEY_MAX_LEVEL_TRAITS;
-  /** Error for when the tool has too few upgrade slots */
-  protected static final String KEY_NOT_ENOUGH_SLOTS = IDisplayModifierRecipe.KEY_NOT_ENOUGH_SLOTS;
-  /** Error for when the tool has too few upgrade slots from a single slot */
-  protected static final String KEY_NOT_ENOUGH_SLOT = IDisplayModifierRecipe.KEY_NOT_ENOUGH_SLOT;
-
   /* Fields */
-  protected static final LoadableField<Ingredient,AbstractModifierRecipe> TOOLS_FIELD = IngredientLoadable.DISALLOW_EMPTY.requiredField("tools", r -> r.toolRequirement);
+  protected static final LoadableField<Ingredient,AbstractModifierRecipe> TOOLS_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tools", r -> r.toolRequirement);
   protected static final LoadableField<Integer,AbstractModifierRecipe> MAX_TOOL_SIZE_FIELD = IntLoadable.FROM_ONE.defaultField("max_tool_size", ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE, r -> r.maxToolSize);
   protected static final LoadableField<ModifierId,AbstractModifierRecipe> RESULT_FIELD = ModifierId.PARSER.requiredField("result", r -> r.result.id());
   protected static final LoadableField<IntRange,AbstractModifierRecipe> LEVEL_FIELD = ModifierEntry.VALID_LEVEL.defaultField("level", r -> r.level);
@@ -71,8 +59,6 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   protected static final LoadableField<Boolean,AbstractModifierRecipe> CHECK_TRAIT_LEVEL_FIELD = BooleanLoadable.INSTANCE.defaultField("check_trait_level", false, false, r -> r.checkTraitLevel);
 
 
-  @Getter
-  private final ResourceLocation id;
   /** Ingredient representing the required tool, typically a tag */
   protected final Ingredient toolRequirement;
   /** Max size of the tool for this modifier. If the tool size is smaller, the stack will reduce by less */
@@ -93,9 +79,8 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   @Getter @Accessors(fluent = true)
   protected final boolean checkTraitLevel;
 
-  protected AbstractModifierRecipe(ResourceLocation id, Ingredient toolRequirement, int maxToolSize,
+  protected AbstractModifierRecipe(Ingredient toolRequirement, int maxToolSize,
                                    ModifierId result, IntRange level, @Nullable SlotCount slots, boolean allowCrystal, boolean checkTraitLevel) {
-    this.id = id;
     this.toolRequirement = toolRequirement;
     this.maxToolSize = maxToolSize;
     this.result = new LazyModifier(result);
@@ -107,7 +92,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   }
 
   @Override
-  public abstract RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access);
+  public abstract RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries);
 
   @Override
   public int shrinkToolSlotBy() {
@@ -122,11 +107,6 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   /** Cache of modifier slots produced by this recipe for JEI display */
   @Nullable
   protected List<SlotCount> resultSlots = null;
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
-  }
 
   /** Gets or builds the list of tool inputs */
   protected List<ItemStack> getToolInputs() {
@@ -320,10 +300,5 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   @NonExtendable
   protected RecipeResult<LazyToolStack> success(ToolStack tool, TinkerStationRecipeInput inv) {
     return success(tool, inv.getTinkerableStack());
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + '{' + id + '}';
   }
 }

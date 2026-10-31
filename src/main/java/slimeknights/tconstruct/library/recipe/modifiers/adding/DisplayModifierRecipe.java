@@ -8,13 +8,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,8 +24,6 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DisplayModifierRecipe implements IDisplayModifierRecipe {
-  @Nullable
-  private final ResourceLocation recipeId;
   private final List<List<ItemStack>> inputs;
   private final List<ItemStack> toolWithoutModifier;
   private final List<ItemStack> toolWithModifier;
@@ -59,14 +59,19 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
 
   /* Builder */
 
-  /** Creates a new builder instance */
-  public static Builder builder() {
-    return new Builder();
+  /** Creates a new builder instance with the given parent */
+  public static Builder id(ResourceLocation id, List<ResourceLocation> parent) {
+    return new Builder(id, parent);
+  }
+
+  /** Creates a new builder instance for a single recipe */
+  public static Builder id(ResourceLocation id) {
+    return id(id, List.of(id));
   }
 
   /** Resolves a list of sized ingredients into a list of item stack lists */
   private static List<List<ItemStack>> resolve(List<SizedIngredient> ingredients) {
-    return ingredients.stream().map(SizedIngredient::getMatchingStacks).toList();
+    return ingredients.stream().map(ingredient -> Arrays.asList(ingredient.getItems())).toList();
   }
 
   /** Builder for creating a display recipe */
@@ -74,9 +79,9 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
   @Accessors(fluent = true)
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Builder {
+    private final ResourceLocation id;
+    private final List<ResourceLocation> parent;
     private ModifierEntry result = ModifierEntry.EMPTY;
-    @Nullable
-    private ResourceLocation id = null;
     private List<List<ItemStack>> inputs = List.of();
     /** Predicate to check if the focus is a valid tool for this recipe. If unset, uses {@link #toolWithoutModifier} */
     private Predicate<ItemStack> isTool;
@@ -92,10 +97,9 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
     /** Maximum stack size for dynamically computed tools. The minimum between this and the stack's max stack size will be used. */
     private int maxToolSize = ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE;
 
-    /** Creates a copy of this builder with the same properties */
-    public Builder copy() {
-      Builder copy = new Builder();
-      copy.id = this.id;
+    /** Creates a copy of this builder with the same properties but a new ID. */
+    public Builder copy(ResourceLocation id) {
+      Builder copy = new Builder(id, parent);
       copy.inputs = this.inputs;
       copy.toolWithoutModifier = this.toolWithoutModifier;
       copy.toolWithModifier = this.toolWithModifier;
@@ -120,7 +124,7 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
     }
 
     /** Builds the final recipe */
-    public IDisplayModifierRecipe build() {
+    public NamedRecipe<IDisplayModifierRecipe> build() {
       if (result == ModifierEntry.EMPTY) {
         throw new IllegalStateException("Must set result");
       }
@@ -133,7 +137,7 @@ public class DisplayModifierRecipe implements IDisplayModifierRecipe {
       if (toolWithModifier.isEmpty()) {
         throw new IllegalStateException("Must set tools with modifier");
       }
-      return new DisplayModifierRecipe(id, inputs, toolWithoutModifier, toolWithModifier, maxToolSize, isTool, result, level, slots, resultSlots, incremental, checkTraitLevel);
+      return NamedRecipe.of(id, parent, new DisplayModifierRecipe(inputs, toolWithoutModifier, toolWithModifier, maxToolSize, isTool, result, level, slots, resultSlots, incremental, checkTraitLevel));
     }
   }
 }

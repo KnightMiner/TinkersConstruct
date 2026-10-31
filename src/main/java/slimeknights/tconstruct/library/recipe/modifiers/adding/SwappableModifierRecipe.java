@@ -1,18 +1,17 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.NamedComponentRegistry;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.json.IntRange;
@@ -23,6 +22,7 @@ import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -30,7 +30,6 @@ import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -42,13 +41,13 @@ import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayMo
 import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe.withModifiers;
 
 /**
- * Standard recipe to add a modifier
+ * Recipe for a modifier with a swappable variant string.
+ * @see SwappableModifierRecipeBuilder
+ * @see ModifierRecipe
  */
 public class SwappableModifierRecipe extends ModifierRecipe {
-
   private static final String ALREADY_PRESENT = TConstruct.makeTranslationKey("recipe", "swappable.already_present");
   public static final RecordLoadable<SwappableModifierRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
     INPUTS_FIELD, TOOLS_FIELD, MAX_TOOL_SIZE_FIELD,
     new MergingField<>(ModifierId.PARSER.requiredField("name", r -> r.result.id()), "result", MissingMode.DISALLOWED),
     new MergingField<>(StringLoadable.DEFAULT.requiredField("value", r -> r.value), "result", MissingMode.DISALLOWED),
@@ -64,15 +63,15 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Getter
   private final Component variant;
 
-  public SwappableModifierRecipe(ResourceLocation id, List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, String value, VariantFormatter variantFormatter, @Nullable SlotCount slots, boolean allowCrystal) {
-    super(id, inputs, toolRequirement, maxToolSize, result, new IntRange(1, 1), slots, allowCrystal, false);
+  public SwappableModifierRecipe(List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, String value, VariantFormatter variantFormatter, @Nullable SlotCount slots, boolean allowCrystal) {
+    super(inputs, toolRequirement, maxToolSize, result, new IntRange(1, 1), slots, allowCrystal, false);
     this.value = value;
     this.variantFormatter = variantFormatter;
     this.variant = variantFormatter.format(result, value);
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
 
     // if the tool has the modifier already, can skip most requirements
@@ -126,7 +125,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.swappableModifierSerializer.get();
+    return TinkerRecipes.swappableModifier.get();
   }
 
 

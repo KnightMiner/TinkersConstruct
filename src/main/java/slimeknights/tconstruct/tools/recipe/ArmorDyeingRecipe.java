@@ -1,27 +1,30 @@
 package slimeknights.tconstruct.tools.recipe;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags.Items;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -33,15 +36,13 @@ import slimeknights.tconstruct.tools.TinkerModifiers;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/** Recipe to dye travelers gear */
-public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisplayModifierRecipe> {
-  @Getter
-  private final ResourceLocation id;
-
-  public ArmorDyeingRecipe(ResourceLocation id) {
-    this.id = id;
+/**
+ * Recipe to dye travelers gear.
+ * @see slimeknights.mantle.recipe.data.SimpleRecipeBuilder
+ */
+public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe<IDisplayModifierRecipe> {
+  public ArmorDyeingRecipe() {
     ModifierRecipeLookup.addRecipeModifier(null, TinkerModifiers.dyed);
   }
 
@@ -66,7 +67,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable().copy();
 
     ModDataNBT persistentData = tool.getPersistentData();
@@ -94,10 +95,10 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
       if (!stack.isEmpty()) {
         DyeColor dye = DyeColor.getColor(stack);
         if (dye != null) {
-          float[] color = dye.getTextureDiffuseColors();
-          int r = (int)(color[0] * 255);
-          int g = (int)(color[1] * 255);
-          int b = (int)(color[2] * 255);
+          int rgb = dye.getTextureDiffuseColor();
+          int r = ARGB32.red(rgb);
+          int g = ARGB32.green(rgb);
+          int b = ARGB32.blue(rgb);
           brightness += Math.max(r, Math.max(g, b));
           nr += r;
           ng += g;
@@ -131,17 +132,17 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.armorDyeingSerializer.get();
+    return TinkerRecipes.armorDyeing.get();
   }
 
 
   /* JEI */
 
   @Nullable
-  private List<IDisplayModifierRecipe> displayRecipes;
+  private List<NamedRecipe<IDisplayModifierRecipe>> displayRecipes;
 
   @Override
-  public List<IDisplayModifierRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayModifierRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       List<ItemStack> toolInputs = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DYEABLE)
         .map(item -> {
@@ -152,8 +153,8 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
           return stack;
         }).toList();
       if (!toolInputs.isEmpty()) {
-        ResourceLocation id = getId();
-        displayRecipes = Arrays.stream(DyeColor.values()).map(dye -> new DisplayRecipe(id, toolInputs, dye)).collect(Collectors.toList());
+        List<ResourceLocation> parent = List.of(id);
+        displayRecipes = Arrays.stream(DyeColor.values()).map(dye -> NamedRecipe.<IDisplayModifierRecipe>of(id.withSuffix("/" + dye.getSerializedName()), parent, new DisplayRecipe(toolInputs, dye))).toList();
       } else {
         displayRecipes = List.of();
       }
@@ -165,8 +166,6 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
     private static final IntRange LEVELS = new IntRange(1, 1);
     private final ModifierEntry RESULT = new ModifierEntry(TinkerModifiers.dyed, 1);
 
-    @Getter
-    private final ResourceLocation recipeId;
     private final List<ItemStack> dyes;
     @Getter
     private final List<ItemStack> toolWithoutModifier;
@@ -179,8 +178,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, IMultiRecipe<IDi
     private final int g;
     private final int b;
     private final int brightness;
-    public DisplayRecipe(ResourceLocation recipeId, List<ItemStack> tools, DyeColor color) {
-      this.recipeId = recipeId;
+    public DisplayRecipe(List<ItemStack> tools, DyeColor color) {
       this.toolWithoutModifier = tools;
       this.dyes = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, color.getTag()).map(ItemStack::new).toList();
       this.variant = Component.translatable("color.minecraft." + color.getSerializedName());

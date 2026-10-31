@@ -1,25 +1,26 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import com.google.common.collect.Streams;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -27,12 +28,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Modifier recipe that changes max level and slot behavior each level. Used for a single input recipe that has multiple slot requirements
+ * Modifier recipe that changes max level and slot behavior each level. Used for a single input recipe that has multiple slot requirements.
+ * @see MultilevelModifierRecipeBuilder
+ * @see MultilevelIncrementalModifierRecipe
+ * @see ModifierRecipe
  */
-public class MultilevelModifierRecipe extends ModifierRecipe implements IMultiRecipe<IDisplayModifierRecipe> {
+public class MultilevelModifierRecipe extends ModifierRecipe implements MultiNamedRecipe<IDisplayModifierRecipe> {
   public static final RecordLoadable<MultilevelModifierRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    SizedIngredient.LOADABLE.list(0).defaultField("inputs", List.of(), r -> r.inputs),
+    Loadables.SIZED_ITEM_INGREDIENT.list(0).defaultField("inputs",List.of(), r -> r.inputs),
     TOOLS_FIELD, MAX_TOOL_SIZE_FIELD, RESULT_FIELD, ALLOW_CRYSTAL_FIELD,
     LevelEntry.LOADABLE.list(1).requiredField("levels", r -> r.levels),
     CHECK_TRAIT_LEVEL_FIELD,
@@ -44,8 +47,8 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements IMultiRe
   });
 
   private final List<LevelEntry> levels;
-  protected MultilevelModifierRecipe(ResourceLocation id, List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, boolean allowCrystal, List<LevelEntry> levels, boolean checkTraitLevel) {
-    super(id, inputs, toolRequirement, maxToolSize, result, levels.get(0).level, levels.get(0).slots, allowCrystal, checkTraitLevel);
+  protected MultilevelModifierRecipe(List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, boolean allowCrystal, List<LevelEntry> levels, boolean checkTraitLevel) {
+    super(inputs, toolRequirement, maxToolSize, result, levels.get(0).level, levels.get(0).slots, allowCrystal, checkTraitLevel);
     this.levels = levels;
   }
 
@@ -54,13 +57,13 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements IMultiRe
     // if the level is below the minimum, then display a different error
     int min = levels.get(0).level.min();
     if (newLevel < min) {
-      return RecipeResult.failure(checkTraitLevel ? KEY_MIN_LEVEL_TRAITS : KEY_MIN_LEVEL, result.get().getDisplayName(min - 1));
+      return RecipeResult.failure(checkTraitLevel ? IDisplayModifierRecipe.KEY_MIN_LEVEL_TRAITS : IDisplayModifierRecipe.KEY_MIN_LEVEL, result.get().getDisplayName(min - 1));
     }
-    return RecipeResult.failure(checkTraitLevel ? KEY_MAX_LEVEL_TRAITS : KEY_MAX_LEVEL, result.get().getDisplayName(), levels.get(levels.size() - 1).level.max());
+    return RecipeResult.failure(checkTraitLevel ? IDisplayModifierRecipe.KEY_MAX_LEVEL_TRAITS : IDisplayModifierRecipe.KEY_MAX_LEVEL, result.get().getDisplayName(), levels.get(levels.size() - 1).level.max());
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
 
     // next few checks depend on the current level to decide
@@ -97,28 +100,29 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements IMultiRe
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.multilevelModifierSerializer.get();
+    return TinkerRecipes.multilevelModifier.get();
   }
 
 
   /* JEI display */
 
-  private List<IDisplayModifierRecipe> displayRecipes = null;
+  private List<NamedRecipe<IDisplayModifierRecipe>> displayRecipes = null;
 
   @Override
-  public List<IDisplayModifierRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayModifierRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     // no inputs means this recipe is to handle internal crystal stuff
     if (inputs.isEmpty()) {
       return Collections.emptyList();
     }
     if (displayRecipes == null) {
       // this instance is a proper display recipe for the first level entry, for the rest build display instances with unique requirements keys
-      DisplayModifierRecipe.Builder builder = DisplayModifierRecipe.builder()
-        .id(getId()).ingredients(inputs).resultSlots(getResultSlots()).checkTraitLevel(checkTraitLevel)
+      List<ResourceLocation> parent = List.of(id);
+      DisplayModifierRecipe.Builder builder = DisplayModifierRecipe.id(id, parent)
+        .ingredients(inputs).resultSlots(getResultSlots()).checkTraitLevel(checkTraitLevel)
         .isTool(toolRequirement).toolWithoutModifier(getToolWithoutModifier()).toolWithModifier(getToolWithModifier()).maxToolSize(shrinkToolSlotBy());
       displayRecipes = Streams.concat(
-        Stream.of(this),
-        levels.stream().skip(1).map(levelEntry -> builder.copy()
+        Stream.of(NamedRecipe.<IDisplayModifierRecipe>of(id, parent, this)),
+        levels.stream().skip(1).map(levelEntry -> builder.copy(id.withSuffix("/level_" + levelEntry.level))
           .result(new ModifierEntry(result, levelEntry.level.min()))
           .level(levelEntry.level).slots(levelEntry.slots).build())
       ).toList();

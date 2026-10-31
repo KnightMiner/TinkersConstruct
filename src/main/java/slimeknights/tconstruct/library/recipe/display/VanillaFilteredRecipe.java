@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public interface VanillaFilteredRecipe<T extends FilteredRecipe> {
   /**
    * Gets a list of filtered recipes for adding to a recipe manager plugin.
+   * TODO: this should either be nullable or pass in the ID
    * @return  List of recipes
    * @param access  Registry access instance
    */

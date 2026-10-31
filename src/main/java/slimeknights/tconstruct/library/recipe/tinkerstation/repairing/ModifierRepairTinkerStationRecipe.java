@@ -3,7 +3,8 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.repairing;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,7 +17,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -24,11 +26,12 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
-import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
@@ -38,7 +41,6 @@ import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import java.util.List;
 
@@ -49,7 +51,7 @@ import java.util.List;
  * @see slimeknights.tconstruct.library.modifiers.modules.behavior.MaterialRepairModule
  */
 @RequiredArgsConstructor
-public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, IModifierRepairRecipe, IMultiRecipe<IDisplayToolTinkering> {
+public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, IModifierRepairRecipe, MultiNamedRecipe<IDisplayToolTinkering> {
   private static final String TOOLTIP_KEY = TConstruct.makeTranslationKey("recipe", "tool_repair.modifier");
   private static final String KEY_AMOUNT = TConstruct.makeTranslationKey("recipe", "modifier.amount");
   public static final RecordLoadable<ModifierRepairTinkerStationRecipe> LOADER = RecordLoadable.create(ContextKey.ID.requiredField(), MODIFIER_FIELD, INGREDIENT_FIELD, REPAIR_AMOUNT_FIELD, ModifierRepairTinkerStationRecipe::new);
@@ -77,7 +79,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
     int amountPerItem = tool.getModifierLevel(modifier) * repairAmount;
     if (amountPerItem <= 0) {
@@ -128,24 +130,23 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.modifierRepair.get();
+    return TinkerRecipes.modifierRepair.get();
   }
 
 
   /* JEI */
-  private List<IDisplayToolTinkering> displayRecipes;
+  private List<NamedRecipe<IDisplayToolTinkering>> displayRecipes;
 
   @Override
-  public List<IDisplayToolTinkering> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayToolTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      displayRecipes = List.of(new DisplayRecipe(id, this, false));
+      displayRecipes = List.of(NamedRecipe.of(id, new DisplayRecipe(this, false)));
     }
     return displayRecipes;
   }
 
   @Getter
   static class DisplayRecipe implements IDisplayCraftingTinkering {
-    private final ResourceLocation id;
     private final ModifierId modifier;
     private final int repairAmount;
     private final Component tooltip;
@@ -154,8 +155,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
     private final List<ItemStack> toolWithoutModifier;
     private final List<ItemStack> toolWithModifier;
 
-    public DisplayRecipe(ResourceLocation id, IModifierRepairRecipe recipe, boolean isCrafting) {
-      this.id = id;
+    public DisplayRecipe(IModifierRepairRecipe recipe, boolean isCrafting) {
       this.modifier = recipe.getModifier();
       this.repairAmount = recipe.getRepairAmount();
       MutableComponent tooltip = Component.translatable(TOOLTIP_KEY, ModifierManager.getValue(modifier).getDisplayName());
@@ -177,7 +177,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
             tag.put(ToolStack.TAG_STATS, stats);
             tag.put(ToolStack.TAG_UPGRADES, modifiers);
             tag.put(ToolStack.TAG_MODIFIERS, modifiers);
-            tag.putInt(ToolStack.TAG_DAMAGE, 200); // mostly broken
+            stack.set(DataComponents.DAMAGE, 200); // mostly broken
             return stack;
           }
           return ItemStack.EMPTY;
@@ -186,7 +186,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
         .toList();
       toolWithModifier = toolWithoutModifier.stream().map(stack -> {
         stack = stack.copy();
-        stack.getOrCreateTag().putInt(ToolStack.TAG_DAMAGE, 200 - repairAmount);
+        stack.set(DataComponents.DAMAGE, 200 - repairAmount);
         return stack;
       }).toList();
     }

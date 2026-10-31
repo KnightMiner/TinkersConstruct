@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.tools.recipe;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,10 +21,10 @@ import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatterns;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -32,12 +32,13 @@ import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlots;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -49,20 +50,19 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Recipe to add a banner to a shield */
-public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisplayModifierRecipe> {
+/**
+ * Recipe to add a banner to a shield.
+ * @see slimeknights.mantle.recipe.data.SimpleRecipeBuilder
+ */
+public class BannerModifierRecipe implements ITinkerStationRecipe, MultiNamedRecipe<IDisplayModifierRecipe> {
   private static final RecipeResult<LazyToolStack> NO_PATTERNS = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "banner.clear.no_patterns"));
   public static final RecordLoadable<BannerModifierRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    IngredientLoadable.ALLOW_EMPTY.defaultField("clear_input", Ingredient.EMPTY, false, r -> r.clearInput),
+    Loadables.ITEM_INGREDIENT.defaultField("clear_input", Ingredient.EMPTY, false, r -> r.clearInput),
     BannerModifierRecipe::new);
 
-  @Getter
-  private final ResourceLocation id;
   private final Ingredient clearInput;
 
-  public BannerModifierRecipe(ResourceLocation id, Ingredient clearInput) {
-    this.id = id;
+  public BannerModifierRecipe(Ingredient clearInput) {
     this.clearInput = clearInput;
     ModifierRecipeLookup.addRecipeModifier(null, TinkerModifiers.banner);
   }
@@ -112,7 +112,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable().copy();
 
     ModifierId key = TinkerModifiers.banner.id();
@@ -163,14 +163,14 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.bannerModifierSerializer.get();
+    return TinkerRecipes.bannerModifier.get();
   }
 
 
   /* JEI */
 
   @Nullable
-  private List<IDisplayModifierRecipe> displayRecipes;
+  private List<NamedRecipe<IDisplayModifierRecipe>> displayRecipes;
 
   /** Creates the tag for a single pattern with the given color */
   private static CompoundTag createDisplayPatternTag(BannerPattern pattern, DyeColor color) {
@@ -190,7 +190,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
   }
 
   @Override
-  public List<IDisplayModifierRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayModifierRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       List<ItemStack> toolInputs = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.BANNER)
         .map(item -> {
@@ -211,10 +211,10 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
         TConstruct.LOG.error("Unable to create banner modifier display recipes {}: Banner tag {} has no BannerItem", id, ItemTags.BANNERS);
         displayRecipes = List.of();
       } else {
-        ResourceLocation id = getId();
-        List<IDisplayModifierRecipe> recipes = new ArrayList<>(clearInput != Ingredient.EMPTY ? 2 : 1);
+        List<NamedRecipe<IDisplayModifierRecipe>> recipes = new ArrayList<>(clearInput != Ingredient.EMPTY ? 2 : 1);
+        List<ResourceLocation> parent = List.of(id);
         // create standard recipe
-        recipes.add(new DisplayRecipe(id, toolInputs, banners, List.of()));
+        recipes.add(NamedRecipe.of(id, new DisplayRecipe(toolInputs, banners, List.of())));
         // if we have an ingredient that makes it clear, add the clear recipe
         if (clearInput != Ingredient.EMPTY) {
           // we want a pattern on it to make it more clear what it does
@@ -234,7 +234,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
             stack.setTag(stack.getItem() == Items.BLACK_BANNER ? stackTagBlack : stackTag);
             return stack;
           }).toList();
-          recipes.add(new DisplayRecipe(id, toolInputs, bannersWithPattern, List.of(clearInput.getItems())));
+          recipes.add(NamedRecipe.of(id.withSuffix("/clear"), parent, new DisplayRecipe(toolInputs, bannersWithPattern, List.of(clearInput.getItems()))));
         }
         displayRecipes = List.copyOf(recipes);
       }
@@ -247,8 +247,6 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
     private static final IntRange LEVELS = new IntRange(1, 1);
     private final ModifierEntry RESULT = new ModifierEntry(TinkerModifiers.banner, 1);
 
-    @Getter
-    private final ResourceLocation recipeId;
     private final List<ItemStack> banners;
     private final List<ItemStack> clearInput;
     @Getter
@@ -257,8 +255,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
     private final List<ItemStack> toolWithModifier;
     @Getter
     private final Component variant;
-    public DisplayRecipe(ResourceLocation recipeId, List<ItemStack> tools, List<ItemStack> banners, List<ItemStack> clearInput) {
-      this.recipeId = recipeId;
+    public DisplayRecipe(List<ItemStack> tools, List<ItemStack> banners, List<ItemStack> clearInput) {
       this.toolWithoutModifier = tools;
       this.banners = banners;
       this.clearInput = clearInput;

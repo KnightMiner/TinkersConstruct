@@ -39,6 +39,14 @@ import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.MaterialMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.OreMeltingRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.ModifierSalvage;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelIncrementalModifierRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelModifierRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeModifierRecipe;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.AgeableSeveringRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
@@ -50,6 +58,8 @@ import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToo
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.damaging.TinkerStationDamagingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairCraftingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairTinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.FixedMaterialSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.MaterialValueSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartMaterialSwappingRecipe;
@@ -58,6 +68,9 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMateria
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
 import slimeknights.tconstruct.tables.recipe.CraftingTableRepairKitRecipe;
 import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
+import slimeknights.tconstruct.tools.recipe.ArmorDyeingRecipe;
+import slimeknights.tconstruct.tools.recipe.ArmorTrimRecipe;
+import slimeknights.tconstruct.tools.recipe.BannerModifierRecipe;
 import slimeknights.tconstruct.tools.recipe.TippedToolTransformRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
@@ -88,7 +101,9 @@ public class TinkerRecipes {
   /*
    * crafting table
    */
-  public static final DeferredRecipeSerializer<CraftingTableRepairKitRecipe> craftingTableRepair = SERIALIZERS.registerSerializer("crafting_table_repair", () -> SimpleRecipeSerializer.singleton(CraftingTableRepairKitRecipe.INSTANCE));
+  public static final DeferredRecipeSerializer<CraftingTableRepairKitRecipe> craftingTableRepair = SERIALIZERS.registerSingleton("crafting_table_repair", CraftingTableRepairKitRecipe.INSTANCE);
+  public static final DeferredRecipeSerializer<ModifierRepairCraftingRecipe> craftingModifierRepair = SERIALIZERS.registerLoadable("crafting_modifier_repair", ModifierRepairCraftingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<OverslimeCraftingTableRecipe> craftingOverslime = SERIALIZERS.registerLoadable("crafting_overslime_modifier", OverslimeCraftingTableRecipe.LOADER);
 
   /*
    * materials
@@ -116,12 +131,26 @@ public class TinkerRecipes {
   // durability
   public static final DeferredRecipeSerializer<TinkerStationRepairRecipe> tinkerStationRepair = SERIALIZERS.registerSerializer("tinker_station_repair", () -> SimpleRecipeSerializer.noArguments(TinkerStationRepairRecipe::new));
   public static final DeferredRecipeSerializer<TinkerStationDamagingRecipe> tinkerStationDamaging = SERIALIZERS.registerLoadable("tinker_station_damaging", TinkerStationDamagingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ModifierRepairTinkerStationRecipe> modifierRepair = SERIALIZERS.registerLoadable("modifier_repair", ModifierRepairTinkerStationRecipe.LOADER);
   // material swapping
   public static final DeferredRecipeSerializer<PartMaterialSwappingRecipe> partSwapping = SERIALIZERS.registerLoadable("part_material_swapping", PartMaterialSwappingRecipe.LOADER);
   public static final DeferredRecipeSerializer<PartSwappingOverrideRecipe> partSwappingOverride = SERIALIZERS.registerLoadable("part_swapping_override", PartSwappingOverrideRecipe.LOADER);
   public static final DeferredRecipeSerializer<FixedMaterialSwappingRecipe> fixedMaterialSwapping = SERIALIZERS.registerLoadable("fixed_material_swapping", FixedMaterialSwappingRecipe.LOADER);
   public static final DeferredRecipeSerializer<MaterialValueSwappingRecipe> materialValueSwapping = SERIALIZERS.registerLoadable("material_value_swapping", MaterialValueSwappingRecipe.LOADER);
   public static final DeferredRecipeSerializer<ToolMaterialSwappingRecipe> toolMaterialSwapping = SERIALIZERS.registerLoadable("tool_material_swapping", ToolMaterialSwappingRecipe.LOADER);
+
+  // modifiers
+  public static final DeferredRecipeSerializer<ModifierRecipe> modifier = SERIALIZERS.registerLoadable("modifier", ModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<IncrementalModifierRecipe> incrementalModifier = SERIALIZERS.registerLoadable("incremental_modifier", IncrementalModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<SwappableModifierRecipe> swappableModifier = SERIALIZERS.registerLoadable("swappable_modifier", SwappableModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MultilevelModifierRecipe> multilevelModifier = SERIALIZERS.registerLoadable("multilevel_modifier", MultilevelModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MultilevelIncrementalModifierRecipe> multilevelIncrementalModifier = SERIALIZERS.registerLoadable("multilevel_incremental_modifier", MultilevelIncrementalModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ModifierSalvage> modifierSalvage = SERIALIZERS.registerLoadable("modifier_salvage", ModifierSalvage.LOADER);
+  // specialized
+  public static final DeferredRecipeSerializer<OverslimeModifierRecipe> overslimeModifier = SERIALIZERS.registerLoadable("overslime_modifier", OverslimeModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ArmorDyeingRecipe> armorDyeing = SERIALIZERS.registerNoArguments("armor_dyeing_modifier", ArmorDyeingRecipe::new);
+  public static final DeferredRecipeSerializer<BannerModifierRecipe> bannerModifier = SERIALIZERS.registerLoadable("banner_modifier", BannerModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ArmorTrimRecipe> armorTrimModifier = SERIALIZERS.registerNoArguments("armor_trim_modifier", ArmorTrimRecipe::new);
 
   /*
    * smeltery

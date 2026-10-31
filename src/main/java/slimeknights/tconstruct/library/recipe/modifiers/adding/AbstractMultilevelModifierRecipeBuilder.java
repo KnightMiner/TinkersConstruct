@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.recipe.modifiers.adding;
 import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -20,8 +20,8 @@ import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
+/** Common logic for {@link MultilevelModifierRecipeBuilder} and {@link MultilevelIncrementalModifierRecipeBuilder} */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractMultilevelModifierRecipeBuilder<T extends AbstractMultilevelModifierRecipeBuilder<T>> extends AbstractRecipeBuilder<T> {
   protected final ModifierId result;
@@ -30,12 +30,6 @@ public abstract class AbstractMultilevelModifierRecipeBuilder<T extends Abstract
   protected Ingredient tools = Ingredient.EMPTY;
   protected int maxToolSize = ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE;
   protected boolean checkTraitLevel = false;
-
-  /** Gets the casted builder */
-  @SuppressWarnings("unchecked")
-  private T self() {
-    return (T) this;
-  }
 
 
   /* Tool */
@@ -149,22 +143,22 @@ public abstract class AbstractMultilevelModifierRecipeBuilder<T extends Abstract
   /* Saving */
 
   /** Saves all salvage recipes for this recipe */
-  public T saveSalvage(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public T saveSalvage(RecipeOutput output, ResourceLocation id) {
     if (levels.isEmpty()) {
       throw new IllegalStateException("Must have at least 1 level");
     }
     for (LevelEntry levelEntry : levels) {
       if (levelEntry.slots() != null) {
-        consumer.accept(new LoadableFinishedRecipe<>(new ModifierSalvage(
+        output.accept(
           id.withSuffix("_level_" + levelEntry.level().min()),
-          tools, maxToolSize, result, levelEntry.level(), levelEntry.slots()), ModifierSalvage.LOADER, null));
+          new ModifierSalvage(tools, maxToolSize, result, levelEntry.level(), levelEntry.slots()), null);
       }
     }
     return self();
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer) {
-    save(consumer, result);
+  public void save(RecipeOutput output) {
+    save(output, result);
   }
 }

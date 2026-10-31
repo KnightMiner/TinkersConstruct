@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -10,9 +10,12 @@ import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 
-import java.util.function.Consumer;
-
-/** Builder for {@link MultilevelIncrementalModifierRecipe} */
+/**
+ * Builder for {@link MultilevelIncrementalModifierRecipe}.
+ * @see MultilevelIncrementalModifierRecipe
+ * @see MultilevelModifierRecipeBuilder
+ * @see IncrementalModifierRecipeBuilder
+ */
 public class MultilevelIncrementalModifierRecipeBuilder extends AbstractMultilevelModifierRecipeBuilder<MultilevelIncrementalModifierRecipeBuilder> {
   private Ingredient input = Ingredient.EMPTY;
   private int amountPerItem;
@@ -96,14 +99,13 @@ public class MultilevelIncrementalModifierRecipeBuilder extends AbstractMultilev
   /* Saving */
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public void save(RecipeOutput output, ResourceLocation id) {
     if (input == Ingredient.EMPTY) {
       throw new IllegalStateException("Must set input");
     }
     if (levels.isEmpty()) {
       throw new IllegalStateException("Must have at least 1 level");
     }
-    ResourceLocation advancementId = buildOptionalAdvancement(id, "modifiers");
-    consumer.accept(new LoadableFinishedRecipe<>(new MultilevelIncrementalModifierRecipe(id, input, amountPerItem, neededPerLevel, tools, maxToolSize, result, leftover, allowCrystal, levels, checkTraitLevel), MultilevelIncrementalModifierRecipe.LOADER, advancementId));
+    output.accept(id, new MultilevelIncrementalModifierRecipe(input, amountPerItem, neededPerLevel, tools, maxToolSize, result, leftover, allowCrystal, levels, checkTraitLevel), buildOptionalAdvancement(output, id, "modifiers"));
   }
 }

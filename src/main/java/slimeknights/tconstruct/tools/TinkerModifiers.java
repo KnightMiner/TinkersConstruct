@@ -21,7 +21,6 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.ModifierTagProvider;
@@ -165,16 +164,6 @@ import slimeknights.tconstruct.library.modifiers.util.ModifierDeferredRegister;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
 import slimeknights.tconstruct.library.modifiers.util.StaticModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
-import slimeknights.tconstruct.library.recipe.modifiers.ModifierSalvage;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelIncrementalModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeModifierRecipe;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairCraftingRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairTinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
@@ -299,9 +288,6 @@ import slimeknights.tconstruct.tools.modules.ranged.common.ProjectileBounceModul
 import slimeknights.tconstruct.tools.modules.ranged.common.ProjectilePlaceGlowModule;
 import slimeknights.tconstruct.tools.modules.ranged.common.PunchModule;
 import slimeknights.tconstruct.tools.modules.ranged.common.ReversePunchModule;
-import slimeknights.tconstruct.tools.recipe.ArmorDyeingRecipe;
-import slimeknights.tconstruct.tools.recipe.ArmorTrimRecipe;
-import slimeknights.tconstruct.tools.recipe.BannerModifierRecipe;
 import slimeknights.tconstruct.tools.recipe.EnchantmentConvertingRecipe;
 import slimeknights.tconstruct.tools.recipe.ExtractModifierRecipe;
 import slimeknights.tconstruct.tools.recipe.ModifierRemovalRecipe;
@@ -421,20 +407,6 @@ public final class TinkerModifiers extends TinkerModule {
   /*
    * Recipes
    */
-  public static final RegistryObject<RecipeSerializer<ModifierRecipe>> modifierSerializer = RECIPE_SERIALIZERS.register("modifier", () -> LoadableRecipeSerializer.of(ModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<IncrementalModifierRecipe>> incrementalModifierSerializer = RECIPE_SERIALIZERS.register("incremental_modifier", () -> LoadableRecipeSerializer.of(IncrementalModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<SwappableModifierRecipe>> swappableModifierSerializer = RECIPE_SERIALIZERS.register("swappable_modifier", () -> LoadableRecipeSerializer.of(SwappableModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<MultilevelModifierRecipe>> multilevelModifierSerializer = RECIPE_SERIALIZERS.register("multilevel_modifier", () -> LoadableRecipeSerializer.of(MultilevelModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<MultilevelIncrementalModifierRecipe>> multilevelIncrementalModifierSerializer = RECIPE_SERIALIZERS.register("multilevel_incremental_modifier", () -> LoadableRecipeSerializer.of(MultilevelIncrementalModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<OverslimeModifierRecipe>> overslimeSerializer = RECIPE_SERIALIZERS.register("overslime_modifier", () -> LoadableRecipeSerializer.of(OverslimeModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<OverslimeCraftingTableRecipe>> craftingOverslimeSerializer = RECIPE_SERIALIZERS.register("crafting_overslime_modifier", () -> LoadableRecipeSerializer.of(OverslimeCraftingTableRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<ModifierSalvage>> modifierSalvageSerializer = RECIPE_SERIALIZERS.register("modifier_salvage", () -> LoadableRecipeSerializer.of(ModifierSalvage.LOADER));
-  public static final RegistryObject<RecipeSerializer<ArmorDyeingRecipe>> armorDyeingSerializer = RECIPE_SERIALIZERS.register("armor_dyeing_modifier", () -> new SimpleRecipeSerializer<>(ArmorDyeingRecipe::new));
-  public static final RegistryObject<RecipeSerializer<BannerModifierRecipe>> bannerModifierSerializer = RECIPE_SERIALIZERS.register("banner_modifier", () -> LoadableRecipeSerializer.of(BannerModifierRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<ArmorTrimRecipe>> armorTrimSerializer = RECIPE_SERIALIZERS.register("armor_trim_modifier", () -> new SimpleRecipeSerializer<>(ArmorTrimRecipe::new));
-  // modifiers
-  public static final RegistryObject<RecipeSerializer<ModifierRepairTinkerStationRecipe>> modifierRepair = RECIPE_SERIALIZERS.register("modifier_repair", () -> LoadableRecipeSerializer.of(ModifierRepairTinkerStationRecipe.LOADER));
-  public static final RegistryObject<RecipeSerializer<ModifierRepairCraftingRecipe>> craftingModifierRepair = RECIPE_SERIALIZERS.register("crafting_modifier_repair", () -> LoadableRecipeSerializer.of(ModifierRepairCraftingRecipe.LOADER));
   // worktable
   public static final RegistryObject<RecipeSerializer<ModifierRemovalRecipe>> removeModifierSerializer = RECIPE_SERIALIZERS.register("remove_modifier", () -> LoadableRecipeSerializer.of(ModifierRemovalRecipe.LOADER));
   public static final RegistryObject<RecipeSerializer<ExtractModifierRecipe>> extractModifierSerializer = RECIPE_SERIALIZERS.register("extract_modifier", () -> LoadableRecipeSerializer.of(ExtractModifierRecipe.LOADER));

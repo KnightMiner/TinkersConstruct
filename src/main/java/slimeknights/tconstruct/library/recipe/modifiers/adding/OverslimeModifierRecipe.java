@@ -1,16 +1,14 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
@@ -19,9 +17,10 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
-import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -34,20 +33,19 @@ import java.util.List;
 import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe.withModifiers;
 
 /**
- * Recipe to add overslime to a tool
+ * Recipe to add overslime to a tool.
+ * @see OverslimeCraftingTableRecipe
+ * @see OverslimeModifierRecipeBuilder
  */
 public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayModifierRecipe {
   private static final RecipeResult<LazyToolStack> AT_CAPACITY = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "overslime.at_capacity"));
   private static final String KEY_AMOUNT = TConstruct.makeTranslationKey("recipe", "modifier.amount");
   public static final RecordLoadable<OverslimeModifierRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    IngredientLoadable.DISALLOW_EMPTY.defaultField("tools", Ingredient.of(TinkerTags.Items.DURABILITY), true, r -> r.tools),
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("ingredient", r -> r.ingredient),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.defaultField("tools", Ingredient.of(TinkerTags.Items.DURABILITY), true, r -> r.tools),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("ingredient", r -> r.ingredient),
     IntLoadable.FROM_ONE.requiredField("restore_amount", r -> r.restoreAmount),
     OverslimeModifierRecipe::new);
 
-  @Getter
-  private final ResourceLocation id;
   private final Ingredient tools;
   private final Ingredient ingredient;
   private final int restoreAmount;
@@ -55,8 +53,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   private final Component variant;
 
   @Internal
-  protected OverslimeModifierRecipe(ResourceLocation id, Ingredient tools, Ingredient ingredient, int restoreAmount) {
-    this.id = id;
+  protected OverslimeModifierRecipe(Ingredient tools, Ingredient ingredient, int restoreAmount) {
     this.tools = tools;
     this.ingredient = ingredient;
     this.restoreAmount = restoreAmount;
@@ -74,7 +71,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
     ModifierId overslime = TinkerModifiers.overslime.id();
     // if the tool lacks true overslime, add overslime
@@ -112,7 +109,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.overslimeSerializer.get();
+    return TinkerRecipes.overslimeModifier.get();
   }
 
 
@@ -121,12 +118,6 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   public static final ModifierEntry RESULT = new ModifierEntry(TinkerModifiers.overslime, 1);
   /** Cache of input and output tools for display */
   private List<ItemStack> toolWithoutModifier, toolWithModifier = null;
-
-  @Nullable
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
-  }
 
   @Override
   public int getInputCount() {
