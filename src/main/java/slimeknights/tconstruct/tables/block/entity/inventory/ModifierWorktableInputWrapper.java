@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tables.block.entity.table.ModifierWorktableBlockEntity;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import static slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity.TINKER_SLOT;
 
 @RequiredArgsConstructor
-public class ModifierWorktableContainerWrapper implements ITinkerableContainer.Mutable {
+public class ModifierWorktableInputWrapper implements TinkerableRecipeInput.Mutable {
   private final ModifierWorktableBlockEntity worktable;
   @Nullable @Setter
   private Player player;

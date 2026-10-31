@@ -11,8 +11,8 @@ import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer.Mutable;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput.Mutable;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.tools.TinkerModifiers;
@@ -41,7 +41,7 @@ public class ExtractModifierRecipe extends ModifierRemovalRecipe {
   }
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null) {
       IToolStackView tool = inv.getTinkerable();
       if (filter(tool, tool.getModifierList()).isEmpty()) {

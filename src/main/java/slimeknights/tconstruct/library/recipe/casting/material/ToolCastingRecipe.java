@@ -29,7 +29,7 @@ import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
-import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialSwappingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.MaterialSwappingRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;

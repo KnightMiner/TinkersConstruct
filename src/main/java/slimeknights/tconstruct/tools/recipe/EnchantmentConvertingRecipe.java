@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
@@ -91,7 +91,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   /* Text */
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     // ensure we have at least one supported enchantment
     if (inv != null && getEnchantments(inv.getTinkerableStack()).entrySet().stream().noneMatch(entry -> {
       Modifier modifier = ModifierManager.INSTANCE.get(entry.getKey());
@@ -106,7 +106,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   /* Logic */
 
   @Override
-  public boolean matches(ITinkerableContainer inv, Level world) {
+  public boolean matches(TinkerableRecipeInput inv, Level world) {
     ItemStack tool = inv.getTinkerableStack();
     if (matchBook) {
       if (!tool.is(Items.ENCHANTED_BOOK)) {
@@ -128,7 +128,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv != null) {
       // map all enchantments to an equal level modifier
       return getEnchantments(inv.getTinkerableStack()).entrySet().stream().map(entry -> {
@@ -155,7 +155,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getResult(ITinkerableContainer inv, ModifierEntry modifier) {
+  public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     // first, ensure we have enough items for counts above 1
     int level = modifier.getLevel();
     if (level > 1) {
@@ -183,7 +183,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, ITinkerableContainer.Mutable inv, ModifierEntry selected, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerableRecipeInput.Mutable inv, ModifierEntry selected, boolean isServer) {
     // consume inputs once per selected item
     for (int i = 0; i < selected.getLevel(); i++) {
       ModifierRecipe.updateInputs(inv, inputs);

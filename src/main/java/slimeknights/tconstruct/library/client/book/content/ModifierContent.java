@@ -135,7 +135,7 @@ public class ModifierContent extends PageContent {
         assert level != null;
         TagKey<Item> filter = getToolFilterTag();
         // TODO: feel we can speed this up by not fetching the whole recipes list for every page
-        this.recipes = RecipeHelper.getJEIRecipes(level.registryAccess(), level.getRecipeManager(), TinkerRecipes.TINKER_STATION.get(), IDisplayModifierRecipe.class).stream()
+        this.recipes = RecipeHelper.getJEIRecipes(level.registryAccess(), level.getRecipeManager(), TinkerRecipes.tinkerStationType.get(), IDisplayModifierRecipe.class).stream()
           // must output this modifier, and must have at least 1 tool that matches the filter
           .filter(recipe -> recipe.getDisplayResult().matches(modifier) && (filter == null || recipe.getToolWithoutModifier().stream().anyMatch(tool -> tool.is(filter))))
           .toList();

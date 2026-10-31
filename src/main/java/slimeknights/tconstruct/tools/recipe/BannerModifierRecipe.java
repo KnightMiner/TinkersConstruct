@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlots;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -68,7 +68,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     // ensure this modifier can be applied
     if (!inv.getTinkerableStack().is(TinkerTags.Items.BANNER)) {
       return false;
@@ -112,7 +112,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, IMultiRecipe<
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable().copy();
 
     ModifierId key = TinkerModifiers.banner.id();

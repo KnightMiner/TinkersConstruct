@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.tools.recipe;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -8,20 +8,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -31,27 +31,29 @@ import java.util.List;
 public class TippedToolTransformRecipe extends ToolBuildingRecipe {
   /** Loader instance */
   public static final RecordLoadable<TippedToolTransformRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
     LoadableRecipeSerializer.RECIPE_GROUP, RESULT_FIELD, LAYOUT_FIELD,
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("input", r -> r.ingredients.get(0)),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", r -> r.ingredients.get(0)),
     MaterialVariantId.LOADABLE.list(0).defaultField("materials", List.of(), false, r -> r.materials),
     ModifierId.PARSER.requiredField("modifier", r -> r.modifier),
     TippedToolTransformRecipe::new);
 
   protected final ModifierId modifier;
-  public TippedToolTransformRecipe(ResourceLocation id, String group, IModifiable output, @Nullable ResourceLocation layoutSlot, Ingredient ingredient, List<MaterialVariantId> materials, ModifierId modifier) {
-    super(id, group, output, 1, layoutSlot, List.of(ingredient), List.of(), materials);
+
+  /** @apiNote construct using {@link slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipeBuilder} */
+  @Internal
+  public TippedToolTransformRecipe(String group, IModifiable output, @Nullable ResourceLocation layoutSlot, Ingredient ingredient, List<MaterialVariantId> materials, ModifierId modifier) {
+    super(group, output, 1, layoutSlot, List.of(ingredient), List.of(), materials);
     this.modifier = modifier;
   }
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.tippedToolTransformRecipeSerializer.get();
+    return TinkerRecipes.tippedToolTransform.get();
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
-    RecipeResult<LazyToolStack> result = super.getValidatedResult(inv, access);
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
+    RecipeResult<LazyToolStack> result = super.getValidatedResult(inv, registries);
     if (result.isSuccess()) {
       // tool must have modifier, else we are adding bad data
       IToolStackView tool = result.getResult().getTool();

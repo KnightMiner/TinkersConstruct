@@ -21,7 +21,7 @@ import slimeknights.tconstruct.shared.inventory.ConfigurableInvWrapperCapability
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer.ILazyCrafter;
-import slimeknights.tconstruct.tables.block.entity.inventory.ModifierWorktableContainerWrapper;
+import slimeknights.tconstruct.tables.block.entity.inventory.ModifierWorktableInputWrapper;
 import slimeknights.tconstruct.tables.menu.ModifierWorktableContainerMenu;
 
 import javax.annotation.Nonnull;
@@ -45,7 +45,7 @@ public class ModifierWorktableBlockEntity extends RetexturedTableBlockEntity imp
   private final LazyResultContainer craftingResult;
   /** Crafting inventory for the recipe calls */
   @Getter
-  private final ModifierWorktableContainerWrapper inventoryWrapper;
+  private final ModifierWorktableInputWrapper inventoryWrapper;
 
   /** If true, the last recipe is the current recipe. If false, no recipe was found. If null, have not tried recipe lookup */
   private Boolean recipeValid;
@@ -69,7 +69,7 @@ public class ModifierWorktableBlockEntity extends RetexturedTableBlockEntity imp
     super(TinkerTables.modifierWorktableTile.get(), pos, state, NAME, 3);
     this.itemHandler = new ConfigurableInvWrapperCapability(this, false, false);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
-    this.inventoryWrapper = new ModifierWorktableContainerWrapper(this);
+    this.inventoryWrapper = new ModifierWorktableInputWrapper(this);
     this.craftingResult = new LazyResultContainer(this);
   }
 

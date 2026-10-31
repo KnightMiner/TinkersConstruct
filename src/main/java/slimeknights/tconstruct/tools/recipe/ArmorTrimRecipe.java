@@ -25,7 +25,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -57,7 +57,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
 
   /** Finds the trim template and material */
   @Nullable
-  private static TrimItems findInputs(ITinkerStationContainer inv) {
+  private static TrimItems findInputs(TinkerStationRecipeInput inv) {
     ItemStack template = ItemStack.EMPTY;
     ItemStack material = ItemStack.EMPTY;
     for (int i = 0; i < inv.getInputCount(); i++) {
@@ -86,7 +86,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     // ensure this modifier can be applied
     if (!inv.getTinkerableStack().is(TinkerTags.Items.TRIM)) {
       return false;
@@ -96,7 +96,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, IMultiRecipe<IDisp
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     // first need to find our trim and material instances
     TrimItems trimItems = findInputs(inv);
     // should never happen

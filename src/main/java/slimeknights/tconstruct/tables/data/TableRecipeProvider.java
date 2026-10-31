@@ -32,10 +32,10 @@ import slimeknights.tconstruct.library.recipe.ingredient.MaterialIngredient;
 import slimeknights.tconstruct.library.recipe.material.MaterialsConsumerBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycleBuilder;
+import slimeknights.tconstruct.library.recipe.tinkerstation.damaging.TinkerStationDamagingRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMaterialSwappingRecipeBuilder;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tables.TinkerTables;
-import slimeknights.tconstruct.tables.recipe.TinkerStationDamagingRecipeBuilder;
-import slimeknights.tconstruct.tables.recipe.TinkerStationPartSwappingBuilder;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -280,14 +280,14 @@ public class TableRecipeProvider extends BaseRecipeProvider {
       .save(materialConsumer, location(folder + "scorched_forge_material"));
 
     // part swapping
-    TinkerStationPartSwappingBuilder.tools(DifferenceIngredient.of(Ingredient.of(TinkerTags.Items.MULTIPART_TOOL), Ingredient.of(TinkerTags.Items.UNSWAPPABLE_PARTS)))
+    ToolMaterialSwappingRecipeBuilder.tools(DifferenceIngredient.of(Ingredient.of(TinkerTags.Items.MULTIPART_TOOL), Ingredient.of(TinkerTags.Items.UNSWAPPABLE_PARTS)))
       .save(consumer, location(folder + "tinker_station_part_swapping"));
-    TinkerStationPartSwappingBuilder.tools(DifferenceIngredient.of(Ingredient.of(TinkerTags.Items.MULTIPART_TOOL), Ingredient.of(TinkerTags.Items.UNSWAPPABLE_TOOLS)))
+    ToolMaterialSwappingRecipeBuilder.tools(DifferenceIngredient.of(Ingredient.of(TinkerTags.Items.MULTIPART_TOOL), Ingredient.of(TinkerTags.Items.UNSWAPPABLE_TOOLS)))
       .fromTool().save(consumer, location(folder + "tool_material_swapping"));
-    TinkerStationPartSwappingBuilder.tools(Ingredient.of(TinkerTools.arrow.get(), TinkerTools.shuriken.get()))
+    ToolMaterialSwappingRecipeBuilder.tools(Ingredient.of(TinkerTools.arrow.get(), TinkerTools.shuriken.get()))
       .maxStackSize(4)
       .save(consumer, location(folder + "ammo_part_swapping"));
-    TinkerStationPartSwappingBuilder.tools(Ingredient.of(TinkerTools.throwingAxe.get()))
+    ToolMaterialSwappingRecipeBuilder.tools(Ingredient.of(TinkerTools.throwingAxe.get()))
       .maxStackSize(2)
       .save(consumer, location(folder + "throwing_axe_part_swapping"));
 

@@ -37,7 +37,7 @@ import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tables.block.TinkerStationBlock;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer;
 import slimeknights.tconstruct.tables.block.entity.inventory.LazyResultContainer.ILazyCrafter;
-import slimeknights.tconstruct.tables.block.entity.inventory.TinkerStationContainerWrapper;
+import slimeknights.tconstruct.tables.block.entity.inventory.TinkerStationInputWrapper;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
 import slimeknights.tconstruct.tables.network.UpdateTinkerStationRecipePacket;
 
@@ -61,7 +61,7 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
   @Getter
   private final LazyResultContainer craftingResult;
   /** Crafting inventory for the recipe calls */
-  private final TinkerStationContainerWrapper inventoryWrapper;
+  private final TinkerStationInputWrapper inventoryWrapper;
 
   /** Current result, may be modified again later */
   @Nullable
@@ -87,7 +87,7 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
     super(TinkerTables.tinkerStationTile.get(), pos, state, NAME, slots);
     this.itemHandler = new ConfigurableInvWrapperCapability(this, false, false);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
-    this.inventoryWrapper = new TinkerStationContainerWrapper(this);
+    this.inventoryWrapper = new TinkerStationInputWrapper(this);
     this.craftingResult = new LazyResultContainer(this);
   }
 
@@ -152,7 +152,7 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
       ITinkerStationRecipe recipe = lastRecipe;
       // if it does not match, find a new recipe
       if (recipe == null || !recipe.matches(this.inventoryWrapper, this.level)) {
-        recipe = manager.getRecipeFor(TinkerRecipes.TINKER_STATION.get(), this.inventoryWrapper, this.level).orElse(null);
+        recipe = manager.getRecipeFor(TinkerRecipes.tinkerStationType.get(), this.inventoryWrapper, this.level).orElse(null);
       }
 
       // if we have a recipe, fetch its result

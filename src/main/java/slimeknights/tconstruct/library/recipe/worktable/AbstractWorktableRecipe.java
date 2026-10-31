@@ -11,7 +11,7 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
@@ -44,7 +44,7 @@ public abstract class AbstractWorktableRecipe implements IModifierWorktableRecip
   }
 
   @Override
-  public boolean matches(ITinkerableContainer inv, Level world) {
+  public boolean matches(TinkerableRecipeInput inv, Level world) {
     if (!toolRequirement.test(inv.getTinkerableStack())) {
       return false;
     }
@@ -52,7 +52,7 @@ public abstract class AbstractWorktableRecipe implements IModifierWorktableRecip
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv == null) {
       return ModifierRecipeLookup.getRecipeModifierList();
     }
@@ -60,7 +60,7 @@ public abstract class AbstractWorktableRecipe implements IModifierWorktableRecip
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, ITinkerableContainer.Mutable inv, ModifierEntry selected, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerableRecipeInput.Mutable inv, ModifierEntry selected, boolean isServer) {
     ModifierRecipe.updateInputs(inv, inputs);
   }
 

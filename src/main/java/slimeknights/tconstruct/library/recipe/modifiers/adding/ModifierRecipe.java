@@ -7,17 +7,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
@@ -52,7 +51,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
      * @param inv  Alloy tank
      * @return  Bitset
      */
-  public static BitSet makeBitset(ITinkerableContainer inv) {
+  public static BitSet makeBitset(TinkerableRecipeInput inv) {
     int inputs = inv.getInputCount();
     BitSet used = new BitSet(inputs);
     // mark empty as used to save a bit of effort
@@ -71,7 +70,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
    * @param used        Bitset for already used matches, will be modified
    * @return  Index of found match, or -1 if match not found
    */
-  protected static int findMatch(SizedIngredient ingredient, ITinkerableContainer inv, BitSet used) {
+  protected static int findMatch(SizedIngredient ingredient, TinkerableRecipeInput inv, BitSet used) {
     ItemStack stack;
     for (int i = 0; i < inv.getInputCount(); i++) {
       // must not have used that fluid yet
@@ -92,7 +91,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
    * @param inputs  List of inputs to check
    * @return True if a match
    */
-  public static boolean checkMatch(ITinkerableContainer inv, List<SizedIngredient> inputs) {
+  public static boolean checkMatch(TinkerableRecipeInput inv, List<SizedIngredient> inputs) {
     if (inputs.isEmpty()) {
       return false;
     }
@@ -103,10 +102,10 @@ public class ModifierRecipe extends AbstractModifierRecipe {
    * Tries to match the given list of ingredients to the inventory
    * @param inv     Inventory to check
    * @param inputs  List of inputs to check
-   * @param used    Partially filled bitset to mark ingredients used by other parts of the recipe. Use {@link #checkMatch(ITinkerableContainer, List)} if no other logic.
+   * @param used    Partially filled bitset to mark ingredients used by other parts of the recipe. Use {@link #checkMatch(TinkerableRecipeInput, List)} if no other logic.
    * @return True if a match
    */
-  public static boolean checkMatch(ITinkerableContainer inv, List<SizedIngredient> inputs, BitSet used) {
+  public static boolean checkMatch(TinkerableRecipeInput inv, List<SizedIngredient> inputs, BitSet used) {
     for (SizedIngredient ingredient : inputs) {
       int index = findMatch(ingredient, inv, used);
       if (index == -1) {
@@ -126,7 +125,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     // ensure this modifier can be applied
     if (!result.isBound() || !this.toolRequirement.test(inv.getTinkerableStack())) {
       return false;
@@ -139,7 +138,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
    * @return Validated result
    */
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable();
 
     // common errors
@@ -168,18 +167,18 @@ public class ModifierRecipe extends AbstractModifierRecipe {
   }
 
   /** Updates all inputs in the given container */
-  public static void updateInputs(ITinkerableContainer.Mutable inv, List<SizedIngredient> inputs) {
+  public static void updateInputs(TinkerableRecipeInput.Mutable inv, List<SizedIngredient> inputs) {
     updateInputs(inv, inputs, makeBitset(inv));
   }
 
   /** Updates all inputs in the given container, ignoring any slots already present in the bitset */
-  public static void updateInputs(ITinkerableContainer.Mutable inv, List<SizedIngredient> inputs, BitSet used) {
+  public static void updateInputs(TinkerableRecipeInput.Mutable inv, List<SizedIngredient> inputs, BitSet used) {
     // just shrink each input
     for (SizedIngredient ingredient : inputs) {
       // care about size, if too small just skip the recipe
       int index = findMatch(ingredient, inv, used);
       if (index != -1) {
-        inv.shrinkInput(index, ingredient.getAmountNeeded());
+        inv.shrinkInput(index, ingredient.count());
       } else {
         TConstruct.LOG.warn("Missing ingredient in modifier recipe input consume");
       }
@@ -187,7 +186,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     // if it's a crystal, just shrink the crystal
     if (matchesCrystal(inv)) {
       super.updateInputs(result, inv, isServer);

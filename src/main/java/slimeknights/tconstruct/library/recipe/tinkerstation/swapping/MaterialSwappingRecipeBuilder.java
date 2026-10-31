@@ -1,18 +1,18 @@
-package slimeknights.tconstruct.library.recipe.tinkerstation.building;
+package slimeknights.tconstruct.library.recipe.tinkerstation.swapping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
@@ -21,7 +21,6 @@ import slimeknights.tconstruct.library.tools.part.IToolPart;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 /** Builder for {@link FixedMaterialSwappingRecipe}, {@link PartSwappingOverrideRecipe}, and {@link MaterialValueSwappingRecipe} */
 @Accessors(fluent = true)
@@ -41,7 +40,7 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
   private IToolPart part = null;
 
   /** Ingredient for the input part, used by fixed */
-  private SizedIngredient ingredient = SizedIngredient.EMPTY;
+  private SizedIngredient ingredient = null;
   /** Material to swap to, used by fixed */
   private MaterialVariantId material = MaterialId.UNKNOWN;
   /** Repair value on swapping, used by fixed and material value */
@@ -76,7 +75,7 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
 
   /** Sets the material for this builder */
   public MaterialSwappingRecipeBuilder material(MaterialVariantId material, ItemLike item) {
-    return material(material, SizedIngredient.fromItems(item));
+    return material(material, SizedIngredient.of(item, 1));
   }
 
   /** Sets the materials for this builder */
@@ -94,34 +93,34 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
 
   /** Adds an extra ingredient requirement */
   public MaterialSwappingRecipeBuilder addExtraRequirement(Ingredient ingredient) {
-    return addExtraRequirement(SizedIngredient.of(ingredient));
+    return addExtraRequirement(new SizedIngredient(ingredient, 1));
   }
 
   /** Adds an extra ingredient requirement */
   public MaterialSwappingRecipeBuilder addExtraRequirement(ItemLike... items) {
-    return addExtraRequirement(SizedIngredient.fromItems(items));
+    return addExtraRequirement(Ingredient.of(items));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer) {
-    save(consumer, Loadables.ITEM.getKey(tools.getItems()[0].getItem()));
+  public void save(RecipeOutput output) {
+    save(output, Loadables.ITEM.getKey(tools.getItems()[0].getItem()));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public void save(RecipeOutput output, ResourceLocation id) {
     int[] indices = this.indices.stream().toArray();
     if (indices.length == 0) {
       throw new IllegalStateException("Must set index");
     }
     if (part != null) {
-      if (ingredient != SizedIngredient.EMPTY) {
+      if (ingredient != null) {
         throw new IllegalStateException("Cannot set both part and ingredient");
       }
-      consumer.accept(new LoadableFinishedRecipe<>(new PartSwappingOverrideRecipe(id, tools, maxStackSize, part, indices, extraRequirements), PartSwappingOverrideRecipe.LOADER, null));
+      output.accept(id, new PartSwappingOverrideRecipe(tools, maxStackSize, part, indices, extraRequirements), null);
     } else if (material != MaterialId.UNKNOWN) {
-      consumer.accept(new LoadableFinishedRecipe<>(new FixedMaterialSwappingRecipe(id, tools, maxStackSize, ingredient, material, indices, repairValue, extraRequirements), FixedMaterialSwappingRecipe.LOADER, null));
+      output.accept(id, new FixedMaterialSwappingRecipe(tools, maxStackSize, ingredient, material, indices, repairValue, extraRequirements), null);
     } else if (repairValue > 0) {
-      consumer.accept(new LoadableFinishedRecipe<>(new MaterialValueSwappingRecipe(id, tools, maxStackSize, materials, repairValue, indices, extraRequirements), MaterialValueSwappingRecipe.LOADER, null));
+      output.accept(id, new MaterialValueSwappingRecipe(tools, maxStackSize, materials, repairValue, indices, extraRequirements), null);
     }
   }
 }

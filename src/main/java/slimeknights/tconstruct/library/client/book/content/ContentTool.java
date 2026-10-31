@@ -175,7 +175,7 @@ public class ContentTool extends PageContent {
         }
       } else {
         // fetch the tool building recipe for extra ingredients
-        ToolBuildingRecipe toolBuilding = level.getRecipeManager().byType(TinkerRecipes.TINKER_STATION.get()).values().stream()
+        ToolBuildingRecipe toolBuilding = level.getRecipeManager().byType(TinkerRecipes.tinkerStationType.get()).values().stream()
           // only fetch recipes with the correct tool and that have the same number of parts - fixes issues with tools having multiple recipes
           .filter(r -> r instanceof ToolBuildingRecipe toolRecipe && toolRecipe.getOutput() == tool)
           .map(r -> ((ToolBuildingRecipe) r))

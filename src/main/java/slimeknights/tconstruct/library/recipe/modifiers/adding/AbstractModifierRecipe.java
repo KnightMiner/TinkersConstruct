@@ -21,8 +21,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
@@ -107,7 +107,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   }
 
   @Override
-  public abstract RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access);
+  public abstract RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access);
 
   @Override
   public int shrinkToolSlotBy() {
@@ -231,7 +231,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   /* Helpers */
 
   /** Checks if the inventory contains a crystal */
-  public static boolean matchesCrystal(ITinkerStationContainer container, ModifierId match) {
+  public static boolean matchesCrystal(TinkerStationRecipeInput container, ModifierId match) {
     boolean found = false;
     for (int i = 0; i < container.getInputCount(); i++) {
       ItemStack stack = container.getInput(i);
@@ -253,7 +253,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   }
 
   /** Checks if the inventory contains a crystal */
-  protected boolean matchesCrystal(ITinkerStationContainer container) {
+  protected boolean matchesCrystal(TinkerStationRecipeInput container) {
     return allowCrystal && matchesCrystal(container, result.id());
   }
 
@@ -318,7 +318,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
 
   /** Creates a successful result for the given tool and input stack size */
   @NonExtendable
-  protected RecipeResult<LazyToolStack> success(ToolStack tool, ITinkerStationContainer inv) {
+  protected RecipeResult<LazyToolStack> success(ToolStack tool, TinkerStationRecipeInput inv) {
     return success(tool, inv.getTinkerableStack());
   }
 

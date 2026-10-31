@@ -20,8 +20,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -66,7 +65,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     if (!tools.test(inv.getTinkerableStack())) {
       return false;
     }
@@ -75,7 +74,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable();
     ModifierId overslime = TinkerModifiers.overslime.id();
     // if the tool lacks true overslime, add overslime
@@ -103,7 +102,7 @@ public class OverslimeModifierRecipe implements ITinkerStationRecipe, IDisplayMo
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     ToolStack tool = inv.getTinkerable();
     // how much did we actually consume?
     // if the original tool did not have overslime, its treated as having no slime

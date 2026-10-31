@@ -1,17 +1,16 @@
-package slimeknights.tconstruct.library.recipe.tinkerstation.building;
+package slimeknights.tconstruct.library.recipe.tinkerstation.swapping;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.IMaterialUser;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
@@ -22,14 +21,13 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.definition.module.material.MaterialRepairModule;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
@@ -41,6 +39,7 @@ import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.IntPredicate;
@@ -49,16 +48,14 @@ import java.util.stream.IntStream;
 /** Common logic for different implementations of material swapping. */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
-  protected static final RecordField<Ingredient, MaterialSwappingRecipe> TOOLS_FIELD = IngredientLoadable.DISALLOW_EMPTY.requiredField("tools", r -> r.tools);
+  protected static final RecordField<Ingredient, MaterialSwappingRecipe> TOOLS_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tools", r -> r.tools);
   protected static final RecordField<Integer, MaterialSwappingRecipe> STACK_SIZE_FIELD = IntLoadable.FROM_ONE.defaultField("max_stack_size", ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE, true, r -> r.maxStackSize);
-  protected static final RecordField<List<SizedIngredient>, MaterialSwappingRecipe> EXTRA_REQUIREMENTS_FIELD = SizedIngredient.LOADABLE.list(0).defaultField("extra_requirements", List.of(), r -> r.extraRequirements);
+  protected static final RecordField<List<SizedIngredient>, MaterialSwappingRecipe> EXTRA_REQUIREMENTS_FIELD = Loadables.SIZED_ITEM_INGREDIENT.list(0).defaultField("extra_requirements", List.of(), r -> r.extraRequirements);
   protected static final RecipeResult<LazyToolStack> TOO_FEW_INPUTS = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "part_swapping.too_few_inputs"));
   protected static final RecipeResult<LazyToolStack> TOO_FEW_PARTS = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "part_swapping.too_few_parts"));
   protected static final RecipeResult<LazyToolStack> TOO_MANY_PARTS = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "part_swapping.too_many_parts"));
   protected static final RecipeResult<LazyToolStack> INVALID_MATERIAL = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "part_swapping.invalid_material"));
 
-  @Getter
-  protected final ResourceLocation id;
   /** Tools that may use this recipe */
   protected final Ingredient tools;
   /** Max stack size that can be swapped at once */
@@ -82,7 +79,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   }
 
   @Override
-  public int shrinkToolSlotBy(LazyToolStack result, ITinkerStationContainer inv) {
+  public int shrinkToolSlotBy(LazyToolStack result, TinkerStationRecipeInput inv) {
     // if the output is shrinking, we want to ensure we take the minumum amount needed for that output
     // for example, if its reducing by 50%, just consuming the full amount might consume 3 arrows to produce 1 (instead of 2 to produce 1)
     int outputMax = maxStackSize(result.getTool());
@@ -90,12 +87,12 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   }
 
   /** Logic to actually swap the material */
-  protected RecipeResult<LazyToolStack> swapMaterial(ITinkerableContainer inv, MaterialVariantId material, int index, int partValue) {
+  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariantId material, int index, int partValue) {
     return swapMaterial(inv, material, index, partValue, false);
   }
 
   /** Logic to actually swap the material, with an override to force swap on damaged tools (intended for manual repair logic) */
-  protected RecipeResult<LazyToolStack> swapMaterial(ITinkerableContainer inv, MaterialVariantId material, int index, int partValue, boolean mayRepair) {
+  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariantId material, int index, int partValue, boolean mayRepair) {
     // ensure we have enough items to get a result
     ToolStack original = inv.getTinkerable();
     int shrink = maxStackSize(original);
@@ -174,10 +171,10 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   }
 
   /** Shrinks the part, returning false if no match */
-  protected abstract boolean shrinkPart(IMutableTinkerStationContainer inv, int index, ItemStack stack);
+  protected abstract boolean shrinkPart(TinkerStationRecipeInput.Mutable inv, int index, ItemStack stack);
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     // keep track of where we shrunk so it does not shrink again
     BitSet used = ModifierRecipe.makeBitset(inv);
     for (int i = 0; i < inv.getInputCount(); i++) {
@@ -263,11 +260,6 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     }
 
     @Override
-    public ResourceLocation getRecipeId() {
-      return id;
-    }
-
-    @Override
     public int getMaxToolSize() {
       return maxStackSize;
     }
@@ -299,7 +291,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
         slot--;
       }
       if (slot < extraRequirements.size()) {
-        return extraRequirements.get(slot).getMatchingStacks();
+        return Arrays.asList(extraRequirements.get(slot).getItems());
       }
       return List.of();
     }

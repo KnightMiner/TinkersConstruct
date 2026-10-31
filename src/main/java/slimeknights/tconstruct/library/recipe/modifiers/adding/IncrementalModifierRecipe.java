@@ -20,10 +20,9 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -65,7 +64,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level level) {
+  public boolean matches(TinkerStationRecipeInput inv, Level level) {
     // ensure this modifier can be applied
     if (!result.isBound() || !this.toolRequirement.test(inv.getTinkerableStack())) {
       return false;
@@ -74,7 +73,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable();
 
     // fetch the amount from the modifier, will be 0 if we have a full level
@@ -125,7 +124,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     // if its a crystal, just shrink the crystal
     if (matchesCrystal(inv)) {
       super.updateInputs(result, inv, isServer);
@@ -222,7 +221,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
    * @param ingredient  Ingredient to try
    * @return  True if the inventory contains just this item
    */
-  public static boolean containsOnlyIngredient(ITinkerableContainer inv, Ingredient ingredient) {
+  public static boolean containsOnlyIngredient(TinkerableRecipeInput inv, Ingredient ingredient) {
     boolean found = false;
     for (int i = 0; i < inv.getInputCount(); i++) {
       ItemStack stack = inv.getInput(i);
@@ -247,7 +246,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
    * @param amountPerItem  Amount each item in the inventory is worth
    * @return  Total value in the inventory
    */
-  public static int getAvailableAmount(ITinkerStationContainer inv, Ingredient ingredient, int amountPerItem) {
+  public static int getAvailableAmount(TinkerStationRecipeInput inv, Ingredient ingredient, int amountPerItem) {
     int available = 0;
     for (int i = 0; i < inv.getInputCount(); i++) {
       ItemStack stack = inv.getInput(i);
@@ -266,7 +265,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
    * @param amountPerInput  Number each item gives
    * @param leftover        Itemstack to use if amountNeeded is too much to match amountPerInput
    */
-  public static void updateInputs(IMutableTinkerStationContainer inv, Ingredient ingredient, int amountNeeded, int amountPerInput, ItemStack leftover) {
+  public static void updateInputs(TinkerStationRecipeInput.Mutable inv, Ingredient ingredient, int amountNeeded, int amountPerInput, ItemStack leftover) {
     int itemsNeeded = amountNeeded / amountPerInput;
     int leftoverAmount = amountNeeded % amountPerInput;
     if (leftoverAmount > 0) {

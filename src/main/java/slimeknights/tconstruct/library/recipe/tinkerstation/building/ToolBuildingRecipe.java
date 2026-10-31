@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.building;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -12,8 +12,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -25,9 +23,11 @@ import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.MaterialSwappingRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
@@ -43,7 +43,6 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.library.tools.part.MaterialItemCache;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -68,16 +67,14 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   protected static final LoadableField<ResourceLocation,ToolBuildingRecipe> LAYOUT_FIELD = Loadables.RESOURCE_LOCATION.nullableField("slot_layout",  r -> r.layoutSlot);
   /** Loader instance */
   public static final RecordLoadable<ToolBuildingRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP, RESULT_FIELD,
+    LoadableRecipeSerializer.RECIPE_GROUP, RESULT_FIELD,
     IntLoadable.FROM_ONE.defaultField("result_count", 1, true, r -> r.outputCount),
     LAYOUT_FIELD,
-    IngredientLoadable.DISALLOW_EMPTY.list(0).defaultField("extra_requirements", List.of(), r -> r.ingredients),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.list(0).defaultField("extra_requirements", List.of(), r -> r.ingredients),
     TinkerLoadables.TOOL_PART_ITEM.list(0).nullableField("parts_override", r -> r.parts),
     MaterialVariantId.LOADABLE.list(0).defaultField("extra_materials", List.of(), false, r -> r.materials),
     ToolBuildingRecipe::new);
 
-  @Getter
-  protected final ResourceLocation id;
   @Getter
   protected final String group;
   /** Tool result */
@@ -104,7 +101,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.toolBuildingRecipeSerializer.get();
+    return TinkerRecipes.toolBuilding.get();
   }
 
   /** Gets the tool parts for this tool */
@@ -126,7 +123,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level worldIn) {
+  public boolean matches(TinkerStationRecipeInput inv, Level worldIn) {
     if (!inv.getTinkerableStack().isEmpty()) {
       return false;
     }
@@ -175,7 +172,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     int materialCount = ToolMaterialHook.stats(output.getToolDefinition()).size();
     // fill in materials
     List<MaterialVariant> materials = new ArrayList<>(materialCount);
@@ -199,7 +196,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
     // if we have any parts set, run the count hook
     // no point running it if all materials are set through override/no materials, just set the recipe count in that case
     // note there is an edge case when you have a fixed material that adjusts count plus parts, not really a good solution for that case
-    int itemMax = item.getMaxStackSize();
+    int itemMax = item.getDefaultMaxStackSize();
     if (parts > 0 && itemMax > 1) {
       count = CraftCountModifierHook.maxStackSize(tool, outputCount);
       if (count <= 0) {
@@ -231,7 +228,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
    * Typically matches the output definition ID, but some tool recipes share a single layout.
    */
   public ResourceLocation getLayoutSlotId() {
-    return Objects.requireNonNullElse(layoutSlot, output.getToolDefinition().getId());
+    return Objects.requireNonNullElse(layoutSlot, output.getToolDefinition().id());
   }
 
   /**
@@ -269,7 +266,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       int missingSlots = getAllToolParts().size() + getExtraRequirements().size() - layoutSlots.size();
       // check layout slots if its too small
       if (missingSlots > 0) {
-        TConstruct.LOG.error(String.format("Tool part count is greater than layout slot count for %s!", getId()));
+        TConstruct.LOG.error("Tool part count is greater than layout slot count for " + output.getToolDefinition().id() + '!');
         layoutSlots = new ArrayList<>(layoutSlots);
         for (int additionalSlot = 0; additionalSlot < missingSlots; additionalSlot++) {
           layoutSlots.add(new LayoutSlot(null, null, additionalSlot * SLOT_SIZE - X_OFFSET, -Y_OFFSET, null));
@@ -307,6 +304,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
           } else {
             // not a full list? mark it for display with just the materials on the end
             result = new MaterialIdNBT(list).updateStack(new ItemStack(output, outputCount));
+            // TODO: display tags
             result.getOrCreateTag().putBoolean(TooltipUtil.KEY_DISPLAY, true);
           }
         }
@@ -327,15 +325,17 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
 
   /* Unused */
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return new ItemStack(this.output);
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ItemStack assemble(ITinkerStationContainer inv, RegistryAccess access) {
-    return getValidatedResult(inv, access).getResult().getStack();
+  public ItemStack assemble(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
+    return getValidatedResult(inv, registries).getResult().getStack();
   }
 }

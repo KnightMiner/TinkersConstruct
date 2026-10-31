@@ -4,10 +4,10 @@ import lombok.Setter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import slimeknights.mantle.recipe.container.ISingleStackContainer;
+import slimeknights.mantle.recipe.input.SingleItemInput;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity.INPUT_SLOT;
 import static slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity.TINKER_SLOT;
 
-public class TinkerStationContainerWrapper implements IMutableTinkerStationContainer {
+public class TinkerStationInputWrapper implements TinkerStationRecipeInput.Mutable {
   private final TinkerStationBlockEntity station;
   /** Cache of the material recipes found in each slot */
   private MaterialRecipe[] materials;
@@ -37,7 +37,7 @@ public class TinkerStationContainerWrapper implements IMutableTinkerStationConta
    * Creates a new wrapper instance for the station
    * @param station  Station instance
    */
-  public TinkerStationContainerWrapper(TinkerStationBlockEntity station) {
+  public TinkerStationInputWrapper(TinkerStationBlockEntity station) {
     this.station = station;
     int count = station.getInputCount();
     this.materials = new MaterialRecipe[count];
@@ -57,7 +57,7 @@ public class TinkerStationContainerWrapper implements IMutableTinkerStationConta
       return null;
     }
     // try last recipe
-    ISingleStackContainer inv = () -> stack;
+    SingleItemInput inv = () -> stack;
     if (lastMaterialRecipe != null && lastMaterialRecipe.matches(inv, world)) {
       return lastMaterialRecipe;
     }

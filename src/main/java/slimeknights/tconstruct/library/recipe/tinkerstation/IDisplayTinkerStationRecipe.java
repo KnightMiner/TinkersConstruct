@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.library.recipe.tinkerstation;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -15,10 +14,6 @@ import java.util.List;
 public interface IDisplayTinkerStationRecipe {
   /** Return from {@link #linkToOutput()} to indicate no slots are linked. Will attempt to link the inputs instead. */
   int[] NO_LINKS = new int[0];
-
-  /** Gets the ID of this recipe. If this is a generated display recipe, uses the parent recipe ID */
-  @Nullable
-  ResourceLocation getRecipeId();
 
   /**
    * Gets the variant for this recipe. Mutually exclusive with level for recipe display.

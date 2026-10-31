@@ -27,8 +27,7 @@ import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -65,7 +64,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
   private final int repairAmount;
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     ItemStack tinkerable = inv.getTinkerableStack();
     if (!tinkerable.is(TinkerTags.Items.DURABILITY)) {
       return false;
@@ -78,7 +77,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, RegistryAccess access) {
     ToolStack tool = inv.getTinkerable();
     int amountPerItem = tool.getModifierLevel(modifier) * repairAmount;
     if (amountPerItem <= 0) {
@@ -109,7 +108,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     ToolStack tool = inv.getTinkerable();
 
     // rescale the amount based on modifiers

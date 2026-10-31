@@ -15,7 +15,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.worktable.AbstractWorktableRecipe;
@@ -56,7 +56,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null && inv.getTinkerable().getModifiers().getModifiers().stream().noneMatch(FILTER)) {
       return ModifierSetWorktableRecipe.NO_MATCHES;
     }
@@ -64,7 +64,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv == null) {
       if (filteredModifiers == null) {
         filteredModifiers = ModifierRecipeLookup.getRecipeModifierList().stream().filter(FILTER).toList();
@@ -75,7 +75,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getResult(ITinkerableContainer inv, ModifierEntry modifier) {
+  public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     ToolStack tool = inv.getTinkerable().copy();
     ModDataNBT persistentData = tool.getPersistentData();
     // start by obtaining the two lists

@@ -19,7 +19,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
@@ -88,7 +88,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   /** Gets the modifiers from the container */
-  private List<ModifierEntry> getModifiers(ITinkerableContainer inv) {
+  private List<ModifierEntry> getModifiers(TinkerableRecipeInput inv) {
     if (allowTraits) {
       return inv.getTinkerable().getModifiers().getModifiers();
     }
@@ -96,7 +96,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null && getModifiers(inv).stream().noneMatch(this.entryFilter)) {
       return NO_MATCHES;
     }
@@ -104,7 +104,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv == null) {
       if (filteredModifiers == null) {
         filteredModifiers = ModifierRecipeLookup.getRecipeModifierList().stream().filter(this.entryFilter).toList();
@@ -118,7 +118,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getResult(ITinkerableContainer inv, ModifierEntry modifier) {
+  public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     ToolStack tool = inv.getTinkerable().copy();
     ModDataNBT persistentData = tool.getPersistentData();
     // get or create the tag

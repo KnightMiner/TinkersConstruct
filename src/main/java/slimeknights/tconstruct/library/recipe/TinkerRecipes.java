@@ -47,7 +47,15 @@ import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycle;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycle;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.damaging.TinkerStationDamagingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.FixedMaterialSwappingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.MaterialValueSwappingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartMaterialSwappingRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartSwappingOverrideRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMaterialSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.tools.recipe.TippedToolTransformRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.SheepShearingRecipe;
@@ -72,7 +80,6 @@ public class TinkerRecipes {
   /** Internal recipe type for recipes that are not pulled by any specific crafting block */
   public static final DeferredRecipeType<Recipe<?>> dataType = TYPES.registerType("data");
 
-  public static final DeferredRecipeType<ITinkerStationRecipe> TINKER_STATION = TYPES.registerType("tinker_station");
   public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
 
   /*
@@ -91,6 +98,20 @@ public class TinkerRecipes {
   public static final DeferredRecipeSerializer<ItemPartRecipe> itemPartBuilder = SERIALIZERS.registerLoadable("item_part_builder", ItemPartRecipe.LOADER);
   public static final DeferredRecipeSerializer<PartBuilderToolRecycle> partBuilderToolRecycle = SERIALIZERS.registerLoadable("part_builder_tool_recycling", PartBuilderToolRecycle.LOADER);
   public static final DeferredRecipeSerializer<PartBuilderRecycle> partBuilderRecycle = SERIALIZERS.registerLoadable("part_builder_recycling", PartBuilderRecycle.LOADER);
+
+  /*
+   * tinker station
+   */
+  public static final DeferredRecipeType<ITinkerStationRecipe> tinkerStationType = TYPES.registerType("tinker_station");
+  public static final DeferredRecipeSerializer<ToolBuildingRecipe> toolBuilding = SERIALIZERS.registerLoadable("tool_building", ToolBuildingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<TippedToolTransformRecipe> tippedToolTransform = SERIALIZERS.registerLoadable("tipped_tool_transform", TippedToolTransformRecipe.LOADER);
+  public static final DeferredRecipeSerializer<TinkerStationDamagingRecipe> tinkerStationDamaging = SERIALIZERS.registerLoadable("tinker_station_damaging", TinkerStationDamagingRecipe.LOADER);
+  // material swapping
+  public static final DeferredRecipeSerializer<PartMaterialSwappingRecipe> partSwapping = SERIALIZERS.registerLoadable("part_material_swapping", PartMaterialSwappingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<PartSwappingOverrideRecipe> partSwappingOverride = SERIALIZERS.registerLoadable("part_swapping_override", PartSwappingOverrideRecipe.LOADER);
+  public static final DeferredRecipeSerializer<FixedMaterialSwappingRecipe> fixedMaterialSwapping = SERIALIZERS.registerLoadable("fixed_material_swapping", FixedMaterialSwappingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MaterialValueSwappingRecipe> materialValueSwapping = SERIALIZERS.registerLoadable("material_value_swapping", MaterialValueSwappingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ToolMaterialSwappingRecipe> toolMaterialSwapping = SERIALIZERS.registerLoadable("tool_material_swapping", ToolMaterialSwappingRecipe.LOADER);
 
   /*
    * smeltery

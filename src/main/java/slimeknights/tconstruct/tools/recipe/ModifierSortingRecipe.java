@@ -13,7 +13,7 @@ import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
@@ -56,7 +56,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public boolean matches(ITinkerableContainer inv, Level world) {
+  public boolean matches(TinkerableRecipeInput inv, Level world) {
     if (!inv.getTinkerableStack().is(TinkerTags.Items.MODIFIABLE)) {
       return false;
     }
@@ -69,7 +69,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null) {
       if (inv.getTinkerable().getUpgrades().getModifiers().size() < 2) {
         return NOT_ENOUGH_MODIFIERS;
@@ -87,7 +87,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv == null) {
       return ModifierRecipeLookup.getRecipeModifierList();
     }
@@ -99,7 +99,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getResult(ITinkerableContainer inv, ModifierEntry modifier) {
+  public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     ToolStack tool = inv.getTinkerable();
 
     // find the modifier to remove
@@ -130,7 +130,7 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, ITinkerableContainer.Mutable inv, ModifierEntry selected, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerableRecipeInput.Mutable inv, ModifierEntry selected, boolean isServer) {
     // input is not consumed
   }
 

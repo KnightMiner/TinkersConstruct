@@ -272,7 +272,7 @@ public class JEIPlugin implements IModPlugin {
     register.addRecipes(TConstructJEIConstants.MOLDING, moldingRecipes);
 
     // modifiers
-    List<IDisplayModifierRecipe> modifierRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), IDisplayModifierRecipe.class)
+    List<IDisplayModifierRecipe> modifierRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayModifierRecipe.class)
                                                                .stream()
                                                                .sorted((r1, r2) -> {
                                                                  SlotType t1 = r1.getSlotType();
@@ -282,13 +282,13 @@ public class JEIPlugin implements IModPlugin {
                                                                  return n1.compareTo(n2);
                                                                }).collect(Collectors.toList());
     register.addRecipes(TConstructJEIConstants.MODIFIERS, modifierRecipes);
-    register.addRecipes(TConstructJEIConstants.TOOL_MODIFICATION, FilteredRecipe.unfiltered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), IDisplayToolTinkering.class)));
+    register.addRecipes(TConstructJEIConstants.TOOL_MODIFICATION, FilteredRecipe.unfiltered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class)));
 
     // beheading
     register.addRecipes(TConstructJEIConstants.SEVERING, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.severingType.get(), SeveringRecipe.class));
 
     // tool building
-    List<ToolBuildingRecipe> toolBuilding = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), ToolBuildingRecipe.class)
+    List<ToolBuildingRecipe> toolBuilding = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), ToolBuildingRecipe.class)
       .stream()
       .sorted(Comparator.comparingInt(r -> StationSlotLayoutLoader.getInstance().get(r.getLayoutSlotId()).getSortIndex()))
       .toList();
@@ -315,7 +315,7 @@ public class JEIPlugin implements IModPlugin {
 
     // copy tinker station repair recipes to the crafting table
     CraftingTableRepairKitRecipe craftingRepair = findFirst(manager, RecipeType.CRAFTING, CraftingTableRepairKitRecipe.class);
-    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.TINKER_STATION.get(), TinkerStationRepairRecipe.class);
+    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
     if (craftingRepair != null && tinkerRepair != null) {
       ResourceLocation id = craftingRepair.getId();
       List<IDisplayCraftingTinkering> recipes = tinkerRepair.getRecipes(access);
@@ -354,12 +354,12 @@ public class JEIPlugin implements IModPlugin {
     IIngredientManager ingredientManager = registration.getJeiHelpers().getIngredientManager();
     registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_BASIN, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingBasinType)));
     registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_TABLE, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingTableType)));
-    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.TOOL_MODIFICATION, new SimpleItemRecipeManager<>(ingredientManager, FilteredRecipe.filtered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), IDisplayToolTinkering.class))));
+    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.TOOL_MODIFICATION, new SimpleItemRecipeManager<>(ingredientManager, FilteredRecipe.filtered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class))));
 
     // copy tinker station repair recipes to the crafting table
     List<IDisplayCraftingTinkering> craftingRecipes = VanillaFilteredRecipe.getRecipes(access, manager, RecipeType.CRAFTING, IDisplayCraftingTinkering.class);
     // copy tinker repair recipes to the crafting table
-    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.TINKER_STATION.get(), TinkerStationRepairRecipe.class);
+    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
     if (tinkerRepair != null) {
       List<IDisplayCraftingTinkering> recipes = tinkerRepair.getRecipes(access);
       for (IDisplayCraftingTinkering recipe : recipes) {

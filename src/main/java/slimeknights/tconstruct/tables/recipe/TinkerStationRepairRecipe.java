@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -26,9 +27,8 @@ import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlots;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTinkering;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.MaterialRepairToolHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
@@ -76,7 +76,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
    * @param slot  Slot
    * @return  Material amount
    */
-  protected static MaterialId getMaterialFrom(ITinkerStationContainer inv, int slot) {
+  protected static MaterialId getMaterialFrom(TinkerStationRecipeInput inv, int slot) {
     // try repair kit first
     ItemStack item = inv.getInput(slot);
     if (item.getItem() instanceof IRepairKitItem kit) {
@@ -96,7 +96,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   }
 
   /** Gets the amount to repair per item */
-  protected float getRepairPerItem(ToolStack tool, ITinkerStationContainer inv, int slot, MaterialId repairMaterial) {
+  protected float getRepairPerItem(ToolStack tool, TinkerStationRecipeInput inv, int slot, MaterialId repairMaterial) {
     // repair stat may be null in the modifier repair recipe
     float amount = getRepairAmount(tool, repairMaterial);
     if (amount > 0) {
@@ -117,7 +117,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     // must be repairable
     ItemStack tinkerable = inv.getTinkerableStack();
     // must be repairable and multipart to use this recipe
@@ -167,7 +167,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
     if (tool.getDefinition() == ToolDefinition.EMPTY) {
       return RecipeResult.pass();
@@ -200,7 +200,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     ToolStack inputTool = ToolStack.from(inv.getTinkerableStack());
 
     // iterate stacks, removing items as we repair
@@ -224,7 +224,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, IMultiRe
    * @param amountConsumer  Action to perform on repair, input is the amount consumed
    * @return  Repair from this slot
    */
-  protected int repairFromSlot(ToolStack tool, ITinkerStationContainer inv, int repairNeeded, int slot, IntConsumer amountConsumer) {
+  protected int repairFromSlot(ToolStack tool, TinkerStationRecipeInput inv, int repairNeeded, int slot, IntConsumer amountConsumer) {
     ItemStack stack = inv.getInput(slot);
     if (!stack.isEmpty()) {
       // we have a recipe with matching stack, find out how much we can repair

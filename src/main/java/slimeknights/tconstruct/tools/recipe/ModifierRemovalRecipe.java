@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
-import slimeknights.tconstruct.library.recipe.ITinkerableContainer;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierSalvage;
@@ -77,7 +77,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public boolean matches(ITinkerableContainer inv, Level world) {
+  public boolean matches(TinkerableRecipeInput inv, Level world) {
     if (!sizedTool.test(inv.getTinkerableStack())) {
       return false;
     }
@@ -93,7 +93,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public List<ModifierEntry> getModifierOptions(@Nullable ITinkerableContainer inv) {
+  public List<ModifierEntry> getModifierOptions(@Nullable TinkerableRecipeInput inv) {
     if (inv == null) {
       if (displayModifiers == null) {
         displayModifiers = filter(null, ModifierRecipeLookup.getRecipeModifierList());
@@ -104,7 +104,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public Component getDescription(@Nullable ITinkerableContainer inv) {
+  public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null && inv.getTinkerable().getUpgrades().getModifiers().stream().noneMatch(entryPredicate)) {
       return NO_MODIFIERS;
     }
@@ -112,7 +112,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getResult(ITinkerableContainer inv, ModifierEntry entry) {
+  public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry entry) {
     ToolStack original = inv.getTinkerable();
 
     // salvage
@@ -150,7 +150,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, ITinkerableContainer.Mutable inv, ModifierEntry selected, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerableRecipeInput.Mutable inv, ModifierEntry selected, boolean isServer) {
     super.updateInputs(result, inv, selected, isServer);
     if (isServer) {
       for (ItemStack stack : leftovers) {

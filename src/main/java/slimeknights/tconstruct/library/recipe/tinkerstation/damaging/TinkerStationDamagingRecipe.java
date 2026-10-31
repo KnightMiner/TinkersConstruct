@@ -1,43 +1,39 @@
-package slimeknights.tconstruct.tables.recipe;
+package slimeknights.tconstruct.library.recipe.tinkerstation.damaging;
 
-import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.tables.TinkerTables;
 
 import java.util.List;
 
 /** Recipe for damaging a tool in the tinker station. */
 public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDisplayToolTinkering {
   public static final RecordLoadable<TinkerStationDamagingRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("ingredient", r -> r.ingredient),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("ingredient", r -> r.ingredient),
     IntLoadable.FROM_ONE.requiredField("damage_amount", r -> r.damageAmount),
     TinkerStationDamagingRecipe::new);
   private static final RecipeResult<LazyToolStack> BROKEN = RecipeResult.failure(TConstruct.makeTranslationKey("recipe", "damaging.broken"));
@@ -45,21 +41,18 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   private static final Component TOOLTIP = TConstruct.makeTranslation("recipe", "tool_damaging.tooltip");
   private static final String KEY_AMOUNT = TConstruct.makeTranslationKey("recipe", "modifier.amount");
 
-  @Getter
-  private final ResourceLocation id;
   private final Ingredient ingredient;
   private final int damageAmount;
   private final Component amountText;
 
-  public TinkerStationDamagingRecipe(ResourceLocation id, Ingredient ingredient, int damageAmount) {
-    this.id = id;
+  public TinkerStationDamagingRecipe(Ingredient ingredient, int damageAmount) {
     this.ingredient = ingredient;
     this.damageAmount = damageAmount;
     this.amountText = Component.translatable(KEY_AMOUNT, damageAmount);
   }
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     if (!inv.getTinkerableStack().is(TinkerTags.Items.DURABILITY)) {
       return false;
     }
@@ -68,7 +61,7 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable();
     if (tool.isBroken()) {
       return BROKEN;
@@ -87,7 +80,7 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   }
 
   @Override
-  public void updateInputs(LazyToolStack result, IMutableTinkerStationContainer inv, boolean isServer) {
+  public void updateInputs(LazyToolStack result, TinkerStationRecipeInput.Mutable inv, boolean isServer) {
     // how much did we actually consume?
     int damageTaken = result.getTool().getDamage() - inv.getTinkerable().getDamage();
     IncrementalModifierRecipe.updateInputs(inv, ingredient, damageTaken, damageAmount, ItemStack.EMPTY);
@@ -95,7 +88,7 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.tinkerStationDamagingSerializer.get();
+    return TinkerRecipes.tinkerStationDamaging.get();
   }
 
 
@@ -103,11 +96,6 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
 
   /** Tools for display in JEI */
   private List<ItemStack> toolWithoutModifier, toolWithModifier;
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
-  }
 
   @Override
   public Component getTitle() {
@@ -170,7 +158,7 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
       toolWithModifier = getToolWithoutModifier().stream()
         .map(stack -> {
           stack = stack.copy();
-          stack.getOrCreateTag().putInt(ToolStack.TAG_DAMAGE, damageAmount);
+          stack.set(DataComponents.DAMAGE, damageAmount);
           return stack;
         }).toList();
     }

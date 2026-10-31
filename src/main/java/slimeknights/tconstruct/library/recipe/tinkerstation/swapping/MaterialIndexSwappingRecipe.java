@@ -1,23 +1,21 @@
-package slimeknights.tconstruct.library.recipe.tinkerstation.building;
+package slimeknights.tconstruct.library.recipe.tinkerstation.swapping;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.array.IntArrayLoadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
-import slimeknights.tconstruct.library.recipe.tinkerstation.IMutableTinkerStationContainer;
-import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationContainer;
+import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -32,8 +30,8 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
   /** Options of indexes to set the material */
   protected final int[] indices;
 
-  protected MaterialIndexSwappingRecipe(ResourceLocation id, Ingredient tools, int maxStackSize, int[] indices, List<SizedIngredient> extraRequirements) {
-    super(id, tools, maxStackSize, extraRequirements);
+  protected MaterialIndexSwappingRecipe(Ingredient tools, int maxStackSize, int[] indices, List<SizedIngredient> extraRequirements) {
+    super(tools, maxStackSize, extraRequirements);
     this.indices = indices;
   }
 
@@ -47,7 +45,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
   protected abstract int getRepairValue();
 
   @Override
-  public boolean matches(ITinkerStationContainer inv, Level world) {
+  public boolean matches(TinkerStationRecipeInput inv, Level world) {
     ItemStack tinkerable = inv.getTinkerableStack();
     if (tinkerable.isEmpty() || !tools.test(tinkerable)) {
       return false;
@@ -73,7 +71,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
   }
 
   @Override
-  public RecipeResult<LazyToolStack> getValidatedResult(ITinkerStationContainer inv, RegistryAccess access) {
+  public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     // copy the tool NBT to ensure the original tool is intact
     List<MaterialStatsId> materials = ToolMaterialHook.stats(inv.getTinkerable().getDefinition());
 
@@ -120,7 +118,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
   }
 
   @Override
-  protected boolean shrinkPart(IMutableTinkerStationContainer inv, int index, ItemStack stack) {
+  protected boolean shrinkPart(TinkerStationRecipeInput.Mutable inv, int index, ItemStack stack) {
     if (isMaterial(stack)) {
       inv.shrinkInput(index, 1);
       return true;

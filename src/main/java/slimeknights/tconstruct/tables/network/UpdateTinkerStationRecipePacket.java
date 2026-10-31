@@ -42,7 +42,7 @@ public record UpdateTinkerStationRecipePacket(BlockPos pos, ResourceLocation rec
     Player player = context.player();
     Level level = context.player().level();
     // start by fetching the recipe, no further work if it's missing
-    RecipeHolder<ITinkerStationRecipe> recipe = level.getRecipeManager().byKeyTyped(TinkerRecipes.TINKER_STATION.get(), this.recipe);
+    RecipeHolder<ITinkerStationRecipe> recipe = level.getRecipeManager().byKeyTyped(TinkerRecipes.tinkerStationType.get(), this.recipe);
     if (recipe == null) {
       TConstruct.LOG.error("Failed to update Tinker Station Recipe at {}: unknown recipe {}", pos, recipe);
       return;

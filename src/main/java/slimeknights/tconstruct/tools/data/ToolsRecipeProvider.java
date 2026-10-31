@@ -47,8 +47,8 @@ import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipeBuil
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycleBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycleBuilder;
-import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialSwappingRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.MaterialSwappingRecipeBuilder;
 import slimeknights.tconstruct.library.tools.layout.Patterns;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.shared.TinkerMaterials;
@@ -101,7 +101,7 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
     toolBuilding(consumer, TinkerTools.scythe, folder);
     // sword
     ToolBuildingRecipeBuilder.toolBuildingRecipe(TinkerTools.dagger.get())
-                             .outputSize(2)
+                             .resultCount(2)
                              .save(consumer, prefix(TinkerTools.dagger, folder));
     toolBuilding(consumer, TinkerTools.sword, folder);
     toolBuilding(consumer, TinkerTools.cleaver, folder);
@@ -112,15 +112,15 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
     toolBuilding(consumer, TinkerTools.javelin, folder);
     // ammo
     ToolBuildingRecipeBuilder.toolBuildingRecipe(TinkerTools.arrow.get())
-      .outputSize(4)
+      .resultCount(4)
       .save(consumer, prefix(TinkerTools.arrow, folder));
     ToolBuildingRecipeBuilder.toolBuildingRecipe(TinkerTools.shuriken.get())
       .layoutSlot(Patterns.THROWN_AMMO)
-      .outputSize(4)
+      .resultCount(4)
       .save(consumer, prefix(TinkerTools.shuriken, folder));
     ToolBuildingRecipeBuilder.toolBuildingRecipe(TinkerTools.throwingAxe.get())
       .layoutSlot(Patterns.THROWN_AMMO)
-      .outputSize(2)
+      .resultCount(2)
       .save(consumer, prefix(TinkerTools.throwingAxe, folder));
     ToolBuildingRecipeBuilder.toolBuildingRecipe(TinkerTools.arrow.get())
       .addExtraRequirement(Ingredient.of(Items.ARROW))
