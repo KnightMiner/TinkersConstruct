@@ -2,30 +2,30 @@ package slimeknights.tconstruct.library.recipe.casting.container;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.ICastingContainer;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 
@@ -35,34 +35,21 @@ import java.util.List;
  * Casting recipe that takes an arbitrary fluid for a given amount and fills a container
  */
 @RequiredArgsConstructor
-public class ContainerFillingRecipe implements ICastingRecipe, IMultiRecipe<IDisplayableCastingRecipe> {
+public class ContainerFillingRecipe implements ICastingRecipe, MultiNamedRecipe<IDisplayableCastingRecipe> {
   public static final RecordLoadable<ContainerFillingRecipe> LOADER = RecordLoadable.create(
-    LoadableRecipeSerializer.TYPED_SERIALIZER.requiredField(), ContextKey.ID.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP,
+    LoadableRecipeSerializer.TYPE.requiredField(), LoadableRecipeSerializer.SERIALIZER.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP,
     IntLoadable.FROM_ONE.requiredField("fluid_amount", r -> r.fluidAmount),
     Loadables.ITEM.requiredField("container", r -> r.container),
     ContainerFillingRecipe::new);
 
   @Getter
-  private final TypeAwareRecipeSerializer<?> serializer;
+  private final RecipeType<?> type;
   @Getter
-  private final ResourceLocation id;
+  private final RecipeSerializer<?> serializer;
   @Getter
   private final String group;
   private final int fluidAmount;
   private final Item container;
-
-  @Override
-  public RecipeType<?> getType() {
-    return serializer.getType();
-  }
-
-  @Override
-  public int getFluidAmount(ICastingContainer inv) {
-    Fluid fluid = inv.getFluid();
-    return inv.getStack().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-              .map(handler -> handler.fill(new FluidStack(fluid, this.fluidAmount), FluidAction.SIMULATE))
-              .orElse(0);
-  }
 
   @Override
   public boolean isConsumed() {
@@ -75,45 +62,54 @@ public class ContainerFillingRecipe implements ICastingRecipe, IMultiRecipe<IDis
   }
 
   @Override
-  public int getCoolingTime(ICastingContainer inv) {
+  public int getCoolingTime(CastingRecipeInput inv) {
     return 5;
   }
-
   @Override
-  public boolean matches(ICastingContainer inv, Level worldIn) {
-    ItemStack stack = inv.getStack();
-    Fluid fluid = inv.getFluid();
-    return stack.getItem() == this.container.asItem()
-           && stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-                   .filter(handler -> handler.fill(new FluidStack(fluid, this.fluidAmount), FluidAction.SIMULATE) > 0)
-                   .isPresent();
+  public int getFluidAmount(CastingRecipeInput input) {
+    FluidStack fluid = input.getFluid();
+    IFluidHandlerItem handler = input.getItem().getCapability(Capabilities.FluidHandler.ITEM);
+    return handler == null ? 0 : handler.fill(fluid.copyWithAmount(this.fluidAmount), FluidAction.SIMULATE);
   }
 
-  /** @deprecated use {@link ICastingRecipe#assemble(Container, RegistryAccess)} */
+  @Override
+  public boolean matches(CastingRecipeInput inv, Level level) {
+    ItemStack stack = inv.getItem();
+    if (stack.getItem() != this.container) {
+      return false;
+    }
+    IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+    return handler != null && handler.fill(inv.getFluid().copyWithAmount(this.fluidAmount), FluidAction.SIMULATE) > 0;
+  }
+
+  /** @deprecated use {@link ICastingRecipe#assemble(RecipeInput, HolderLookup.Provider)} */
   @Override
   @Deprecated
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return new ItemStack(this.container);
   }
 
   @Override
-  public ItemStack assemble(ICastingContainer inv, RegistryAccess access) {
-    ItemStack stack = inv.getStack().copy();
-    return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
-      handler.fill(new FluidStack(inv.getFluid(), this.fluidAmount, inv.getFluidTag()), FluidAction.EXECUTE);
-      return handler.getContainer();
-    }).orElse(stack);
+  public ItemStack assemble(CastingRecipeInput inv, HolderLookup.Provider registries) {
+    ItemStack stack = inv.getItem().copyWithCount(1);
+    IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+    if (handler == null) {
+      return stack;
+    }
+    handler.fill(inv.getFluid().copyWithAmount(this.fluidAmount), FluidAction.EXECUTE);
+    return handler.getContainer();
   }
+
 
   /* Display */
   /** Cache of items to display for this container */
-  private List<IDisplayableCastingRecipe> displayRecipes = null;
+  private List<NamedRecipe<IDisplayableCastingRecipe>> displayRecipes = null;
 
   @Override
-  public List<IDisplayableCastingRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       // filter fluid registry to just fluids we care about
-      List<FluidStack> fluids = ForgeRegistries.FLUIDS.getValues().stream()
+      List<FluidStack> fluids = BuiltInRegistries.FLUID.stream()
         .filter(fluid -> {
           // skip flowing fluids (redundant to source), fluids with no bucket (probably internal), and fluids hidden from recipe viewers (they be hidden)
           if (fluid.isSource(fluid.defaultFluidState()) && !fluid.is(TinkerTags.Fluids.HIDE_IN_CREATIVE_TANKS)) {
@@ -137,7 +133,7 @@ public class ContainerFillingRecipe implements ICastingRecipe, IMultiRecipe<IDis
           return handler.getContainer();
         }).orElse(stack);
       }).toList();
-      displayRecipes = List.of(DisplayCastingRecipe.from(this)
+      displayRecipes = List.of(DisplayCastingRecipe.id(id)
         // cast is just an empty container, which is "consumed"
         .cast(new ItemStack(container)).consumed()
         .fluids(fluids).results(results).linkFluidsToOutput()

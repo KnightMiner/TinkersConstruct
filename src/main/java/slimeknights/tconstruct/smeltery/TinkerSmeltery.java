@@ -32,7 +32,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.block.GaugeBlock;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
@@ -45,20 +44,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.CastItemObject;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.recipe.FluidValues;
-import slimeknights.tconstruct.library.recipe.TinkerRecipes;
-import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
-import slimeknights.tconstruct.library.recipe.casting.CastDuplicationRecipe;
-import slimeknights.tconstruct.library.recipe.casting.ItemCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.PotionCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.RetexturedCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.TipClearingCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.TippingCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.container.ContainerFillingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.material.CompositeCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe;
-import slimeknights.tconstruct.library.recipe.casting.material.PartSwapCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.material.ToolCastingRecipe;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.ClearGlassPaneBlock;
@@ -390,34 +376,7 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final EnumObject<ArmorItem.Type,DummyMaterialItem> dummyPlating = ITEMS.registerEnum(ArmorItem.Type.values(), "plating_dummy", type -> new DummyMaterialItem(ITEM_PROPS));
 
 
-  /*
-   * Recipe
-   */
-  // casting
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ItemCastingRecipe>> basinRecipeSerializer = RECIPE_SERIALIZERS.register("casting_basin", () -> LoadableRecipeSerializer.of(ItemCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ItemCastingRecipe>> tableRecipeSerializer = RECIPE_SERIALIZERS.register("casting_table", () -> LoadableRecipeSerializer.of(ItemCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ContainerFillingRecipe>> basinFillingRecipeSerializer = RECIPE_SERIALIZERS.register("basin_filling", () -> LoadableRecipeSerializer.of(ContainerFillingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ContainerFillingRecipe>> tableFillingRecipeSerializer = RECIPE_SERIALIZERS.register("table_filling", () -> LoadableRecipeSerializer.of(ContainerFillingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<CastDuplicationRecipe>> basinDuplicationRecipeSerializer = RECIPE_SERIALIZERS.register("basin_duplication", () -> LoadableRecipeSerializer.of(CastDuplicationRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<CastDuplicationRecipe>> tableDuplicationRecipeSerializer = RECIPE_SERIALIZERS.register("table_duplication", () -> LoadableRecipeSerializer.of(CastDuplicationRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PotionCastingRecipe>> basinPotionRecipeSerializer = RECIPE_SERIALIZERS.register("casting_basin_potion", () -> LoadableRecipeSerializer.of(PotionCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PotionCastingRecipe>> tablePotionRecipeSerializer = RECIPE_SERIALIZERS.register("casting_table_potion", () -> LoadableRecipeSerializer.of(PotionCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<TippingCastingRecipe>> basinTippingRecipeSerializer = RECIPE_SERIALIZERS.register("casting_basin_tipping", () -> LoadableRecipeSerializer.of(TippingCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<TippingCastingRecipe>> tableTippingRecipeSerializer = RECIPE_SERIALIZERS.register("casting_table_tipping", () -> LoadableRecipeSerializer.of(TippingCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<TipClearingCastingRecipe>> basinTipClearingRecipeSerializer = RECIPE_SERIALIZERS.register("casting_basin_tipped_clearing", () -> LoadableRecipeSerializer.of(TipClearingCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<TipClearingCastingRecipe>> tableTipClearingRecipeSerializer = RECIPE_SERIALIZERS.register("casting_table_tipped_clearing", () -> LoadableRecipeSerializer.of(TipClearingCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<RetexturedCastingRecipe>> retexturedBasinRecipeSerializer = RECIPE_SERIALIZERS.register("retextured_casting_basin", () -> LoadableRecipeSerializer.of(RetexturedCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<RetexturedCastingRecipe>> retexturedTableRecipeSerializer = RECIPE_SERIALIZERS.register("retextured_casting_table", () -> LoadableRecipeSerializer.of(RetexturedCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  // material casting
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<MaterialCastingRecipe>> basinMaterialSerializer = RECIPE_SERIALIZERS.register("basin_casting_material", () -> LoadableRecipeSerializer.of(MaterialCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<MaterialCastingRecipe>> tableMaterialSerializer = RECIPE_SERIALIZERS.register("table_casting_material", () -> LoadableRecipeSerializer.of(MaterialCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<CompositeCastingRecipe>> basinCompositeSerializer = RECIPE_SERIALIZERS.register("basin_casting_composite", () -> LoadableRecipeSerializer.of(CompositeCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<CompositeCastingRecipe>> tableCompositeSerializer = RECIPE_SERIALIZERS.register("table_casting_composite", () -> LoadableRecipeSerializer.of(CompositeCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ToolCastingRecipe>> basinToolSerializer = RECIPE_SERIALIZERS.register("basin_tool_casting", () -> LoadableRecipeSerializer.of(ToolCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<ToolCastingRecipe>> tableToolSerializer = RECIPE_SERIALIZERS.register("table_tool_casting", () -> LoadableRecipeSerializer.of(ToolCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<MaterialFluidRecipe>> materialFluidRecipe = RECIPE_SERIALIZERS.register("material_fluid", () -> LoadableRecipeSerializer.of(MaterialFluidRecipe.LOADER));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PartSwapCastingRecipe>> basinPartSwappingSerializer = RECIPE_SERIALIZERS.register("basin_casting_part_swapping", () -> LoadableRecipeSerializer.of(PartSwapCastingRecipe.LOADER, TinkerRecipes.CASTING_BASIN));
-  public static final DeferredHolder<RecipeSerializer<?>,TypeAwareRecipeSerializer<PartSwapCastingRecipe>> tablePartSwappingSerializer = RECIPE_SERIALIZERS.register("table_casting_part_swapping", () -> LoadableRecipeSerializer.of(PartSwapCastingRecipe.LOADER, TinkerRecipes.CASTING_TABLE));
 
   /*
    * Inventory

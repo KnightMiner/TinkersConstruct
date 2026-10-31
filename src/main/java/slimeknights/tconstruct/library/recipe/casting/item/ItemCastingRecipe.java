@@ -1,20 +1,24 @@
-package slimeknights.tconstruct.library.recipe.casting;
+package slimeknights.tconstruct.library.recipe.casting.item;
 
 import lombok.Getter;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import slimeknights.tconstruct.library.recipe.casting.AbstractCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
+import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,21 +27,21 @@ import java.util.List;
 @Getter
 public class ItemCastingRecipe extends AbstractCastingRecipe implements IDisplayableCastingRecipe {
   /* Shared fields */
-  protected static final LoadableField<FluidIngredient,ItemCastingRecipe> FLUID_FIELD = FluidIngredient.LOADABLE.requiredField("fluid", ItemCastingRecipe::getFluid);
-  protected static final LoadableField<ItemOutput,ItemCastingRecipe> RESULT_FIELD = ItemOutput.Loadable.REQUIRED_ITEM.requiredField("result", r -> r.result);
+  protected static final LoadableField<SizedFluidIngredient,ItemCastingRecipe> FLUID_FIELD = Loadables.SIZED_FLUID_INGREDIENT.requiredField("fluid", ItemCastingRecipe::getFluid);
+  protected static final LoadableField<ItemOutput,ItemCastingRecipe> RESULT_FIELD = ItemOutput.REQUIRED_ITEM_LOADABLE.requiredField("result", r -> r.result);
   protected static final LoadableField<Integer,ItemCastingRecipe> COOLING_TIME_FIELD = IntLoadable.FROM_ONE.requiredField("cooling_time", ItemCastingRecipe::getCoolingTime);
   /** Loader instance */
   public static final RecordLoadable<ItemCastingRecipe> LOADER = RecordLoadable.create(
-    LoadableRecipeSerializer.TYPED_SERIALIZER.requiredField(), ContextKey.ID.requiredField(),
+    LoadableRecipeSerializer.TYPE.requiredField(), LoadableRecipeSerializer.SERIALIZER.requiredField(),
     LoadableRecipeSerializer.RECIPE_GROUP, CAST_FIELD, FLUID_FIELD, RESULT_FIELD, COOLING_TIME_FIELD, CAST_CONSUMED_FIELD, SWITCH_SLOTS_FIELD,
     ItemCastingRecipe::new);
 
-  private final TypeAwareRecipeSerializer<?> serializer;
-  protected final FluidIngredient fluid;
+  private final RecipeSerializer<?> serializer;
+  protected final SizedFluidIngredient fluid;
   protected final ItemOutput result;
   protected final int coolingTime;
-  public ItemCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, FluidIngredient fluid, ItemOutput result, int coolingTime, boolean consumed, boolean switchSlots) {
-    super(serializer.getType(), id, group, cast, consumed, switchSlots);
+  public ItemCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, SizedFluidIngredient fluid, ItemOutput result, int coolingTime, boolean consumed, boolean switchSlots) {
+    super(type, group, cast, consumed, switchSlots);
     this.serializer = serializer;
     this.fluid = fluid;
     this.result = result;
@@ -46,33 +50,27 @@ public class ItemCastingRecipe extends AbstractCastingRecipe implements IDisplay
   }
 
   @Override
-  public int getFluidAmount(ICastingContainer inv) {
-    return this.fluid.getAmount(inv.getFluid());
+  public int getFluidAmount(CastingRecipeInput inv) {
+    return this.fluid.amount();
   }
 
   @Override
-  public boolean matches(ICastingContainer inv, Level worldIn) {
-    return getCast().test(inv.getStack()) && fluid.test(inv.getFluid());
+  public boolean matches(CastingRecipeInput inv, Level worldIn) {
+    return getCast().test(inv.getItem()) && fluid.ingredient().test(inv.getFluid());
   }
 
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return this.result.get();
   }
 
   @Override
-  public int getCoolingTime(ICastingContainer inv) {
+  public int getCoolingTime(CastingRecipeInput inv) {
     return this.coolingTime;
   }
 
 
   /* JEI */
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    // need a separate method as remapping makes the names mismatch
-    return getId();
-  }
 
   @Override
   public boolean hasCast() {
@@ -89,12 +87,8 @@ public class ItemCastingRecipe extends AbstractCastingRecipe implements IDisplay
     return List.of(this.result.get());
   }
 
-  /**
-   * Gets a list of valid fluid inputs for this recipe, for display in JEI
-   * @return  List of fluids
-   */
   @Override
   public List<FluidStack> getFluids() {
-    return this.fluid.getFluids();
+    return List.of(this.fluid.getFluids());
   }
 }

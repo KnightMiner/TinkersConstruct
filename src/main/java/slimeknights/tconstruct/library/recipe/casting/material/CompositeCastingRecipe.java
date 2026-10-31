@@ -1,22 +1,22 @@
 package slimeknights.tconstruct.library.recipe.casting.material;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.ICastingContainer;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
@@ -29,9 +29,9 @@ import java.util.List;
 /**
  * Casting recipe taking a part of a material and a fluid and outputting the part with a new material
  */
-public class CompositeCastingRecipe extends MaterialCastingRecipe implements IMultiRecipe<IDisplayableCastingRecipe> {
+public class CompositeCastingRecipe extends MaterialCastingRecipe implements MultiNamedRecipe<IDisplayableCastingRecipe> {
   public static final RecordLoadable<CompositeCastingRecipe> LOADER = RecordLoadable.create(
-    LoadableRecipeSerializer.TYPED_SERIALIZER.requiredField(), ContextKey.ID.requiredField(),
+    LoadableRecipeSerializer.TYPE.requiredField(), LoadableRecipeSerializer.SERIALIZER.requiredField(),
     LoadableRecipeSerializer.RECIPE_GROUP, ITEM_COST_FIELD, RESULT_FIELD, MATERIALS_FIELD,
     MaterialStatsId.PARSER.nullableField("casting_stat_conflict", r -> r.castingStatConflict),
     CompositeCastingRecipe::new);
@@ -39,24 +39,24 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements IMu
   @Nullable
   private final MaterialStatsId castingStatConflict;
 
-  public CompositeCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariantId> materials, @Nullable MaterialStatsId castingStatConflict) {
-    super(serializer, id, group, Ingredient.of(result), itemCost, result, materials, true, false);
+  public CompositeCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariantId> materials, @Nullable MaterialStatsId castingStatConflict) {
+    super(type, serializer, group, Ingredient.of(result), itemCost, result, materials, true, false);
     this.castingStatConflict = castingStatConflict;
   }
 
   @Override
-  protected MaterialFluidRecipe getFluidRecipe(ICastingContainer inv) {
-    Fluid fluid = inv.getFluid();
+  protected MaterialFluidRecipe getFluidRecipe(CastingRecipeInput inv) {
+    FluidStack fluid = inv.getFluid();
     if (castingStatConflict != null) {
       // if we have casting recipe that matches our fluid and is valid for the result, return no match
       // used to prevent conflicts between tool casting and composite part casting
-      MaterialFluidRecipe recipe = MaterialCastingLookup.getCastingFluid(fluid); // TODO: does this need a filter?
+      MaterialFluidRecipe recipe = MaterialCastingLookup.getCastingFluid(fluid.getFluid()); // TODO: does this need a filter?
       if (recipe != MaterialFluidRecipe.EMPTY && castingStatConflict.canUseMaterial(recipe.getOutput().getId())) {
         return MaterialFluidRecipe.EMPTY;
       }
     }
     // find a composite match, requires fetching the material ID but not a huge deal as we already validated the cast (won't be calling this for multiple fluids)
-    return MaterialCastingLookup.getCompositeFluid(fluid, IMaterialItem.getMaterialFromStack(inv.getStack()), materials);
+    return MaterialCastingLookup.getCompositeFluid(fluid.getFluid(), IMaterialItem.getMaterialFromStack(inv.getItem()), materials);
   }
 
   /* JEI */
@@ -73,7 +73,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements IMu
   }
 
   @Override
-  public List<IDisplayableCastingRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (multiRecipes == null) {
       List<MaterialFluidRecipe> recipes = MaterialCastingLookup.getSortedCompositeFluids();
       List<FluidStack> displayFluids = new ArrayList<>(recipes.size());
@@ -147,7 +147,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements IMu
       if (displayFluids.isEmpty()) {
         multiRecipes = List.of();
       } else {
-        multiRecipes = List.of(DisplayCastingRecipe.from(this)
+        multiRecipes = List.of(DisplayCastingRecipe.id(id)
           .casts(List.copyOf(displayInputs)).consumed()
           .fluids(List.copyOf(displayFluids))
           .results(List.copyOf(displayResults))

@@ -13,6 +13,17 @@ import slimeknights.tconstruct.common.registration.CastingRecipeSerializers;
 import slimeknights.tconstruct.common.registration.RecipeSerializerDeferredRegisterExtension;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.container.ContainerFillingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.item.CastDuplicationRecipe;
+import slimeknights.tconstruct.library.recipe.casting.item.ItemCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.item.RetexturedCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.material.CompositeCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.material.PartSwapCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.material.ToolCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.potion.PotionCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.potion.TipClearingCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.potion.TippingCastingRecipe;
 import slimeknights.tconstruct.library.recipe.entitymelting.EntityMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.recipe.ingredient.InstrumentIngredient;
@@ -56,9 +67,6 @@ public class TinkerRecipes {
   /*
    * smeltery
    */
-  // casting
-  public static final DeferredRecipeType<ICastingRecipe> CASTING_BASIN = TYPES.registerType("casting_basin");
-  public static final DeferredRecipeType<ICastingRecipe> CASTING_TABLE = TYPES.registerType("casting_table");
   // fuel
   public static final DeferredRecipeType<MeltingFuel> fuelType = TYPES.registerType("fuel");
   public static final DeferredRecipeSerializer<MeltingFuel> fuel = SERIALIZERS.registerLoadable("melting_fuel", MeltingFuel.LOADER);
@@ -83,6 +91,25 @@ public class TinkerRecipes {
     SERIALIZERS.registerLoadable("molding_table", MoldingRecipe.LOADER, moldingTableType),
     SERIALIZERS.registerLoadable("molding_basin", MoldingRecipe.LOADER, moldingBasinType)
   );
+
+  // casting
+  public static final DeferredRecipeType<ICastingRecipe> castingBasinType = TYPES.registerType("casting_basin");
+  public static final DeferredRecipeType<ICastingRecipe> castingTableType = TYPES.registerType("casting_table");
+  // basic
+  public static final CastingRecipeSerializers<ItemCastingRecipe> itemCasting = SERIALIZERS.registerCastingPrefix("casting", ItemCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<CastDuplicationRecipe> castDuplication = SERIALIZERS.registerCastingSuffix("cast_duplication", CastDuplicationRecipe.LOADER);
+  public static final CastingRecipeSerializers<RetexturedCastingRecipe> retexturedCasting = SERIALIZERS.registerCastingPrefix("retextured_casting", RetexturedCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<ContainerFillingRecipe> containerFilling = SERIALIZERS.registerCastingSuffix("filling", ContainerFillingRecipe.LOADER);
+  // material
+  public static final CastingRecipeSerializers<MaterialCastingRecipe> materialCasting = SERIALIZERS.registerCastingSuffix("material_casting", MaterialCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<CompositeCastingRecipe> compositeCasting = SERIALIZERS.registerCastingSuffix("composite_casting", CompositeCastingRecipe.LOADER);
+  // tool
+  public static final CastingRecipeSerializers<PartSwapCastingRecipe> partSwapCasting = SERIALIZERS.registerCastingSuffix("part_swapping", PartSwapCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<ToolCastingRecipe> toolCasting = SERIALIZERS.registerCastingSuffix("tool_casting", ToolCastingRecipe.LOADER);
+  // potion
+  public static final CastingRecipeSerializers<PotionCastingRecipe> potionCasting = SERIALIZERS.registerCastingSuffix("potion_casting", PotionCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<TippingCastingRecipe> toolTipping = SERIALIZERS.registerCastingSuffix("tool_tipping", TippingCastingRecipe.LOADER);
+  public static final CastingRecipeSerializers<TipClearingCastingRecipe> toolTippedClearing = SERIALIZERS.registerCastingSuffix("tool_tip_clearing", TipClearingCastingRecipe.LOADER);
 
   // modifiers
   public static final DeferredRecipeType<SeveringRecipe> SEVERING = TYPES.registerType("severing");

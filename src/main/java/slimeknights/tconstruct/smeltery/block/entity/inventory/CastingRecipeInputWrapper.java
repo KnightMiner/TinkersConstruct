@@ -1,44 +1,30 @@
 package slimeknights.tconstruct.smeltery.block.entity.inventory;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.tconstruct.library.recipe.casting.ICastingContainer;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.smeltery.block.entity.CastingBlockEntity;
-
-import javax.annotation.Nullable;
 
 /**
  * Provides read only access to the input of a casting table. Prevents extra data from leaking
  */
 @RequiredArgsConstructor
-public class CastingContainerWrapper implements ICastingContainer {
+public class CastingRecipeInputWrapper implements CastingRecipeInput {
   private final CastingBlockEntity tile;
-  @Setter
+  @Setter @Getter
   private FluidStack fluid;
   private boolean switchSlots = false;
 
   @Override
-  public ItemStack getStack() {
+  public ItemStack getItem() {
     ItemStack stack = tile.getItem(switchSlots ? CastingBlockEntity.OUTPUT : CastingBlockEntity.INPUT);
     if (stack.is(tile.getEmptyCastTag())) {
       return ItemStack.EMPTY;
     }
     return stack;
-  }
-
-  @Override
-  public Fluid getFluid() {
-    return fluid.getFluid();
-  }
-
-  @Nullable
-  @Override
-  public CompoundTag getFluidTag() {
-    return fluid.getTag();
   }
 
   /** Uses the input for input (default) */

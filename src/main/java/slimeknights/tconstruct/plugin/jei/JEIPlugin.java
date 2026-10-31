@@ -242,8 +242,8 @@ public class JEIPlugin implements IModPlugin {
     RegistryAccess access = level.registryAccess();
     RecipeManager manager = level.getRecipeManager();
     // casting
-    register.addRecipes(TConstructJEIConstants.CASTING_BASIN, getCastingRecipes(access, manager, TinkerRecipes.CASTING_BASIN));
-    register.addRecipes(TConstructJEIConstants.CASTING_TABLE, getCastingRecipes(access, manager, TinkerRecipes.CASTING_TABLE));
+    register.addRecipes(TConstructJEIConstants.CASTING_BASIN, getCastingRecipes(access, manager, TinkerRecipes.castingBasinType));
+    register.addRecipes(TConstructJEIConstants.CASTING_TABLE, getCastingRecipes(access, manager, TinkerRecipes.castingTableType));
 
     // melting
     // need to register the fuels before the categories so they are available
@@ -352,8 +352,8 @@ public class JEIPlugin implements IModPlugin {
     RecipeManager manager = level.getRecipeManager();
 
     IIngredientManager ingredientManager = registration.getJeiHelpers().getIngredientManager();
-    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_BASIN, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.CASTING_BASIN)));
-    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_TABLE, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.CASTING_TABLE)));
+    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_BASIN, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingBasinType)));
+    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_TABLE, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingTableType)));
     registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.TOOL_MODIFICATION, new SimpleItemRecipeManager<>(ingredientManager, FilteredRecipe.filtered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.TINKER_STATION.get(), IDisplayToolTinkering.class))));
 
     // copy tinker station repair recipes to the crafting table

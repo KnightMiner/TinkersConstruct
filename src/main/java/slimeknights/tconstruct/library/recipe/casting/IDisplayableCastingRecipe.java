@@ -1,13 +1,11 @@
 package slimeknights.tconstruct.library.recipe.casting;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.tconstruct.library.recipe.display.FilteredFluidRecipe;
 import slimeknights.tconstruct.library.recipe.display.FilteredItemRecipe;
 import slimeknights.tconstruct.library.recipe.display.RecipeSlot;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -15,12 +13,6 @@ import static slimeknights.tconstruct.library.recipe.display.FilteredRecipe.matc
 
 /** Interface for casting recipes that are displayable in JEI */
 public interface IDisplayableCastingRecipe extends FilteredItemRecipe, FilteredFluidRecipe {
-  /** Gets the ID of this recipe. If this is a generated display recipe, uses the parent recipe ID */
-  @Nullable
-  default ResourceLocation getRecipeId() {
-    return null;
-  }
-
   /** If true, the recipe has a cast item */
   boolean hasCast();
 

@@ -1,69 +1,72 @@
-package slimeknights.tconstruct.library.recipe.casting;
+package slimeknights.tconstruct.library.recipe.casting.potion;
 
 import lombok.Getter;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.IMultiRecipe;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
+import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Recipe for casting a fluid onto an item, copying the fluid NBT to the item.
- * TODO 1.21: move to {@link slimeknights.tconstruct.library.recipe.casting.potion}
  */
-public class PotionCastingRecipe implements ICastingRecipe, IMultiRecipe<IDisplayableCastingRecipe> {
-  protected static final LoadableField<FluidIngredient, PotionCastingRecipe> FLUID_FIELD = FluidIngredient.LOADABLE.requiredField("fluid", r -> r.fluid);
+public class PotionCastingRecipe implements ICastingRecipe, MultiNamedRecipe<IDisplayableCastingRecipe> {
+  protected static final LoadableField<SizedFluidIngredient, PotionCastingRecipe> FLUID_FIELD = Loadables.SIZED_FLUID_INGREDIENT.requiredField("fluid", r -> r.fluid);
   protected static final LoadableField<Integer, PotionCastingRecipe> COOLING_TIME_FIELD = IntLoadable.FROM_ONE.defaultField("cooling_time", 5, r -> r.coolingTime);
   public static final RecordLoadable<PotionCastingRecipe> LOADER = RecordLoadable.create(
-    LoadableRecipeSerializer.TYPED_SERIALIZER.requiredField(), ContextKey.ID.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP,
-    IngredientLoadable.DISALLOW_EMPTY.requiredField("bottle", r -> r.bottle),
+    LoadableRecipeSerializer.TYPE.requiredField(), LoadableRecipeSerializer.SERIALIZER.requiredField(), LoadableRecipeSerializer.RECIPE_GROUP,
+    Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("bottle", r -> r.bottle),
     FLUID_FIELD,
     Loadables.ITEM.requiredField("result", r -> r.result),
     COOLING_TIME_FIELD,
     PotionCastingRecipe::new);
 
   @Getter
-  protected final TypeAwareRecipeSerializer<?> serializer;
+  protected final RecipeType<?> type;
   @Getter
-  protected final ResourceLocation id;
+  protected final RecipeSerializer<?> serializer;
   @Getter
   protected final String group;
   /** Input on the casting table, always consumed */
   protected final Ingredient bottle;
   /** Potion ingredient, typically just the potion tag */
-  protected final FluidIngredient fluid;
+  protected final SizedFluidIngredient fluid;
   /** Potion item result, will be given the proper NBT */
   protected final Item result;
   /** Cooling time for this recipe, used for tipped arrows */
   protected final int coolingTime;
 
-  public PotionCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient bottle, FluidIngredient fluid, Item result, int coolingTime) {
+  public PotionCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient bottle, SizedFluidIngredient fluid, Item result, int coolingTime) {
+    this.type = type;
     this.serializer = serializer;
-    this.id = id;
     this.group = group;
     this.bottle = bottle;
     this.fluid = fluid;
@@ -73,18 +76,13 @@ public class PotionCastingRecipe implements ICastingRecipe, IMultiRecipe<IDispla
   }
 
   @Override
-  public RecipeType<?> getType() {
-    return serializer.getType();
+  public boolean matches(CastingRecipeInput inv, Level level) {
+    return bottle.test(inv.getItem()) && fluid.test(inv.getFluid());
   }
 
   @Override
-  public boolean matches(ICastingContainer inv, Level level) {
-    return bottle.test(inv.getStack()) && fluid.test(inv.getFluid());
-  }
-
-  @Override
-  public int getFluidAmount(ICastingContainer inv) {
-    return fluid.getAmount(inv.getFluid());
+  public int getFluidAmount(CastingRecipeInput inv) {
+    return fluid.amount();
   }
 
   @Override
@@ -98,46 +96,47 @@ public class PotionCastingRecipe implements ICastingRecipe, IMultiRecipe<IDispla
   }
 
   @Override
-  public int getCoolingTime(ICastingContainer inv) {
+  public int getCoolingTime(CastingRecipeInput inv) {
     return coolingTime;
   }
 
   @Override
-  public ItemStack assemble(ICastingContainer inv, RegistryAccess access) {
+  public ItemStack assemble(CastingRecipeInput inv, HolderLookup.Provider registries) {
     ItemStack result = new ItemStack(this.result);
-    result.setTag(inv.getFluidTag());
+    result.applyComponents(inv.getFluid().getComponentsPatch());
     return result;
   }
 
 
   /* JEI */
   // TODO 1.21: consider making this a display recipe instead of a multirecipe
-  protected List<IDisplayableCastingRecipe> displayRecipes = null;
+  protected List<NamedRecipe<IDisplayableCastingRecipe>> displayRecipes = null;
 
   @Override
-  public List<IDisplayableCastingRecipe> getRecipes(RegistryAccess access) {
+  public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      Collection<Potion> potions = ForgeRegistries.POTIONS.getValues();
-      List<ItemStack> results = new ArrayList<>(potions.size());
       // first, make all the potion items
-      for (Potion potion : potions) {
-        if (potion == Potions.EMPTY) continue;
-        results.add(PotionUtils.setPotion(new ItemStack(this.result), potion));
-      }
+      List<ItemStack> results = getPotions().map(potion -> {
+        ItemStack stack = new ItemStack(this.result);
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
+        return stack;
+      }).filter(stack -> !stack.isEmpty()).toList();
       // next, it's time to do the fluids
       // we want an order of Mod 1 Potion 1, Mod 1 Potion 2, ..., Mod 2 Potion 1, ...
       // this is potentially displaying multiple fluids from the fluid tag
-      List<FluidStack> potionFluids = this.fluid.getFluids();
-      int totalSize = results.size() * potionFluids.size();
+      FluidStack[] potionFluids = this.fluid.getFluids();
+      int totalSize = results.size() * potionFluids.length;
       List<ItemStack> displayResults = new ArrayList<>(totalSize);
       List<FluidStack> displayFluids = new ArrayList<>(totalSize);
-      for (FluidStack fluid : potionFluids) {
+      for (FluidStack potionFluid : potionFluids) {
         displayResults.addAll(results);
         for (ItemStack result : results) {
-          displayFluids.add(new FluidStack(fluid.getFluid(), fluid.getAmount(), result.getTag()));
+          FluidStack fluid = potionFluid.copy();
+          fluid.applyComponents(result.getComponentsPatch());
+          displayFluids.add(fluid);
         }
       }
-      this.displayRecipes = List.of(DisplayCastingRecipe.from(this)
+      this.displayRecipes = List.of(DisplayCastingRecipe.id(id)
         .cast(bottle).consumed()
         .fluids(List.copyOf(displayFluids))
         .results(List.copyOf(displayResults)).linkFluidsToOutput()
@@ -155,10 +154,10 @@ public class PotionCastingRecipe implements ICastingRecipe, IMultiRecipe<IDispla
     return NonNullList.of(Ingredient.EMPTY, bottle);
   }
 
-  /** @deprecated use {@link #assemble(Container, RegistryAccess)} */
+  /** @deprecated use {@link #assemble(CastingRecipeInput, HolderLookup.Provider)} */
   @Deprecated
   @Override
-  public ItemStack getResultItem(RegistryAccess access) {
+  public ItemStack getResultItem(HolderLookup.Provider registries) {
     return new ItemStack(this.result);
   }
 
@@ -166,11 +165,7 @@ public class PotionCastingRecipe implements ICastingRecipe, IMultiRecipe<IDispla
   /* JEI helpers */
 
   /** Gets a list of all potion IDs ready for usage in building NBT */
-  @SuppressWarnings("deprecation")
-  public static List<String> getPotionIds() {
-    return BuiltInRegistries.POTION.holders()
-      .filter(holder -> !holder.is(Potions.EMPTY_ID))
-      .map(holder -> holder.key().location().toString())
-      .toList();
+  public static Stream<Holder.Reference<Potion>> getPotions() {
+    return BuiltInRegistries.POTION.holders().filter(holder -> !holder.equals(Potions.WATER));
   }
 }

@@ -8,8 +8,9 @@ import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingLookup;
 import slimeknights.tconstruct.library.recipe.display.ItemVisible;
 
@@ -22,9 +23,6 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DisplayCastingRecipe implements IDisplayableCastingRecipe {
-  @Nullable
-  private final ResourceLocation recipeId;
-  private final RecipeType<?> type;
   private final List<ItemStack> castItems;
   private final List<FluidStack> fluids;
   private final List<ItemStack> outputs;
@@ -64,22 +62,21 @@ public final class DisplayCastingRecipe implements IDisplayableCastingRecipe {
   /* Builder */
 
   /** Creates a new builder instance */
-  public static Builder type(RecipeType<?> type) {
-    return new Builder(type);
+  public static Builder id(ResourceLocation id, List<ResourceLocation> parent) {
+    return new Builder(id, parent);
   }
 
-  /** Creates a new builder instance with the type and ID from the given recipe */
-  public static Builder from(ICastingRecipe recipe) {
-    return type(recipe.getType()).id(recipe.getId());
+  /** Creates a new builder instance */
+  public static Builder id(ResourceLocation id) {
+    return id(id, List.of(id));
   }
 
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor
   public static class Builder {
-    private final RecipeType<?> type;
-    @Nullable
-    private ResourceLocation id;
+    private final ResourceLocation id;
+    private final List<ResourceLocation> parent;
     private List<ItemStack> casts = List.of();
     private List<FluidStack> fluids = List.of();
     private List<ItemStack> results = List.of();
@@ -108,6 +105,11 @@ public final class DisplayCastingRecipe implements IDisplayableCastingRecipe {
     /** Sets the given cast to the builder */
     public Builder fluid(FluidStack fluid) {
       return fluids(List.of(fluid));
+    }
+
+    /** Sets the given cast to the builder */
+    public Builder fluid(SizedFluidIngredient fluid) {
+      return fluids(List.of(fluid.getFluids()));
     }
 
     /** Sets the given output to the builder */
@@ -157,10 +159,10 @@ public final class DisplayCastingRecipe implements IDisplayableCastingRecipe {
     }
 
     /** Builds the final recipe */
-    public IDisplayableCastingRecipe build() {
+    public NamedRecipe<IDisplayableCastingRecipe> build() {
       if (fluids.isEmpty()) throw new IllegalStateException("Fluids cannot be empty");
       if (results.isEmpty()) throw new IllegalStateException("Results cannot be empty");
-      return new DisplayCastingRecipe(id, type, casts, fluids, results, coolingTime, consumed, linkCastToOutput, linkFluidsToOutput, materialCoolingTime && fluids.size() > 1, showUnfocused, isVisible);
+      return NamedRecipe.of(id, parent, new DisplayCastingRecipe(casts, fluids, results, coolingTime, consumed, linkCastToOutput, linkFluidsToOutput, materialCoolingTime && fluids.size() > 1, showUnfocused, isVisible));
     }
   }
 }

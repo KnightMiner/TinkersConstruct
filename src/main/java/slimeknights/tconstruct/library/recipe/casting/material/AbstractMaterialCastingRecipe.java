@@ -1,18 +1,17 @@
 package slimeknights.tconstruct.library.recipe.casting.material;
 
 import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.recipe.helper.TypeAwareRecipeSerializer;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.casting.AbstractCastingRecipe;
-import slimeknights.tconstruct.library.recipe.casting.ICastingContainer;
+import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 
 import java.util.List;
@@ -29,30 +28,30 @@ public abstract class AbstractMaterialCastingRecipe extends AbstractCastingRecip
   protected final int itemCost;
   protected final IJsonPredicate<MaterialVariantId> materials;
 
-  public AbstractMaterialCastingRecipe(TypeAwareRecipeSerializer<?> serializer, ResourceLocation id, String group, Ingredient cast, int itemCost, boolean consumed, boolean switchSlots, IJsonPredicate<MaterialVariantId> materials) {
-    super(serializer.getType(), id, group, cast, consumed, switchSlots);
+  public AbstractMaterialCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, boolean consumed, boolean switchSlots, IJsonPredicate<MaterialVariantId> materials) {
+    super(type, group, cast, consumed, switchSlots);
     this.serializer = serializer;
     this.itemCost = itemCost;
     this.materials = materials;
   }
 
   /** Gets the material fluid recipe for the given recipe */
-  protected MaterialFluidRecipe getFluidRecipe(ICastingContainer inv) {
-    return MaterialCastingLookup.getCastingFluid(inv.getFluid(), materials);
+  protected MaterialFluidRecipe getFluidRecipe(CastingRecipeInput inv) {
+    return MaterialCastingLookup.getCastingFluid(inv.getFluid().getFluid(), materials);
   }
 
   @Override
-  public int getCoolingTime(ICastingContainer inv) {
+  public int getCoolingTime(CastingRecipeInput inv) {
     MaterialFluidRecipe recipe = getFluidRecipe(inv);
     if (recipe != MaterialFluidRecipe.EMPTY) {
-      return ICastingRecipe.calcCoolingTime(recipe.getTemperature(), recipe.getFluidAmount(inv.getFluid()) * itemCost);
+      return ICastingRecipe.calcCoolingTime(recipe.getTemperature(), recipe.getFluidAmount(inv.getFluid().getFluid()) * itemCost);
     }
     return 1;
   }
 
   @Override
-  public int getFluidAmount(ICastingContainer inv) {
-    return getFluidRecipe(inv).getFluidAmount(inv.getFluid()) * itemCost;
+  public int getFluidAmount(CastingRecipeInput inv) {
+    return getFluidRecipe(inv).getFluidAmount(inv.getFluid().getFluid()) * itemCost;
   }
 
   /** Resizes the fluid with respect to the item cost */
@@ -60,7 +59,7 @@ public abstract class AbstractMaterialCastingRecipe extends AbstractCastingRecip
     if (itemCost == 1) {
       return fluid;
     }
-    return new FluidStack(fluid, itemCost * fluid.getAmount());
+    return fluid.copyWithAmount(itemCost * fluid.getAmount());
   }
 
   /** Resizes the list of the fluids with respect to the item cost */

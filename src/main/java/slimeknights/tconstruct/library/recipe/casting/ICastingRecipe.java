@@ -12,10 +12,10 @@ import static slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe.getT
 /**
  * Base interface for all casting recipes
  */
-public interface ICastingRecipe extends ICommonRecipe<ICastingContainer> {
+public interface ICastingRecipe extends ICommonRecipe<CastingRecipeInput> {
   @Override
   default ItemStack getToastSymbol() {
-    return new ItemStack(getType() == TinkerRecipes.CASTING_TABLE.get() ? TinkerSmeltery.searedTable : TinkerSmeltery.searedBasin);
+    return new ItemStack(getType() == TinkerRecipes.castingTableType.get() ? TinkerSmeltery.searedTable : TinkerSmeltery.searedBasin);
   }
 
   /**
@@ -23,7 +23,7 @@ public interface ICastingRecipe extends ICommonRecipe<ICastingContainer> {
    * @param inv  Inventory instance
    * @return Fluid amount when using the fluid in the inventory
    */
-  int getFluidAmount(ICastingContainer inv);
+  int getFluidAmount(CastingRecipeInput inv);
 
   /**
    * TODO 1.21: move this method to {@link IDisplayableCastingRecipe}.
@@ -32,7 +32,7 @@ public interface ICastingRecipe extends ICommonRecipe<ICastingContainer> {
   boolean isConsumed();
 
   /** {@return true if the cast item is consumed on crafting} */
-  default boolean isConsumed(ICastingContainer inv) {
+  default boolean isConsumed(CastingRecipeInput inv) {
     return isConsumed();
   }
 
@@ -43,7 +43,7 @@ public interface ICastingRecipe extends ICommonRecipe<ICastingContainer> {
    * @param inv ICastingInventory for casting recipe
    * {@return cooling time for the output}
    */
-  int getCoolingTime(ICastingContainer inv);
+  int getCoolingTime(CastingRecipeInput inv);
 
   /**
    * Calculates the cooling time for a recipe based on the amount and temperature
