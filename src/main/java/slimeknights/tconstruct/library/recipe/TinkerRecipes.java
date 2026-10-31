@@ -19,6 +19,7 @@ import slimeknights.tconstruct.library.recipe.casting.item.ItemCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.item.RetexturedCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.CompositeCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingRecipe;
+import slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.PartSwapCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.material.ToolCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.potion.PotionCastingRecipe;
@@ -59,10 +60,19 @@ public class TinkerRecipes {
     INGREDIENTS.register(bus);
   }
 
+  /** Internal recipe type for recipes that are not pulled by any specific crafting block */
+  public static final DeferredRecipeType<Recipe<?>> dataType = TYPES.registerType("data");
+
   public static final DeferredRecipeType<IPartBuilderRecipe> PART_BUILDER = TYPES.registerType("part_builder");
-  public static final DeferredRecipeType<MaterialRecipe> MATERIAL = TYPES.registerType("material");
   public static final DeferredRecipeType<ITinkerStationRecipe> TINKER_STATION = TYPES.registerType("tinker_station");
   public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
+
+  /*
+   * materials
+   */
+  public static final DeferredRecipeType<MaterialRecipe> materialType = TYPES.registerType("material");
+  public static final DeferredRecipeSerializer<MaterialRecipe> materialItem = SERIALIZERS.registerLoadable("material", MaterialRecipe.LOADER);
+  public static final DeferredRecipeSerializer<MaterialFluidRecipe> materialFluidRecipe = SERIALIZERS.registerLoadable("material_fluid", MaterialFluidRecipe.LOADER);
 
   /*
    * smeltery
@@ -113,9 +123,6 @@ public class TinkerRecipes {
 
   // modifiers
   public static final DeferredRecipeType<SeveringRecipe> SEVERING = TYPES.registerType("severing");
-
-  /** Internal recipe type for recipes that are not pulled by any specific crafting block */
-  public static final DeferredRecipeType<Recipe<?>> DATA = TYPES.registerType("data");
 
   // ingredients
   /** Ingredient that only matches items with no container */

@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.library.recipe.material;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
@@ -10,9 +9,6 @@ import java.util.List;
 
 /** Interface for recipes in the materials tab, showing items and fluids used to create materials. Common interface between {@link MaterialRecipe} and {@link slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe} */
 public interface IDisplayMaterialRecipe {
-  /** Gets the ID of this recipe */
-  ResourceLocation getRecipeId();
-
   /** Gets the material result for this recipe */
   MaterialVariant getMaterial();
 

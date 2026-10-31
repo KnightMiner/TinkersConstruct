@@ -84,7 +84,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<Container> {
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipes.DATA.get();
+    return TinkerRecipes.dataType.get();
   }
 
   /** @deprecated Use {@link #matches(ItemStack, IToolStackView, int)} */

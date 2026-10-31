@@ -2,14 +2,12 @@ package slimeknights.tconstruct.library.recipe.material;
 
 import lombok.Getter;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.recipe.helper.ItemOutput;
@@ -25,13 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Recipe to get the material from an ingredient
+ * Recipe assigning materials to items.
+ * @see slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe
  */
 public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMaterialValue, IDisplayMaterialRecipe {
   /** Empty material instance for the cache */
-  public static final MaterialRecipe EMPTY = new MaterialRecipe(ResourceLocation.withDefaultNamespace("missingno"), "", Ingredient.EMPTY, 0, 0, MaterialId.UNKNOWN, ItemOutput.EMPTY);
+  public static final MaterialRecipe EMPTY = new MaterialRecipe("", Ingredient.EMPTY, 0, 0, MaterialId.UNKNOWN, ItemOutput.EMPTY);
   public static final RecordLoadable<MaterialRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
     LoadableRecipeSerializer.RECIPE_GROUP,
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("ingredient", MaterialRecipe::getIngredient),
     IMaterialValue.VALUE_FIELD,
@@ -43,8 +41,6 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
   /** Vanilla requires 4 ingots for full repair, we drop it down to 3 to mesh better with nuggets and blocks and to fit small head costs better */
   public static final float INGOTS_PER_REPAIR = 3f;
 
-  @Getter
-  protected final ResourceLocation id;
   @Getter
   protected final String group;
   @Getter
@@ -65,8 +61,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
    * Creates a new material recipe
    */
   @SuppressWarnings("WeakerAccess")
-  public MaterialRecipe(ResourceLocation id, String group, Ingredient ingredient, int value, int needed, MaterialVariantId materialId, ItemOutput leftover) {
-    this.id = id;
+  public MaterialRecipe(String group, Ingredient ingredient, int value, int needed, MaterialVariantId materialId, ItemOutput leftover) {
     this.group = group;
     this.ingredient = ingredient;
     this.value = value;
@@ -76,6 +71,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
     this.leftover = value > 1 ? leftover : ItemOutput.EMPTY;
 
     // save recipe into the cache
+    // TODO: migrate away from recipes?
     MaterialRecipeCache.registerRecipe(this);
   }
 
@@ -83,7 +79,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
 
   @Override
   public RecipeType<?> getType() {
-    return TinkerRecipes.MATERIAL.get();
+    return TinkerRecipes.materialType.get();
   }
 
   @Override
@@ -93,7 +89,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerTables.materialRecipeSerializer.get();
+    return TinkerRecipes.materialItem.get();
   }
 
   @Override
@@ -149,13 +145,5 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
   @Override
   public boolean isVisible() {
     return !material.isUnknown() && !material.get().isHidden();
-  }
-
-
-  /* JEI */
-
-  @Override
-  public ResourceLocation getRecipeId() {
-    return getId();
   }
 }

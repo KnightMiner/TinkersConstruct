@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 import static slimeknights.mantle.Mantle.COMMON;
-import static slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe.getTemperature;
 
 /**
  * Interface for adding recipes for tool materials
@@ -94,8 +93,7 @@ public interface IMaterialRecipeHelper extends IRecipeHelper {
   /** Adds recipes to melt and cast a material */
   default void materialMeltingCasting(Consumer<FinishedRecipe> consumer, MaterialVariantId material, FluidObject<?> fluid, int fluidAmount, String folder) {
     MaterialFluidRecipeBuilder.material(material)
-                              .setFluid(fluid.ingredient(fluidAmount))
-                              .setTemperature(getTemperature(fluid))
+                              .setFluidAndTemp(fluid, fluidAmount)
                               .save(consumer, location(folder + "casting/" + material.getLocation('_').getPath()));
     materialMelting(consumer, material, fluid, fluidAmount, folder);
   }
@@ -125,8 +123,7 @@ public interface IMaterialRecipeHelper extends IRecipeHelper {
   default void materialComposite(Consumer<FinishedRecipe> consumer, MaterialVariantId input, MaterialVariantId output, FluidObject<?> fluid, int amount, String folder, String name) {
     MaterialFluidRecipeBuilder.material(output)
                               .setInputId(input)
-                              .setFluid(fluid.ingredient(amount))
-                              .setTemperature(getTemperature(fluid))
+                              .setFluidAndTemp(fluid, amount)
                               .save(consumer, location(folder + "composite/" + name));
   }
 
