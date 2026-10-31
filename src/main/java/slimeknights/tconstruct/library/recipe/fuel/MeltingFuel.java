@@ -6,28 +6,28 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
+import slimeknights.tconstruct.library.json.FluidStackSet;
 import slimeknights.tconstruct.library.recipe.SingleFluidInput;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock.TankType;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Recipe for a fuel for the melter or smeltery
  */
+@SuppressWarnings("ClassCanBeRecord")  // API
 @Getter
 @ToString
 public class MeltingFuel implements ICustomOutputRecipe<SingleFluidInput> {
   public static final RecordLoadable<MeltingFuel> LOADER = RecordLoadable.create(
-    Loadables.SIZED_FLUID_INGREDIENT.nullableField("fluid", r -> r.input),
+    FluidStackSet.LOADABLE.defaultField("fluid", FluidStackSet.EMPTY, false, r -> r.input),
     IntLoadable.FROM_ONE.defaultField("duration", 0, MeltingFuel::getDuration),
     IntLoadable.FROM_ONE.requiredField("temperature", MeltingFuel::getTemperature),
     IntLoadable.FROM_ONE.requiredField("rate", MeltingFuel::getRate),
@@ -39,13 +39,12 @@ public class MeltingFuel implements ICustomOutputRecipe<SingleFluidInput> {
       return fuel;
     });
 
-  @Nullable
-  private final SizedFluidIngredient input;
+  private final FluidStackSet input;
   private final int duration;
   private final int temperature;
   private final int rate;
 
-  public MeltingFuel(@Nullable SizedFluidIngredient input, int duration, int temperature, int rate) {
+  public MeltingFuel(FluidStackSet input, int duration, int temperature, int rate) {
     this.input = input;
     this.duration = duration;
     this.temperature = temperature;
@@ -58,7 +57,7 @@ public class MeltingFuel implements ICustomOutputRecipe<SingleFluidInput> {
 
   @Override
   public boolean matches(SingleFluidInput inv, Level worldIn) {
-    return matches(inv.getFluid());
+    return matches(inv.getFluid().getFluid());
   }
 
   /**
@@ -66,8 +65,8 @@ public class MeltingFuel implements ICustomOutputRecipe<SingleFluidInput> {
    * @param fluid  Fluid
    * @return  True if matches
    */
-  public boolean matches(FluidStack fluid) {
-    return input != null && input.test(fluid);
+  public boolean matches(Fluid fluid) {
+    return input.contains(fluid);
   }
 
   /**
@@ -93,7 +92,7 @@ public class MeltingFuel implements ICustomOutputRecipe<SingleFluidInput> {
    * @return  Input fluids
    */
   public List<FluidStack> getInputs() {
-    return input == null ? List.of() : List.of(input.getFluids());
+    return input.display();
   }
 
   /* Recipe type methods */

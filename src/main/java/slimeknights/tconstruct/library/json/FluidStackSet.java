@@ -8,6 +8,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -19,6 +20,9 @@ import java.util.List;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "of")
 public class FluidStackSet {
+  /** Empty instance, useful for defaults */
+  public static final FluidStackSet EMPTY = FluidStackSet.of(HolderSet.empty(), 0);
+  /** Loader instance */
   public static final RecordLoadable<FluidStackSet> LOADABLE = RecordLoadable.create(
     Loadables.FLUID_SET.requiredField("fluid", s -> s.fluids),
     IntLoadable.FROM_ONE.requiredField("amount", e -> e.amount),
@@ -64,5 +68,19 @@ public class FluidStackSet {
       display = fluids.stream().map(fluid -> new FluidStack(fluid, amount)).toList();
     }
     return display;
+  }
+
+
+  /* Default fields mostly */
+
+  @Override
+  public boolean equals(@Nullable Object object) {
+    if (this == object) return true;
+    return object instanceof FluidStackSet other && this.amount == other.amount && this.fluids.equals(other.fluids);
+  }
+
+  @Override
+  public int hashCode() {
+    return 31 * this.amount + this.fluids.hashCode();
   }
 }

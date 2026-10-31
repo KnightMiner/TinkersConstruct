@@ -1,13 +1,13 @@
 package slimeknights.tconstruct.library.recipe.fuel;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidStackLinkedSet;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
+import slimeknights.tconstruct.library.json.FluidStackSet;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 
 import javax.annotation.Nullable;
@@ -20,13 +20,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeltingFuelLookup {
   /** Dummy fuel instance sine caches don't support caching null */
-  private static final MeltingFuel EMPTY = new MeltingFuel(null, 0, 0, 0);
+  private static final MeltingFuel EMPTY = new MeltingFuel(FluidStackSet.EMPTY, 0, 0, 0);
   /** Temperature for solid fuels in the heater */
   private static MeltingFuel SOLID = EMPTY;
   /** List of all recipes */
   private static final List<MeltingFuel> RECIPES = new ArrayList<>();
   /** Mapping from fluid to fuel */
-  private static final SimpleCache<FluidStack,MeltingFuel> CACHE = new SimpleCache<>(new Object2ObjectOpenCustomHashMap<>(FluidStackLinkedSet.TYPE_AND_COMPONENTS), fluid -> {
+  private static final SimpleCache<Fluid,MeltingFuel> CACHE = new SimpleCache<>(fluid -> {
     for (MeltingFuel recipe : RECIPES) {
       if (recipe.matches(fluid)) {
         return recipe;
@@ -51,7 +51,7 @@ public class MeltingFuelLookup {
       return;
     }
     LISTENER.checkClear();
-    if (fuel.getInput() != null) {
+    if (fuel.getInput() != FluidStackSet.EMPTY) {
       RECIPES.add(fuel);
     } else if (SOLID == EMPTY) {
       SOLID = fuel;
@@ -61,7 +61,7 @@ public class MeltingFuelLookup {
   }
 
   /** Checks if the given fluid is a fuel */
-  public static boolean isFuel(FluidStack fluid) {
+  public static boolean isFuel(Fluid fluid) {
     return CACHE.apply(fluid) != EMPTY;
   }
 
@@ -77,7 +77,7 @@ public class MeltingFuelLookup {
    */
   @Nullable
   public static MeltingFuel findFuel(FluidStack fluid) {
-    MeltingFuel recipe = CACHE.apply(fluid);
+    MeltingFuel recipe = CACHE.apply(fluid.getFluid());
     if (recipe == EMPTY) {
       return null;
     }
