@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.plugin.jei.material;
 
 import net.minecraft.world.item.crafting.Ingredient;
-import slimeknights.tconstruct.library.recipe.material.ShapelessMaterialsRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapelessMaterialsRecipe;
 
 import java.util.List;
 

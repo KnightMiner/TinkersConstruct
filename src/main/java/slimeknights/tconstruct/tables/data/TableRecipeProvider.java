@@ -29,9 +29,9 @@ import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.data.recipe.CraftingNBTWrapper;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.recipe.ingredient.MaterialIngredient;
-import slimeknights.tconstruct.library.recipe.material.MaterialsConsumerBuilder;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycleBuilder;
+import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapedMaterialsRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.damaging.TinkerStationDamagingRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMaterialSwappingRecipeBuilder;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
@@ -241,43 +241,49 @@ public class TableRecipeProvider extends BaseRecipeProvider {
       .build(toolForge, location(folder + "scorched_forge"));
 
     // material recipes - for the material fallbacks
-    Consumer<FinishedRecipe> materialConsumer = MaterialsConsumerBuilder.shaped("m").build(consumer);
     Ingredient fakeStorageBlock = MaterialIngredient.of(TinkerToolParts.fakeStorageBlock, MaterialPredicate.tag(TinkerTags.Materials.COMPATABILITY_ALLOYS));
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TinkerTables.tinkersAnvil)
+    ShapedMaterialsRecipeBuilder.shaped(TinkerTables.tinkersAnvil)
+      .category(RecipeCategory.DECORATIONS)
       .define('m', fakeStorageBlock)
       .define('s', TinkerTags.Items.SEARED_BLOCKS)
       .pattern("mmm")
       .pattern(" s ")
       .pattern("sss")
+      .parts("m")
       .unlockedBy("has_item", has(TinkerToolParts.fakeStorageBlock))
-      .save(materialConsumer, wrap(TinkerTables.tinkersAnvil, folder, "_material"));
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TinkerTables.scorchedAnvil)
+      .save(consumer, wrap(TinkerTables.tinkersAnvil, folder, "_material"));
+    ShapedMaterialsRecipeBuilder.shaped(TinkerTables.scorchedAnvil)
+      .category(RecipeCategory.DECORATIONS)
       .define('m', fakeStorageBlock)
       .define('s', TinkerTags.Items.SCORCHED_BLOCKS)
       .pattern("mmm")
       .pattern(" s ")
       .pattern("sss")
+      .parts("m")
       .unlockedBy("has_item", has(TinkerToolParts.fakeStorageBlock))
-      .save(materialConsumer, wrap(TinkerTables.scorchedAnvil, folder, "_material"));
-    materialConsumer = MaterialsConsumerBuilder.shaped("m").build(toolForge);
-    ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, TinkerTables.tinkersAnvil)
+      .save(consumer, wrap(TinkerTables.scorchedAnvil, folder, "_material"));
+    ShapedMaterialsRecipeBuilder.shaped(TinkerTables.tinkersAnvil)
+      .category(RecipeCategory.DECORATIONS)
       .define('m', fakeStorageBlock)
       .define('s', TinkerTags.Items.SEARED_BLOCKS)
       .define('t', TinkerTables.tinkerStation)
       .pattern("sss")
       .pattern("mtm")
       .pattern("m m")
+      .parts("m")
       .unlockedBy("has_item", has(TinkerToolParts.fakeStorageBlock))
-      .save(materialConsumer, location(folder + "seared_forge_material"));
-    ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, TinkerTables.scorchedAnvil)
+      .save(toolForge, location(folder + "seared_forge_material"));
+    ShapedMaterialsRecipeBuilder.shaped(TinkerTables.scorchedAnvil)
+      .category(RecipeCategory.DECORATIONS)
       .define('m', fakeStorageBlock)
       .define('s', TinkerTags.Items.SCORCHED_BLOCKS)
       .define('t', TinkerTables.tinkerStation)
       .pattern("sss")
       .pattern("mtm")
       .pattern("m m")
+      .parts("m")
       .unlockedBy("has_item", has(TinkerToolParts.fakeStorageBlock))
-      .save(materialConsumer, location(folder + "scorched_forge_material"));
+      .save(toolForge, location(folder + "scorched_forge_material"));
 
     // part swapping
     ToolMaterialSwappingRecipeBuilder.tools(DifferenceIngredient.of(Ingredient.of(TinkerTags.Items.MULTIPART_TOOL), Ingredient.of(TinkerTags.Items.UNSWAPPABLE_PARTS)))

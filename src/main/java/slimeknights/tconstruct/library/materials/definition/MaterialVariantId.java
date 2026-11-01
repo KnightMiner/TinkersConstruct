@@ -1,15 +1,16 @@
 package slimeknights.tconstruct.library.materials.definition;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.ResourceLocationException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
@@ -20,15 +21,22 @@ import javax.annotation.Nullable;
 
 /** Represents a material that possibly has a variant. Variants are simply a different texture with the same material properties */
 public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdImpl {
-  Loadable<MaterialVariantId> LOADABLE = StringLoadable.DEFAULT.comapFlatMap((text, error) -> {
+  /** Loader instance for shared */
+  Loadable<MaterialVariantId> LOADABLE = StringLoadable.DEFAULT.mapChecked(MaterialVariantId::parse, (id, error) -> id.toString());
+  /** Context key to include material context in loadables. */
+  ContextKey<MaterialVariantId> CONTEXT_KEY = new ContextKey<>("material_variant");
+  /** Codec instance for JSON */
+  Codec<MaterialVariantId> CODEC = Codec.STRING.comapFlatMap(text -> {
     MaterialVariantId location = tryParse(text);
     if (location == null) {
-      throw error.create("Expected a material variant ID, was '" + text + "'");
+      return DataResult.error(() -> "Expected a material variant ID, was '" + text + "'");
     }
-    return location;
+    return DataResult.success(location);
   }, MaterialVariantId::toString);
-  ContextKey<MaterialVariantId> CONTEXT_KEY = new ContextKey<>("material_variant");
-  EntityDataSerializer<MaterialVariantId> DATA_ACCESSOR = EntityDataSerializer.simple((buffer, material) -> material.toNetwork(buffer), MaterialVariantId::fromNetwork);
+  /** Stream codec instance for network buffer */
+  StreamCodec<ByteBuf,MaterialVariantId> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(text -> MaterialVariantId.parse(text, ErrorFactory.DECODER_EXCEPTION), MaterialVariantId::toString);
+  /** Data accessor for an entity to store a material */
+  EntityDataSerializer<MaterialVariantId> DATA_ACCESSOR = EntityDataSerializer.forValueType(STREAM_CODEC);
 
   /** Variant ID that will match normal {@link MaterialId} with no variant, to allow checking for non-variant materials specifically. */
   String DEFAULT_VARIANT = "default";
@@ -109,6 +117,9 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
     return new MaterialVariantIdImpl(id, variant);
   }
 
+
+  /* Parsing */
+
   /**
    * Attempts to parse the variant ID from the given string.
    * @param defaultDomain  Domain to use if unspecified in the string
@@ -169,63 +180,21 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
     return variant;
   }
 
+  /** Parses this from a string, throwing using the error factory if invalid. */
+  private static MaterialVariantId parse(String text, ErrorFactory error) {
+    MaterialVariantId id = tryParse(text);
+    if (id == null) {
+      throw error.create("Expected a material variant ID, was '" + text + "'");
+    }
+    return id;
+  }
+
   /**
    * Parses a material variant ID, throwing if invalid
    * @param text  Text to parse
    * @return  Variant ID
    */
   static MaterialVariantId parse(String text) {
-    MaterialVariantId location = tryParse(text);
-    if (location == null) {
-      throw new JsonSyntaxException("Expected a material variant ID, was '" + text + "'");
-    }
-    return location;
-  }
-
-
-  /* JSON */
-
-  /** Shared logic for {@link #fromJson(JsonObject, String)} and {@link #convertJson(JsonElement, String)} */
-  private static MaterialVariantId parse(String text, String key) {
-    MaterialVariantId location = tryParse(text);
-    if (location == null) {
-      throw new JsonSyntaxException("Expected " + key + " to be a material variant ID, was '" + text + "'");
-    }
-    return location;
-  }
-
-  /**
-   * Gets a resource location from JSON, throwing a nice exception if invalid
-   * @param json  JSON object
-   * @param key   Key to fetch
-   * @return  Resource location parsed
-   */
-  static MaterialVariantId fromJson(JsonObject json, String key) {
-    String text = GsonHelper.getAsString(json, key);
-    return parse(text, key);
-  }
-
-  /**
-   * Gets a resource location from JSON, throwing a nice exception if invalid
-   * @param json  JSON object
-   * @param key   Key to fetch
-   * @return  Resource location parsed
-   */
-  static MaterialVariantId convertJson(JsonElement json, String key) {
-    String text = GsonHelper.convertToString(json, key);
-    return parse(text, key);
-  }
-
-
-  /* Networking */
-
-  /** Writes an ID to the packet buffer */
-  default void toNetwork(FriendlyByteBuf buf) {
-    buf.writeUtf(toString());
-  }
-
-  /** Reads an ID from the packet buffer */
-  static MaterialVariantId fromNetwork(FriendlyByteBuf buf) {
-    return parse(buf.readUtf(Short.MAX_VALUE));
+    return parse(text, ErrorFactory.JSON_SYNTAX_ERROR);
   }
 }

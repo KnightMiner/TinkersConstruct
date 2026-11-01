@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.recipe.material;
+package slimeknights.tconstruct.library.recipe.tinkerstation.building;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;

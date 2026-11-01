@@ -56,6 +56,8 @@ import slimeknights.tconstruct.library.recipe.partbuilder.MaterialPartRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderRecycle;
 import slimeknights.tconstruct.library.recipe.partbuilder.recycle.PartBuilderToolRecycle;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapedMaterialsRecipe;
+import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapelessMaterialsRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.damaging.TinkerStationDamagingRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairCraftingRecipe;
@@ -108,6 +110,9 @@ public class TinkerRecipes {
   public static final DeferredRecipeSerializer<CraftingTableRepairKitRecipe> craftingTableRepair = SERIALIZERS.registerSingleton("crafting_table_repair", CraftingTableRepairKitRecipe.INSTANCE);
   public static final DeferredRecipeSerializer<ModifierRepairCraftingRecipe> craftingModifierRepair = SERIALIZERS.registerLoadable("crafting_modifier_repair", ModifierRepairCraftingRecipe.LOADER);
   public static final DeferredRecipeSerializer<OverslimeCraftingTableRecipe> craftingOverslime = SERIALIZERS.registerLoadable("crafting_overslime_modifier", OverslimeCraftingTableRecipe.LOADER);
+  // tool building
+  public static final DeferredRecipeSerializer<ShapedMaterialsRecipe> shapedMaterials = SERIALIZERS.registerSimple("crafting_shaped_materials", ShapedMaterialsRecipe.CODEC, ShapedMaterialsRecipe.STREAM_CODEC);
+  public static final DeferredRecipeSerializer<ShapelessMaterialsRecipe> shapelessMaterials = SERIALIZERS.registerLoadable("crafting_shapeless_materials", ShapelessMaterialsRecipe.LOADER);
 
   /*
    * materials

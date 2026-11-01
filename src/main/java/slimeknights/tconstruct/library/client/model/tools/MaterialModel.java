@@ -204,7 +204,7 @@ public class MaterialModel implements IUnbakedGeometry<MaterialModel> {
     // static material can be defined, if unset uses dynamic material
     MaterialVariantId material = null;
     if (json.has("material")) {
-      material = MaterialVariantId.fromJson(json, "material");
+      material = MaterialVariantId.LOADABLE.getIfPresent(json, "material");
     }
 
     Vec2 offset = Vec2.ZERO;
