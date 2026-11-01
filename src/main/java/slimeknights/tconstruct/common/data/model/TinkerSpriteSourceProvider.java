@@ -3,6 +3,7 @@ package slimeknights.tconstruct.common.data.model;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.client.renderer.texture.atlas.sources.PalettedPermutations;
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,14 +38,13 @@ public class TinkerSpriteSourceProvider extends SpriteSourceProvider {
   private static final String PALETTE_FOLDER = "trims/color_palettes/";
   private static final String TRIM_FOLDER = "trims/models/armor/";
 
-  public TinkerSpriteSourceProvider(PackOutput output, ExistingFileHelper fileHelper) {
-    super(output, fileHelper, TConstruct.MOD_ID);
+  public TinkerSpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper fileHelper) {
+    super(output, lookupProvider, TConstruct.MOD_ID, fileHelper);
   }
 
-  @SuppressWarnings("removal")
   @Override
-  protected void addSources() {
-    ResourceLocation trimPalette = new ResourceLocation(PALETTE_FOLDER + "trim_palette");
+  protected void gather() {
+    ResourceLocation trimPalette = ResourceLocation.withDefaultNamespace(PALETTE_FOLDER + "trim_palette");
     // map of material suffix to material paeltte for trims
     Map<String,ResourceLocation> tinkerMaterials = Arrays.stream(MaterialIds.TRIM_MATERIALS).collect(Collectors.toMap(id -> id.getNamespace() + "_" + id.getPath(), id -> id.withPrefix(PALETTE_FOLDER)));
     Map<String,ResourceLocation> vanillaMaterials = new HashMap<>();
@@ -61,11 +62,9 @@ public class TinkerSpriteSourceProvider extends SpriteSourceProvider {
     List<ResourceLocation> customItemTrims = Stream.of("item/tool/armor/travelers/goggles/trim", "item/tool/armor/slime/wings/trim").map(TConstruct::getResource).toList();
 
     SourceList blocks = atlas(BLOCKS_ATLAS)
-      // We load our fluid textures from here
-      .addSource(directory("fluid"))
-      // patterns load from this directory
-      .addSource(directory("gui/modifiers"))
       // we typically use this directory for modifier icons that are not items nor blocks
+      .addSource(directory("gui/modifiers"))
+      // patterns load from this directory - TODO: use GUI sprites
       .addSource(directory("gui/tinker_pattern"))
       // trim armor icons
       .addSource(new PalettedPermutations(
@@ -80,9 +79,9 @@ public class TinkerSpriteSourceProvider extends SpriteSourceProvider {
       blocks.addSource(new SingleFile(armor.getRoot(), Optional.empty()));
     }
     // add armor trims in our materials
-    atlas(new ResourceLocation("armor_trims"))
+    atlas(ResourceLocation.withDefaultNamespace("armor_trims"))
       .addSource(new PalettedPermutations(
-        Arrays.stream(TRIMS).flatMap(name -> Stream.of(new ResourceLocation(TRIM_FOLDER + name), new ResourceLocation(TRIM_FOLDER + name + "_leggings"))).toList(),
+        Arrays.stream(TRIMS).flatMap(name -> Stream.of(ResourceLocation.withDefaultNamespace(TRIM_FOLDER + name), ResourceLocation.withDefaultNamespace(TRIM_FOLDER + name + "_leggings"))).toList(),
         trimPalette, tinkerMaterials));
   }
 
