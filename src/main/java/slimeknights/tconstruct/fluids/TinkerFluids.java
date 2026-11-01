@@ -62,6 +62,7 @@ import slimeknights.tconstruct.fluids.item.MagmaBottleItem;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoEmpty;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoWater;
 import slimeknights.tconstruct.fluids.util.FillBottle;
+import slimeknights.tconstruct.fluids.util.FluidDataSerializer;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
@@ -73,7 +74,6 @@ import slimeknights.tconstruct.smeltery.item.CopperCanItem;
 import slimeknights.tconstruct.smeltery.item.TankItem;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
-import slimeknights.tconstruct.tools.network.FluidDataSerializer;
 import slimeknights.tconstruct.world.TinkerWorld;
 
 import java.util.Map;
@@ -225,9 +225,6 @@ public final class TinkerFluids extends TinkerModule {
   public static final FlowingFluidObject<BaseFlowingFluid> moltenSteeleaf = FLUIDS.registerMetal("molten_steeleaf").type(hot("molten_steeleaf").temperature(1234).lightLevel(10)).block(createBurning(MapColor.COLOR_GREEN, 10, 10, 6f)).bucket().flowing();
   public static final FlowingFluidObject<BaseFlowingFluid> fieryLiquid = FLUIDS.register("fiery_liquid").type(hot("fiery_liquid").temperature(1800).lightLevel(15)).block(createBurning(MapColor.CRIMSON_HYPHAE, 15, 20, 6f)).tickRate(30).bucket().flowing();
 
-  // fluid data serializer
-  public static final FluidDataSerializer FLUID_DATA_SERIALIZER = new FluidDataSerializer();
-
   /** Creates a builder for a cool fluid with sounds */
   private static FluidType.Properties cool() {
     return FluidType.Properties.create()
@@ -274,7 +271,7 @@ public final class TinkerFluids extends TinkerModule {
   void registerAdditional(RegisterEvent event) {
     if (event.getRegistryKey() == NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS) {
       Registry<EntityDataSerializer<?>> registry = Objects.requireNonNull(event.getRegistry(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS));
-      Registry.register(registry, TConstruct.getResource("fluid"), FLUID_DATA_SERIALIZER);
+      Registry.register(registry, TConstruct.getResource("fluid"), FluidDataSerializer.INSTANCE);
     }
   }
 

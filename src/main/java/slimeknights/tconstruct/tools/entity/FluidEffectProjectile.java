@@ -33,7 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import slimeknights.mantle.inventory.EmptyItemHandler;
-import slimeknights.tconstruct.fluids.TinkerFluids;
+import slimeknights.tconstruct.fluids.util.FluidDataSerializer;
 import slimeknights.tconstruct.library.modifiers.entity.ProjectileWithKnockback;
 import slimeknights.tconstruct.library.modifiers.entity.ProjectileWithPower;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 @Setter
 public class FluidEffectProjectile extends Projectile implements ProjectileWithKnockback, ProjectileWithPower {
 
-  private static final EntityDataAccessor<FluidStack> FLUID = SynchedEntityData.defineId(FluidEffectProjectile.class, TinkerFluids.FLUID_DATA_SERIALIZER);
+  private static final EntityDataAccessor<FluidStack> FLUID = SynchedEntityData.defineId(FluidEffectProjectile.class, FluidDataSerializer.INSTANCE);
   /** Movement speed in water */
   private static final EntityDataAccessor<Float> WATER_INERTIA = SynchedEntityData.defineId(FluidEffectProjectile.class, EntityDataSerializers.FLOAT);
 
@@ -303,9 +303,9 @@ public class FluidEffectProjectile extends Projectile implements ProjectileWithK
   private static final String KEY_WATER_INERTIA = "water_inertia";
 
   @Override
-  protected void defineSynchedData() {
-    this.entityData.define(FLUID, FluidStack.EMPTY);
-    this.entityData.define(WATER_INERTIA, 0.6f);
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    builder.define(FLUID, FluidStack.EMPTY);
+    builder.define(WATER_INERTIA, 0.6f);
   }
 
   @Override

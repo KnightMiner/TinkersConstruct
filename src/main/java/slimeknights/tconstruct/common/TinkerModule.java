@@ -5,7 +5,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
@@ -54,7 +53,6 @@ public abstract class TinkerModule {
   protected static final BlockDeferredRegisterExtension BLOCKS = new BlockDeferredRegisterExtension(TConstruct.MOD_ID);
   protected static final ItemDeferredRegisterExtension ITEMS = new ItemDeferredRegisterExtension(TConstruct.MOD_ID);
   protected static final SynchronizedDeferredRegister<ParticleType<?>> PARTICLE_TYPES = SynchronizedDeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, TConstruct.MOD_ID);
-  protected static final SynchronizedDeferredRegister<EntityDataSerializer<?>> DATA_SERIALIZERS = SynchronizedDeferredRegister.create(Keys.ENTITY_DATA_SERIALIZERS, TConstruct.MOD_ID);
   protected static final SynchronizedDeferredRegister<CreativeModeTab> CREATIVE_TABS = SynchronizedDeferredRegister.create(Registries.CREATIVE_MODE_TAB, TConstruct.MOD_ID);
   // gameplay instances
   protected static final BlockEntityTypeDeferredRegister BLOCK_ENTITIES = new BlockEntityTypeDeferredRegister(TConstruct.MOD_ID);
@@ -75,7 +73,6 @@ public abstract class TinkerModule {
     BLOCKS.register(bus);
     ITEMS.register(bus);
     PARTICLE_TYPES.register(bus);
-    DATA_SERIALIZERS.register(bus);
     CREATIVE_TABS.register(bus);
     // gameplay instance
     BLOCK_ENTITIES.register(bus);
