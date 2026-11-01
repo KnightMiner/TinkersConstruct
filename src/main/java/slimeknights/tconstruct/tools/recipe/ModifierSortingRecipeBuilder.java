@@ -1,28 +1,32 @@
 package slimeknights.tconstruct.tools.recipe;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.tconstruct.library.recipe.worktable.AbstractSizedIngredientRecipeBuilder;
-
-import java.util.function.Consumer;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.SizedIngredientRecipeBuilder;
 
 /** Builder for modifier sorting recipes */
 @RequiredArgsConstructor(staticName = "sorting")
-public class ModifierSortingRecipeBuilder extends AbstractSizedIngredientRecipeBuilder<ModifierSortingRecipeBuilder> {
+public class ModifierSortingRecipeBuilder extends AbstractRecipeBuilder<ModifierSortingRecipeBuilder> implements SizedIngredientRecipeBuilder<ModifierSortingRecipeBuilder> {
+  @Accessors(fluent = true)
+  @Setter
+  private SizedIngredient input = null;
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer) {
-    save(consumer, BuiltInRegistries.ITEM.getKey((inputs.get(0).getMatchingStacks().get(0).getItem())));
+  public void save(RecipeOutput output) {
+    save(output, BuiltInRegistries.ITEM.getKey((input.getItems()[0].getItem())));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    if (inputs.isEmpty()) {
-      throw new IllegalStateException("Must have at least one ingredient");
+  public void save(RecipeOutput output, ResourceLocation id) {
+    if (input == null) {
+      throw new IllegalStateException("Must set the input ingredient");
     }
-    ResourceLocation advancementId = buildOptionalAdvancement(id, "modifiers");
-    consumer.accept(new LoadableFinishedRecipe<>(new ModifierSortingRecipe(id, inputs), ModifierSortingRecipe.LOADER, advancementId));
+    output.accept(id, new ModifierSortingRecipe(input), buildOptionalAdvancement(output, id, "modifiers"));
   }
 }

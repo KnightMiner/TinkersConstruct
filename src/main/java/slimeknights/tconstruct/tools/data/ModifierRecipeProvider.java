@@ -1788,8 +1788,8 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
 
     }
     ModifierSortingRecipeBuilder.sorting()
-                                .addInput(Items.COMPASS)
-                                .save(consumer, location(worktableFolder + "modifier_sorting"));
+      .input(Items.COMPASS)
+      .save(consumer, location(worktableFolder + "modifier_sorting"));
 
     // invisible ink
     ResourceLocation hiddenModifiers = TConstruct.getResource("invisible_modifiers");

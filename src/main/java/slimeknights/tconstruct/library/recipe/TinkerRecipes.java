@@ -66,12 +66,18 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartMateria
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.PartSwappingOverrideRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.swapping.ToolMaterialSwappingRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.tables.recipe.CraftingTableRepairKitRecipe;
 import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
 import slimeknights.tconstruct.tools.recipe.ArmorDyeingRecipe;
 import slimeknights.tconstruct.tools.recipe.ArmorTrimRecipe;
 import slimeknights.tconstruct.tools.recipe.BannerModifierRecipe;
+import slimeknights.tconstruct.tools.recipe.EnchantmentConvertingRecipe;
+import slimeknights.tconstruct.tools.recipe.ExtractModifierRecipe;
+import slimeknights.tconstruct.tools.recipe.ModifierRemovalRecipe;
+import slimeknights.tconstruct.tools.recipe.ModifierSortingRecipe;
 import slimeknights.tconstruct.tools.recipe.TippedToolTransformRecipe;
+import slimeknights.tconstruct.tools.recipe.ToggleInteractionWorktableRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.MooshroomDemushroomingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.PlayerBeheadingRecipe;
 import slimeknights.tconstruct.tools.recipe.severing.SheepShearingRecipe;
@@ -95,8 +101,6 @@ public class TinkerRecipes {
 
   /** Internal recipe type for recipes that are not pulled by any specific crafting block */
   public static final DeferredRecipeType<Recipe<?>> dataType = TYPES.registerType("data");
-
-  public static final DeferredRecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = TYPES.registerType("modifier_worktable");
 
   /*
    * crafting table
@@ -151,6 +155,17 @@ public class TinkerRecipes {
   public static final DeferredRecipeSerializer<ArmorDyeingRecipe> armorDyeing = SERIALIZERS.registerNoArguments("armor_dyeing_modifier", ArmorDyeingRecipe::new);
   public static final DeferredRecipeSerializer<BannerModifierRecipe> bannerModifier = SERIALIZERS.registerLoadable("banner_modifier", BannerModifierRecipe.LOADER);
   public static final DeferredRecipeSerializer<ArmorTrimRecipe> armorTrimModifier = SERIALIZERS.registerNoArguments("armor_trim_modifier", ArmorTrimRecipe::new);
+
+  /*
+   * modifier worktable
+   */
+  public static final DeferredRecipeType<IModifierWorktableRecipe> modifierWorktableType = TYPES.registerType("modifier_worktable");
+  public static final DeferredRecipeSerializer<ModifierRemovalRecipe> removeModifier = SERIALIZERS.registerLoadable("remove_modifier", ModifierRemovalRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ExtractModifierRecipe> extractModifier = SERIALIZERS.registerLoadable("extract_modifier", ExtractModifierRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ModifierSortingRecipe> modifierSorting = SERIALIZERS.registerLoadable("modifier_sorting", ModifierSortingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ModifierSetWorktableRecipe> modifierSetWorktable = SERIALIZERS.registerLoadable("modifier_set_worktable", ModifierSetWorktableRecipe.LOADER);
+  public static final DeferredRecipeSerializer<EnchantmentConvertingRecipe> enchantmentConverting = SERIALIZERS.registerLoadable("enchantment_converting", EnchantmentConvertingRecipe.LOADER);
+  public static final DeferredRecipeSerializer<ToggleInteractionWorktableRecipe> toggleInteraction = SERIALIZERS.registerLoadable("toggle_interaction", ToggleInteractionWorktableRecipe.LOADER);
 
   /*
    * smeltery

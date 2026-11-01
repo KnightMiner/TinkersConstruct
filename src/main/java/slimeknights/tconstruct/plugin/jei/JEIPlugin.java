@@ -304,7 +304,7 @@ public class JEIPlugin implements IModPlugin {
     register.addRecipes(TConstructJEIConstants.PART_BUILDER, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.partBuilderType.get(), IDisplayPartBuilderRecipe.class));
 
     // modifier worktable
-    register.addRecipes(TConstructJEIConstants.MODIFIER_WORKTABLE, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.MODIFIER_WORKTABLE.get(), IModifierWorktableRecipe.class)
+    register.addRecipes(TConstructJEIConstants.MODIFIER_WORKTABLE, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.modifierWorktableType.get(), IModifierWorktableRecipe.class)
       .stream().filter(recipe -> {
         if (recipe.getModifierOptions(null).isEmpty()) {
           TConstruct.LOG.debug("Hiding Modifier Worktable recipe {} as it has no valid modifiers", recipe.getId());

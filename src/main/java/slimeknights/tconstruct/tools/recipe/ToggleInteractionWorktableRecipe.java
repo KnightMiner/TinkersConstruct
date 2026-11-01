@@ -3,20 +3,19 @@ package slimeknights.tconstruct.tools.recipe;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
-import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.worktable.AbstractWorktableRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
@@ -24,7 +23,6 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,22 +30,24 @@ import java.util.function.Predicate;
 
 import static slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe.LIST_GETTER;
 
-/** Recipe handling toggling for modifiers that work on left and right click.
+/**
+ * Recipe handling toggling for modifiers that work on left and right click.
  * @see slimeknights.tconstruct.library.tools.definition.module.interaction.DualOptionInteraction
  * @see slimeknights.tconstruct.library.tools.definition.module.interaction.ToggleableSetInteraction
+ * @see ToggleInteractionWorktableRecipeBuilder
  */
 public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   private static final Component TITLE = TConstruct.makeTranslation("recipe", "toggle_interaction.title");
   private static final Component DESCRIPTION = TConstruct.makeTranslation("recipe", "toggle_interaction.description");
   private static final Predicate<ModifierEntry> FILTER = entry -> ModifierManager.isInTag(entry.id(), TinkerTags.Modifiers.DUAL_INTERACTION);
   /** Loader instance */
-  public static final RecordLoadable<ToggleInteractionWorktableRecipe> LOADER = RecordLoadable.create(ContextKey.ID.requiredField(), TOOL_FIELD, INPUTS_FIELD, ToggleInteractionWorktableRecipe::new);
+  public static final RecordLoadable<ToggleInteractionWorktableRecipe> LOADER = RecordLoadable.create(TOOL_FIELD, INPUTS_FIELD, ToggleInteractionWorktableRecipe::new);
 
   /** Cached list of modifiers shown in JEI */
   private List<ModifierEntry> filteredModifiers = null;
 
-  public ToggleInteractionWorktableRecipe(ResourceLocation id, Ingredient toolRequirement, List<SizedIngredient> inputs) {
-    super(id, toolRequirement, inputs);
+  public ToggleInteractionWorktableRecipe(Ingredient toolRequirement, List<SizedIngredient> inputs) {
+    super(toolRequirement, inputs);
   }
 
   @Override
@@ -110,6 +110,6 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.toggleInteractionSerializer.get();
+    return TinkerRecipes.toggleInteraction.get();
   }
 }

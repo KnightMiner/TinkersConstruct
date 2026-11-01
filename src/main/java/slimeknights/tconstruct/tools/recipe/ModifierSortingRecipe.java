@@ -1,36 +1,42 @@
 package slimeknights.tconstruct.tools.recipe;
 
+import lombok.RequiredArgsConstructor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import slimeknights.mantle.data.loadable.ErrorFactory;
-import slimeknights.mantle.data.loadable.array.ArrayLoadable;
-import slimeknights.mantle.data.loadable.field.ContextKey;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
+import slimeknights.tconstruct.library.recipe.TinkerRecipes;
+import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
-import slimeknights.tconstruct.library.recipe.worktable.AbstractWorktableRecipe;
+import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/** Reorders modifiers ion a tool */
-public class ModifierSortingRecipe extends AbstractWorktableRecipe {
+/**
+ * Reorders modifiers ion a tool.
+ * @see ModifierSortingRecipeBuilder
+ */
+@RequiredArgsConstructor
+public class ModifierSortingRecipe implements IModifierWorktableRecipe {
   private static final Component TITLE = TConstruct.makeTranslation("recipe", "modifier_sorting.title");
   /** JEI description */
   private static final Component DESCRIPTION = TConstruct.makeTranslation("recipe", "modifier_sorting.description");
@@ -40,27 +46,27 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
   private static final Component DESCRIPTION_REVERSE = TConstruct.makeTranslation("recipe", "modifier_sorting.description.reversed");
   /** Error for too few modifiers */
   private static final Component NOT_ENOUGH_MODIFIERS = TConstruct.makeTranslation("recipe", "modifier_sorting.not_enough_modifiers").withStyle(ChatFormatting.RED);
+  public static final RecordLoadable<ModifierSortingRecipe> LOADER = RecordLoadable.create(Loadables.SIZED_ITEM_INGREDIENT.requiredField("input", r -> r.input), ModifierSortingRecipe::new);
 
-  public static final RecordLoadable<ModifierSortingRecipe> LOADER = RecordLoadable.create(
-    ContextKey.ID.requiredField(),
-    SizedIngredient.LOADABLE.list(ArrayLoadable.COMPACT).validate((list, error) -> {
-      if ((error == ErrorFactory.RUNTIME || error == ErrorFactory.JSON_SYNTAX_ERROR) && list.size() > 1) {
-        TConstruct.LOG.warn("Using multiple ingredients for the modifier sorting recipe is deprecated. Use just a single input.");
-      }
-      return list;
-    }).requiredField("inputs", r -> r.inputs),
-    ModifierSortingRecipe::new);
-
-  public ModifierSortingRecipe(ResourceLocation id, List<SizedIngredient> inputs) {
-    super(id, inputs);
-  }
+  private final SizedIngredient input;
 
   @Override
   public boolean matches(TinkerableRecipeInput inv, Level world) {
     if (!inv.getTinkerableStack().is(TinkerTags.Items.MODIFIABLE)) {
       return false;
     }
-    return ModifierRecipe.checkMatch(inv, inputs);
+    boolean found = false;
+    for (int i = 0; i < inv.getInputCount(); i++) {
+      ItemStack stack = inv.getInput(i);
+      if (!stack.isEmpty()) {
+        // at most one copy, and no other inputs
+        if (found || !input.test(stack)) {
+          return false;
+        }
+        found = true;
+      }
+    }
+    return found;
   }
 
   @Override
@@ -76,12 +82,9 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
       }
       if (inv.getInput(0).isEmpty()) {
         return DESCRIPTION_REVERSE;
+      } else {
+        return DESCRIPTION_FORWARD;
       }
-    }
-    // if we have multiple inputs, show the forwards description in JEI instead of the generic one
-    // if we have just the one input, use a more generic one in JEI
-    if (inv != null || inputs.size() > 1) {
-      return DESCRIPTION_FORWARD;
     }
     return DESCRIPTION;
   }
@@ -136,6 +139,32 @@ public class ModifierSortingRecipe extends AbstractWorktableRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return TinkerModifiers.modifierSortingSerializer.get();
+    return TinkerRecipes.modifierSorting.get();
+  }
+
+
+  /* JEI */
+  @Nullable
+  protected List<ItemStack> tools;
+
+  @Override
+  public List<ItemStack> getInputTools() {
+    if (tools == null) {
+      tools = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.MODIFIABLE).map(IModifiableDisplay::getDisplayStack).toList();
+    }
+    return tools;
+  }
+
+  @Override
+  public List<ItemStack> getDisplayItems(int slot) {
+    if (slot == 0) {
+      return Arrays.asList(input.getItems());
+    }
+    return List.of();
+  }
+
+  @Override
+  public int getInputCount() {
+    return 1;
   }
 }

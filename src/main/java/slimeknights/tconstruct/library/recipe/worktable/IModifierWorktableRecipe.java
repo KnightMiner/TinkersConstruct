@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.recipe.worktable;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -22,7 +22,7 @@ import java.util.List;
 public interface IModifierWorktableRecipe extends ICommonRecipe<TinkerableRecipeInput> {
   @Override
   default RecipeType<?> getType() {
-    return TinkerRecipes.MODIFIER_WORKTABLE.get();
+    return TinkerRecipes.modifierWorktableType.get();
   }
 
   /** If true, this recipe matches the given inputs, does not consider the modifier button yet */
@@ -104,13 +104,13 @@ public interface IModifierWorktableRecipe extends ICommonRecipe<TinkerableRecipe
 
   @Override
   @Deprecated
-  default ItemStack getResultItem(RegistryAccess access) {
+  default ItemStack getResultItem(HolderLookup.Provider registries) {
     return ItemStack.EMPTY;
   }
 
   @Deprecated
   @Override
-  default ItemStack assemble(TinkerableRecipeInput inv, RegistryAccess access) {
+  default ItemStack assemble(TinkerableRecipeInput inv, HolderLookup.Provider registries) {
     return ItemStack.EMPTY;
   }
 }
