@@ -124,7 +124,7 @@ public class TConstruct {
     modEventBus.register(new TinkerTools());
     // smeltery
     modEventBus.register(new TinkerSmeltery());
-    modEventBus.register(new TinkerFluids());
+    modEventBus.register(new TinkerFluids(modEventBus));
 
     // other events
     modEventBus.addListener(RegisterPayloadHandlersEvent.class, TinkerNetwork::registerPackets);

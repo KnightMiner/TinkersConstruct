@@ -27,6 +27,7 @@ import slimeknights.mantle.data.predicate.block.BlockPredicate;
 import slimeknights.mantle.data.predicate.entity.BlockAtEntityPredicate;
 import slimeknights.mantle.data.predicate.entity.HasMobEffectPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
@@ -94,7 +95,7 @@ public class FluidEffectProvider extends AbstractFluidEffectProvider {
       .addLivingDamage(LivingEntityPredicate.WATER_SENSITIVE, 2f, TinkerDamageTypes.WATER)
       .addEntityEffect(FluidEffect.EXTINGUISH_FIRE)
       .addBlockEffect(BlockPredicate.or(BlockPredicate.BLOCKS_MOTION, BlockPredicate.tag(TinkerTags.Blocks.UNREPLACABLE_BY_LIQUID)).inverted(), new BreakBlockFluidEffect(0));
-    addFluid(TinkerFluids.powderedSnow, FluidType.BUCKET_VOLUME / 10)
+    addFluid(MantleFluids.powderSnow, FluidType.BUCKET_VOLUME / 10)
       .coldDamage(2f)
       .addEntityEffect(new FreezeFluidEffect(TimeAction.ADD, 80))
       .addBlockEffect(new PlaceBlockFluidEffect(Blocks.SNOW));
@@ -207,13 +208,13 @@ public class FluidEffectProvider extends AbstractFluidEffectProvider {
     addMetal(TinkerFluids.moltenDebris).addBlockEffect(new HarvestTierPredicate(Tiers.NETHERITE), new BreakBlockFluidEffect(50));
 
     // foods - setup to give equivalent saturation on a full bowl/bottle to their food counterparts, though hunger may be slightly different
-    addFluid(TinkerFluids.honey.getTag(), FluidValues.SIP)
+    addFluid(MantleFluids.honey.getTag(), FluidValues.SIP)
       .addEntityEffect(new RestoreHungerFluidEffect(1, 0.12f, false, ItemOutput.fromItem(Items.HONEY_BOTTLE)))
       .addEntityEffect(new RemoveEffectFluidEffect(MobEffects.POISON));
     // soups
-    addFluid(TinkerFluids.beetrootSoup.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(1, 0.72f, false, ItemOutput.fromItem(Items.BEETROOT_SOUP)));
-    addFluid(TinkerFluids.mushroomStew.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(1, 0.72f, false, ItemOutput.fromItem(Items.MUSHROOM_STEW)));
-    addFluid(TinkerFluids.rabbitStew.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(2, 0.6f, false, ItemOutput.fromItem(Items.RABBIT_STEW)));
+    addFluid(MantleFluids.beetrootSoup.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(1, 0.72f, false, ItemOutput.fromItem(Items.BEETROOT_SOUP)));
+    addFluid(MantleFluids.mushroomStew.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(1, 0.72f, false, ItemOutput.fromItem(Items.MUSHROOM_STEW)));
+    addFluid(MantleFluids.rabbitStew.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(2, 0.6f, false, ItemOutput.fromItem(Items.RABBIT_STEW)));
     addFluid(TinkerFluids.meatSoup.getTag(), FluidValues.SIP).addEntityEffect(new RestoreHungerFluidEffect(2, 0.48f, false, ItemOutput.fromItem(TinkerFluids.meatSoupBowl)));
     // pig iron fills you up food, but still hurts
     addMetal(TinkerFluids.moltenPigIron).fireDamage(3).addEntityEffect(new RestoreHungerFluidEffect(2, 0.7f, false, ItemOutput.fromItem(TinkerCommons.bacon)));
@@ -327,7 +328,7 @@ public class FluidEffectProvider extends AbstractFluidEffectProvider {
 
     // potion fluid compat
     // standard potion is 250 mb, but we want a smaller number. divide into 5 pieces at 25% a piece (so healing is 1 health), means you gain 25% per potion
-    addFluid(TinkerFluids.potion, FluidValues.SIP)
+    addFluid(MantleFluids.potion, FluidValues.SIP)
       .addEntityEffect(new PotionFluidEffect(0.25f, TagPredicate.ANY))
       .addBlockEffect(new PotionCloudFluidEffect(0.25f, TagPredicate.ANY));
 

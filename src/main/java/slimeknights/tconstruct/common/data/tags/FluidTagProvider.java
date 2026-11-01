@@ -9,6 +9,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
@@ -35,6 +36,7 @@ public class FluidTagProvider extends FluidTagsProvider {
     fluidTag(TinkerFluids.enderSlime);
     fluidTag(TinkerFluids.magma);
     fluidTag(TinkerFluids.venom);
+    fluidTag(TinkerFluids.meatSoup);
     // basic molten
     fluidTag(TinkerFluids.searedStone);
     fluidTag(TinkerFluids.scorchedStone);
@@ -105,12 +107,6 @@ public class FluidTagProvider extends FluidTagsProvider {
     // twilight compat fluids
     fluidTag(TinkerFluids.moltenSteeleaf);
     fluidTag(TinkerFluids.fieryLiquid);
-    // unplacable fluids
-    fluidTag(TinkerFluids.honey);
-    fluidTag(TinkerFluids.beetrootSoup);
-    fluidTag(TinkerFluids.mushroomStew);
-    fluidTag(TinkerFluids.rabbitStew);
-    fluidTag(TinkerFluids.meatSoup);
 
     /* Normal tags */
     this.tag(TinkerTags.Fluids.SLIME)
@@ -119,12 +115,9 @@ public class FluidTagProvider extends FluidTagsProvider {
         .addTags(TinkerFluids.ichor.getTag())
         .addTag(TinkerFluids.enderSlime.getTag());
 
-    fluidTag(TinkerFluids.potion);
-    fluidTag(TinkerFluids.powderedSnow);
-
     // drowned want fluids that work nice in water, while wither skeletons want to complement the withering
     // both need to act as a swasher tutorial though
-    tag(TinkerTags.Fluids.DROWNED_SWASHER).add(Fluids.LAVA, TinkerFluids.powderedSnow.get(), TinkerFluids.moltenGlass.get(), TinkerFluids.moltenObsidian.get());
+    tag(TinkerTags.Fluids.DROWNED_SWASHER).add(Fluids.LAVA, MantleFluids.powderSnow.get(), TinkerFluids.moltenGlass.get(), TinkerFluids.moltenObsidian.get());
     tag(TinkerTags.Fluids.WITHER_SKELETON_SWASHER).add(Fluids.LAVA, TinkerFluids.blazingBlood.get(), TinkerFluids.liquidSoul.get(), TinkerFluids.magma.get());
 
     // tag local tags with the chemthrower, do not include forge tags as its on other mods to choose how they want to support IE
@@ -140,7 +133,7 @@ public class FluidTagProvider extends FluidTagsProvider {
       );
     // entity effects - most of these have block effects, but we don't want the clouds triggering mostly
     this.tag(TinkerTags.Fluids.CHEMTHROWER_ENTITY_EFFECTS)
-      .add(TinkerFluids.powderedSnow.get())
+      .add(MantleFluids.powderSnow.get())
       .addTags(
         // common
         Tags.Fluids.MILK, TinkerFluids.blazingBlood.getLocalTag(),
@@ -151,8 +144,8 @@ public class FluidTagProvider extends FluidTagsProvider {
         // clay
         TinkerFluids.moltenClay.getLocalTag(), TinkerFluids.searedStone.getLocalTag(), TinkerFluids.scorchedStone.getLocalTag(),
         // food
-        TinkerFluids.honey.getLocalTag(),
-        TinkerFluids.mushroomStew.getLocalTag(), TinkerFluids.rabbitStew.getLocalTag(), TinkerFluids.meatSoup.getLocalTag(),
+        MantleFluids.honey.getLocalTag(), MantleFluids.beetrootSoup.getLocalTag(),
+        MantleFluids.mushroomStew.getLocalTag(), MantleFluids.rabbitStew.getLocalTag(), TinkerFluids.meatSoup.getLocalTag(),
         // tier 2
         TinkerFluids.moltenCopper.getLocalTag(), TinkerFluids.moltenIron.getLocalTag(), TinkerFluids.moltenGold.getLocalTag(),
         // tier 2 compat
@@ -228,7 +221,7 @@ public class FluidTagProvider extends FluidTagsProvider {
     this.tag(MantleTags.Fluids.SOUP).addTag(TinkerFluids.meatSoup.getTag());
 
     // hide fluids that require NBT. Can expand this list if other mods report problems
-    tag(TinkerTags.Fluids.HIDE_IN_CREATIVE_TANKS).add(TinkerFluids.potion.get()).addOptionalTag(TinkerTags.HIDDEN_FROM_RECIPE_VIEWERS);
+    tag(TinkerTags.Fluids.HIDE_IN_CREATIVE_TANKS).add(MantleFluids.potion.get()).addOptionalTag(TinkerTags.HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
   @Override

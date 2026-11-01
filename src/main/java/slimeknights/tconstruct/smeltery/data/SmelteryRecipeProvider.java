@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -39,6 +39,8 @@ import net.neoforged.neoforge.common.crafting.conditions.TrueCondition;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
+import slimeknights.mantle.fluid.PotionFluidType;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipeBuilder;
 import slimeknights.mantle.recipe.data.ConsumerWrapperBuilder;
@@ -58,7 +60,6 @@ import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.common.registration.GeodeItemObject;
 import slimeknights.tconstruct.common.registration.GeodeItemObject.BudSize;
 import slimeknights.tconstruct.fluids.TinkerFluids;
-import slimeknights.tconstruct.fluids.fluids.PotionFluidType;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.data.recipe.ISmelteryRecipeHelper;
 import slimeknights.tconstruct.library.data.recipe.SmelteryRecipeBuilder;
@@ -1067,7 +1068,7 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
     ContainerFillingRecipeBuilder.tableRecipe(TinkerSmeltery.copperCan, FluidValues.INGOT)
                                  .save(consumer, location(folder + "filling/copper_can"));
     // potion filling
-    FluidIngredient potionBottle = TinkerFluids.potion.ingredient(FluidValues.BOTTLE);
+    FluidIngredient potionBottle = MantleFluids.potion.ingredient(FluidValues.BOTTLE);
     PotionCastingRecipeBuilder.tableRecipe(Items.POTION)
                               .setBottle(Items.GLASS_BOTTLE)
                               .setFluid(potionBottle)
@@ -1082,7 +1083,7 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
                               .save(consumer, location(folder + "filling/splash_bottle"));
     PotionCastingRecipeBuilder.tableRecipe(Items.TIPPED_ARROW)
                               .setBottle(Items.ARROW)
-                              .setFluid(TinkerFluids.potion.ingredient(FluidValues.BOTTLE / 5))
+                              .setFluid(MantleFluids.potion.ingredient(FluidValues.BOTTLE / 5))
                               .setCoolingTime(20)
                               .save(consumer, location(folder + "filling/tipped_arrow"));
     ItemCastingRecipeBuilder.tableRecipe(Items.ARROW)
@@ -1275,26 +1276,26 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
 
     // honey
     ItemCastingRecipeBuilder.tableRecipe(Items.HONEY_BOTTLE)
-                            .setFluid(TinkerFluids.honey.getTag(), FluidValues.BOTTLE)
+                            .setFluid(MantleFluids.honey.getTag(), FluidValues.BOTTLE)
                             .setCoolingTime(1)
                             .setCast(Items.GLASS_BOTTLE, true)
                             .save(consumer, location(folder + "honey/bottle"));
     ItemCastingRecipeBuilder.basinRecipe(Items.HONEY_BLOCK)
-                            .setFluidAndTime(TinkerFluids.honey, FluidValues.BOTTLE * 4)
+                            .setFluidAndTime(MantleFluids.honey, FluidValues.BOTTLE * 4)
                             .save(consumer, location(folder + "honey/block"));
     // soup
     ItemCastingRecipeBuilder.tableRecipe(Items.BEETROOT_SOUP)
-                            .setFluid(TinkerFluids.beetrootSoup.getTag(), FluidValues.BOWL)
+                            .setFluid(MantleFluids.beetrootSoup.getTag(), FluidValues.BOWL)
                             .setCast(Items.BOWL, true)
                             .setCoolingTime(1)
                             .save(consumer, location(folder + "soup/beetroot"));
     ItemCastingRecipeBuilder.tableRecipe(Items.MUSHROOM_STEW)
-                            .setFluid(TinkerFluids.mushroomStew.getTag(), FluidValues.BOWL)
+                            .setFluid(MantleFluids.mushroomStew.getTag(), FluidValues.BOWL)
                             .setCast(Items.BOWL, true)
                             .setCoolingTime(1)
                             .save(consumer, location(folder + "soup/mushroom"));
     ItemCastingRecipeBuilder.tableRecipe(Items.RABBIT_STEW)
-                            .setFluid(TinkerFluids.rabbitStew.getTag(), FluidValues.BOWL)
+                            .setFluid(MantleFluids.rabbitStew.getTag(), FluidValues.BOWL)
                             .setCast(Items.BOWL, true)
                             .setCoolingTime(1)
                             .save(consumer, location(folder + "soup/rabbit"));
@@ -1838,12 +1839,12 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
                         .save(consumer, location(slimeFolder + "ender/sapling"));
 
     // honey
-    MeltingRecipeBuilder.melting(Ingredient.of(Items.HONEY_BLOCK), TinkerFluids.honey, FluidValues.BOTTLE * 4)
+    MeltingRecipeBuilder.melting(Ingredient.of(Items.HONEY_BLOCK), MantleFluids.honey, FluidValues.BOTTLE * 4)
                         .save(consumer, location(slimeFolder + "honey_block"));
     // soup
-    MeltingRecipeBuilder.melting(Ingredient.of(Items.BEETROOT), TinkerFluids.beetrootSoup, FluidValues.BOTTLE / 5, 1)
+    MeltingRecipeBuilder.melting(Ingredient.of(Items.BEETROOT), MantleFluids.beetrootSoup, FluidValues.BOTTLE / 5, 1)
                         .save(consumer, location(slimeFolder + "beetroot_soup"));
-    MeltingRecipeBuilder.melting(Ingredient.of(Tags.Items.MUSHROOMS), TinkerFluids.mushroomStew, FluidValues.BOTTLE / 2, 1)
+    MeltingRecipeBuilder.melting(Ingredient.of(Tags.Items.MUSHROOMS), MantleFluids.mushroomStew, FluidValues.BOTTLE / 2, 1)
                         .save(consumer, location(slimeFolder + "mushroom_stew"));
 
     // fuels
@@ -1885,7 +1886,7 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
     AlloyRecipeBuilder.alloy(TinkerFluids.moltenPigIron, FluidValues.INGOT * 2)
                       .addInput(TinkerFluids.moltenIron.ingredient(FluidValues.INGOT))
                       .addInput(TinkerFluids.meatSoup.ingredient(FluidValues.SLIMEBALL * 2))
-                      .addInput(TinkerFluids.honey.ingredient(FluidValues.BOTTLE))
+                      .addInput(MantleFluids.honey.ingredient(FluidValues.BOTTLE))
                       .save(consumer, prefix(TinkerFluids.moltenPigIron, folder));
     // obsidian: 1 lava = 1 obsidian, but require some water is present
     // water being a catalyst makes this friendlier in the nether as we just need 1 bottle instead of collecting a bunch
@@ -2136,7 +2137,7 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
     EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.PHANTOMS), PotionFluidType.potionResult(Potions.SLOW_FALLING, FluidValues.BOTTLE / 5), 4)
                               .save(consumer, location(folder + "phantom"));
     // its not quite levitation, but close enough
-    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.SHULKERS), PotionFluidType.potionResult(TinkerEffects.levitationPotion.get(PotionType.NORMAL), FluidValues.BOTTLE / 5), 3)
+    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.SHULKERS), PotionFluidType.potionResult(TinkerEffects.levitationPotion.getHolder(PotionType.NORMAL), FluidValues.BOTTLE / 5), 3)
                               .save(consumer, location(folder + "shulker"));
     // frogs leap too
     EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.FROGS), PotionFluidType.potionResult(Potions.LEAPING, FluidValues.BOTTLE / 5), 2)
@@ -2157,9 +2158,9 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
                               .save(consumer, location(folder + "strength"));
 
     // melt skeletons to get the milk out
-    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.MELTABLE_SKELETON), new FluidStack(ForgeMod.MILK.get(), FluidType.BUCKET_VOLUME / 10))
+    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.MELTABLE_SKELETON), new FluidStack(NeoForgeMod.MILK.get(), FluidType.BUCKET_VOLUME / 10))
                               .save(consumer, location(folder + "skeletons"));
-    MeltingRecipeBuilder.melting(Ingredient.of(Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, TinkerWorld.heads.get(TinkerHeadType.STRAY)), ForgeMod.MILK.get(), FluidType.BUCKET_VOLUME / 4)
+    MeltingRecipeBuilder.melting(Ingredient.of(Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, TinkerWorld.heads.get(TinkerHeadType.STRAY)), NeoForgeMod.MILK.get(), FluidType.BUCKET_VOLUME / 4)
                         .save(consumer, location(headFolder + "skeleton"));
 
     // slimes melt into slime, shocker
@@ -2173,7 +2174,7 @@ public class SmelteryRecipeProvider extends BaseRecipeProvider implements ISmelt
                               .save(consumer, prefix(TinkerWorld.terracubeEntity, folder));
     EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.MELTABLE_MAGMA), TinkerFluids.magma.result(FluidValues.SLIMEBALL / 10))
                               .save(consumer, location(folder + "magma_cube"));
-    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.BEES), TinkerFluids.honey.result(FluidValues.BOTTLE / 10))
+    EntityMeltingRecipeBuilder.melting(EntityIngredient.of(TinkerTags.EntityTypes.BEES), MantleFluids.honey.result(FluidValues.BOTTLE / 10))
                               .save(consumer, location(folder + "bee"));
 
     // iron golems can be healed using an iron ingot 25 health

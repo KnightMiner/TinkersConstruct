@@ -15,6 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.fluids.TinkerFluids;
@@ -102,7 +103,7 @@ public class GadgetRecipeProvider extends BaseRecipeProvider {
         SlimeType slime = foliage.asSlime();
         ItemLike grass = TinkerWorld.slimeTallGrass.get(foliage);
         ShapedRecipeBuilder.shaped(RecipeCategory.FOOD, cake)
-                           .define('M', slime != null ? TinkerFluids.slime.get(slime).getBucket() : TinkerFluids.honey.asItem())
+                           .define('M', slime != null ? TinkerFluids.slime.get(slime).getBucket() : MantleFluids.honey.asItem())
                            .define('S', foliage.isNether()
                              ? Ingredient.of(Tags.Items.DUSTS_GLOWSTONE)
                              : foliage == FoliageType.ENDER ? Ingredient.of(Tags.Items.DUSTS_REDSTONE) : Ingredient.of(Items.SUGAR))

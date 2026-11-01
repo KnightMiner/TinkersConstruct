@@ -21,6 +21,7 @@ import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.conditions.OrCondition;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.recipe.condition.TagCombinationCondition;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.FluidOutput;
@@ -28,8 +29,8 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
+import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.data.recipe.IMaterialRecipeHelper;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
@@ -386,7 +387,7 @@ public class MaterialRecipeProvider extends BaseRecipeProvider implements IMater
     // slimesuit - pseudoslime
     materialMeltingCasting(consumer, MaterialIds.clay,       TinkerFluids.moltenClay,  FluidValues.BRICK,     folder);
     materialMeltingCasting(consumer, MaterialIds.enderPearl, TinkerFluids.moltenEnder, FluidValues.SLIMEBALL, folder);
-    materialMeltingCasting(consumer, MaterialIds.honey,      TinkerFluids.honey,       FluidValues.BOTTLE,    folder);
+    materialMeltingCasting(consumer, MaterialIds.honey,      MantleFluids.honey,       FluidValues.BOTTLE,    folder);
     materialMeltingCasting(consumer, MaterialIds.venom,      TinkerFluids.venom,       FluidValues.BOTTLE,    folder);
     // slimesuit - repair kits
     materialMeltingCasting(consumer, MaterialIds.glass, TinkerFluids.moltenGlass, FluidValues.GLASS_PANE, folder);

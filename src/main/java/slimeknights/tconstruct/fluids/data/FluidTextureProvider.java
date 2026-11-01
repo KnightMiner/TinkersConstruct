@@ -2,6 +2,7 @@ package slimeknights.tconstruct.fluids.data;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.data.PackOutput;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.fluid.texture.AbstractFluidTextureProvider;
 import slimeknights.mantle.fluid.texture.FluidTexture;
 import slimeknights.mantle.registration.object.FluidObject;
@@ -19,9 +20,6 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
 
   @Override
   public void addTextures() {
-    // basic
-    root(TinkerFluids.powderedSnow);
-    root(TinkerFluids.potion).color(0xfff800f8);
     // slime
     waterFog(slime(TinkerFluids.earthSlime, "earth"));
     waterFog(slime(TinkerFluids.skySlime, "sky"));
@@ -31,10 +29,6 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
     waterFog(slime(TinkerFluids.venom));
     moltenFog(slime(TinkerFluids.liquidSoul, "soul"));
     // food
-    waterFog(folder(TinkerFluids.honey, "food"));
-    tintedStew(TinkerFluids.beetrootSoup).color(0xFF84160D);
-    tintedStew(TinkerFluids.mushroomStew).color(0xFFCD8C6F);
-    tintedStew(TinkerFluids.rabbitStew).color(0xFF984A2C);
     tintedStew(TinkerFluids.meatSoup).color(0xFFE03E35);
 
     // molten
@@ -127,7 +121,7 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
 
   /** Creates a texture in the root folder */
   private FluidTexture.Builder root(FluidObject<?> fluid) {
-    return texture(fluid).wrapId("fluid/", "/", false, false);
+    return texture(fluid).wrapId("fluid/", "/").still().flowing();
   }
 
   /** Creates a texture using the given fixed name in the fluid folder */
@@ -138,7 +132,7 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
 
   /** Creates a texture using the fluid's ID in the given folder */
   private FluidTexture.Builder folder(FluidObject<?> fluid, String folder) {
-    return named(fluid, folder + '/' + fluid.getId().getPath());
+    return named(fluid, folder + '/' + fluid.id().getPath());
   }
 
   /** Creates a texture in the slime folder using the ID */
@@ -194,7 +188,10 @@ public class FluidTextureProvider extends AbstractFluidTextureProvider {
 
   /** Builder with the stew texture */
   private FluidTexture.Builder tintedStew(FluidObject<?> fluid) {
-    return named(fluid, "food/stew");
+    return  texture(fluid)
+      .root(Mantle.getResource("fluid/stew_"))
+      .still().flowing().camera()
+      .fog(FogShape.SPHERE, 0.25f, 2);
   }
 
   /** Builder with the stone texture */

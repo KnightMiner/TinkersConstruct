@@ -2,24 +2,22 @@ package slimeknights.tconstruct.fluids;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
 import slimeknights.tconstruct.library.client.model.FluidContainerModel;
 
-@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
+@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class FluidClientEvents extends ClientEventBase {
   @SubscribeEvent
   static void clientSetup(final FMLClientSetupEvent event) {
-    setTranslucent(TinkerFluids.honey);
+    setTranslucent(MantleFluids.honey);
     // slime
     setTranslucent(TinkerFluids.earthSlime);
     setTranslucent(TinkerFluids.skySlime);
@@ -31,11 +29,6 @@ public class FluidClientEvents extends ClientEventBase {
     setTranslucent(TinkerFluids.moltenGlass);
     setTranslucent(TinkerFluids.liquidSoul);
     setTranslucent(TinkerFluids.moltenAmethyst);
-  }
-
-  @SubscribeEvent
-  static void itemColors(final RegisterColorHandlersEvent.Item event) {
-    event.register((stack, index) -> index > 0 ? -1 : PotionUtils.getColor(stack), TinkerFluids.potion.asItem());
   }
 
   @SubscribeEvent

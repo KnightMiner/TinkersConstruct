@@ -33,8 +33,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -56,7 +54,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.fluids.TinkerFluids;
-import slimeknights.tconstruct.fluids.fluids.PotionFluidType;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -126,7 +123,6 @@ import slimeknights.tconstruct.plugin.jei.transfer.CraftingStationTransferInfo;
 import slimeknights.tconstruct.plugin.jei.transfer.TinkerStationTransferInfo;
 import slimeknights.tconstruct.plugin.jei.transfer.ToolInventoryTransferInfo;
 import slimeknights.tconstruct.plugin.jei.util.GuiContainerTankHandler;
-import slimeknights.tconstruct.plugin.jei.util.PotionSubtypeInterpreter;
 import slimeknights.tconstruct.plugin.jei.util.TankHidingIngredientListener;
 import slimeknights.tconstruct.plugin.jei.util.ToolPartSubtypeInterpreter;
 import slimeknights.tconstruct.plugin.jei.util.ToolSubtypeInterpreter;
@@ -500,10 +496,6 @@ public class JEIPlugin implements IModPlugin {
     registry.registerSubtypeInterpreter(TinkerTables.tinkersAnvil.asItem(), anvils);
     registry.registerSubtypeInterpreter(TinkerTables.scorchedAnvil.asItem(), anvils);
 
-    // potions
-    registry.registerSubtypeInterpreter(TinkerFluids.potion.asItem(), (PotionSubtypeInterpreter<ItemStack>)ItemStack::getTag);
-    registry.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, TinkerFluids.potion.get(), (PotionSubtypeInterpreter<FluidStack>)FluidStack::getTag);
-
     // parts
     for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.TOOL_PARTS)) {
       registry.registerSubtypeInterpreter(item.value(), ToolPartSubtypeInterpreter.INSTANCE);
@@ -659,17 +651,6 @@ public class JEIPlugin implements IModPlugin {
       removeItems.add(new ItemStack(TinkerFluids.moltenPorcelain));
       removeFluid(removeFluids, TinkerFluids.moltenPorcelain.get());
     }
-
-    // add potion fluids for each potion variant if requested
-    if (Config.CLIENT.showPotionFluidInJEI.get()) {
-      manager.addIngredientsAtRuntime(NeoForgeTypes.FLUID_STACK,
-                                      BuiltInRegistries.POTION.holders().filter(holder -> {
-                                        Potion potion = holder.get();
-                                        return potion != Potions.EMPTY && potion != Potions.WATER && !holder.is(TinkerTags.Potions.HIDDEN_FLUID);
-                                      }).map(holder -> PotionFluidType.potionFluid(holder.key(), FluidType.BUCKET_VOLUME)).toList());
-    }
-    // remove variantless potion fluid
-    removeFluid(removeFluids, TinkerFluids.potion.get());
 
     // update ingredients as requested
     if (!removeItems.isEmpty()) {

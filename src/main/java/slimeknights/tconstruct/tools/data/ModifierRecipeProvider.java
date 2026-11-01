@@ -20,6 +20,7 @@ import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.data.ItemNameIngredient;
 import slimeknights.mantle.recipe.helper.ItemOutput;
@@ -1709,7 +1710,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     PotionCastingRecipeBuilder.tableTipping(ModifierIds.tipped)
       .setBottle(TinkerTags.Items.AMMO)
       .setCoolingTime(20)
-      .setFluid(TinkerFluids.potion.ingredient(FluidValues.BOTTLE / 5))
+      .setFluid(MantleFluids.potion.ingredient(FluidValues.BOTTLE / 5))
       .save(consumer, location(slotlessFolder + "ammo_tipping"));
     PotionCastingRecipeBuilder.tableClearing(ModifierIds.tipped)
       .setBottle(TinkerTags.Items.AMMO)
@@ -1719,7 +1720,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     PotionCastingRecipeBuilder.tableTipping(ModifierIds.tipped)
       .setBottle(TinkerTags.Items.FISHING_RODS)
       .setCoolingTime(20)
-      .setFluid(TinkerFluids.potion.ingredient(FluidValues.BOTTLE))
+      .setFluid(MantleFluids.potion.ingredient(FluidValues.BOTTLE))
       .save(consumer, location(slotlessFolder + "fishing_rod_tipping"));
     PotionCastingRecipeBuilder.tableClearing(ModifierIds.tipped)
       .setBottle(TinkerTags.Items.FISHING_RODS)

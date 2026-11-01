@@ -5,7 +5,6 @@ import net.minecraft.core.BlockSource;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -20,8 +19,6 @@ import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -30,9 +27,10 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 import net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry;
@@ -44,9 +42,8 @@ import net.neoforged.neoforge.fluids.ForgeFlowingFluid;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.InvertedFluid;
-import slimeknights.mantle.fluid.UnplaceableFluid;
+import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
-import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
@@ -64,7 +61,6 @@ import slimeknights.tconstruct.fluids.item.BottleItem;
 import slimeknights.tconstruct.fluids.item.ContainerFoodItem;
 import slimeknights.tconstruct.fluids.item.ContainerFoodItem.FluidContainerFoodItem;
 import slimeknights.tconstruct.fluids.item.MagmaBottleItem;
-import slimeknights.tconstruct.fluids.item.PotionBucketItem;
 import slimeknights.tconstruct.fluids.util.BottleBrewingRecipe;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoEmpty;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoWater;
@@ -92,8 +88,21 @@ import static slimeknights.tconstruct.fluids.block.MobEffectLiquidBlock.createEf
  */
 @SuppressWarnings("unused")
 public final class TinkerFluids extends TinkerModule {
-  public TinkerFluids() {
-    ForgeMod.enableMilkFluid();
+  public TinkerFluids(IEventBus bus) {
+    NeoForgeMod.enableMilkFluid();
+    MantleFluids.registerPotion(bus);
+    MantleFluids.registerPowderSnow(bus);
+    MantleFluids.registerHoney(bus);
+    MantleFluids.registerStew(bus);
+    // aliases
+    // unplaceable
+    FLUIDS.addAliasWithType(TConstruct.getResource("potion"), MantleFluids.potion.id(), true);
+    // used vanilla bucket
+    FLUIDS.addAliasWithType(TConstruct.getResource("powdered_snow"), MantleFluids.powderSnow.id(), false);
+    FLUIDS.addFlowingAlias(TConstruct.getResource("honey"), MantleFluids.honey.id(), true);
+    FLUIDS.addFlowingAlias(TConstruct.getResource("beetroot_soup"), MantleFluids.beetrootSoup.id(), true);
+    FLUIDS.addFlowingAlias(TConstruct.getResource("mushroom_stew"), MantleFluids.mushroomStew.id(), true);
+    FLUIDS.addFlowingAlias(TConstruct.getResource("rabbit_stew"), MantleFluids.rabbitStew.id(), true);
   }
 
   /** Creative tab for general items, or those that lack another tab */
@@ -108,7 +117,6 @@ public final class TinkerFluids extends TinkerModule {
   // basic
   public static final FlowingFluidObject<ForgeFlowingFluid> venom = FLUIDS.register("venom").type(slime("venom").temperature(310)).bucket().block(createEffect(MapColor.QUARTZ, 0, () -> new MobEffectInstance(MobEffects.POISON, 5*20))).flowing();
   public static final ItemObject<Item> venomBottle = ITEMS.register("venom_bottle", () -> new FluidContainerFoodItem(new Item.Properties().food(TinkerFood.VENOM_BOTTLE).stacksTo(16).craftRemainder(Items.GLASS_BOTTLE), () -> new FluidStack(venom.get(), FluidValues.BOTTLE)));
-  public static final FluidObject<UnplaceableFluid> powderedSnow = FLUIDS.register("powdered_snow").bucket(() -> Items.POWDER_SNOW_BUCKET).type(powder("powdered_snow").temperature(270)).commonTag().unplacable();
 
   // slime -  note second name parameter is forge tag name
   public static final FlowingFluidObject<SlimeFluid> earthSlime = FLUIDS.registerSlime("earth_slime", slime("earth_slime").temperature(350)).bucket().block(createEffect(MapColor.GRASS, 0, () -> new MobEffectInstance(TinkerEffects.bouncy.get(), 5*20))).commonTag("slime").flowing(SlimeFluid.Source::new, SlimeFluid.Flowing::new);
@@ -123,15 +131,10 @@ public final class TinkerFluids extends TinkerModule {
   public static final ItemObject<Item> magmaBottle = ITEMS.register("magma_bottle", () -> new MagmaBottleItem(new Item.Properties().stacksTo(16).craftRemainder(Items.GLASS_BOTTLE), 15));
 
   // foods
-  public static FlowingFluidObject<ForgeFlowingFluid> honey        = FLUIDS.registerSlime("honey").type(slime("honey").temperature(301)).bucket().block(createEffect(MapColor.COLOR_ORANGE, 0, () -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5*20))).commonTag().flowing();
-  public static FlowingFluidObject<ForgeFlowingFluid> beetrootSoup = FLUIDS.register("beetroot_soup").type(cool("beetroot_soup").temperature(400)).bucket().block(MapColor.COLOR_RED, 0).commonTag().flowing();
-  public static FlowingFluidObject<ForgeFlowingFluid> mushroomStew = FLUIDS.register("mushroom_stew").type(cool("mushroom_stew").temperature(400)).bucket().block(MapColor.DIRT, 0).commonTag().flowing();
-  public static FlowingFluidObject<ForgeFlowingFluid> rabbitStew   = FLUIDS.register("rabbit_stew").type(cool("rabbit_stew").temperature(400)).bucket().block(MapColor.PODZOL, 0).commonTag().flowing();
   public static FlowingFluidObject<ForgeFlowingFluid> meatSoup     = FLUIDS.register("meat_soup").type(cool("meat_soup").temperature(400)).bucket().block(MapColor.CRIMSON_NYLIUM, 0).flowing();
   public static final ItemObject<Item> meatSoupBowl = ITEMS.register("meat_soup", () -> new ContainerFoodItem(new Item.Properties().food(TinkerFood.MEAT_SOUP).stacksTo(1).craftRemainder(Items.BOWL)));
 
   // potion
-  public static final FluidObject<UnplaceableFluid> potion = FLUIDS.register("potion").type(() -> new PotionFluidType(cool().descriptionId("item.minecraft.potion.effect.empty").density(1100).viscosity(1100).temperature(315).sound(SoundActions.BUCKET_FILL, SoundEvents.BOTTLE_FILL).sound(SoundActions.BUCKET_EMPTY, SoundEvents.BOTTLE_EMPTY))).bucket(fluid -> new PotionBucketItem(fluid, RegistrationHelper.BUCKET_PROPS)).commonTag().unplacable();
   public static final ItemObject<Item> splashBottle = ITEMS.register("splash_bottle", () -> new BottleItem(Items.SPLASH_POTION, ITEM_PROPS));
   public static final ItemObject<Item> lingeringBottle = ITEMS.register("lingering_bottle", () -> new BottleItem(Items.LINGERING_POTION, ITEM_PROPS));
 
@@ -309,11 +312,6 @@ public final class TinkerFluids extends TinkerModule {
       DispenserBlock.registerBehavior(skySlime, dispenseBucket);
       DispenserBlock.registerBehavior(enderSlime, dispenseBucket);
       DispenserBlock.registerBehavior(magma, dispenseBucket);
-      // foods
-      DispenserBlock.registerBehavior(honey, dispenseBucket);
-      DispenserBlock.registerBehavior(beetrootSoup, dispenseBucket);
-      DispenserBlock.registerBehavior(mushroomStew, dispenseBucket);
-      DispenserBlock.registerBehavior(rabbitStew, dispenseBucket);
       DispenserBlock.registerBehavior(meatSoup, dispenseBucket);
       // base molten fluids
       DispenserBlock.registerBehavior(searedStone, dispenseBucket);
@@ -388,7 +386,6 @@ public final class TinkerFluids extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab, called by smeltery */
-  @SuppressWarnings("deprecation")
   public static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // containers
     output.accept(splashBottle);
@@ -405,10 +402,6 @@ public final class TinkerFluids extends TinkerModule {
     output.accept(venomBottle);
 
     // food
-    output.accept(honey);
-    output.accept(beetrootSoup);
-    output.accept(mushroomStew);
-    output.accept(rabbitStew);
     output.accept(meatSoup);
     output.accept(meatSoupBowl);
 
@@ -482,12 +475,6 @@ public final class TinkerFluids extends TinkerModule {
     acceptMolten(output, moltenBendalloy);
     acceptCompat(output, moltenSteeleaf, MaterialIds.steeleaf);
     acceptCompat(output, fieryLiquid, "fiery", MaterialIds.fiery);
-    // potion buckets
-    BuiltInRegistries.POTION.holders().filter(holder -> {
-      Potion potion = holder.get();
-      return potion != Potions.EMPTY && potion != Potions.WATER;
-    }).forEachOrdered(holder ->
-      output.accept(PotionFluidType.potionBucket(holder.key())));
   }
 
   /** Adds all filled containers to the fluids tab. */
