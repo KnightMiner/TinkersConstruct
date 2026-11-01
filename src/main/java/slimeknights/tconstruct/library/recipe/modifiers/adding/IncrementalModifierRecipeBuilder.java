@@ -1,12 +1,10 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -19,10 +17,12 @@ import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
  * @see ModifierRecipeBuilder
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuilder<IncrementalModifierRecipeBuilder> {
+public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuilder<IncrementalModifierRecipeBuilder> implements IncrementalModifierRecipesBuilder<IncrementalModifierRecipeBuilder> {
   private Ingredient input = Ingredient.EMPTY;
   private int amountPerItem;
   private int neededPerLevel;
+  @Accessors(fluent = true)
+  @Setter
   private ItemOutput leftover = ItemOutput.EMPTY;
 
   protected IncrementalModifierRecipeBuilder(ModifierId result) {
@@ -57,58 +57,13 @@ public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuil
    * @param neededPerLevel Total number needed for this modifier
    * @return  Builder instance
    */
-  public IncrementalModifierRecipeBuilder setInput(Ingredient input, int amountPerItem, int neededPerLevel) {
-    if (amountPerItem < 1) {
-      throw new IllegalArgumentException("Amount per item must be at least 1");
-    }
-    if (neededPerLevel <= amountPerItem) {
-      throw new IllegalArgumentException("Needed per level must be greater than amount per item");
-    }
+  @Override
+  public IncrementalModifierRecipeBuilder input(Ingredient input, int amountPerItem, int neededPerLevel) {
+    IncrementalModifierRecipesBuilder.validate(amountPerItem, neededPerLevel);
     this.input = input;
     this.amountPerItem = amountPerItem;
     this.neededPerLevel = neededPerLevel;
     return this;
-  }
-
-  /**
-   * Adds an input to the recipe
-   * @param item           Item input
-   * @param amountPerItem  Amount each item matches
-   * @param neededPerLevel Total number needed for this modifier
-   * @return  Builder instance
-   */
-  public IncrementalModifierRecipeBuilder setInput(ItemLike item, int amountPerItem, int neededPerLevel) {
-    return setInput(Ingredient.of(item), amountPerItem, neededPerLevel);
-  }
-
-  /**
-   * Adds an input to the recipe
-   * @param tag            Tag input
-   * @param amountPerItem  Amount each item matches
-   * @param neededPerLevel Total number needed for this modifier
-   * @return  Builder instance
-   */
-  public IncrementalModifierRecipeBuilder setInput(TagKey<Item> tag, int amountPerItem, int neededPerLevel) {
-    return setInput(Ingredient.of(tag), amountPerItem, neededPerLevel);
-  }
-
-
-  /* Leftover */
-
-  /** Sets the leftover to the given output */
-  public IncrementalModifierRecipeBuilder setLeftover(ItemOutput leftover) {
-    this.leftover = leftover;
-    return this;
-  }
-
-  /** Sets the leftover to the given stack */
-  public IncrementalModifierRecipeBuilder setLeftover(ItemStack stack) {
-    return setLeftover(ItemOutput.fromStack(stack));
-  }
-
-  /** Sets the leftover to the given item */
-  public IncrementalModifierRecipeBuilder setLeftover(ItemLike item) {
-    return setLeftover(ItemOutput.fromItem(item));
   }
 
 

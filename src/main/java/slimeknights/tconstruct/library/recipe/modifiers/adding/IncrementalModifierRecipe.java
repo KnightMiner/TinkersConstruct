@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  * Modifier that incrementally fills the entry, allowing partial application.
  * @see IncrementalModifierRecipeBuilder
  * @see ModifierRecipe
+ * @see MultilevelIncrementalModifierRecipe
  */
 public class IncrementalModifierRecipe extends AbstractModifierRecipe {
   protected static final LoadableField<Ingredient,IncrementalModifierRecipe> INPUT_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", r -> r.input);
