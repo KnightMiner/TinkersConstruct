@@ -6,6 +6,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.fluid.InvertedFluid;
@@ -16,6 +17,7 @@ import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
+import slimeknights.tconstruct.fluids.client.FluidEffectProjectileRenderer;
 
 @EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class FluidClientEvents extends ClientEventBase {
@@ -38,6 +40,11 @@ public class FluidClientEvents extends ClientEventBase {
   private static void setTranslucent(FlowingFluidObject<?> fluid) {
     ItemBlockRenderTypes.setRenderLayer(fluid.getStill(), RenderType.translucent());
     ItemBlockRenderTypes.setRenderLayer(fluid.getFlowing(), RenderType.translucent());
+  }
+
+  @SubscribeEvent
+  static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    event.registerEntityRenderer(TinkerFluids.fluidProjectile.get(), FluidEffectProjectileRenderer::new);
   }
 
   /** Registers the texture extension for the given fluid */

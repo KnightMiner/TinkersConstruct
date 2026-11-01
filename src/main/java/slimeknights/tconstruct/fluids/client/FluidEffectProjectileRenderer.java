@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.tools.client;
+package slimeknights.tconstruct.fluids.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -11,10 +11,11 @@ import net.minecraft.world.inventory.InventoryMenu;
 import slimeknights.mantle.client.render.FluidCuboid;
 import slimeknights.mantle.client.render.FluidRenderer;
 import slimeknights.mantle.client.render.MantleRenderTypes;
-import slimeknights.tconstruct.tools.entity.FluidEffectProjectile;
+import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 
 import java.util.List;
 
+/** Renderer for {@link FluidEffectProjectile} */
 public class FluidEffectProjectileRenderer extends EntityRenderer<FluidEffectProjectile> {
   private final List<FluidCuboid> fluids;
   public FluidEffectProjectileRenderer(Context context) {

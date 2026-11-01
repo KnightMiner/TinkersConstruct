@@ -9,6 +9,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
 import net.minecraft.world.item.CreativeModeTab.Output;
@@ -46,14 +48,17 @@ import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.InvertedFluid;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
+import slimeknights.mantle.registration.holder.DeferredEntity;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.registration.FluidDeferredRegisterExtension;
+import slimeknights.tconstruct.fluids.data.FluidEffectProvider;
 import slimeknights.tconstruct.fluids.data.FluidTextureProvider;
 import slimeknights.tconstruct.fluids.data.FluidTooltipProvider;
+import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.fluids.fluids.SlimeFluid;
 import slimeknights.tconstruct.fluids.item.BottleItem;
 import slimeknights.tconstruct.fluids.item.ContainerFoodItem;
@@ -100,6 +105,7 @@ public final class TinkerFluids extends TinkerModule {
     MantleFluids.registerStew(bus);
     NeoForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, this::registerBrewing);
     // aliases
+    ENTITIES.addAlias(TConstruct.getResource("fluid_spit"), fluidProjectile.getId());
     // unplaceable
     FLUIDS.addAliasWithType(TConstruct.getResource("potion"), MantleFluids.potion.id(), true);
     // used vanilla bucket
@@ -118,6 +124,14 @@ public final class TinkerFluids extends TinkerModule {
                                    .withTabsBefore(TinkerTables.tabTables.getId())
                                    .withSearchBar()
                                    .build());
+
+  // entity
+  public static final DeferredEntity<FluidEffectProjectile> fluidProjectile = ENTITIES.registerNoEgg("fluid_projectile", () ->
+    EntityType.Builder.<FluidEffectProjectile>of(FluidEffectProjectile::new, MobCategory.MISC)
+      .sized(0.25F, 0.25F)
+      .clientTrackingRange(4)
+      .updateInterval(10)
+      .setShouldReceiveVelocityUpdates(false));
 
   // basic
   public static final FlowingFluidObject<BaseFlowingFluid> venom = FLUIDS.register("venom").type(slime("venom").temperature(310)).bucket().block(createEffect(MapColor.QUARTZ, 0, () -> new MobEffectInstance(MobEffects.POISON, 5*20))).flowing();
@@ -279,6 +293,7 @@ public final class TinkerFluids extends TinkerModule {
   void gatherData(final GatherDataEvent event) {
     DataGenerator generator = event.getGenerator();
     PackOutput packOutput = generator.getPackOutput();
+    generator.addProvider(event.includeServer(), new FluidEffectProvider(packOutput, event.getLookupProvider()));
     boolean client = event.includeClient();
     generator.addProvider(client, new FluidTooltipProvider(packOutput));
     FluidTextureProvider textureProvider = new FluidTextureProvider(packOutput);

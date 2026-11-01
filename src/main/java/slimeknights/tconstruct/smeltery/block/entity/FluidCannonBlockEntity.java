@@ -29,6 +29,7 @@ import slimeknights.mantle.fluid.FluidTransferHelper;
 import slimeknights.mantle.inventory.SingleItemHandler;
 import slimeknights.tconstruct.common.network.InventorySlotSyncPacket;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
+import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectManager;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffects;
@@ -39,7 +40,6 @@ import slimeknights.tconstruct.shared.particle.FluidParticleData;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.entity.ITankBlockEntity.ITankInventoryBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity;
-import slimeknights.tconstruct.tools.entity.FluidEffectProjectile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

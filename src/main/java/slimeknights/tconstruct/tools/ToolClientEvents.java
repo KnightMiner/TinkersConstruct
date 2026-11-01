@@ -63,7 +63,6 @@ import slimeknights.tconstruct.library.utils.HarvestTiers;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.effect.AntigravityEffect;
 import slimeknights.tconstruct.tools.client.CrystalshotRenderer;
-import slimeknights.tconstruct.tools.client.FluidEffectProjectileRenderer;
 import slimeknights.tconstruct.tools.client.ShieldBannerModifierSpriteSource;
 import slimeknights.tconstruct.tools.client.SlimeskullArmorModel;
 import slimeknights.tconstruct.tools.client.ToolContainerScreen;
@@ -121,7 +120,6 @@ public class ToolClientEvents extends ClientEventBase {
     event.registerEntityRenderer(TinkerTools.materialArrow.get(), ThrownToolRenderer::new);
     event.registerEntityRenderer(TinkerTools.thrownShuriken.get(), ThrownShurikenRenderer::new);
     event.registerEntityRenderer(TinkerTools.thrownTool.get(), ThrownToolRenderer::new);
-    event.registerEntityRenderer(TinkerModifiers.fluidSpitEntity.get(), FluidEffectProjectileRenderer::new);
     event.registerEntityRenderer(TinkerModifiers.fireball.get(), context -> new ThrownItemRenderer<>(context, 0.75f, true));
   }
 
