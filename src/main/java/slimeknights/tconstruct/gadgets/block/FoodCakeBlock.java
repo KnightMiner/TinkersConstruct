@@ -9,17 +9,16 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.CakeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import slimeknights.tconstruct.fluids.item.ContainerFoodItem;
+import slimeknights.mantle.item.EdibleItem;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -36,8 +35,8 @@ public class FoodCakeBlock extends CakeBlock {
   }
 
   @Override
-  public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> tooltip, TooltipFlag pFlag) {
-    ContainerFoodItem.addEffectTooltip(food, tooltip);
+  public void appendHoverText(ItemStack pStack, TooltipContext context, List<Component> tooltip, TooltipFlag pFlag) {
+    EdibleItem.addEffectTooltip(food, context, tooltip);
   }
 
   @Override

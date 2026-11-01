@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.fluids.item;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
@@ -14,13 +13,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.tconstruct.fluids.TinkerFluids;
-import slimeknights.tconstruct.fluids.util.ConstantFluidContainerWrapper;
-import slimeknights.tconstruct.library.recipe.FluidValues;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /** Magma bottle instance, which lights the drinker on fire */
@@ -32,12 +25,11 @@ public class MagmaBottleItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    super.appendHoverText(stack, worldIn, tooltip, flagIn);
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
     tooltip.add(Component.translatable(
       "potion.withDuration",
       Blocks.FIRE.getName(),
-      StringUtil.formatTickDuration(fireTime * 20)
+      StringUtil.formatTickDuration(fireTime * 20, context.tickRate())
     ).withStyle(MobEffectCategory.HARMFUL.getTooltipFormatting()));
   }
 
@@ -48,18 +40,18 @@ public class MagmaBottleItem extends Item {
   }
 
   @Override
-  public int getUseDuration(ItemStack pStack) {
+  public int getUseDuration(ItemStack stack, LivingEntity entity) {
     return 32;
   }
 
   @Override
-  public UseAnim getUseAnimation(ItemStack pStack) {
+  public UseAnim getUseAnimation(ItemStack stack) {
     return UseAnim.DRINK;
   }
 
   @Override
   public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living) {
-    living.setSecondsOnFire(fireTime);
+    living.igniteForSeconds(fireTime);
     ItemStack container = stack.getCraftingRemainingItem();
     Player player = living instanceof Player p ? p : null;
     if (player == null || !player.getAbilities().instabuild) {
@@ -75,11 +67,5 @@ public class MagmaBottleItem extends Item {
       }
     }
     return stack;
-  }
-
-  @Nullable
-  @Override
-  public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-    return new ConstantFluidContainerWrapper(new FluidStack(TinkerFluids.magma.get(), FluidValues.BOTTLE), stack);
   }
 }

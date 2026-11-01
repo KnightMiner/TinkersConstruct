@@ -17,6 +17,7 @@ import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -29,6 +30,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundActions;
@@ -48,6 +51,8 @@ import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.InvertedFluid;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
+import slimeknights.mantle.item.ConstantFluidHandlerItem;
+import slimeknights.mantle.item.EdibleItem;
 import slimeknights.mantle.registration.holder.DeferredEntity;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
@@ -61,8 +66,6 @@ import slimeknights.tconstruct.fluids.data.FluidTooltipProvider;
 import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.fluids.fluids.SlimeFluid;
 import slimeknights.tconstruct.fluids.item.BottleItem;
-import slimeknights.tconstruct.fluids.item.ContainerFoodItem;
-import slimeknights.tconstruct.fluids.item.ContainerFoodItem.FluidContainerFoodItem;
 import slimeknights.tconstruct.fluids.item.MagmaBottleItem;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoEmpty;
 import slimeknights.tconstruct.fluids.util.EmptyBottleIntoWater;
@@ -135,7 +138,7 @@ public final class TinkerFluids extends TinkerModule {
 
   // basic
   public static final FlowingFluidObject<BaseFlowingFluid> venom = FLUIDS.register("venom").type(slime("venom").temperature(310)).bucket().block(createEffect(MapColor.QUARTZ, 0, () -> new MobEffectInstance(MobEffects.POISON, 5*20))).flowing();
-  public static final DeferredItem<Item> venomBottle = ITEMS.register("venom_bottle", () -> new FluidContainerFoodItem(new Item.Properties().food(TinkerFood.VENOM_BOTTLE).stacksTo(16).craftRemainder(Items.GLASS_BOTTLE), () -> new FluidStack(venom.get(), FluidValues.BOTTLE)));
+  public static final DeferredItem<Item> venomBottle = ITEMS.register("venom_bottle", () -> new EdibleItem(UseAnim.DRINK, new Item.Properties().food(TinkerFood.VENOM_BOTTLE).stacksTo(16).craftRemainder(Items.GLASS_BOTTLE)));
 
   // slime -  note second name parameter is forge tag name
   public static final FlowingFluidObject<SlimeFluid> earthSlime = FLUIDS.registerSlime("earth_slime", slime("earth_slime").temperature(350)).bucket().block(createEffect(MapColor.GRASS, 0, () -> new MobEffectInstance(TinkerEffects.bouncy, 5*20))).commonTag("slime").flowing(SlimeFluid.Source::new, SlimeFluid.Flowing::new);
@@ -150,13 +153,12 @@ public final class TinkerFluids extends TinkerModule {
     .put(SlimeType.ICHOR, ichor)
     .build();
   // bottles of slime
-  public static final EnumObject<SlimeType, Item> slimeBottle = ITEMS.registerEnum(SlimeType.values(), "slime_bottle", type -> new FluidContainerFoodItem(
-      new Item.Properties().food(TinkerFood.getBottle(type)).stacksTo(16).craftRemainder(Items.GLASS_BOTTLE), () -> new FluidStack(slime.get(type), FluidValues.BOTTLE)));
+  public static final EnumObject<SlimeType, Item> slimeBottle = ITEMS.registerEnum(SlimeType.values(), "slime_bottle", type -> new EdibleItem(UseAnim.DRINK, new Item.Properties().food(TinkerFood.getBottle(type)).stacksTo(16).craftRemainder(Items.GLASS_BOTTLE)));
   public static final DeferredItem<Item> magmaBottle = ITEMS.register("magma_bottle", () -> new MagmaBottleItem(new Item.Properties().stacksTo(16).craftRemainder(Items.GLASS_BOTTLE), 15));
 
   // foods
-  public static FlowingFluidObject<BaseFlowingFluid> meatSoup     = FLUIDS.register("meat_soup").type(cool("meat_soup").temperature(400)).bucket().block(MapColor.CRIMSON_NYLIUM, 0).flowing();
-  public static final DeferredItem<Item> meatSoupBowl = ITEMS.register("meat_soup", () -> new ContainerFoodItem(new Item.Properties().food(TinkerFood.MEAT_SOUP).stacksTo(1).craftRemainder(Items.BOWL)));
+  public static FlowingFluidObject<BaseFlowingFluid> meatSoup = FLUIDS.register("meat_soup").type(cool("meat_soup").temperature(400)).bucket().block(MapColor.CRIMSON_NYLIUM, 0).flowing();
+  public static final DeferredItem<Item> meatSoupBowl = ITEMS.register("meat_soup", () -> new EdibleItem(UseAnim.DRINK, new Item.Properties().food(TinkerFood.MEAT_SOUP).stacksTo(1).craftRemainder(Items.BOWL)));
 
   // potion
   public static final DeferredItem<Item> splashBottle = ITEMS.register("splash_bottle", () -> new BottleItem(Items.SPLASH_POTION, ITEM_PROPS));
@@ -301,6 +303,15 @@ public final class TinkerFluids extends TinkerModule {
     generator.addProvider(client, new FluidTextureCameraProvider(packOutput, event.getExistingFileHelper(), textureProvider));
     generator.addProvider(client, new FluidBucketModelProvider(packOutput, TConstruct.MOD_ID));
     generator.addProvider(client, new FluidBlockstateModelProvider(packOutput, TConstruct.MOD_ID));
+  }
+
+  @SubscribeEvent
+  void registerCapabilities(RegisterCapabilitiesEvent event) {
+    slimeBottle.forEach((type, item) -> {
+      event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(slime.get(type), FluidValues.BOTTLE), stack), item);
+    });
+    event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(magma.get(), FluidValues.BOTTLE), stack), magmaBottle);
+    event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(venom.get(), FluidValues.BOTTLE), stack), venomBottle);
   }
 
   @SubscribeEvent
