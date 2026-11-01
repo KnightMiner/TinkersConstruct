@@ -4,6 +4,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.common.util.Lazy;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -13,24 +15,23 @@ import slimeknights.tconstruct.smeltery.block.entity.module.EntityMeltingModule;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Extension of entity melting recipe for the sake of displaying entities in the default "recipe"
- */
+/** Extension of entity melting recipe for the sake of displaying entities in the default "recipe" */
+@Internal
 public class DefaultEntityMeltingRecipe extends EntityMeltingRecipe {
   /**
    * Gets a list of entity types, filtered by the recipe list
    * @param recipes  Recipe list
    * @return List of entity types
    */
-  private static EntityIngredient getEntityList(List<EntityMeltingRecipe> recipes) {
+  private static EntityIngredient getEntityList(List<NamedRecipe<EntityMeltingRecipe>> recipes) {
     List<EntityType<?>> unusedTypes = new ArrayList<>();
     typeLoop:
     for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
       // use tag overrides for default recipe
       if (type.is(TinkerTags.EntityTypes.MELTING_HIDE)) continue;
       if (type.getCategory() == MobCategory.MISC && !type.is(TinkerTags.EntityTypes.MELTING_SHOW)) continue;
-      for (EntityMeltingRecipe recipe : recipes) {
-        if (recipe.matches(type)) {
+      for (NamedRecipe<EntityMeltingRecipe> recipe : recipes) {
+        if (recipe.recipe().matches(type)) {
           continue typeLoop;
         }
       }
@@ -40,7 +41,7 @@ public class DefaultEntityMeltingRecipe extends EntityMeltingRecipe {
   }
 
   private final Lazy<EntityIngredient> entities;
-  public DefaultEntityMeltingRecipe(List<EntityMeltingRecipe> recipes) {
+  public DefaultEntityMeltingRecipe(List<NamedRecipe<EntityMeltingRecipe>> recipes) {
     super(EntityIngredient.EMPTY, FluidOutput.fromStack(EntityMeltingModule.getDefaultFluid()), 2);
     entities = Lazy.of(() -> getEntityList(recipes));
   }

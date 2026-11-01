@@ -2,13 +2,13 @@ package slimeknights.tconstruct.plugin.jei.melting;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -18,8 +18,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
@@ -33,7 +36,8 @@ import static slimeknights.tconstruct.plugin.jei.melting.AbstractMeltingCategory
 import static slimeknights.tconstruct.plugin.jei.melting.AbstractMeltingCategory.KEY_TEMPERATURE;
 
 /** Category showing smeltery fuels */
-public class FuelCategory extends AbstractRecipeCategory<MeltingFuel> {
+@Internal
+public class FuelCategory extends AbstractRecipeCategory<RecipeHolder<MeltingFuel>> {
   private static final Component TITLE = TConstruct.makeTranslation("jei", "fuel.title");
   private static final Component SOLID = TConstruct.makeTranslation("jei", "fuel.solid");
   private static final Component LASTS = TConstruct.makeTranslation("jei", "fuel.duration.lasts");
@@ -46,12 +50,18 @@ public class FuelCategory extends AbstractRecipeCategory<MeltingFuel> {
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, MeltingFuel recipe, IFocusGroup focuses) {
+  public ResourceLocation getRegistryName(RecipeHolder<MeltingFuel> recipe) {
+    return recipe.id();
+  }
+
+  @Override
+  public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<MeltingFuel> holder, IFocusGroup focuses) {
+    MeltingFuel recipe = holder.value();
     List<FluidStack> fluids = recipe.getInputs();
     // no fluids mean this is the solid fuel info
     if (!fluids.isEmpty()) {
       builder.addInputSlot(4, 4)
-        .addIngredients(ForgeTypes.FLUID_STACK, fluids)
+        .addIngredients(NeoForgeTypes.FLUID_STACK, fluids)
         .setFluidRenderer(100, false, 12, 32)
         .setBackground(fuelBar, -1, -1)
         .setSlotName(FUEL_SLOT);
@@ -70,7 +80,8 @@ public class FuelCategory extends AbstractRecipeCategory<MeltingFuel> {
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, MeltingFuel recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<MeltingFuel> holder, IFocusGroup focuses) {
+    MeltingFuel recipe = holder.value();
     List<FluidStack> fluids = recipe.getInputs();
     Component title = SOLID;
     IRecipeSlotView fuel = CategoryUtil.findSlot(builder.getRecipeSlots().getSlots(), FUEL_SLOT);
@@ -78,7 +89,7 @@ public class FuelCategory extends AbstractRecipeCategory<MeltingFuel> {
     Font font = Minecraft.getInstance().font;
     if (!fluids.isEmpty()) {
       FluidStack fluid = fluids.get(0);
-      title = fluid.getDisplayName();
+      title = fluid.getHoverName();
       if (fuel != null) {
         builder.addWidget(new LiquidFuelWidget(fuelPosition, 105, font, fuel, recipe.getDuration() / 5));
       }
@@ -101,7 +112,7 @@ public class FuelCategory extends AbstractRecipeCategory<MeltingFuel> {
 
     @Override
     public void drawWidget(GuiGraphics graphics, double mouseX, double mouseY) {
-      FluidStack fluid = fuel.getDisplayedIngredient(ForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
+      FluidStack fluid = fuel.getDisplayedIngredient(NeoForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
       if (!fluid.isEmpty()) {
         graphics.drawString(font, LASTS, 0, 0, Color.GRAY.getRGB(), false);
         Component string = Component.translatable(KEY_DURATION, duration, fluid.getAmount());

@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.plugin.jei.entity;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -11,18 +10,20 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
+import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientRenderer;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.FluidValues;
@@ -34,10 +35,9 @@ import slimeknights.tconstruct.plugin.jei.util.FluidTooltipCallback;
 import java.awt.Color;
 import java.util.List;
 
-/**
- * Entity melting display in JEI
- */
-public class EntityMeltingRecipeCategory extends AbstractRecipeCategory<EntityMeltingRecipe> {
+/** Category to display {@link EntityMeltingRecipe} in JEI */
+@Internal
+public class EntityMeltingRecipeCategory extends NamedRecipeCategory<EntityMeltingRecipe> {
   public static final ResourceLocation BACKGROUND_LOC = TConstruct.getResource("textures/gui/jei/melting.png");
   private static final Component TITLE = TConstruct.makeTranslation("jei", "entity_melting.title");
   private static final String KEY_PER_HEARTS = TConstruct.makeTranslationKey("jei", "entity_melting.per_hearts");
@@ -58,49 +58,43 @@ public class EntityMeltingRecipeCategory extends AbstractRecipeCategory<EntityMe
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, EntityMeltingRecipe recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<EntityMeltingRecipe> recipe, IFocusGroup focuses) {
     builder.addDrawableWidget(arrow).setPosition(71, 21);
-    builder.addText(Component.literal(Float.toString(recipe.getDamage() / 2f)), 84, 9)
+    builder.addText(Component.literal(Float.toString(recipe.recipe().getDamage() / 2f)), 84, 9)
       .setPosition(0, 8)
       .setColor(Color.RED.getRGB())
       .setTextAlignment(HorizontalAlignment.RIGHT);
   }
 
   @Override
-  public void draw(EntityMeltingRecipe recipe, IRecipeSlotsView slot, GuiGraphics graphics, double mouseX, double mouseY) {
+  public void draw(NamedRecipe<EntityMeltingRecipe> recipe, IRecipeSlotsView slot, GuiGraphics graphics, double mouseX, double mouseY) {
     background.draw(graphics);
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, EntityMeltingRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<EntityMeltingRecipe> holder, IFocusGroup focuses) {
     // inputs, filtered by spawn egg item
+    EntityMeltingRecipe recipe = holder.recipe();
     EntityIngredient input = recipe.getIngredient();
     IIngredientAcceptor<?> entities = builder.addInputSlot(19, 11)
                                              .setCustomRenderer(MantleJEIConstants.ENTITY_TYPE, entityRenderer)
                                              .addIngredients(MantleJEIConstants.ENTITY_TYPE, input.getDisplay());
     // add spawn eggs as hidden inputs
-    // currently JEI doesn't accept empty for a focus linked slot, so use null
-    List<ItemStack> eggStacks = input.getEggs().stream().map(stack -> stack.isEmpty() ? null : stack).toList();
-    IIngredientAcceptor<?> eggs = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(VanillaTypes.ITEM_STACK, eggStacks);
+    IIngredientAcceptor<?> eggs = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(VanillaTypes.ITEM_STACK, input.getEggs());
     builder.createFocusLink(entities, eggs);
 
     // output
     builder.addOutputSlot(115, 11)
            .setFluidRenderer(FluidValues.INGOT * 2, false, 16, 32)
            .addRichTooltipCallback(new FluidTooltip(recipe.getDamage()))
-           .addIngredient(ForgeTypes.FLUID_STACK, recipe.getOutput());
+           .addIngredient(NeoForgeTypes.FLUID_STACK, recipe.getOutput());
 
     // show fuels that are valid for this recipe
     builder.addSlot(RecipeIngredientRole.CATALYST, 75, 43)
            .setFluidRenderer(1, false, 16, 16)
            .setOverlay(tank, 0, 0)
            .addRichTooltipCallback(FluidTooltipCallback.NO_AMOUNT)
-           .addIngredients(ForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(1));
-  }
-
-  @Override
-  public ResourceLocation getRegistryName(EntityMeltingRecipe recipe) {
-    return recipe.getId();
+           .addIngredients(NeoForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(1));
   }
 
   /** Tooltip for relevant damage on the fluid */

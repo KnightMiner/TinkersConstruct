@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /** Common logic for {@link ShapedMaterialsExtension} and {@link ShapelessMaterialsRecipe} */
-public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraftingTableRecipe> implements ICraftingCategoryExtension {
+public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraftingTableRecipe> implements ICraftingCategoryExtension<T> {
   private static final String RESULT_SLOT = "result";
 
   protected final T recipe;

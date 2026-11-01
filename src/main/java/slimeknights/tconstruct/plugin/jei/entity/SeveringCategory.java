@@ -7,21 +7,22 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
+import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientRenderer;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.plugin.jei.TConstructJEIConstants;
 import slimeknights.tconstruct.tools.TinkerTools;
 
-import java.util.List;
-
-public class SeveringCategory extends AbstractRecipeCategory<SeveringRecipe> {
+/** Recipe category for {@link SeveringRecipe} */
+@Internal
+public class SeveringCategory extends NamedRecipeCategory<SeveringRecipe> {
   public static final ResourceLocation BACKGROUND_LOC = TConstruct.getResource("textures/gui/jei/tinker_station.png");
   private static final Component TITLE = TConstruct.makeTranslation("jei", "severing.title");
 
@@ -33,27 +34,22 @@ public class SeveringCategory extends AbstractRecipeCategory<SeveringRecipe> {
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, SeveringRecipe recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<SeveringRecipe> recipe, IFocusGroup focuses) {
     builder.addRecipeArrowWidget().setPosition(42, 10);
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, SeveringRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<SeveringRecipe> holder, IFocusGroup focuses) {
+    SeveringRecipe recipe = holder.recipe();
     EntityIngredient input = recipe.getIngredient();
     IIngredientAcceptor<?> entities = builder.addInputSlot(3, 3)
            .setCustomRenderer(MantleJEIConstants.ENTITY_TYPE, entityRenderer)
            .addIngredients(MantleJEIConstants.ENTITY_TYPE, input.getDisplay());
     // currently JEI doesn't accept empty for a focus linked slot, so use null
-    List<ItemStack> eggStacks = input.getEggs().stream().map(stack -> stack.isEmpty() ? null : stack).toList();
-    IIngredientAcceptor<?> eggs = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(VanillaTypes.ITEM_STACK, eggStacks);
+    IIngredientAcceptor<?> eggs = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(VanillaTypes.ITEM_STACK, input.getEggs());
     builder.createFocusLink(entities, eggs);
 
     // output
     builder.addOutputSlot(76, 11).addItemStack(recipe.getOutput()).setOutputSlotBackground();
-  }
-
-  @Override
-  public ResourceLocation getRegistryName(SeveringRecipe recipe) {
-    return recipe.getId();
   }
 }

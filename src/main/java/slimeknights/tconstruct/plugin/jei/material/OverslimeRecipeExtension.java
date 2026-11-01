@@ -31,7 +31,7 @@ import java.util.List;
 import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe.withModifiers;
 
 /** Logic for showing the overslime recipe in the crafting table tab */
-public class OverslimeRecipeExtension implements ICraftingCategoryExtension {
+public class OverslimeRecipeExtension implements ICraftingCategoryExtension<OverslimeCraftingTableRecipe> {
   private static final String KEY_AMOUNT = TConstruct.makeTranslationKey("recipe", "modifier.amount");
   private static final String KEY_TOOLTIP = TConstruct.makeTranslationKey("recipe", "overslime.tooltip");
 

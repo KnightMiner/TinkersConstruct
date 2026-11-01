@@ -10,6 +10,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -23,7 +25,8 @@ import slimeknights.tconstruct.tools.item.CreativeSlotItem;
 
 import javax.annotation.Nullable;
 
-/** Category for display recipes for crafting {@link ModifierEntry}. */
+/** Category for display recipes for crafting {@link IDisplayModifierRecipe}. */
+@Internal
 public class ModifierRecipeCategory extends AbstractTinkerStationCategory<IDisplayModifierRecipe> {
   protected static final ResourceLocation BACKGROUND_LOC = AbstractTinkerStationCategory.BACKGROUND_LOC;
   private static final Component TITLE = TConstruct.makeTranslation("jei", "modifiers.title");
@@ -89,8 +92,9 @@ public class ModifierRecipeCategory extends AbstractTinkerStationCategory<IDispl
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, IDisplayModifierRecipe recipe, IFocusGroup focuses) {
-    super.createRecipeExtras(builder, recipe, focuses);
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<IDisplayModifierRecipe> holder, IFocusGroup focuses) {
+    super.createRecipeExtras(builder, holder, focuses);
+    IDisplayModifierRecipe recipe = holder.recipe();
 
     ModifierEntry result = recipe.getDisplayResult();
     Component requirementsError = result.getHook(ModifierHooks.REQUIREMENTS).requirementsError(result);
@@ -113,8 +117,9 @@ public class ModifierRecipeCategory extends AbstractTinkerStationCategory<IDispl
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, IDisplayModifierRecipe recipe, IFocusGroup focuses) {
-    super.setRecipe(builder, recipe, focuses);
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayModifierRecipe> holder, IFocusGroup focuses) {
+    super.setRecipe(builder, holder, focuses);
+    IDisplayModifierRecipe recipe = holder.recipe();
 
     // modifiers
     builder.addOutputSlot(3, 3)

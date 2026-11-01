@@ -12,11 +12,13 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
@@ -30,7 +32,9 @@ import slimeknights.tconstruct.tables.TinkerTables;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuilderRecipe> {
+/** Category displaying {@link IDisplayPartBuilderRecipe} */
+@Internal
+public class PartBuilderCategory extends NamedRecipeCategory<IDisplayPartBuilderRecipe> {
   private static final ResourceLocation BACKGROUND_LOC = TConstruct.getResource("textures/gui/jei/tinker_station.png");
   private static final Component TITLE = TConstruct.makeTranslation("jei", "part_builder.title");
   private static final Component REUSABLE = TConstruct.makeTranslation("jei", "part_builder.reusable").withStyle(ChatFormatting.GRAY);
@@ -52,7 +56,8 @@ public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuil
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, IDisplayPartBuilderRecipe recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<IDisplayPartBuilderRecipe> holder, IFocusGroup focuses) {
+    IDisplayPartBuilderRecipe recipe = holder.recipe();
     builder.addRecipeArrowWidget().setPosition(66, 15);
     Component title = recipe.getDisplayTitle();
     if (title != null && recipe.getMaterials().isEmpty()) {
@@ -68,7 +73,8 @@ public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuil
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, IDisplayPartBuilderRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayPartBuilderRecipe> holder, IFocusGroup focuses) {
+    IDisplayPartBuilderRecipe recipe = holder.recipe();
     // focus
     MaterialVariant focusMaterial = MaterialVariant.UNKNOWN;
     ItemStack focusStack = ItemStack.EMPTY;
@@ -134,11 +140,6 @@ public class PartBuilderCategory extends AbstractRecipeCategory<IDisplayPartBuil
         builder.createFocusLink(linked.toArray(IRecipeSlotBuilder[]::new));
       }
     }
-  }
-
-  @Override
-  public ResourceLocation getRegistryName(IDisplayPartBuilderRecipe recipe) {
-    return recipe.getRecipeId();
   }
 
   /** Tooltip for the pattern showing the cost */

@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.plugin.jei.material;
 
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -11,6 +10,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
@@ -25,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
@@ -45,7 +46,8 @@ import slimeknights.tconstruct.tools.data.material.MaterialIds;
 import java.awt.Color;
 import java.util.List;
 
-/** Category for displaying generic recipes to create materials. */
+/** Category for displaying generic recipes to create materials, including {@link slimeknights.tconstruct.library.recipe.material.MaterialRecipe} and {@link slimeknights.tconstruct.library.recipe.casting.material.MaterialFluidRecipe}. */
+@Internal
 public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRecipe> {
   private static final Component TITLE = TConstruct.makeTranslation("jei", "materials.title");
   /** Tooltip for materials marked craftable */
@@ -144,7 +146,7 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
     // draw fluids
     if (!fluids.isEmpty()) {
       builder.addInputSlot(4, 2)
-        .addIngredients(ForgeTypes.FLUID_STACK, fluids)
+        .addIngredients(NeoForgeTypes.FLUID_STACK, fluids)
         .setFluidRenderer(100, false, 12, fluidHeight)
         .setSlotName(FLUID_SLOT);
     }
@@ -207,7 +209,7 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
 
     @Override
     public void drawWidget(GuiGraphics graphics, double mouseX, double mouseY) {
-      FluidStack fluid = fluidSlot.getDisplayedIngredient(ForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
+      FluidStack fluid = fluidSlot.getDisplayedIngredient(NeoForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
       if (!fluid.isEmpty()) {
         Component string = Component.translatable(KEY_AMOUNT, fluid.getAmount());
         graphics.drawString(font, string, 0, 0, Color.GRAY.getRGB(), false);

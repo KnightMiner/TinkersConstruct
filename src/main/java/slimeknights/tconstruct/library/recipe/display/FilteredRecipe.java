@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.library.recipe.display;
 
+import slimeknights.mantle.recipe.NamedRecipe;
+
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -25,22 +27,22 @@ public interface FilteredRecipe {
   }
 
   /** Gets a list of recipes that are always shown in JEI. */
-  static <T extends FilteredRecipe> List<T> unfiltered(List<T> recipes) {
-    List<T> filtered = recipes.stream().filter(r -> !r.isFiltered()).toList();
+  static <T extends FilteredRecipe> List<NamedRecipe<T>> unfiltered(List<NamedRecipe<T>> recipes) {
+    List<NamedRecipe<T>> filtered = recipes.stream().filter(r -> !r.recipe().isFiltered()).toList();
     // save memory: return the same list if the size is the same
     return filtered.size() < recipes.size() ? filtered : recipes;
   }
 
   /** Gets a list of recipes that support dynamic filtering. */
-  static <T extends FilteredRecipe> List<T> filtered(List<T> recipes) {
-    List<T> filtered = recipes.stream().filter(FilteredRecipe::isFiltered).toList();
+  static <T extends FilteredRecipe> List<NamedRecipe<T>> filtered(List<NamedRecipe<T>> recipes) {
+    List<NamedRecipe<T>> filtered = recipes.stream().filter(r -> r.recipe().isFiltered()).toList();
     // save memory: return the same list if the size is the same
     return filtered.size() < recipes.size() ? filtered : recipes;
   }
 
   /** Gets a list of always visible recipes from the list of filterable recipes. */
-  static <T extends FilteredRecipe> List<T> alwaysVisible(List<T> recipes) {
-    List<T> filtered = recipes.stream().filter(FilteredRecipe::showUnfocused).toList();
+  static <T extends FilteredRecipe> List<NamedRecipe<T>> alwaysVisible(List<NamedRecipe<T>> recipes) {
+    List<NamedRecipe<T>> filtered = recipes.stream().filter(r -> r.recipe().showUnfocused()).toList();
     // save memory: return the same list if the size is the same
     return filtered.size() < recipes.size() ? filtered : recipes;
   }

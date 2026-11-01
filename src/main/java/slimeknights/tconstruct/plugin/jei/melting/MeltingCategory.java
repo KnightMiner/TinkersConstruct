@@ -3,12 +3,12 @@ package slimeknights.tconstruct.plugin.jei.melting;
 import com.mojang.datafixers.util.Either;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
@@ -16,7 +16,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.recipe.FluidValues;
@@ -31,6 +33,7 @@ import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import java.util.List;
 
 /** Shared by melter and smeltery */
+@Internal
 public class MeltingCategory extends AbstractMeltingCategory {
   private static final Component TITLE = TConstruct.makeTranslation("jei", "melting.title");
   private static final Component TOOLTIP_SMELTERY = TConstruct.makeTranslation("jei", "melting.smeltery").withStyle(ChatFormatting.GRAY, ChatFormatting.UNDERLINE);
@@ -61,7 +64,8 @@ public class MeltingCategory extends AbstractMeltingCategory {
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, IDisplayableMeltingRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayableMeltingRecipe> holder, IFocusGroup focuses) {
+    IDisplayableMeltingRecipe recipe = holder.recipe();
     // input
     List<ItemStack> inputs = recipe.getInputs();
     IRecipeSlotBuilder inputSlot = builder.addInputSlot(24, 18).addItemStacks(inputs);
@@ -81,7 +85,7 @@ public class MeltingCategory extends AbstractMeltingCategory {
       .addRichTooltipCallback(tooltip)
       .setFluidRenderer(FluidValues.METAL_BLOCK, false, 32, 32)
       .setOverlay(tankOverlay, 0, 0)
-      .addIngredients(ForgeTypes.FLUID_STACK, outputs)
+      .addIngredients(NeoForgeTypes.FLUID_STACK, outputs)
       .setSlotName(FLUID_SLOT);
     // apply focus link if the sizes match
     if (outputs.size() > 1 && outputs.size() == inputs.size()) {
@@ -103,7 +107,7 @@ public class MeltingCategory extends AbstractMeltingCategory {
     builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 4, 4)
            .addRichTooltipCallback(FUEL_TOOLTIP)
            .setFluidRenderer(1, false, 12, fuelHeight)
-           .addIngredients(ForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(recipe.getTemperature()));
+           .addIngredients(NeoForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(recipe.getTemperature()));
   }
 
   /** Adds amounts to outputs and temperatures to fuels */

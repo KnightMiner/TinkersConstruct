@@ -4,6 +4,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.definition.LazyMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
@@ -81,31 +83,33 @@ public class TConstructJEIConstants {
   };
 
   // casting
-  public static final RecipeType<IDisplayableCastingRecipe> CASTING_BASIN = type("casting_basin", IDisplayableCastingRecipe.class);
-  public static final RecipeType<IDisplayableCastingRecipe> CASTING_TABLE = type("casting_table", IDisplayableCastingRecipe.class);
-  public static final RecipeType<MoldingRecipe> MOLDING = type("molding", MoldingRecipe.class);
+  public static final RecipeType<NamedRecipe<IDisplayableCastingRecipe>> CASTING_BASIN = type("casting_basin");
+  public static final RecipeType<NamedRecipe<IDisplayableCastingRecipe>> CASTING_TABLE = type("casting_table");
+  public static final RecipeType<NamedRecipe<MoldingRecipe>> MOLDING = type("molding");
 
   // melting
-  public static final RecipeType<IDisplayableMeltingRecipe> MELTING = type("melting", IDisplayableMeltingRecipe.class);
-  public static final RecipeType<EntityMeltingRecipe> ENTITY_MELTING = type("entity_melting", EntityMeltingRecipe.class);
-  public static final RecipeType<AlloyRecipe> ALLOY = type("alloy", AlloyRecipe.class);
-  public static final RecipeType<IDisplayableMeltingRecipe> FOUNDRY = type("foundry", IDisplayableMeltingRecipe.class);
-  public static final RecipeType<MeltingFuel> FUEL = type("fuel", MeltingFuel.class);
+  public static final RecipeType<NamedRecipe<IDisplayableMeltingRecipe>> MELTING = type("melting");
+  public static final RecipeType<NamedRecipe<EntityMeltingRecipe>> ENTITY_MELTING = type("entity_melting");
+  public static final RecipeType<NamedRecipe<AlloyRecipe>> ALLOY = type("alloy");
+  public static final RecipeType<NamedRecipe<IDisplayableMeltingRecipe>> FOUNDRY = type("foundry");
+  @SuppressWarnings("unchecked")
+  public static final RecipeType<RecipeHolder<MeltingFuel>> FUEL = RecipeType.create(TConstruct.MOD_ID, "fuel", (Class<RecipeHolder<MeltingFuel>>)(Class<?>)RecipeHolder.class);
 
   // tinker station
-  public static final RecipeType<IDisplayModifierRecipe> MODIFIERS = type("modifiers", IDisplayModifierRecipe.class);
-  public static final RecipeType<SeveringRecipe> SEVERING = type("severing", SeveringRecipe.class);
-  public static final RecipeType<ToolBuildingRecipe> TOOL_BUILDING = type("tool_recipes", ToolBuildingRecipe.class);
-  public static final RecipeType<IDisplayToolTinkering> TOOL_MODIFICATION = type("tool_modification", IDisplayToolTinkering.class);
+  public static final RecipeType<NamedRecipe<IDisplayModifierRecipe>> MODIFIERS = type("modifiers");
+  public static final RecipeType<NamedRecipe<SeveringRecipe>> SEVERING = type("severing");
+  public static final RecipeType<NamedRecipe<ToolBuildingRecipe>> TOOL_BUILDING = type("tool_recipes");
+  public static final RecipeType<NamedRecipe<IDisplayToolTinkering>> TOOL_MODIFICATION = type("tool_modification");
 
   // part builder
-  public static final RecipeType<IDisplayMaterialRecipe> MATERIALS = type("materials", IDisplayMaterialRecipe.class);
-  public static final RecipeType<IDisplayPartBuilderRecipe> PART_BUILDER = type("part_builder", IDisplayPartBuilderRecipe.class);
+  // TODO: migrate to named recipe with new material item/material fluid manager
+  public static final RecipeType<IDisplayMaterialRecipe> MATERIALS = RecipeType.create(TConstruct.MOD_ID, "materials", IDisplayMaterialRecipe.class);
+  public static final RecipeType<NamedRecipe<IDisplayPartBuilderRecipe>> PART_BUILDER = type("part_builder");
 
   // modifier workstation
-  public static final RecipeType<IModifierWorktableRecipe> MODIFIER_WORKTABLE = type("worktable", IModifierWorktableRecipe.class);
+  public static final RecipeType<NamedRecipe<IModifierWorktableRecipe>> MODIFIER_WORKTABLE = type("worktable");
 
-  private static <T> RecipeType<T> type(String name, Class<T> clazz) {
-    return RecipeType.create(TConstruct.MOD_ID, name, clazz);
+  private static <T> RecipeType<NamedRecipe<T>> type(String name) {
+    return RecipeType.create(TConstruct.MOD_ID, name, NamedRecipe.<T>recipeClass());
   }
 }

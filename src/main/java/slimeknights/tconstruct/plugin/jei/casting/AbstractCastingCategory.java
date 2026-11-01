@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.plugin.jei.casting;
 
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -12,17 +11,19 @@ import mezz.jei.api.gui.widgets.IDrawableWidget;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidgetTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.fluids.FluidStack;
+import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
@@ -31,12 +32,11 @@ import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
 import slimeknights.tconstruct.plugin.jei.util.FluidTooltipCallback;
 import slimeknights.tconstruct.plugin.jei.util.RecipeSlotWrapper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Shared base logic for the two casting recipe types */
-public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDisplayableCastingRecipe> {
+/** Shared base logic for the two {@link IDisplayableCastingRecipe} types */
+public abstract class AbstractCastingCategory extends NamedRecipeCategory<IDisplayableCastingRecipe> {
   private static final String KEY_COOLING_TIME = TConstruct.makeTranslationKey("jei", "casting.time");
   private static final Component CAST_KEPT = TConstruct.makeTranslation("jei", "casting.cast_kept");
   private static final Component CAST_CONSUMED = TConstruct.makeTranslation("jei", "casting.cast_consumed");
@@ -53,7 +53,7 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
   private final IDrawable block;
   private final IGuiHelper guiHelper;
 
-  protected AbstractCastingCategory(IGuiHelper guiHelper, RecipeType<IDisplayableCastingRecipe> recipeType, Component title, Block icon, IDrawable block) {
+  protected AbstractCastingCategory(IGuiHelper guiHelper, RecipeType<NamedRecipe<IDisplayableCastingRecipe>> recipeType, Component title, Block icon, IDrawable block) {
     super(recipeType, title, guiHelper.createDrawableItemLike(icon), 117, 54);
     this.background = guiHelper.createDrawable(BACKGROUND_LOC, 0, 0, 117, 54);
     this.tankOverlay = guiHelper.createDrawable(BACKGROUND_LOC, 133, 0, 32, 32);
@@ -64,7 +64,8 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, IDisplayableCastingRecipe recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<IDisplayableCastingRecipe> holder, IFocusGroup focuses) {
+    IDisplayableCastingRecipe recipe = holder.recipe();
     builder.addDrawableWidget(block).setPosition(38, 35);
     int coolingTime = recipe.getCoolingTime();
     IDrawable arrow = guiHelper.drawableBuilder(BACKGROUND_LOC, 117, 32, 24, 17)
@@ -90,12 +91,13 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
   }
 
   @Override
-  public void draw(IDisplayableCastingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+  public void draw(NamedRecipe<IDisplayableCastingRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
     background.draw(graphics);
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, IDisplayableCastingRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayableCastingRecipe> holder, IFocusGroup focuses) {
+    IDisplayableCastingRecipe recipe = holder.recipe();
     // fetch focus data
     IFocus<ItemStack> focus = focuses.getItemStackFocuses().findFirst().orElse(null);
     ItemStack focusStack = ItemStack.EMPTY;
@@ -131,7 +133,7 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
            .addRichTooltipCallback(FluidTooltipCallback.UNITS)
            .setFluidRenderer(capacity, false, 32, 32)
            .setOverlay(tankOverlay, 0, 0)
-           .addIngredients(ForgeTypes.FLUID_STACK, inputs)
+           .addIngredients(NeoForgeTypes.FLUID_STACK, inputs)
       .setSlotName(FLUID_SLOT);
     // pouring fluid
     int h = 11;
@@ -141,7 +143,7 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
     IRecipeSlotBuilder faucet = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 43, 8)
       .addRichTooltipCallback(FluidTooltipCallback.UNITS)
       .setFluidRenderer(1, false, 6, h)
-      .addIngredients(ForgeTypes.FLUID_STACK, inputs)
+      .addIngredients(NeoForgeTypes.FLUID_STACK, inputs)
       .setSlotName(FAUCET_SLOT);
 
     // if requested, and they are the same size, link output and fluid
@@ -159,8 +161,9 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
   }
 
   @Override
-  public void onDisplayedIngredientsUpdate(IDisplayableCastingRecipe recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+  public void onDisplayedIngredientsUpdate(NamedRecipe<IDisplayableCastingRecipe> holder, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
     // require the recipe to opt in as it saves a lot of lookups on recipes that don't need this feature
+    IDisplayableCastingRecipe recipe = holder.recipe();
     if (recipe.isSlotsDynamic()) {
       // combine both fluids together into a single slot
       IRecipeSlotDrawable fluid = CategoryUtil.findSlot(recipeSlots, FLUID_SLOT);
@@ -168,9 +171,9 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
       if (fluid != null) {
         IRecipeSlotDrawable faucet = CategoryUtil.findSlot(recipeSlots, FAUCET_SLOT);
         if (faucet != null) {
-          fluidSlot = new RecipeSlotWrapper<>(fluid, ForgeTypes.FLUID_STACK, FluidStack.EMPTY, faucet);
+          fluidSlot = new RecipeSlotWrapper<>(fluid, NeoForgeTypes.FLUID_STACK, FluidStack.EMPTY, faucet);
         } else {
-          fluidSlot = new RecipeSlotWrapper<>(fluid, ForgeTypes.FLUID_STACK, FluidStack.EMPTY);
+          fluidSlot = new RecipeSlotWrapper<>(fluid, NeoForgeTypes.FLUID_STACK, FluidStack.EMPTY);
         }
       } else {
         fluidSlot = RecipeSlot.EMPTY_FLUID;
@@ -184,17 +187,11 @@ public abstract class AbstractCastingCategory extends AbstractRecipeCategory<IDi
     }
   }
 
-  @Nullable
-  @Override
-  public ResourceLocation getRegistryName(IDisplayableCastingRecipe recipe) {
-    return recipe.getRecipeId();
-  }
-
   /** Handles the tooltip for the arrow */
   private record CoolingArrowTooltip(IDisplayableCastingRecipe recipe, IRecipeSlotDrawable fluidSlot) implements IRecipeWidgetTooltipCallback {
     @Override
     public void onTooltip(ITooltipBuilder tooltip) {
-      FluidStack fluid = fluidSlot.getDisplayedIngredient(ForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
+      FluidStack fluid = fluidSlot.getDisplayedIngredient(NeoForgeTypes.FLUID_STACK).orElse(FluidStack.EMPTY);
       tooltip.add(Component.translatable(KEY_COOLING_TIME, recipe.getCoolingTime(fluid) / 20));
     }
   }

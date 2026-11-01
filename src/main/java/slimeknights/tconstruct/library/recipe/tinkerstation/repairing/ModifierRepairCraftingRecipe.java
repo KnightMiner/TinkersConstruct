@@ -3,12 +3,13 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.repairing;
 import lombok.Getter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -125,12 +126,12 @@ public class ModifierRepairCraftingRecipe extends CustomRecipe implements IModif
 
 
   /* JEI */
-  private List<IDisplayCraftingTinkering> displayRecipes;
+  private List<RecipeHolder<IDisplayCraftingTinkering>> displayRecipes;
 
   @Override
-  public List<IDisplayCraftingTinkering> getFilteredRecipes(RegistryAccess access) {
+  public List<RecipeHolder<IDisplayCraftingTinkering>> getFilteredRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      displayRecipes = List.of(new ModifierRepairTinkerStationRecipe.DisplayRecipe(this, true));
+      displayRecipes = List.of(new RecipeHolder<>(id, new ModifierRepairTinkerStationRecipe.DisplayRecipe(this, true)));
     }
     return displayRecipes;
   }

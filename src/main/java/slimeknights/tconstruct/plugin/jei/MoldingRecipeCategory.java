@@ -8,19 +8,21 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.client.SafeClientAccess;
+import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.molding.MoldingRecipe;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
-/** Recipe category for molding casts */
-public class MoldingRecipeCategory extends AbstractRecipeCategory<MoldingRecipe> {
+/** Recipe category for {@link MoldingRecipe} */
+@Internal
+public class MoldingRecipeCategory extends NamedRecipeCategory<MoldingRecipe> {
   private static final ResourceLocation BACKGROUND_LOC = TConstruct.getResource("textures/gui/jei/casting.png");
   private static final Component TITLE = TConstruct.makeTranslation("jei", "molding.title");
   private static final Component TOOLTIP_PATTERN_CONSUMED = Component.translatable(TConstruct.makeTranslationKey("jei", "molding.pattern_consumed"));
@@ -36,7 +38,8 @@ public class MoldingRecipeCategory extends AbstractRecipeCategory<MoldingRecipe>
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, MoldingRecipe recipe, IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<MoldingRecipe> holder, IFocusGroup focuses) {
+    MoldingRecipe recipe = holder.recipe();
     builder.addRecipeArrowWidget().setPosition(24, 23);
     builder.addDrawableWidget(recipe.getPattern().isEmpty() ? upArrow : downArrow).setPosition(8, 17);
     IDrawable block = recipe.getType() == TinkerRecipes.moldingBasinType.get() ? basin : table;
@@ -49,13 +52,11 @@ public class MoldingRecipeCategory extends AbstractRecipeCategory<MoldingRecipe>
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, MoldingRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<MoldingRecipe> holder, IFocusGroup focuses) {
+    MoldingRecipe recipe = holder.recipe();
     // basic input output
     builder.addInputSlot(3, 24).addIngredients(recipe.getMaterial());
-    RegistryAccess access = SafeClientAccess.getRegistryAccess();
-    if (access != null) {
-      builder.addOutputSlot(51, 24).addItemStack(recipe.getResultItem(access));
-    }
+    builder.addOutputSlot(51, 24).addItemStack(recipe.getResultItem(SafeClientAccess.getRegistryAccess()));
 
     // if we have a mold, we are pressing into the table, so draw pressed item on input and output
     Ingredient pattern = recipe.getPattern();
@@ -70,10 +71,5 @@ public class MoldingRecipeCategory extends AbstractRecipeCategory<MoldingRecipe>
         builder.createFocusLink(inputSlot, preservedSlot);
       }
     }
-  }
-
-  @Override
-  public ResourceLocation getRegistryName(MoldingRecipe recipe) {
-    return recipe.getId();
   }
 }

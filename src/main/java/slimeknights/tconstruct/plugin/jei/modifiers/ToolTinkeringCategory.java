@@ -5,6 +5,8 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
 import slimeknights.tconstruct.plugin.jei.TConstructJEIConstants;
@@ -12,7 +14,8 @@ import slimeknights.tconstruct.tables.TinkerTables;
 
 import java.awt.Color;
 
-/** Displays tool modifications that are not adding modifiers, such as part swapping or tool damaging. */
+/** Displays {@link IDisplayToolTinkering} modifications that are not adding modifiers, such as part swapping or tool damaging. */
+@Internal
 public class ToolTinkeringCategory extends AbstractTinkerStationCategory<IDisplayToolTinkering> {
   private static final Component TITLE = TConstruct.makeTranslation("jei", "tool_tinkering.title");
 
@@ -26,8 +29,9 @@ public class ToolTinkeringCategory extends AbstractTinkerStationCategory<IDispla
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, IDisplayToolTinkering recipe, IFocusGroup focuses) {
-    super.createRecipeExtras(builder, recipe, focuses);
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<IDisplayToolTinkering> holder, IFocusGroup focuses) {
+    super.createRecipeExtras(builder, holder, focuses);
+    IDisplayToolTinkering recipe = holder.recipe();
 
     // add title and tooltip
     builder.addText(recipe.getTitle(), 124, 10)

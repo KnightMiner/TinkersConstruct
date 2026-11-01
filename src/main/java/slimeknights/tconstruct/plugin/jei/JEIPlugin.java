@@ -4,11 +4,11 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -31,13 +31,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
@@ -47,7 +48,8 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.client.SafeClientAccess;
-import slimeknights.mantle.recipe.helper.RecipeHelper;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.TConstruct;
@@ -129,6 +131,7 @@ import slimeknights.tconstruct.plugin.jei.util.TankHidingIngredientListener;
 import slimeknights.tconstruct.plugin.jei.util.ToolPartSubtypeInterpreter;
 import slimeknights.tconstruct.plugin.jei.util.ToolSubtypeInterpreter;
 import slimeknights.tconstruct.plugin.jei.util.manager.SimpleItemRecipeManager;
+import slimeknights.tconstruct.plugin.jei.util.manager.VanillaRecipeManager;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock.TankType;
 import slimeknights.tconstruct.smeltery.client.screen.AlloyerScreen;
@@ -155,7 +158,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static slimeknights.mantle.util.RetexturedHelper.addTagVariants;
@@ -225,14 +227,15 @@ public class JEIPlugin implements IModPlugin {
   }
 
   /** Gets a list of unfiltered casting recipes to give to JEI. */
-  private static List<IDisplayableCastingRecipe> getCastingRecipes(RegistryAccess access, RecipeManager manager, Supplier<? extends RecipeType<ICastingRecipe>> recipeType) {
-    return FilteredRecipe.unfiltered(RecipeHelper.getJEIRecipes(access, manager, recipeType.get(), IDisplayableCastingRecipe.class));
+  private static List<NamedRecipe<IDisplayableCastingRecipe>> getCastingRecipes(RegistryAccess access, RecipeManager manager, Supplier<? extends RecipeType<ICastingRecipe>> recipeType) {
+    return FilteredRecipe.unfiltered(MultiNamedRecipe.getNamedRecipes(access, manager, recipeType.get(), IDisplayableCastingRecipe.class));
   }
 
   /** Finds the first recipe of the given type */
+  @SuppressWarnings("unchecked")
   @Nullable
-  private static <T, C extends Container, R extends Recipe<C>> T findFirst(RecipeManager manager, RecipeType<R> type, Class<T> clazz) {
-    return manager.byType(type).values().stream().filter(clazz::isInstance).map(clazz::cast).findFirst().orElse(null);
+  private static <T extends R, C extends RecipeInput, R extends Recipe<C>> RecipeHolder<T> findFirst(RecipeManager manager, RecipeType<R> type, Class<T> clazz) {
+    return manager.byType(type).stream().filter(r -> clazz.isInstance(r.value())).map(r -> (RecipeHolder<T>) r).findFirst().orElse(null);
   }
 
   @Override
@@ -248,51 +251,46 @@ public class JEIPlugin implements IModPlugin {
     // melting
     // need to register the fuels before the categories so they are available
     MeltingFuelHandler.registerSolidFuels(register.getIngredientManager());
-    List<MeltingFuel> fuels = RecipeHelper.getRecipes(manager, TinkerRecipes.fuelType.get(), MeltingFuel.class);
-    MeltingFuelHandler.setMeltngFuels(fuels);
+    List<RecipeHolder<MeltingFuel>> fuels = manager.getAllRecipesFor(TinkerRecipes.fuelType.get());
+    MeltingFuelHandler.setMeltingFuels(fuels);
     register.addRecipes(TConstructJEIConstants.FUEL, fuels);
     // register melting recipes
-    List<IDisplayableMeltingRecipe> meltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.meltingType.get(), IDisplayableMeltingRecipe.class);
+    List<NamedRecipe<IDisplayableMeltingRecipe>> meltingRecipes = MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.meltingType.get(), IDisplayableMeltingRecipe.class);
     register.addRecipes(TConstructJEIConstants.MELTING, meltingRecipes);
     register.addRecipes(TConstructJEIConstants.FOUNDRY, meltingRecipes);
 
     // entity melting
-    List<EntityMeltingRecipe> entityMeltingRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.entityMeltingType.get(), EntityMeltingRecipe.class);
+    List<NamedRecipe<EntityMeltingRecipe>> entityMeltingRecipes = MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.entityMeltingType.get(), EntityMeltingRecipe.class);
     // generate a "default" recipe for all other entity types
-    entityMeltingRecipes.add(new DefaultEntityMeltingRecipe(entityMeltingRecipes));
+    entityMeltingRecipes.add(NamedRecipe.of(TConstruct.getResource("/default"), List.of(), new DefaultEntityMeltingRecipe(entityMeltingRecipes)));
     register.addRecipes(TConstructJEIConstants.ENTITY_MELTING, entityMeltingRecipes);
 
     // alloying
-    register.addRecipes(TConstructJEIConstants.ALLOY, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.alloyingType.get(), AlloyRecipe.class));
+    register.addRecipes(TConstructJEIConstants.ALLOY, MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.alloyingType.get(), AlloyRecipe.class));
 
     // molding
-    List<MoldingRecipe> moldingRecipes = new ArrayList<>();
-    moldingRecipes.addAll(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.moldingTableType.get(), MoldingRecipe.class));
-    moldingRecipes.addAll(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.moldingBasinType.get(), MoldingRecipe.class));
+    List<NamedRecipe<MoldingRecipe>> moldingRecipes = new ArrayList<>();
+    moldingRecipes.addAll(MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.moldingTableType.get(), MoldingRecipe.class));
+    moldingRecipes.addAll(MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.moldingBasinType.get(), MoldingRecipe.class));
     register.addRecipes(TConstructJEIConstants.MOLDING, moldingRecipes);
 
     // modifiers
-    List<IDisplayModifierRecipe> modifierRecipes = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayModifierRecipe.class)
-                                                               .stream()
-                                                               .sorted((r1, r2) -> {
-                                                                 SlotType t1 = r1.getSlotType();
-                                                                 SlotType t2 = r2.getSlotType();
-                                                                 String n1 = t1 == null ? "zzzzzzzzzz" : t1.getName();
-                                                                 String n2 = t2 == null ? "zzzzzzzzzz" : t2.getName();
-                                                                 return n1.compareTo(n2);
-                                                               }).collect(Collectors.toList());
+    List<NamedRecipe<IDisplayModifierRecipe>> modifierRecipes = MultiNamedRecipe.streamNamedRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayModifierRecipe.class)
+      .sorted(Comparator.comparing(r -> {
+        SlotType slotType = r.recipe().getSlotType();
+        return slotType == null ? "zzzzzzzzzz" : slotType.getName();
+      })).toList();
     register.addRecipes(TConstructJEIConstants.MODIFIERS, modifierRecipes);
-    register.addRecipes(TConstructJEIConstants.TOOL_MODIFICATION, FilteredRecipe.unfiltered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class)));
+    register.addRecipes(TConstructJEIConstants.TOOL_MODIFICATION, FilteredRecipe.unfiltered(MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class)));
 
     // beheading
-    register.addRecipes(TConstructJEIConstants.SEVERING, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.severingType.get(), SeveringRecipe.class));
+    register.addRecipes(TConstructJEIConstants.SEVERING, MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.severingType.get(), SeveringRecipe.class));
 
     // tool building
-    List<ToolBuildingRecipe> toolBuilding = RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), ToolBuildingRecipe.class)
-      .stream()
-      .sorted(Comparator.comparingInt(r -> StationSlotLayoutLoader.getInstance().get(r.getLayoutSlotId()).getSortIndex()))
-      .toList();
-    register.addRecipes(TConstructJEIConstants.TOOL_BUILDING, toolBuilding);
+    StationSlotLayoutLoader slotLayoutLoader = StationSlotLayoutLoader.getInstance();
+    register.addRecipes(TConstructJEIConstants.TOOL_BUILDING, MultiNamedRecipe.streamNamedRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), ToolBuildingRecipe.class)
+      .sorted(Comparator.comparingInt(r -> slotLayoutLoader.get(r.recipe().getLayoutSlotId()).getSortIndex()))
+      .toList());
 
     // materials
     register.addRecipes(TConstructJEIConstants.MATERIALS, Stream.<IDisplayMaterialRecipe>concat(
@@ -301,29 +299,29 @@ public class JEIPlugin implements IModPlugin {
       .sorted(Comparator.comparing(IDisplayMaterialRecipe::getMaterial)).toList());
 
     // part builder
-    register.addRecipes(TConstructJEIConstants.PART_BUILDER, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.partBuilderType.get(), IDisplayPartBuilderRecipe.class));
+    register.addRecipes(TConstructJEIConstants.PART_BUILDER, MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.partBuilderType.get(), IDisplayPartBuilderRecipe.class));
 
     // modifier worktable
-    register.addRecipes(TConstructJEIConstants.MODIFIER_WORKTABLE, RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.modifierWorktableType.get(), IModifierWorktableRecipe.class)
+    register.addRecipes(TConstructJEIConstants.MODIFIER_WORKTABLE, MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.modifierWorktableType.get(), IModifierWorktableRecipe.class)
       .stream().filter(recipe -> {
-        if (recipe.getModifierOptions(null).isEmpty()) {
-          TConstruct.LOG.debug("Hiding Modifier Worktable recipe {} as it has no valid modifiers", recipe.getId());
+        if (recipe.recipe().getModifierOptions(null).isEmpty()) {
+          TConstruct.LOG.debug("Hiding Modifier Worktable recipe {} as it has no valid modifiers", recipe.id());
           return false;
         }
         return true;
       }).toList());
 
     // copy tinker station repair recipes to the crafting table
-    CraftingTableRepairKitRecipe craftingRepair = findFirst(manager, RecipeType.CRAFTING, CraftingTableRepairKitRecipe.class);
-    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
+    RecipeHolder<CraftingTableRepairKitRecipe> craftingRepair = findFirst(manager, RecipeType.CRAFTING, CraftingTableRepairKitRecipe.class);
+    RecipeHolder<TinkerStationRepairRecipe> tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
     if (craftingRepair != null && tinkerRepair != null) {
-      ResourceLocation id = craftingRepair.getId();
-      List<IDisplayCraftingTinkering> recipes = tinkerRepair.getRecipes(access);
-      List<CraftingRecipe> newRecipes = new ArrayList<>();
-      TinkerStationRepairRecipe.setCraftingId(recipes, id);
-      for (IDisplayCraftingTinkering recipe : recipes) {
-        if (!recipe.isFiltered()) {
-          newRecipes.add(recipe);
+      ResourceLocation id = craftingRepair.id();
+      List<NamedRecipe<IDisplayCraftingTinkering>> recipes = tinkerRepair.value().getRecipes(tinkerRepair.id(), access);
+      List<RecipeHolder<CraftingRecipe>> newRecipes = new ArrayList<>();
+      TinkerStationRepairRecipe.setParent(id, recipes);
+      for (NamedRecipe<IDisplayCraftingTinkering> recipe : recipes) {
+        if (!recipe.recipe().isFiltered()) {
+          newRecipes.add(new RecipeHolder<>(recipe.id(), recipe.recipe()));
         }
       }
       if (!recipes.isEmpty()) {
@@ -340,8 +338,8 @@ public class JEIPlugin implements IModPlugin {
   }
 
   /** Gets a list of filtered casting recipes to give to JEI. */
-  private static List<IDisplayableCastingRecipe> getFilteredCastingRecipes(RegistryAccess access, RecipeManager manager, Supplier<? extends RecipeType<ICastingRecipe>> recipeType) {
-    return FilteredRecipe.filtered(RecipeHelper.getJEIRecipes(access, manager, recipeType.get(), IDisplayableCastingRecipe.class));
+  private static List<NamedRecipe<IDisplayableCastingRecipe>> getFilteredCastingRecipes(RegistryAccess access, RecipeManager manager, Supplier<? extends RecipeType<ICastingRecipe>> recipeType) {
+    return FilteredRecipe.filtered(MultiNamedRecipe.getNamedRecipes(access, manager, recipeType.get(), IDisplayableCastingRecipe.class));
   }
 
   @Override
@@ -354,23 +352,23 @@ public class JEIPlugin implements IModPlugin {
     IIngredientManager ingredientManager = registration.getJeiHelpers().getIngredientManager();
     registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_BASIN, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingBasinType)));
     registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.CASTING_TABLE, new CastingRecipeManager(ingredientManager, getFilteredCastingRecipes(access, manager, TinkerRecipes.castingTableType)));
-    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.TOOL_MODIFICATION, new SimpleItemRecipeManager<>(ingredientManager, FilteredRecipe.filtered(RecipeHelper.getJEIRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class))));
+    registration.addTypedRecipeManagerPlugin(TConstructJEIConstants.TOOL_MODIFICATION, new SimpleItemRecipeManager<>(ingredientManager, FilteredRecipe.filtered(MultiNamedRecipe.getNamedRecipes(access, manager, TinkerRecipes.tinkerStationType.get(), IDisplayToolTinkering.class))));
 
     // copy tinker station repair recipes to the crafting table
-    List<IDisplayCraftingTinkering> craftingRecipes = VanillaFilteredRecipe.getRecipes(access, manager, RecipeType.CRAFTING, IDisplayCraftingTinkering.class);
+    List<RecipeHolder<IDisplayCraftingTinkering>> craftingRecipes = VanillaFilteredRecipe.getRecipes(access, manager, RecipeType.CRAFTING, IDisplayCraftingTinkering.class);
     // copy tinker repair recipes to the crafting table
-    TinkerStationRepairRecipe tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
+    RecipeHolder<TinkerStationRepairRecipe> tinkerRepair = findFirst(manager, TinkerRecipes.tinkerStationType.get(), TinkerStationRepairRecipe.class);
     if (tinkerRepair != null) {
-      List<IDisplayCraftingTinkering> recipes = tinkerRepair.getRecipes(access);
-      for (IDisplayCraftingTinkering recipe : recipes) {
-        if (recipe.isFiltered()) {
-          craftingRecipes.add(recipe);
+      List<NamedRecipe<IDisplayCraftingTinkering>> recipes = tinkerRepair.value().getRecipes(tinkerRepair.id(), access);
+      for (NamedRecipe<IDisplayCraftingTinkering> recipe : recipes) {
+        if (recipe.recipe().isFiltered()) {
+          craftingRecipes.add(new RecipeHolder<>(recipe.id(), recipe.recipe()));
         }
       }
     }
     // add the plugin if we found anything
     if (!craftingRecipes.isEmpty()) {
-      registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, SimpleItemRecipeManager.createCrafting(ingredientManager, craftingRecipes));
+      registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, VanillaRecipeManager.createCrafting(ingredientManager, craftingRecipes));
     }
   }
 
@@ -396,7 +394,7 @@ public class JEIPlugin implements IModPlugin {
    * @param ownCategory  Category to always add
    * @param type         Molding recipe type
    */
-  private static void addCastingCatalyst(IRecipeCatalystRegistration registry, ItemLike item, mezz.jei.api.recipe.RecipeType<IDisplayableCastingRecipe> ownCategory, RecipeType<MoldingRecipe> type) {
+  private static void addCastingCatalyst(IRecipeCatalystRegistration registry, ItemLike item, mezz.jei.api.recipe.RecipeType<NamedRecipe<IDisplayableCastingRecipe>> ownCategory, RecipeType<MoldingRecipe> type) {
     registry.addRecipeCatalyst(item, ownCategory);
     assert Minecraft.getInstance().level != null;
     if (!Minecraft.getInstance().level.getRecipeManager().byType(type).isEmpty()) {
@@ -441,7 +439,7 @@ public class JEIPlugin implements IModPlugin {
     addModifierCatalyst(registry, TinkerTags.Modifiers.MELTING, TConstructJEIConstants.MELTING, TConstructJEIConstants.ENTITY_MELTING);
     // add items containing these modifiers to start as catalysts as well
     for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.MODIFIABLE)) {
-      if (item.get() instanceof IModifiableDisplay modifiable) {
+      if (item.value() instanceof IModifiableDisplay modifiable) {
         // add any tools with a severing trait to severing
         ModifierNBT traits = ToolTraitHook.getTraits(modifiable.getToolDefinition(), MaterialNBT.EMPTY);
         if (traits.has(TinkerTags.Modifiers.CRAFTING)) {
@@ -456,7 +454,7 @@ public class JEIPlugin implements IModPlugin {
         // add any tools with a melting trait to melting
         if (traits.has(TinkerTags.Modifiers.MELTING)) {
           // only add to entity melting if its melee too
-          if (item.containsTag(TinkerTags.Items.MELEE)) {
+          if (item.is(TinkerTags.Items.MELEE)) {
             registry.addRecipeCatalyst(modifiable.getRenderTool(), TConstructJEIConstants.MELTING, TConstructJEIConstants.ENTITY_MELTING);
           } else {
             registry.addRecipeCatalyst(modifiable.getRenderTool(), TConstructJEIConstants.MELTING);
@@ -504,7 +502,7 @@ public class JEIPlugin implements IModPlugin {
 
     // potions
     registry.registerSubtypeInterpreter(TinkerFluids.potion.asItem(), (PotionSubtypeInterpreter<ItemStack>)ItemStack::getTag);
-    registry.registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, TinkerFluids.potion.get(), (PotionSubtypeInterpreter<FluidStack>)FluidStack::getTag);
+    registry.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, TinkerFluids.potion.get(), (PotionSubtypeInterpreter<FluidStack>)FluidStack::getTag);
 
     // parts
     for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.TOOL_PARTS)) {
@@ -603,7 +601,7 @@ public class JEIPlugin implements IModPlugin {
     String showOnlyParts = Config.CLIENT.showOnlyPartMaterial.get();
     if (!showOnlyParts.isEmpty()) {
       for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.TOOL_PARTS)) {
-        if (item.get() instanceof IMaterialItem part) {
+        if (item.value() instanceof IMaterialItem part) {
           part.addVariants(hideItem, "");
           part.addVariants(showItem, showOnlyParts);
         }
@@ -664,7 +662,7 @@ public class JEIPlugin implements IModPlugin {
 
     // add potion fluids for each potion variant if requested
     if (Config.CLIENT.showPotionFluidInJEI.get()) {
-      manager.addIngredientsAtRuntime(ForgeTypes.FLUID_STACK,
+      manager.addIngredientsAtRuntime(NeoForgeTypes.FLUID_STACK,
                                       BuiltInRegistries.POTION.holders().filter(holder -> {
                                         Potion potion = holder.get();
                                         return potion != Potions.EMPTY && potion != Potions.WATER && !holder.is(TinkerTags.Potions.HIDDEN_FLUID);
@@ -687,7 +685,7 @@ public class JEIPlugin implements IModPlugin {
     if (!showItems.isEmpty()) {
       visibility.unhideIngredients(VanillaTypes.ITEM_STACK, showItems, Set.of(UidContext.Ingredient));
     }
-    manager.removeIngredientsAtRuntime(ForgeTypes.FLUID_STACK, removeFluids);
+    manager.removeIngredientsAtRuntime(NeoForgeTypes.FLUID_STACK, removeFluids);
 
     // hide easter egg recipes
     Level level = SafeClientAccess.getLevel();

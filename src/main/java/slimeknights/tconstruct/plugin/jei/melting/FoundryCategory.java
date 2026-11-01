@@ -1,14 +1,16 @@
 package slimeknights.tconstruct.plugin.jei.melting;
 
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.recipe.melting.IDisplayableMeltingRecipe;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** Extension of melting for byproducts, but ditchs solid fuels */
+@Internal
 public class FoundryCategory extends AbstractMeltingCategory {
   private static final Component TITLE = TConstruct.makeTranslation("jei", "foundry.title");
 
@@ -29,7 +32,8 @@ public class FoundryCategory extends AbstractMeltingCategory {
   }
 
   @Override
-  public void setRecipe(IRecipeLayoutBuilder builder, IDisplayableMeltingRecipe recipe, IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayableMeltingRecipe> holder, IFocusGroup focuses) {
+    IDisplayableMeltingRecipe recipe = holder.recipe();
     // input
     List<ItemStack> inputs = recipe.getInputs();
     IRecipeSlotBuilder inputSlot = builder.addInputSlot(24, 18).addItemStacks(inputs);
@@ -64,6 +68,6 @@ public class FoundryCategory extends AbstractMeltingCategory {
     builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 4, 4)
            .addRichTooltipCallback(FUEL_TOOLTIP)
            .setFluidRenderer(1, false, 12, 32)
-           .addIngredients(ForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(recipe.getTemperature()));
+           .addIngredients(NeoForgeTypes.FLUID_STACK, MeltingFuelHandler.getUsableFuels(recipe.getTemperature()));
   }
 }

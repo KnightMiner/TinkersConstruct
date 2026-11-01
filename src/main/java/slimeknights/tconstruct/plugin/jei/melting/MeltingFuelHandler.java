@@ -10,10 +10,11 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.neoforge.common.ForgeHooks;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -22,9 +23,9 @@ import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+/** Helper for fetching {@link MeltingFuel} in {@link AbstractMeltingCategory} and {@link slimeknights.tconstruct.plugin.jei.AlloyRecipeCategory} */
 public class MeltingFuelHandler {
   /**
    * List of pairs of temperature and list of fluids with that or greater temperature
@@ -44,17 +45,17 @@ public class MeltingFuelHandler {
 
   /**
    * Updates the melting cache, called on JEI load.
-   * TODO 1.21: fix method name.
    * @param fuels  List of fuel recipes
    */
-  public static void setMeltngFuels(List<MeltingFuel> fuels) {
-    // sort the fuels highest first
-    fuels.sort(Comparator.comparingInt(MeltingFuel::getTemperature));
+  @Internal
+  public static void setMeltingFuels(List<RecipeHolder<MeltingFuel>> fuels) {
     // get a list of temperature to fuel
     fuelLookup = fuels.stream()
-      .mapToInt(MeltingFuel::getTemperature)
+      .mapToInt(fuel -> fuel.value().getTemperature())
       .distinct()
+      .sorted()
       .mapToObj((temperature) -> Pair.of(temperature, fuels.stream()
+        .map(RecipeHolder::value)
         .filter(fuel -> fuel.getTemperature() >= temperature && !fuel.getInputs().isEmpty())
         .flatMap(fuel -> fuel.getInputs().stream())
         .toList()))
@@ -80,6 +81,7 @@ public class MeltingFuelHandler {
   /* Solid fuels */
 
   /** Sets the solid fuels from the given fuel stacks */
+  @Internal
   public static void registerSolidFuels(IIngredientManager ingredientManager) {
     Collection<ItemStack> allStacks = ingredientManager.getAllItemStacks();
     List<ItemStack> fuels = new ArrayList<>(allStacks.size());
@@ -88,7 +90,7 @@ public class MeltingFuelHandler {
     RecipeType<?> fuel = TinkerRecipes.fuelType.get();
     for (ItemStack stack : allStacks) {
       try {
-        int burnTime = ForgeHooks.getBurnTime(stack, fuel);
+        int burnTime = stack.getBurnTime(fuel);
         if (burnTime > 0) {
           fuels.add(stack);
           newFuels.put(itemHelper.getUid(stack, UidContext.Ingredient), burnTime);

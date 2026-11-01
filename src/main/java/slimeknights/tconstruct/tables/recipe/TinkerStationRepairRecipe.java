@@ -2,6 +2,7 @@ package slimeknights.tconstruct.tables.recipe;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.ApiStatus;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
@@ -42,6 +44,7 @@ import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -315,9 +318,23 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
     return displayRecipes;
   }
 
+  /** Used in JEI to override the crafting table ID for the display recipes. */
+  @ApiStatus.Internal
+  public static void setParent(ResourceLocation id, List<NamedRecipe<IDisplayCraftingTinkering>> recipes) {
+    for (NamedRecipe<IDisplayCraftingTinkering> recipe : recipes) {
+      if (recipe.recipe() instanceof DisplayRecipe display) {
+        display.setParent(id);
+      }
+    }
+  }
+
   /** Common logic for {@link FixedDisplayRecipe} and {@link DynamicDisplayRecipe} */
   @Getter
   private static abstract class DisplayRecipe implements IDisplayCraftingTinkering {
+    @Setter
+    @Nullable
+    private ResourceLocation parent;
+
     private final List<ItemStack> toolWithoutModifier;
 
     private DisplayRecipe(List<ItemStack> toolWithoutModifier) {
@@ -417,6 +434,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
 
   /** Display recipe for tools with constant repair options, such as staffs. */
   private static class FixedDisplayRecipe extends DisplayRecipe {
+
     private final Item tool;
     private final List<ItemStack> inputs;
     public FixedDisplayRecipe(Item tool, List<ItemStack> inputs, List<ItemStack> toolWithoutModifier) {

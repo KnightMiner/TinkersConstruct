@@ -3,7 +3,6 @@ package slimeknights.tconstruct.library.recipe.fuel;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
@@ -76,8 +75,8 @@ public class MeltingFuelLookup {
    * @return  Recipe, or null if no recipe for this type
    */
   @Nullable
-  public static MeltingFuel findFuel(FluidStack fluid) {
-    MeltingFuel recipe = CACHE.apply(fluid.getFluid());
+  public static MeltingFuel findFuel(Fluid fluid) {
+    MeltingFuel recipe = CACHE.apply(fluid);
     if (recipe == EMPTY) {
       return null;
     }
