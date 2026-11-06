@@ -39,7 +39,7 @@ import java.util.function.Function;
 import static slimeknights.tconstruct.TConstruct.getResource;
 
 /**
- * Contains bommon blocks and items used in crafting materials
+ * Contains common blocks and items used in crafting materials
  */
 @SuppressWarnings("unused")
 public final class TinkerMaterials extends TinkerModule {
@@ -49,43 +49,40 @@ public final class TinkerMaterials extends TinkerModule {
   public static final MetalItemObject knightmetal, knightslime;
 
   static {
-    Function<Block, BlockItem> originalBlockItem = BLOCKS.getDefaultBlockItem();
     Component metal = TConstruct.makeTranslation("block", "beacon_base").withStyle(ChatFormatting.GRAY);
     Component slime = TConstruct.makeTranslation("block", "beacon_base.slime").withStyle(ChatFormatting.GRAY);
-    BLOCKS.setDefaultBlockItem(block -> TaggedTooltipBlockItem.beaconBase(block, ITEM_PROPS, metal));
-    Function<Block, BlockItem> slimeBlockItem = block -> TaggedTooltipBlockItem.beaconBase(block, ITEM_PROPS, slime);
+    Function<Block, BlockItem> metalItem = block -> TaggedTooltipBlockItem.beaconBase(block, ITEM_PROPS, metal);
+    Function<Block, BlockItem> slimeItem = block -> TaggedTooltipBlockItem.beaconBase(block, ITEM_PROPS, slime);
     // ores
     cobalt = BLOCKS.registerMetal("cobalt").block(metalBuilder(MapColor.COLOR_BLUE));
     steel = BLOCKS.registerMetal("steel").block(metalBuilder(MapColor.STONE));
     // tier 3
-    slimesteel     = BLOCKS.registerMetal("slimesteel").blockItem(slimeBlockItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.WARPED_WART_BLOCK).noOcclusion()));
-    amethystBronze = BLOCKS.registerMetal("amethyst_bronze").block(metalBuilder(MapColor.COLOR_PURPLE));
-    roseGold       = BLOCKS.registerMetal("rose_gold").block(metalBuilder(MapColor.TERRACOTTA_WHITE));
-    pigIron        = BLOCKS.registerMetal("pig_iron").block(() -> new OrientableBlock(metalBuilder(MapColor.COLOR_PINK)));
+    slimesteel     = BLOCKS.registerMetal("slimesteel"     ).blockItem(slimeItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.WARPED_WART_BLOCK).noOcclusion()));
+    amethystBronze = BLOCKS.registerMetal("amethyst_bronze").blockItem(metalItem).block(metalBuilder(MapColor.COLOR_PURPLE));
+    roseGold       = BLOCKS.registerMetal("rose_gold"      ).blockItem(metalItem).block(metalBuilder(MapColor.TERRACOTTA_WHITE));
+    pigIron        = BLOCKS.registerMetal("pig_iron"       ).blockItem(metalItem).block(() -> new OrientableBlock(metalBuilder(MapColor.COLOR_PINK)));
     // tier 4
-    cinderslime = BLOCKS.registerMetal("cinderslime").blockItem(slimeBlockItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.COLOR_ORANGE).sound(SoundType.NETHERITE_BLOCK).noOcclusion()));
-    queensSlime = BLOCKS.registerMetal("queens_slime").block(metalBuilder(MapColor.COLOR_GREEN).sound(SoundType.NETHERITE_BLOCK));
-    manyullyn   = BLOCKS.registerMetal("manyullyn").block(metalBuilder(MapColor.COLOR_PURPLE).sound(SoundType.NETHERITE_BLOCK));
-    hepatizon   = BLOCKS.registerMetal("hepatizon").block(metalBuilder(MapColor.TERRACOTTA_BLUE).sound(SoundType.NETHERITE_BLOCK));
+    cinderslime = BLOCKS.registerMetal("cinderslime" ).blockItem(slimeItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.COLOR_ORANGE).sound(SoundType.NETHERITE_BLOCK).noOcclusion()));
+    queensSlime = BLOCKS.registerMetal("queens_slime").blockItem(metalItem).block(metalBuilder(MapColor.COLOR_GREEN).sound(SoundType.NETHERITE_BLOCK));
+    manyullyn   = BLOCKS.registerMetal("manyullyn"   ).blockItem(metalItem).block(metalBuilder(MapColor.COLOR_PURPLE).sound(SoundType.NETHERITE_BLOCK));
+    hepatizon   = BLOCKS.registerMetal("hepatizon"   ).blockItem(metalItem).block(metalBuilder(MapColor.TERRACOTTA_BLUE).sound(SoundType.NETHERITE_BLOCK));
     // tier 4 end
     knightmetal = BLOCKS.registerMetal("knightmetal")
       .blockItem(block -> TaggedTooltipBlockItem.beaconBase(block, ITEM_PROPS, TConstruct.makeTranslation("block", "beacon_base.spiky").withStyle(ChatFormatting.GRAY)))
       .block(() -> new KnightMetalBlock(metalBuilder(MapColor.GRASS).sound(SoundType.NETHERITE_BLOCK).noOcclusion()));
-    knightslime = BLOCKS.registerMetal("knightslime").blockItem(slimeBlockItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.COLOR_BLACK).noOcclusion()));
-    // revert to original default
-    BLOCKS.setDefaultBlockItem(originalBlockItem);
+    knightslime = BLOCKS.registerMetal("knightslime").blockItem(slimeItem).block(() -> new SlimesteelBlock(metalBuilder(MapColor.COLOR_BLACK).noOcclusion()));
   }
 
   // nuggets
   public static final DeferredItem<Item> copperNugget = ITEMS.register("copper_nugget", ITEM_PROPS);
   public static final DeferredItem<Item> netheriteNugget = ITEMS.register("netherite_nugget", ITEM_PROPS);
-  public static final DeferredItem<Item> debrisNugget = ITEMS.register("debris_nugget", TOOLTIP_ITEM);
+  public static final DeferredItem<Item> debrisNugget = ITEMS.registerFixedTooltip("debris_nugget");
 
   // non-metal
-  public static final DeferredItem<Item> necroticBone = ITEMS.register("necrotic_bone", TOOLTIP_ITEM);
-  public static final DeferredItem<Item> venombone = ITEMS.register("venombone", TOOLTIP_ITEM);
-  public static final DeferredItem<Item> blazingBone = ITEMS.register("blazing_bone", TOOLTIP_ITEM);
-  public static final DeferredItem<Item> necroniumBone = ITEMS.register("necronium_bone", TOOLTIP_ITEM);
+  public static final DeferredItem<Item> necroticBone = ITEMS.registerFixedTooltip("necrotic_bone");
+  public static final DeferredItem<Item> venombone = ITEMS.register("venombone");
+  public static final DeferredItem<Item> blazingBone = ITEMS.register("blazing_bone");
+  public static final DeferredItem<Item> necroniumBone = ITEMS.register("necronium_bone");
   public static final FenceBuildingBlockObject nahuatl = BLOCKS.registerBuilding("nahuatl", builder(MapColor.COLOR_PURPLE, SoundType.WOOD).instrument(NoteBlockInstrument.BASS).requiresCorrectToolForDrops().strength(25f, 300f)).fence();
   public static final FenceBuildingBlockObject blazewood = BLOCKS.registerBuilding("blazewood", woodBuilder(MapColor.TERRACOTTA_RED).requiresCorrectToolForDrops().strength(25f, 300f).lightLevel(s -> 7)).fence();
 

@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.BuddingAmethystBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
-import slimeknights.tconstruct.common.registration.GeodeItemObject;
-import slimeknights.tconstruct.common.registration.GeodeItemObject.BudSize;
+import slimeknights.tconstruct.common.registration.object.GeodeItemObject;
+import slimeknights.tconstruct.common.registration.object.GeodeItemObject.BudSize;
 
 public class BuddingCrystalBlock extends CrystalBlock {
   private static final Direction[] DIRECTIONS = Direction.values();

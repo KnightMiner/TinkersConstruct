@@ -2,6 +2,7 @@ package slimeknights.tconstruct.common.registration;
 
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.registration.deferred.RecipeSerializerDeferredRegister;
+import slimeknights.tconstruct.common.registration.object.CastingRecipeSerializers;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 

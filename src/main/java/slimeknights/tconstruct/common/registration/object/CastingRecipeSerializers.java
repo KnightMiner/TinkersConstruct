@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.common.registration;
+package slimeknights.tconstruct.common.registration.object;
 
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;

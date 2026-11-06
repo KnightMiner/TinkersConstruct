@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFi
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.common.registration.CastItemObject;
+import slimeknights.tconstruct.common.registration.object.CastItemObject;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.tools.part.MaterialItem;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;

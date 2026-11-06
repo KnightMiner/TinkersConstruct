@@ -1,13 +1,16 @@
 package slimeknights.tconstruct.common.registration;
 
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import slimeknights.mantle.registration.deferred.ItemDeferredRegister;
-import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.tconstruct.common.registration.object.CastItemObject;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
 
 import java.util.function.Supplier;
 
+/** Extension of {@link ItemDeferredRegister} with additional helpers for casts and enum items. */
 public class ItemDeferredRegisterExtension extends ItemDeferredRegister {
   public ItemDeferredRegisterExtension(String modID) {
     super(modID);
@@ -20,9 +23,9 @@ public class ItemDeferredRegisterExtension extends ItemDeferredRegister {
    * @return  Object containing casts
    */
   public CastItemObject registerCast(String name, Supplier<? extends Item> constructor) {
-    ItemObject<Item> cast = register(name + "_cast", constructor);
-    ItemObject<Item> sandCast = register(name + "_sand_cast", constructor);
-    ItemObject<Item> redSandCast = register(name + "_red_sand_cast", constructor);
+    DeferredItem<Item> cast = register(name + "_cast", constructor);
+    DeferredItem<Item> sandCast = register(name + "_sand_cast", constructor);
+    DeferredItem<Item> redSandCast = register(name + "_red_sand_cast", constructor);
     return new CastItemObject(resource(name), cast, sandCast, redSandCast);
   }
 
@@ -42,7 +45,7 @@ public class ItemDeferredRegisterExtension extends ItemDeferredRegister {
    * @param props  Item properties
    * @return  Object containing casts
    */
-  public CastItemObject registerCast(ItemObject<? extends IMaterialItem> item, Item.Properties props) {
+  public CastItemObject registerCast(DeferredHolder<Item,? extends IMaterialItem> item, Item.Properties props) {
     return registerCast(item.getId().getPath(), () -> new PartCastItem(props, item));
   }
 }

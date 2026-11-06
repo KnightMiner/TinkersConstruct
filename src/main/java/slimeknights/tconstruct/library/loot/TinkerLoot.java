@@ -39,6 +39,7 @@ public class TinkerLoot {
   private TinkerLoot() {}
 
   /** Registers this to the bus */
+  @Internal
   public static void init(IEventBus bus) {
     LOOT_CONDITIONS.register(bus);
     LOOT_FUNCTIONS.register(bus);
