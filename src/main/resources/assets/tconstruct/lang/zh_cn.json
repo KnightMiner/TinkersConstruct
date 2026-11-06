@@ -98,6 +98,10 @@
 
   "__comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "可用于建造信标基座",
+  "block.tconstruct.beacon_base.transparent": "可用于建造透明的信标基座",
+  "block.tconstruct.beacon_base.spiky": "可用于建造透明的信标基座",
+
   "item.tconstruct.copper_nugget": "铜粒",
 
   "block.tconstruct.cobalt_ore": "下界钴矿石",
@@ -105,12 +109,10 @@
   "block.tconstruct.raw_cobalt_block": "粗钴块",
 
   "block.tconstruct.cobalt_block": "钴块",
-  "block.tconstruct.cobalt_block.tooltip": "可用于建造信标基座",
   "item.tconstruct.cobalt_ingot": "钴锭",
   "item.tconstruct.cobalt_nugget": "钴粒",
 
   "block.tconstruct.steel_block": "钢块",
-  "block.tconstruct.steel_block.tooltip": "可用于建造信标基座",
   "item.tconstruct.steel_ingot": "钢锭",
   "item.tconstruct.steel_nugget": "钢粒",
 
@@ -118,7 +120,6 @@
   "__comment": "Tier 3 Metals",
 
   "block.tconstruct.slimesteel_block": "黏钢块",
-  "block.tconstruct.slimesteel_block.tooltip": "可用于建造透明的信标基座",
   "item.tconstruct.slimesteel_ingot": "黏钢锭",
   "item.tconstruct.slimesteel_nugget": "黏钢粒",
 
@@ -138,32 +139,26 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "玛玉灵块",
-  "block.tconstruct.manyullyn_block.tooltip": "可用于建造信标基座",
   "item.tconstruct.manyullyn_ingot": "玛玉灵锭",
   "item.tconstruct.manyullyn_nugget": "玛玉灵粒",
 
   "block.tconstruct.hepatizon_block": "黑色科林斯青铜块",
-  "block.tconstruct.hepatizon_block.tooltip": "可用于建造信标基座",
   "item.tconstruct.hepatizon_ingot": "黑色科林斯青铜锭",
   "item.tconstruct.hepatizon_nugget": "黑色科林斯青铜粒",
 
   "block.tconstruct.cinderslime_block": "余烬黏液块",
-  "block.tconstruct.cinderslime_block.tooltip": "可用于建造透明的信标基座",
   "item.tconstruct.cinderslime_ingot": "余烬黏液锭",
   "item.tconstruct.cinderslime_nugget": "余烬黏液粒",
 
   "block.tconstruct.queens_slime_block": "皇后史莱姆块",
-  "block.tconstruct.queens_slime_block.tooltip": "可用于建造信标基座",
   "item.tconstruct.queens_slime_ingot": "皇后史莱姆锭",
   "item.tconstruct.queens_slime_nugget": "皇后史莱姆粒",
 
   "block.tconstruct.knightmetal_block": "骑士金属块",
-  "block.tconstruct.knightmetal_block.tooltip": "可用于建造带刺的信标基座",
   "item.tconstruct.knightmetal_ingot": "骑士金属锭",
   "item.tconstruct.knightmetal_nugget": "骑士金属粒",
 
   "block.tconstruct.knightslime_block": "骑士史莱姆块",
-  "block.tconstruct.knightslime_block.tooltip": "可用于建造透明的信标基座",
   "item.tconstruct.knightslime_ingot": "骑士史莱姆锭",
   "item.tconstruct.knightslime_nugget": "骑士史莱姆粒",
 

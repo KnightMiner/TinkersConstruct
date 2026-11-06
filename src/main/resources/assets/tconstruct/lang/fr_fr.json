@@ -90,12 +90,13 @@
 
   "_comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "Peut servir de base pour une balise",
+
   "item.tconstruct.copper_nugget": "Pépite de cuivre",
   "block.tconstruct.cobalt_ore": "Minerai de cobalt du Nether",
   "item.tconstruct.raw_cobalt": "Cobalt brut",
   "block.tconstruct.raw_cobalt_block": "Bloc de cobalt brut",
   "block.tconstruct.cobalt_block": "Bloc de cobalt",
-  "block.tconstruct.cobalt_block.tooltip": "Peut servir de base pour une balise",
   "item.tconstruct.cobalt_ingot": "Lingot de cobalt",
   "item.tconstruct.cobalt_nugget": "Pépite de cobalt",
   "block.tconstruct.steel_block": "Bloc d'acier",
@@ -120,18 +121,15 @@
   "_comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "Bloc de manyulline",
-  "block.tconstruct.manyullyn_block.tooltip": "Peut servir de base pour une balise",
   "item.tconstruct.manyullyn_ingot": "Lingot de manyulline",
   "item.tconstruct.manyullyn_nugget": "Pépite de manyulline",
   "block.tconstruct.hepatizon_block": "Bloc d'hépatizon",
-  "block.tconstruct.hepatizon_block.tooltip": "Peut servir de base pour une balise",
   "item.tconstruct.hepatizon_ingot": "Lingot d'hépatizon",
   "item.tconstruct.hepatizon_nugget": "Pépite d'hépatizon",
   "block.tconstruct.cinderslime_block": "Bloc de scorieslime",
   "item.tconstruct.cinderslime_ingot": "Lingot de scorieslime",
   "item.tconstruct.cinderslime_nugget": "Pépite de scorieslime",
   "block.tconstruct.queens_slime_block": "Bloc de reineslime",
-  "block.tconstruct.queens_slime_block.tooltip": "Peut servir de base pour une balise",
   "item.tconstruct.queens_slime_ingot": "Lingot de reineslime",
   "item.tconstruct.queens_slime_nugget": "Pépite de reineslime",
   "item.tconstruct.netherite_nugget": "Pépite de netherite",

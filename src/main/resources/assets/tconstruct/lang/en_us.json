@@ -98,6 +98,10 @@
 
   "__comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "Can be used as a beacon base",
+  "block.tconstruct.beacon_base.transparent": "Can be used as a transparent beacon base",
+  "block.tconstruct.beacon_base.spiky": "Can be used as spiky beacon base",
+
   "item.tconstruct.copper_nugget": "Copper Nugget",
 
   "block.tconstruct.cobalt_ore": "Nether Cobalt Ore",
@@ -105,12 +109,10 @@
   "block.tconstruct.raw_cobalt_block": "Block of Raw Cobalt",
 
   "block.tconstruct.cobalt_block": "Block of Cobalt",
-  "block.tconstruct.cobalt_block.tooltip": "Can be used as a beacon base",
   "item.tconstruct.cobalt_ingot": "Cobalt Ingot",
   "item.tconstruct.cobalt_nugget": "Cobalt Nugget",
 
   "block.tconstruct.steel_block": "Block of Steel",
-  "block.tconstruct.steel_block.tooltip": "Can be used as a beacon base",
   "item.tconstruct.steel_ingot": "Steel Ingot",
   "item.tconstruct.steel_nugget": "Steel Nugget",
 
@@ -118,7 +120,6 @@
   "__comment": "Tier 3 Metals",
 
   "block.tconstruct.slimesteel_block": "Block of Slimesteel",
-  "block.tconstruct.slimesteel_block.tooltip": "Can be used as a transparent beacon base",
   "item.tconstruct.slimesteel_ingot": "Slimesteel Ingot",
   "item.tconstruct.slimesteel_nugget": "Slimesteel Nugget",
 
@@ -138,32 +139,26 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "Block of Manyullyn",
-  "block.tconstruct.manyullyn_block.tooltip": "Can be used as a beacon base",
   "item.tconstruct.manyullyn_ingot": "Manyullyn Ingot",
   "item.tconstruct.manyullyn_nugget": "Manyullyn Nugget",
 
   "block.tconstruct.hepatizon_block": "Block of Hepatizon",
-  "block.tconstruct.hepatizon_block.tooltip": "Can be used as a beacon base",
   "item.tconstruct.hepatizon_ingot": "Hepatizon Ingot",
   "item.tconstruct.hepatizon_nugget": "Hepatizon Nugget",
 
   "block.tconstruct.cinderslime_block": "Block of Cinderslime",
-  "block.tconstruct.cinderslime_block.tooltip": "Can be used as a transparent beacon base",
   "item.tconstruct.cinderslime_ingot": "Cinderslime Ingot",
   "item.tconstruct.cinderslime_nugget": "Cinderslime Nugget",
 
   "block.tconstruct.queens_slime_block": "Block of Queen's Slime",
-  "block.tconstruct.queens_slime_block.tooltip": "Can be used as a beacon base",
   "item.tconstruct.queens_slime_ingot": "Queen's Slime Ingot",
   "item.tconstruct.queens_slime_nugget": "Queen's Slime Nugget",
 
   "block.tconstruct.knightmetal_block": "Block of Knightmetal",
-  "block.tconstruct.knightmetal_block.tooltip": "Can be used as spiky beacon base",
   "item.tconstruct.knightmetal_ingot": "Knightmetal Ingot",
   "item.tconstruct.knightmetal_nugget": "Knightmetal Nugget",
 
   "block.tconstruct.knightslime_block": "Block of Knightslime",
-  "block.tconstruct.knightslime_block.tooltip": "Can be used as a transparent beacon base",
   "item.tconstruct.knightslime_ingot": "Knightslime Ingot",
   "item.tconstruct.knightslime_nugget": "Knightslime Nugget",
 

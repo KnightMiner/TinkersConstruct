@@ -97,6 +97,9 @@
 
   "__comment": "Metales de Mena",
 
+  "block.tconstruct.beacon_base": "Puede usarse como base de faro",
+  "block.tconstruct.beacon_base.spiky": "Puede usarse como base de faro con pinchos",
+
   "item.tconstruct.copper_nugget": "Pepita de cobre",
 
   "block.tconstruct.cobalt_ore": "Mena de cobalto del Nether",
@@ -104,12 +107,10 @@
   "block.tconstruct.raw_cobalt_block": "Bloque de cobalto bruto",
 
   "block.tconstruct.cobalt_block": "Bloque de cobalto",
-  "block.tconstruct.cobalt_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.cobalt_ingot": "Lingote de cobalto",
   "item.tconstruct.cobalt_nugget": "Pepita de cobalto",
 
   "block.tconstruct.steel_block": "Bloque de acero",
-  "block.tconstruct.steel_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.steel_ingot": "Lingote de acero",
   "item.tconstruct.steel_nugget": "Pepita de acero",
         
@@ -117,7 +118,6 @@
   "__comment": "Metales de Nivel 3",
 
   "block.tconstruct.slimesteel_block": "Bloque de acero de slime",
-  "block.tconstruct.slimesteel_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.slimesteel_ingot": "Lingote de acero de slime",
   "item.tconstruct.slimesteel_nugget": "Pepita de acero de slime",
 
@@ -137,27 +137,22 @@
   "__comment": "Metales de Nivel 4",
 
   "block.tconstruct.manyullyn_block": "Bloque de Manyullyn",
-  "block.tconstruct.manyullyn_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.manyullyn_ingot": "Lingote de Manyullyn",
   "item.tconstruct.manyullyn_nugget": "Pepita de Manyullyn",
 
   "block.tconstruct.hepatizon_block": "Bloque de Hepatizon",
-  "block.tconstruct.hepatizon_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.hepatizon_ingot": "Lingote de Hepatizon",
   "item.tconstruct.hepatizon_nugget": "Pepita de Hepatizon",
 
   "block.tconstruct.cinderslime_block": "Bloque de Slime de Ceniza",
-  "block.tconstruct.cinderslime_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.cinderslime_ingot": "Lingote de Slime de Ceniza",
   "item.tconstruct.cinderslime_nugget": "Pepita de Slime de Ceniza",
 
   "block.tconstruct.queens_slime_block": "Bloque de Slime Real",
-  "block.tconstruct.queens_slime_block.tooltip": "Puede usarse como base de faro",
   "item.tconstruct.queens_slime_ingot": "Lingote de Slime Real",
   "item.tconstruct.queens_slime_nugget": "Pepita de Slime Real",
 
   "block.tconstruct.knightmetal_block": "Bloque de Metal de Caballero",
-  "block.tconstruct.knightmetal_block.tooltip": "Puede usarse como base de faro con pinchos",
   "item.tconstruct.knightmetal_ingot": "Lingote de Metal de Caballero",
   "item.tconstruct.knightmetal_nugget": "Pepita de Metal de Caballero",
 

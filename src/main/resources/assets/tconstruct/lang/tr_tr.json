@@ -97,6 +97,8 @@
 
   "__comment": "Metal Cevherleri",
 
+  "block.tconstruct.beacon_base": "Fener tabanı olarak kullanılabilir",
+
   "item.tconstruct.copper_nugget": "Bakır Parçası",
 
   "block.tconstruct.cobalt_ore": "Nether Kobalt Cevheri",
@@ -104,7 +106,6 @@
   "block.tconstruct.raw_cobalt_block": "Ham Kobalt Bloğu",
 
   "block.tconstruct.cobalt_block": "Kobalt Bloğu",
-  "block.tconstruct.cobalt_block.tooltip": "Fener tabanı olarak kullanılabilir",
   "item.tconstruct.cobalt_ingot": "Kobalt Külçesi",
   "item.tconstruct.cobalt_nugget": "Kobalt Parçası",
 
@@ -131,17 +132,14 @@
   "__comment": "4. Aşama Metalleri",
 
   "block.tconstruct.manyullyn_block": "Menyullen Bloğu",
-  "block.tconstruct.manyullyn_block.tooltip": "Fener tabanı olarak kullanılabilir",
   "item.tconstruct.manyullyn_ingot": "Menyullen Külçesi",
   "item.tconstruct.manyullyn_nugget": "Menyullen Parçası",
 
   "block.tconstruct.hepatizon_block": "Hepatizon Bloğu",
-  "block.tconstruct.hepatizon_block.tooltip": "Fener tabanı olarak kullanılabilir",
   "item.tconstruct.hepatizon_ingot": "Hepatizon Külçesi",
   "item.tconstruct.hepatizon_nugget": "Hepatizon Parçası",
 
   "block.tconstruct.queens_slime_block": "Ecenin Balçığı Bloğu",
-  "block.tconstruct.queens_slime_block.tooltip": "Fener tabanı olarak kullanılabilir",
   "item.tconstruct.queens_slime_ingot": "Ecenin Balçığı Külçesi",
   "item.tconstruct.queens_slime_nugget": "Ecenin Balçığı Parçası",
 

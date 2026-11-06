@@ -97,6 +97,8 @@
 
   "__comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "可用於建造烽火台基座",
+
   "item.tconstruct.copper_nugget": "銅粒",
 
   "block.tconstruct.cobalt_ore": "地獄鈷礦",
@@ -104,7 +106,6 @@
   "block.tconstruct.raw_cobalt_block": "鈷原礦方塊",
 
   "block.tconstruct.cobalt_block": "鈷方塊",
-  "block.tconstruct.cobalt_block.tooltip": "可用於建造烽火台基座",
   "item.tconstruct.cobalt_ingot": "鈷錠",
   "item.tconstruct.cobalt_nugget": "鈷粒",
 
@@ -131,17 +132,14 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "瑪玉靈方塊",
-  "block.tconstruct.manyullyn_block.tooltip": "可用於建造烽火台基座",
   "item.tconstruct.manyullyn_ingot": "瑪玉靈錠",
   "item.tconstruct.manyullyn_nugget": "瑪玉靈粒",
 
   "block.tconstruct.hepatizon_block": "黑色科林斯青銅方塊",
-  "block.tconstruct.hepatizon_block.tooltip": "可用於建造烽火台基座",
   "item.tconstruct.hepatizon_ingot": "黑色科林斯青銅錠",
   "item.tconstruct.hepatizon_nugget": "黑色科林斯青銅粒",
 
   "block.tconstruct.queens_slime_block": "皇后史萊姆方塊",
-  "block.tconstruct.queens_slime_block.tooltip": "可用於建造烽火台基座",
   "item.tconstruct.queens_slime_ingot": "皇后史萊姆錠",
   "item.tconstruct.queens_slime_nugget": "皇后史萊姆粒",
 

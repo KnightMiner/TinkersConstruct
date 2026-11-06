@@ -98,6 +98,10 @@
 
   "__comment": "Литейное дело: Рудные металлы",
 
+  "block.tconstruct.beacon_base": "Может использоваться в качестве основы для маяка.",
+  "block.tconstruct.beacon_base.transparent": "Может использоваться в качестве бесцветной основы для маяка.",
+  "block.tconstruct.beacon_base.spiky": "Может использоваться в качестве бесцветной основы для маяка.",
+
   "item.tconstruct.copper_nugget": "Кусочек меди",
 
   "block.tconstruct.cobalt_ore": "Незерская кобальтовая руда",
@@ -105,12 +109,10 @@
   "block.tconstruct.raw_cobalt_block": "Блок рудного кобальта",
   
   "block.tconstruct.cobalt_block": "Кобальтовый блок",
-  "block.tconstruct.cobalt_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.cobalt_ingot": "Кобальтовый слиток",
   "item.tconstruct.cobalt_nugget": "Кусочек кобальта",
 
   "block.tconstruct.steel_block": "Стальной блок",
-  "block.tconstruct.steel_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.steel_ingot": "Стальной слиток",
   "item.tconstruct.steel_nugget": "Кусочек стали",
 
@@ -118,7 +120,6 @@
   "__comment": "Литейное дело: Металлы (3 уровень)",
 
   "block.tconstruct.slimesteel_block": "Блок слизневой стали",
-  "block.tconstruct.slimesteel_block.tooltip": "Может использоваться в качестве бесцветной основы для маяка.",
   "item.tconstruct.slimesteel_ingot": "Слиток слизневой стали",
   "item.tconstruct.slimesteel_nugget": "Кусочек слизневой стали",
 
@@ -138,32 +139,26 @@
   "__comment": "Литейное дело: Металлы (4 уровень)",
 
   "block.tconstruct.manyullyn_block": "Блок маньюллина",
-  "block.tconstruct.manyullyn_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.manyullyn_ingot": "Слиток маньюллина",
   "item.tconstruct.manyullyn_nugget": "Кусочек маньюллина",
 
   "block.tconstruct.hepatizon_block": "Блок гепатизона",
-  "block.tconstruct.hepatizon_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.hepatizon_ingot": "Слиток гепатизона",
   "item.tconstruct.hepatizon_nugget": "Кусочек гепатизона",
 
   "block.tconstruct.cinderslime_block": "Блок зольной слизи",
-  "block.tconstruct.cinderslime_block.tooltip": "Может использоваться в качестве бесцветной основы для маяка.",
   "item.tconstruct.cinderslime_ingot": "Слиток зольной слизи",
   "item.tconstruct.cinderslime_nugget": "Кусочек зольной слизи",
 
   "block.tconstruct.queens_slime_block": "Блок королевской слизи",
-  "block.tconstruct.queens_slime_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.queens_slime_ingot": "Слиток королевской слизи",
   "item.tconstruct.queens_slime_nugget": "Кусочек королевской слизи",
 
   "block.tconstruct.knightmetal_block": "Блок рыцарского металла",
-  "block.tconstruct.knightmetal_block.tooltip": "Может использоваться в качестве основы для маяка.",
   "item.tconstruct.knightmetal_ingot": "Слиток рыцарского металла",
   "item.tconstruct.knightmetal_nugget": "Кусочек рыцарского металла",
 
   "block.tconstruct.knightslime_block": "Блок рыцарской слизи",
-  "block.tconstruct.knightslime_block.tooltip": "Может использоваться в качестве бесцветной основы для маяка.",
   "item.tconstruct.knightslime_ingot": "Слиток рыцарской слизи",
   "item.tconstruct.knightslime_nugget": "Кусочек рыцарской слизи",
 

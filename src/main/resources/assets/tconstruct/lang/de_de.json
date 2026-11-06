@@ -93,6 +93,8 @@
 
   "__comment": "Erzmetalle",
 
+  "block.tconstruct.beacon_base": "Kann als Beacon-Basis verwendet werden",
+
   "item.tconstruct.copper_nugget": "Kupfernugget",
 
   "block.tconstruct.cobalt_ore": "Nether-Kobalt-Erz",
@@ -100,7 +102,6 @@
   "block.tconstruct.raw_cobalt_block": "Rohkobaltblock",
 
   "block.tconstruct.cobalt_block": "Kobaltblock",
-  "block.tconstruct.cobalt_block.tooltip": "Kann als Beacon-Basis verwendet werden",
   "item.tconstruct.cobalt_ingot": "Kobaltbarren",
   "item.tconstruct.cobalt_nugget": "Kobalt-Nugget",
 
@@ -123,17 +124,14 @@
   "__comment": "Tier-4-Metalle",
 
   "block.tconstruct.manyullyn_block": "Block von Manyullyn",
-  "block.tconstruct.manyullyn_block.tooltip": "Kann als Beacon-Basis verwendet werden",
   "item.tconstruct.manyullyn_ingot": "Manyullyn-Barren",
   "item.tconstruct.manyullyn_nugget": "Manyullyn-Nugget",
 
   "block.tconstruct.hepatizon_block": "Block von Hepatizon",
-  "block.tconstruct.hepatizon_block.tooltip": "Kann als Beacon-Basis verwendet werden",
   "item.tconstruct.hepatizon_ingot": "Hepatizon-Barren",
   "item.tconstruct.hepatizon_nugget": "Hepatizon-Nugget",
 
   "block.tconstruct.queens_slime_block": "Schleimblock der Königin",
-  "block.tconstruct.queens_slime_block.tooltip": "Kann als Beacon-Basis verwendet werden",
   "item.tconstruct.queens_slime_ingot": "Schleimbarren der Königin",
   "item.tconstruct.queens_slime_nugget": "Schleimnugget der Königin",
 

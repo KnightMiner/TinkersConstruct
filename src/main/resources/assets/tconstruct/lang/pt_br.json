@@ -97,6 +97,8 @@
 
 "__comment": "Ore Metals",
 
+"block.tconstruct.beacon_base": "Pode ser usado como base de sinalizador",
+
 "item.tconstruct.copper_nugget": "Pepita de Cobre",
 
 "block.tconstruct.cobalt_ore": "Minério de Cobalto do Nether",
@@ -104,7 +106,6 @@
 "block.tconstruct.raw_cobalt_block": "Bloco de Cobalto Bruto",
 
 "block.tconstruct.cobalt_block": "Bloco de Cobalto",
-"block.tconstruct.cobalt_block.tooltip": "Pode ser usado como base de sinalizador",
 "item.tconstruct.cobalt_ingot": "Lingote de Cobalto",
 "item.tconstruct.cobalt_nugget": "Pepita de Cobalto",
 
@@ -135,12 +136,10 @@
 "__comment": "Tier 4 Metals",
 
 "block.tconstruct.manyullyn_block": "Bloco de Manyullyn",
-"block.tconstruct.manyullyn_block.tooltip": "Pode ser usado como base de sinalizador",
 "item.tconstruct.manyullyn_ingot": "Lingote de Manyullyn",
 "item.tconstruct.manyullyn_nugget": "Pepita de Manyullyn",
 
 "block.tconstruct.hepatizon_block": "Bloco de Hepatizão",
-"block.tconstruct.hepatizon_block.tooltip": "Pode ser usado como base de sinalizador",
 "item.tconstruct.hepatizon_ingot": "Lingote de Hepatizão",
 "item.tconstruct.hepatizon_nugget": "Pepita de Hepatizão",
 
@@ -149,7 +148,6 @@
 "item.tconstruct.cinderslime_nugget": "Pepita de Slime-de-Brasa",
 
 "block.tconstruct.queens_slime_block": "Bloco de Slime da Rainha",
-"block.tconstruct.queens_slime_block.tooltip": "Pode ser usado como base de sinalizador",
 "item.tconstruct.queens_slime_ingot": "Lingote de Slime da Rainha",
 "item.tconstruct.queens_slime_nugget": "Pepita de Slime da Rainha",
 

@@ -77,11 +77,14 @@
 
   "__comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "Może być użyty jako podstawa do magicznej latarni",
+  "block.tconstruct.beacon_base.transparent": "Może być użyty jako podstawa do magicznej latarni",
+  "block.tconstruct.beacon_base.spiky": "Może być użyty jako podstawa do magicznej latarni",
+
   "item.tconstruct.copper_nugget": "Bryłka miedzi",
 
   "block.tconstruct.cobalt_ore": "Netherowa ruda kobaltu",
   "block.tconstruct.cobalt_block": "Blok kobaltu",
-  "block.tconstruct.cobalt_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.cobalt_ingot": "Sztabka kobaltu",
   "item.tconstruct.cobalt_nugget": "Bryłka kobaltu",
 
@@ -89,7 +92,6 @@
   "__comment": "Tier 3 Metals",
 
   "block.tconstruct.slimesteel_block": "Blok Szlamostali",
-  "block.tconstruct.slimesteel_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.slimesteel_ingot": "Sztabka Szlamostali",
   "item.tconstruct.slimesteel_nugget": "Bryłka Szlamostali",
 
@@ -105,17 +107,14 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "Block Manyullynu",
-  "block.tconstruct.manyullyn_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.manyullyn_ingot": "Sztabka Manyullynu",
   "item.tconstruct.manyullyn_nugget": "Bryłka Manyullynu",
 
   "block.tconstruct.hepatizon_block": "Blok Hepatizonu",
-  "block.tconstruct.hepatizon_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.hepatizon_ingot": "Sztabka Hepatizonu",
   "item.tconstruct.hepatizon_nugget": "Bryłka Hepatizonu",
 
   "block.tconstruct.queens_slime_block": "Blok szlamu królowej",
-  "block.tconstruct.queens_slime_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.queens_slime_ingot": "Sztabka szlamu królowej",
   "item.tconstruct.queens_slime_nugget": "Bryłka szlamu królowej",
 
@@ -127,7 +126,6 @@
   "__comment": "Tier 5 Metals",
 
   "block.tconstruct.knightslime_block": "Blok rycerskiego szlamu",
-  "block.tconstruct.knightslime_block.tooltip": "Może być użyty jako podstawa do magicznej latarni",
   "item.tconstruct.knightslime_ingot": "Sztabka rycerskiego szlamu",
   "item.tconstruct.knightslime_nugget": "Bryłka rycerskiego szlamu",
 

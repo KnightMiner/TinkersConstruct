@@ -95,6 +95,8 @@
 
   "__comment": "Ore Metals",
 
+  "block.tconstruct.beacon_base": "Bisa digunakan sebagai dasar suar",
+
   "item.tconstruct.copper_nugget": "Nugget Tembaga",
 
   "block.tconstruct.cobalt_ore": "Bijih Kobalt Neraka",
@@ -102,7 +104,6 @@
   "block.tconstruct.raw_cobalt_block": "Blok Kobalt Mentah",
 
   "block.tconstruct.cobalt_block": "Block Kobalt",
-  "block.tconstruct.cobalt_block.tooltip": "Bisa digunakan sebagai dasar suar",
   "item.tconstruct.cobalt_ingot": "Batangan Kobalt",
   "item.tconstruct.cobalt_nugget": "Nugget Kobalt",
 
@@ -129,17 +130,14 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "Blok Manyullyn",
-  "block.tconstruct.manyullyn_block.tooltip": "Bisa digunakan sebagai dasar suar",
   "item.tconstruct.manyullyn_ingot": "Batangan Manyullyn",
   "item.tconstruct.manyullyn_nugget": "Nugget Manyullyn",
 
   "block.tconstruct.hepatizon_block": "Blok Hepatizon",
-  "block.tconstruct.hepatizon_block.tooltip": "Bisa digunakan sebagai dasar suar",
   "item.tconstruct.hepatizon_ingot": "Batangan Hepatizon",
   "item.tconstruct.hepatizon_nugget": "Nugget Hepatizon",
 
   "block.tconstruct.queens_slime_block": "Blok Queen's Slime",
-  "block.tconstruct.queens_slime_block.tooltip": "Bisa digunakan sebagai dasar suar",
   "item.tconstruct.queens_slime_ingot": "Batangan Queen's Slime",
   "item.tconstruct.queens_slime_nugget": "Nugget Queen's Slime",
 

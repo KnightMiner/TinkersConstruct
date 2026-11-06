@@ -94,6 +94,8 @@
 
   
   "__comment": "Ore Metals",
+
+  "block.tconstruct.beacon_base": "Kan användas som grund till en fyr",
   
   "item.tconstruct.copper_nugget": "Kopparklimp",
   
@@ -102,7 +104,6 @@
   "block.tconstruct.raw_cobalt_block": "Råkoboltsblock",
 
   "block.tconstruct.cobalt_block": "Koboltblock",
-  "block.tconstruct.cobalt_block.tooltip": "Kan användas som grund till en fyr",
   "item.tconstruct.cobalt_ingot": "Kobolttacka",
   "item.tconstruct.cobalt_nugget": "Koboltklimp",
   
@@ -129,17 +130,14 @@
   "__comment": "Tier 4 Metals",
   
   "block.tconstruct.manyullyn_block": "Manyullynblock",
-  "block.tconstruct.manyullyn_block.tooltip": "Kan användas som grund till en fyr",
   "item.tconstruct.manyullyn_ingot": "Manyullyntacka",
   "item.tconstruct.manyullyn_nugget": "Manyullynklimp",
   
   "block.tconstruct.hepatizon_block": "Hepatizonblock",
-  "block.tconstruct.hepatizon_block.tooltip": "Kan användas som grund till en fyr",
   "item.tconstruct.hepatizon_ingot": "Hepatizontacka",
   "item.tconstruct.hepatizon_nugget": "Hepatizonklimp",
   
   "block.tconstruct.queens_slime_block": "Drottningsslemblock",
-  "block.tconstruct.queens_slime_block.tooltip": "Kan användas som grund till en fyr",
   "item.tconstruct.queens_slime_ingot": "Drottningsslemtacka",
   "item.tconstruct.queens_slime_nugget": "Drottningsslemklimp",
   

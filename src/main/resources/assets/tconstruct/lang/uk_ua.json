@@ -97,6 +97,9 @@
 
 
   "__comment": "Ore Metals",
+  "block.tconstruct.beacon_base": "Можна використати як основу для маяка",
+  "block.tconstruct.beacon_base.transparent": "Можна використати як прозору основу для маяка",
+  "block.tconstruct.beacon_base.spiky": "Можна використати як прозору основу для маяка",
 
   "item.tconstruct.copper_nugget": "Мідний самородок",
 
@@ -105,12 +108,10 @@
   "block.tconstruct.raw_cobalt_block": "Блок необробленого кобальту",
 
   "block.tconstruct.cobalt_block": "Блок кобальту",
-  "block.tconstruct.cobalt_block.tooltip": "Можна використати як основу для маяка",
   "item.tconstruct.cobalt_ingot": "Кобальтовий злиток",
   "item.tconstruct.cobalt_nugget": "Кобальтовий самородок",
 
   "block.tconstruct.steel_block": "Блок сталі",
-  "block.tconstruct.steel_block.tooltip": "Можна використати як основу для маяка",
   "item.tconstruct.steel_ingot": "Сталевий злиток",
   "item.tconstruct.steel_nugget": "Сталевий самородок",
 
@@ -118,7 +119,6 @@
   "__comment": "Tier 3 Metals",
 
   "block.tconstruct.slimesteel_block": "Блок слизосталі",
-  "block.tconstruct.slimesteel_block.tooltip": "Можна використати як прозору основу для маяка",
   "item.tconstruct.slimesteel_ingot": "Слизосталевий злиток",
   "item.tconstruct.slimesteel_nugget": "Слизосталевий самородок",
 
@@ -138,32 +138,26 @@
   "__comment": "Tier 4 Metals",
 
   "block.tconstruct.manyullyn_block": "Блок маньюліну",
-  "block.tconstruct.manyullyn_block.tooltip": "Можна використати як основу для маяка",
   "item.tconstruct.manyullyn_ingot": "Маньюліновий злиток",
   "item.tconstruct.manyullyn_nugget": "Маньюліновий самородок",
 
   "block.tconstruct.hepatizon_block": "Блок гепатизону",
-  "block.tconstruct.hepatizon_block.tooltip": "Можна використати як основу для маяка",
   "item.tconstruct.hepatizon_ingot": "Гепатизоновий злиток",
   "item.tconstruct.hepatizon_nugget": "Гепатизоновий самородок",
 
   "block.tconstruct.cinderslime_block": "Блок жарослизу",
-  "block.tconstruct.cinderslime_block.tooltip": "Можна використати як прозору основу для маяка",
   "item.tconstruct.cinderslime_ingot": "Жарослизовий злиток",
   "item.tconstruct.cinderslime_nugget": "Жарослизовий самородок",
 
   "block.tconstruct.queens_slime_block": "Блок королевиного слизу",
-  "block.tconstruct.queens_slime_block.tooltip": "Можна використати як основу для маяка",
   "item.tconstruct.queens_slime_ingot": "Злиток королевиного слизу",
   "item.tconstruct.queens_slime_nugget": "Самородок королевиного слизу",
 
   "block.tconstruct.knightmetal_block": "Блок лицарського металу",
-  "block.tconstruct.knightmetal_block.tooltip": "Можна використати як колючу основу для маяка",
   "item.tconstruct.knightmetal_ingot": "Злиток лицарського металу",
   "item.tconstruct.knightmetal_nugget": "Самородок лицарського слизу",
 
   "block.tconstruct.knightslime_block": "Блок лицарського слизу",
-  "block.tconstruct.knightslime_block.tooltip": "Можна використати як прозору основу для маяка",
   "item.tconstruct.knightslime_ingot": "Злиток лицарського слизу",
   "item.tconstruct.knightslime_nugget": "Самородок лицарського слизу",
 
