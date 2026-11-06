@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.tools;
 
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleType;
@@ -46,7 +45,6 @@ import slimeknights.tconstruct.library.json.predicate.tool.PersistentDataPredica
 import slimeknights.tconstruct.library.json.predicate.tool.StatInRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.StatInSetPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
-import slimeknights.tconstruct.library.json.predicate.tool.ToolStackItemPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate;
@@ -295,8 +293,6 @@ public final class TinkerTools extends TinkerModule {
       Registry.register(registry, TConstruct.getResource("material_variant"), MaterialVariantId.DATA_ACCESSOR);
     }
     else if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
-      ItemPredicate.register(ToolStackItemPredicate.ID, ToolStackItemPredicate::deserialize);
-
       // register tool stats that are not defined directly in the class; safer than static init registration
       ToolStats.register(OverslimeModule.OVERSLIME_STAT);
       ToolStats.register(ToolTankHelper.CAPACITY_STAT);

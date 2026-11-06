@@ -3,7 +3,7 @@ package slimeknights.tconstruct.common.data.advancement;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.tconstruct.TConstruct;
 
-/** IDs used in {@link slimeknights.tconstruct.common.data.AdvancementsProvider} and {@link FunctionProvider} */
+/** IDs used in {@link AdvancementsProvider} and {@link FunctionProvider} */
 public class AdvancementIds {
   private AdvancementIds() {}
 

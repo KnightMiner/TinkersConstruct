@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.shared;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -72,7 +71,6 @@ import slimeknights.tconstruct.shared.block.WaxedPlatformBlock;
 import slimeknights.tconstruct.shared.block.WeatheringPlatformBlock;
 import slimeknights.tconstruct.shared.command.TConstructCommand;
 import slimeknights.tconstruct.shared.data.CommonRecipeProvider;
-import slimeknights.tconstruct.shared.inventory.BlockContainerOpenedTrigger;
 import slimeknights.tconstruct.shared.item.CheeseBlockItem;
 import slimeknights.tconstruct.shared.item.CheeseItem;
 import slimeknights.tconstruct.shared.item.TinkerBookItem;
@@ -166,8 +164,6 @@ public final class TinkerCommons extends TinkerModule {
       Registry.register(registry, TinkerLoot.config.getId(), ConfigEnabledCondition.CODEC);
     }
     else if (event.getRegistryKey() == Registries.RECIPE_SERIALIZER) {
-      CriteriaTriggers.register(CONTAINER_OPENED_TRIGGER);
-
       // mantle
       DamageSourcePredicate.LOADER.register(getResource("direct"), TinkerPredicate.DIRECT_DAMAGE.getLoader());
       // entity
