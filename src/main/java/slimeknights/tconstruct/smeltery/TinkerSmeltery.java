@@ -29,6 +29,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.RegistryObject;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.block.GaugeBlock;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
@@ -36,7 +37,6 @@ import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 import slimeknights.mantle.util.RetexturedHelper;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.CastItemObject;
@@ -116,15 +116,6 @@ import static slimeknights.mantle.Mantle.commonResource;
  */
 @SuppressWarnings("unused")
 public final class TinkerSmeltery extends TinkerModule {
-  /** Predicate for something that never happens */
-  private static final StatePredicate NEVER = Blocks::never;
-  /** Creative tab for smeltery, all contents related to the multiblocks */
-  public static final RegistryObject<CreativeModeTab> tabSmeltery = CREATIVE_TABS.register(
-    "smeltery", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "smeltery"))
-                                     .icon(() -> new ItemStack(TinkerSmeltery.smelteryController))
-                                     .displayItems(TinkerSmeltery::addTabItems)
-                                     .withTabsBefore(TinkerToolParts.tabToolParts.getId())
-                                     .build());
 
   /* Bricks */
   /* Crafting related items */
@@ -400,7 +391,8 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab */
-  private static void addTabItems(ItemDisplayParameters itemDisplayParameters, Output output) {
+  @Internal
+  public static void addTabItems(ItemDisplayParameters itemDisplayParameters, Output output) {
     // crafting materials
     output.accept(grout);
     output.accept(searedBrick);
@@ -499,6 +491,7 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   /** Adds all relevant items to the variants creative tab. */
+  @Internal
   public static void addTableVariants(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // additional texture variants of controllers, drains, and ducts
     Predicate<ItemStack> variant = stack -> {

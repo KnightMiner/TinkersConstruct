@@ -19,8 +19,8 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
 import slimeknights.mantle.registration.object.ItemObject;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.util.RetexturedHelper;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.tools.layout.StationSlotLayoutLoader;
@@ -50,7 +50,6 @@ import slimeknights.tconstruct.tables.menu.PartBuilderContainerMenu;
 import slimeknights.tconstruct.tables.menu.TinkerChestContainerMenu;
 import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
 import slimeknights.tconstruct.tools.TinkerToolParts;
-import slimeknights.tconstruct.world.TinkerWorld;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -61,14 +60,6 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings("unused")
 public final class TinkerTables extends TinkerModule {
-  /** Creative tab for general items, or those that lack another tab */
-  public static final RegistryObject<CreativeModeTab> tabTables = CREATIVE_TABS.register(
-    "tables", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "tables"))
-      .icon(() -> new ItemStack(TinkerTables.tinkersAnvil))
-      .displayItems(TinkerTables::addTableVariants)
-      .withTabsBefore(TinkerWorld.tabWorld.getId())
-      .withSearchBar()
-      .build());
   /*
    * Blocks
    */
@@ -144,6 +135,7 @@ public final class TinkerTables extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab, called in the general tab */
+  @Internal
   public static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // add one of each standard table
     output.accept(craftingStation);
@@ -163,7 +155,8 @@ public final class TinkerTables extends TinkerModule {
   }
 
   /** Adds all relevant items to the variants creative tab. */
-  private static void addTableVariants(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
+  @Internal
+  public static void addTableVariants(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // put anvil variants first as they are not in another tab and have the least variants
     Consumer<ItemStack> consumer = output::accept;
     ((IMaterialItem) tinkersAnvil.asItem()).addVariants(consumer, "");

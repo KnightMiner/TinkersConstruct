@@ -63,6 +63,7 @@ import slimeknights.tconstruct.plugin.ImmersiveEngineeringPlugin;
 import slimeknights.tconstruct.plugin.craftingtweaks.CraftingTweaksPlugin;
 import slimeknights.tconstruct.plugin.jsonthings.JsonThingsPlugin;
 import slimeknights.tconstruct.shared.TinkerCommons;
+import slimeknights.tconstruct.shared.TinkerCreativeTabs;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tables.TinkerTables;
@@ -85,7 +86,6 @@ import java.util.function.Supplier;
  *
  * @author mDiyo
  */
-
 @Mod(TConstruct.MOD_ID)
 @EventBusSubscriber(modid = TConstruct.MOD_ID)
 public class TConstruct {
@@ -109,6 +109,7 @@ public class TConstruct {
     TinkerLoot.init(modEventBus);
     TinkerEffects.register(modEventBus);
     TinkerRecipes.init(modEventBus);
+    TinkerCreativeTabs.register(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());

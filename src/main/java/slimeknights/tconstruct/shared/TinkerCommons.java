@@ -33,6 +33,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
@@ -41,7 +42,6 @@ import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.mantle.item.EdibleItem;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.ItemObject;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.data.model.ModelSpriteProvider;
@@ -90,12 +90,6 @@ import static slimeknights.tconstruct.TConstruct.getResource;
  */
 @SuppressWarnings("unused")
 public final class TinkerCommons extends TinkerModule {
-  /** Creative tab for general items, or those that lack another tab */
-  public static final RegistryObject<CreativeModeTab> tabGeneral = CREATIVE_TABS.register(
-    "general", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "general"))
-                                    .icon(() -> new ItemStack(TinkerCommons.materialsAndYou))
-                                    .displayItems(TinkerCommons::addTabItems)
-                                    .build());
 
   /*
    * Blocks
@@ -213,7 +207,8 @@ public final class TinkerCommons extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab */
-  private static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
+  @Internal
+  public static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // tables
     TinkerTables.addTabItems(itemDisplayParameters, output);
 

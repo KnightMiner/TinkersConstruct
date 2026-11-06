@@ -41,10 +41,10 @@ import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.client.FluidBlockstateModelProvider;
 import slimeknights.mantle.data.client.FluidBucketModelProvider;
 import slimeknights.mantle.datagen.MantleTags;
@@ -76,11 +76,8 @@ import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.shared.TinkerFood;
 import slimeknights.tconstruct.shared.block.SlimeType;
-import slimeknights.tconstruct.smeltery.TinkerSmeltery;
-import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock.TankType;
 import slimeknights.tconstruct.smeltery.item.CopperCanItem;
 import slimeknights.tconstruct.smeltery.item.TankItem;
-import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 import slimeknights.tconstruct.world.TinkerWorld;
 
@@ -118,15 +115,6 @@ public final class TinkerFluids extends TinkerModule {
     FLUIDS.addFlowingAlias(TConstruct.getResource("mushroom_stew"), MantleFluids.mushroomStew.id(), true);
     FLUIDS.addFlowingAlias(TConstruct.getResource("rabbit_stew"), MantleFluids.rabbitStew.id(), true);
   }
-
-  /** Creative tab for general items, or those that lack another tab */
-  public static final DeferredHolder<CreativeModeTab,CreativeModeTab> tabFluids = CREATIVE_TABS.register(
-    "fluids", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "fluids"))
-                                   .icon(() -> TankItem.fillTank(TinkerSmeltery.searedTank, TankType.FUEL_GAUGE, TinkerFluids.moltenCobalt.get()))
-                                   .displayItems(TinkerFluids::addFilledContainers)
-                                   .withTabsBefore(TinkerTables.tabTables.getId())
-                                   .withSearchBar()
-                                   .build());
 
   // entity
   public static final DeferredEntity<FluidEffectProjectile> fluidProjectile = ENTITIES.registerNoEgg("fluid_projectile", () ->
@@ -511,7 +499,8 @@ public final class TinkerFluids extends TinkerModule {
   }
 
   /** Adds all filled containers to the fluids tab. */
-  private static void addFilledContainers(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
+  @Internal
+  public static void addFilledContainers(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // add copper cans, tanks, and lanterns for all the fluids
     CopperCanItem.addFilledVariants(output::accept);
     TankItem.addFilledVariants(output::accept);

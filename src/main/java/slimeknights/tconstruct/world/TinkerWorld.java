@@ -55,12 +55,12 @@ import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent.Operation
 import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.registration.object.EntityObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.mantle.registration.object.WoodBlockObject;
 import slimeknights.mantle.registration.object.WoodBlockObject.WoodVariant;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -71,7 +71,6 @@ import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.shared.block.SlimeType;
-import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.world.block.CongealedSlimeBlock;
 import slimeknights.tconstruct.world.block.CrystalClusterBlock;
@@ -116,14 +115,6 @@ public final class TinkerWorld extends TinkerModule {
   }
 
   public static final PlantType SLIME_PLANT_TYPE = PlantType.get("slime");
-
-  /** Creative tab for anything that is naturally found in the world */
-  public static final RegistryObject<CreativeModeTab> tabWorld = CREATIVE_TABS.register(
-    "world", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "world"))
-      .icon(() -> new ItemStack(TinkerWorld.cobaltOre))
-      .displayItems(TinkerWorld::addTabItems)
-      .withTabsBefore(TinkerSmeltery.tabSmeltery.getId())
-      .build());
 
   /*
    * Block base properties
@@ -419,7 +410,8 @@ public final class TinkerWorld extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab */
-  private static void addTabItems(ItemDisplayParameters itemDisplayParameters, Output output) {
+  @Internal
+  public static void addTabItems(ItemDisplayParameters itemDisplayParameters, Output output) {
     // ores
     output.accept(cobaltOre);
     output.accept(rawCobalt);

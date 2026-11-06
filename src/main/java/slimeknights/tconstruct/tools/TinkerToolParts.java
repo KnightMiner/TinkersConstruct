@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.tools;
 
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
@@ -8,14 +7,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.RegistryObject;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.ItemObject;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 import slimeknights.tconstruct.library.tools.part.ToolPartItem;
@@ -38,22 +34,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class TinkerToolParts extends TinkerModule {
-  /** Tab for all tool parts or tool components with many variants */
-  public static final RegistryObject<CreativeModeTab> tabToolParts = CREATIVE_TABS.register(
-    "tool_parts", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "tool_parts"))
-                                       .icon(() -> {
-                                         MaterialVariantId material;
-                                         if (MaterialRegistry.isFullyLoaded()) {
-                                           material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create());
-                                         } else {
-                                           material = ToolBuildHandler.getRenderMaterial(0);
-                                         }
-                                         return TinkerToolParts.pickHead.get().withMaterialForDisplay(material);
-                                       })
-                                       .displayItems(TinkerToolParts::addTabItems)
-                                       .withTabsBefore(TinkerTools.tabTools.getId())
-                                       .withSearchBar()
-                                       .build());
 
   // repair kits
   public static final ItemObject<RepairKitItem> repairKit = ITEMS.register("repair_kit", () -> new RepairKitItem(ITEM_PROPS));
@@ -106,7 +86,9 @@ public final class TinkerToolParts extends TinkerModule {
   // loot
 
   /** Adds all relevant items to the creative tab */
-  private static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output tab) {
+  @SuppressWarnings("unused")
+  @Internal
+  public static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output tab) {
     Consumer<ItemStack> output = tab::accept;
     accept(output, repairKit);
     // fake ingot is in materials tab, helps the illusion

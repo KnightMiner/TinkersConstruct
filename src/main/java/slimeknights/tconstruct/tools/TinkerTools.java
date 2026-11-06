@@ -29,6 +29,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
@@ -121,7 +122,6 @@ import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
-import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.tools.data.ArmorModelProvider;
 import slimeknights.tconstruct.tools.data.ModifierIds;
 import slimeknights.tconstruct.tools.data.StationSlotLayoutProvider;
@@ -168,15 +168,6 @@ public final class TinkerTools extends TinkerModule {
     ModifierLootingHandler.init();
     RandomMaterial.init();
   }
-
-  /** Creative tab for complete tools */
-  public static final DeferredHolder<CreativeModeTab,CreativeModeTab> tabTools = CREATIVE_TABS.register(
-    "tools", () -> CreativeModeTab.builder().title(TConstruct.makeTranslation("itemGroup", "tools"))
-      .icon(() -> TinkerTools.pickaxe.get().getRenderTool())
-      .displayItems(TinkerTools::addTabItems)
-      .withTabsBefore(TinkerCommons.tabGeneral.getId())
-      .withSearchBar()
-      .build());
 
   /*
    * Items
@@ -408,7 +399,9 @@ public final class TinkerTools extends TinkerModule {
   }
 
   /** Adds all relevant items to the creative tab */
-  private static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output tab) {
+  @SuppressWarnings("unused")
+  @Internal
+  public static void addTabItems(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output tab) {
     // start with tools that lack materials
     Consumer<ItemStack> output = tab::accept;
 
