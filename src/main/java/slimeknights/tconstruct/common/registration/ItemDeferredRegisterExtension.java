@@ -1,13 +1,18 @@
 package slimeknights.tconstruct.common.registration;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
+import slimeknights.mantle.registration.deferred.EnumDeferredRegister;
 import slimeknights.mantle.registration.deferred.ItemDeferredRegister;
 import slimeknights.tconstruct.common.registration.object.CastItemObject;
+import slimeknights.tconstruct.common.registration.object.EnumItem;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** Extension of {@link ItemDeferredRegister} with additional helpers for casts and enum items. */
@@ -47,5 +52,28 @@ public class ItemDeferredRegisterExtension extends ItemDeferredRegister {
    */
   public CastItemObject registerCast(DeferredHolder<Item,? extends IMaterialItem> item, Item.Properties props) {
     return registerCast(item.getId().getPath(), () -> new PartCastItem(props, item));
+  }
+
+
+  /* ItemObject */
+
+  /** Same as {@link EnumDeferredRegister#registerEnum(String, Enum[], BiFunction)} except the result is a typed {@link EnumItem} */
+  public <E extends Enum<E>, T extends Item> EnumItem<E,T> registerEnumItem(String name, E[] values, BiFunction<ResourceLocation, E, ? extends T> mapper) {
+    return new EnumItem<>(registerEnum(name, values, mapper));
+  }
+
+  /** Same as {@link EnumDeferredRegister#registerEnum(Enum[], String, BiFunction)} except the result is a typed {@link EnumItem} */
+  public <E extends Enum<E>, T extends Item> EnumItem<E,T> registerEnumItem(E[] values, String name, BiFunction<ResourceLocation, E, ? extends T> mapper) {
+    return new EnumItem<>(registerEnum(values, name, mapper));
+  }
+
+  /** Same as {@link EnumDeferredRegister#registerEnum(String, Enum[], Function)} except the result is a typed {@link EnumItem} */
+  public <E extends Enum<E>, T extends Item> EnumItem<E,T> registerEnumItem(String name, E[] values, Function<E, ? extends T> mapper) {
+    return new EnumItem<>(registerEnum(name, values, mapper));
+  }
+
+  /** Same as {@link EnumDeferredRegister#registerEnum(Enum[], String, Function)} except the result is a typed {@link EnumItem} */
+  public  <E extends Enum<E>, T extends Item> EnumItem<E,T> registerEnumItem(E[] values, String name, Function<E, ? extends T> mapper) {
+    return new EnumItem<>(registerEnum(values, name, mapper));
   }
 }
