@@ -10,12 +10,15 @@ import net.minecraft.client.player.Input;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
@@ -31,9 +34,10 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.TickEvent.Phase;
 import net.neoforged.neoforge.event.TickEvent.PlayerTickEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
@@ -47,6 +51,9 @@ import slimeknights.tconstruct.library.client.armor.AbstractArmorModel;
 import slimeknights.tconstruct.library.client.armor.ArmorModelManager;
 import slimeknights.tconstruct.library.client.armor.texture.TrimArmorTextureSupplier;
 import slimeknights.tconstruct.library.client.book.content.material.AbstractMaterialContent;
+import slimeknights.tconstruct.library.client.data.material.GeneratorPartTextureJsonGenerator;
+import slimeknights.tconstruct.library.client.data.material.MaterialPaletteDebugGenerator;
+import slimeknights.tconstruct.library.client.data.material.MaterialPartTextureGenerator;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.client.model.DynamicTextureLoader;
 import slimeknights.tconstruct.library.client.model.TinkerItemProperties;
@@ -69,6 +76,13 @@ import slimeknights.tconstruct.tools.client.ToolContainerScreen;
 import slimeknights.tconstruct.tools.client.material.CombatFishingHookRenderer;
 import slimeknights.tconstruct.tools.client.material.ThrownShurikenRenderer;
 import slimeknights.tconstruct.tools.client.material.ThrownToolRenderer;
+import slimeknights.tconstruct.tools.data.ArmorModelProvider;
+import slimeknights.tconstruct.tools.data.ToolItemModelProvider;
+import slimeknights.tconstruct.tools.data.client.ModifierModelMapProvider;
+import slimeknights.tconstruct.tools.data.material.MaterialRenderInfoProvider;
+import slimeknights.tconstruct.tools.data.sprite.TinkerMaterialSpriteProvider;
+import slimeknights.tconstruct.tools.data.sprite.TinkerPartSpriteProvider;
+import slimeknights.tconstruct.tools.data.sprite.TinkerTrimMaterialPaletteGenerator;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
@@ -121,6 +135,24 @@ public class ToolClientEvents extends ClientEventBase {
     event.registerEntityRenderer(TinkerTools.thrownShuriken.get(), ThrownShurikenRenderer::new);
     event.registerEntityRenderer(TinkerTools.thrownTool.get(), ThrownToolRenderer::new);
     event.registerEntityRenderer(TinkerModifiers.fireball.get(), context -> new ThrownItemRenderer<>(context, 0.75f, true));
+  }
+
+  @SubscribeEvent
+  static void gatherData(final GatherDataEvent event) {
+    DataGenerator generator = event.getGenerator();
+    PackOutput packOutput = generator.getPackOutput();
+    ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+    boolean client = event.includeClient();
+    generator.addProvider(client, new ToolItemModelProvider(packOutput, existingFileHelper));
+    TinkerMaterialSpriteProvider materialSprites = new TinkerMaterialSpriteProvider();
+    TinkerPartSpriteProvider partSprites = new TinkerPartSpriteProvider();
+    generator.addProvider(client, new MaterialRenderInfoProvider(packOutput, materialSprites, existingFileHelper));
+    generator.addProvider(client, new GeneratorPartTextureJsonGenerator(packOutput, TConstruct.MOD_ID, partSprites));
+    generator.addProvider(client, new MaterialPartTextureGenerator(packOutput, existingFileHelper, partSprites, materialSprites));
+    generator.addProvider(client, new MaterialPaletteDebugGenerator(packOutput, TConstruct.MOD_ID, materialSprites));
+    generator.addProvider(client, new ArmorModelProvider(packOutput));
+    generator.addProvider(client, new TinkerTrimMaterialPaletteGenerator(packOutput, existingFileHelper, materialSprites));
+    generator.addProvider(client, new ModifierModelMapProvider(packOutput));
   }
 
   @SubscribeEvent

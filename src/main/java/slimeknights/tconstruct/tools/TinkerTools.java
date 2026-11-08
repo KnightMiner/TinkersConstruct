@@ -34,9 +34,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.MaterialTagProvider;
 import slimeknights.tconstruct.common.registration.object.EnumItem;
-import slimeknights.tconstruct.library.client.data.material.GeneratorPartTextureJsonGenerator;
-import slimeknights.tconstruct.library.client.data.material.MaterialPaletteDebugGenerator;
-import slimeknights.tconstruct.library.client.data.material.MaterialPartTextureGenerator;
 import slimeknights.tconstruct.library.json.predicate.tool.HasMaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasStatTypePredicate;
@@ -122,22 +119,15 @@ import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
-import slimeknights.tconstruct.tools.data.ArmorModelProvider;
 import slimeknights.tconstruct.tools.data.ModifierIds;
 import slimeknights.tconstruct.tools.data.StationSlotLayoutProvider;
 import slimeknights.tconstruct.tools.data.ToolDefinitionDataProvider;
-import slimeknights.tconstruct.tools.data.ToolItemModelProvider;
 import slimeknights.tconstruct.tools.data.ToolsRecipeProvider;
-import slimeknights.tconstruct.tools.data.client.ModifierModelMapProvider;
 import slimeknights.tconstruct.tools.data.material.MaterialDataProvider;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 import slimeknights.tconstruct.tools.data.material.MaterialRecipeProvider;
-import slimeknights.tconstruct.tools.data.material.MaterialRenderInfoProvider;
 import slimeknights.tconstruct.tools.data.material.MaterialStatsDataProvider;
 import slimeknights.tconstruct.tools.data.material.MaterialTraitsDataProvider;
-import slimeknights.tconstruct.tools.data.sprite.TinkerMaterialSpriteProvider;
-import slimeknights.tconstruct.tools.data.sprite.TinkerPartSpriteProvider;
-import slimeknights.tconstruct.tools.data.sprite.TinkerTrimMaterialPaletteGenerator;
 import slimeknights.tconstruct.tools.entity.CombatFishingHook;
 import slimeknights.tconstruct.tools.entity.ModifiableArrow;
 import slimeknights.tconstruct.tools.entity.ThrownShuriken;
@@ -374,7 +364,6 @@ public final class TinkerTools extends TinkerModule {
     PackOutput packOutput = generator.getPackOutput();
     ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
     boolean server = event.includeServer();
-    boolean client = event.includeClient();
     generator.addProvider(server, new ToolsRecipeProvider(packOutput));
     generator.addProvider(server, new MaterialRecipeProvider(packOutput));
     MaterialDataProvider materials = new MaterialDataProvider(packOutput);
@@ -384,16 +373,6 @@ public final class TinkerTools extends TinkerModule {
     generator.addProvider(server, new ToolDefinitionDataProvider(packOutput));
     generator.addProvider(server, new StationSlotLayoutProvider(packOutput));
     generator.addProvider(server, new MaterialTagProvider(packOutput, existingFileHelper));
-    generator.addProvider(client, new ToolItemModelProvider(packOutput, existingFileHelper));
-    TinkerMaterialSpriteProvider materialSprites = new TinkerMaterialSpriteProvider();
-    TinkerPartSpriteProvider partSprites = new TinkerPartSpriteProvider();
-    generator.addProvider(client, new MaterialRenderInfoProvider(packOutput, materialSprites, existingFileHelper));
-    generator.addProvider(client, new GeneratorPartTextureJsonGenerator(packOutput, TConstruct.MOD_ID, partSprites));
-    generator.addProvider(client, new MaterialPartTextureGenerator(packOutput, existingFileHelper, partSprites, materialSprites));
-    generator.addProvider(client, new MaterialPaletteDebugGenerator(packOutput, TConstruct.MOD_ID, materialSprites));
-    generator.addProvider(client, new ArmorModelProvider(packOutput));
-    generator.addProvider(client, new TinkerTrimMaterialPaletteGenerator(packOutput, existingFileHelper, materialSprites));
-    generator.addProvider(client, new ModifierModelMapProvider(packOutput));
   }
 
   /** Adds all relevant items to the creative tab */

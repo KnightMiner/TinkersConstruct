@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -24,9 +26,18 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.joml.Matrix4f;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.common.data.model.ModelSpriteProvider;
+import slimeknights.tconstruct.common.data.model.SimpleBlockStateProvider;
+import slimeknights.tconstruct.common.data.model.TinkerBlockStateProvider;
+import slimeknights.tconstruct.common.data.model.TinkerItemModelProvider;
+import slimeknights.tconstruct.common.data.model.TinkerSpriteSourceProvider;
+import slimeknights.tconstruct.common.data.render.RenderFluidProvider;
+import slimeknights.tconstruct.common.data.render.RenderItemProvider;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.library.client.armor.texture.ArmorTextureSupplier;
 import slimeknights.tconstruct.library.client.armor.texture.DyedArmorTextureSupplier;
@@ -73,7 +84,7 @@ public class TinkerClient {
     TinkerBook.initBook();
     // needs to register listeners early enough for minecraft to load
     ModifierIconManager.init(modEventBus);
-    MaterialRenderInfoLoader.init();
+    MaterialRenderInfoLoader.init(modEventBus);
 
     // add the recipe cache invalidator to the client
     NeoForge.EVENT_BUS.addListener(RecipesUpdatedEvent.class, event -> RecipeCacheInvalidator.reload(true));
@@ -114,6 +125,22 @@ public class TinkerClient {
     ModifierModel.LOADER.register(getResource("material_has_fallback"), MaterialHasFallbackModifierModel.LOADER);
     // specialized
     ModifierModel.LOADER.register(getResource("slimeskull"), SlimeskullModifierModel.LOADER);
+  }
+
+
+  @SubscribeEvent
+  static void gatherData(final GatherDataEvent event) {
+    DataGenerator generator = event.getGenerator();
+    PackOutput output = generator.getPackOutput();
+    ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+    boolean client = event.includeClient();
+    generator.addProvider(client, new ModelSpriteProvider(output, existingFileHelper));
+    generator.addProvider(client, new TinkerSpriteSourceProvider(output, event.getLookupProvider(), existingFileHelper));
+    generator.addProvider(client, new TinkerItemModelProvider(output, existingFileHelper));
+    generator.addProvider(client, new TinkerBlockStateProvider(output, existingFileHelper));
+    generator.addProvider(client, new RenderFluidProvider(output));
+    generator.addProvider(client, new RenderItemProvider(output));
+    generator.addProvider(client, new SimpleBlockStateProvider(output));
   }
 
   @SubscribeEvent

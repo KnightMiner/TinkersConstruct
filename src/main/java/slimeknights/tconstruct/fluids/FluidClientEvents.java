@@ -2,22 +2,30 @@ package slimeknights.tconstruct.fluids;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import slimeknights.mantle.data.client.FluidBlockstateModelProvider;
+import slimeknights.mantle.data.client.FluidBucketModelProvider;
 import slimeknights.mantle.fluid.InvertedFluid;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.ClientInvertedFluidType;
 import slimeknights.mantle.fluid.texture.ClientTextureFluidType;
+import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
 import slimeknights.tconstruct.fluids.client.FluidEffectProjectileRenderer;
+import slimeknights.tconstruct.fluids.data.FluidTextureProvider;
+import slimeknights.tconstruct.fluids.data.FluidTooltipProvider;
 
 @EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class FluidClientEvents extends ClientEventBase {
@@ -45,6 +53,20 @@ public class FluidClientEvents extends ClientEventBase {
   @SubscribeEvent
   static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
     event.registerEntityRenderer(TinkerFluids.fluidProjectile.get(), FluidEffectProjectileRenderer::new);
+  }
+
+  @SubscribeEvent
+  static void gatherData(final GatherDataEvent event) {
+    DataGenerator generator = event.getGenerator();
+    PackOutput packOutput = generator.getPackOutput();
+
+    boolean client = event.includeClient();
+    generator.addProvider(client, new FluidTooltipProvider(packOutput));
+    FluidTextureProvider textureProvider = new FluidTextureProvider(packOutput);
+    generator.addProvider(client, textureProvider);
+    generator.addProvider(client, new FluidTextureCameraProvider(packOutput, event.getExistingFileHelper(), textureProvider));
+    generator.addProvider(client, new FluidBucketModelProvider(packOutput, TConstruct.MOD_ID));
+    generator.addProvider(client, new FluidBlockstateModelProvider(packOutput, TConstruct.MOD_ID));
   }
 
   /** Registers the texture extension for the given fluid */

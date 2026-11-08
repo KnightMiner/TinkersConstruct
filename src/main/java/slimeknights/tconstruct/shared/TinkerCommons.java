@@ -25,7 +25,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -42,13 +41,6 @@ import slimeknights.mantle.item.EdibleItem;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
-import slimeknights.tconstruct.common.data.model.ModelSpriteProvider;
-import slimeknights.tconstruct.common.data.model.SimpleBlockStateProvider;
-import slimeknights.tconstruct.common.data.model.TinkerBlockStateProvider;
-import slimeknights.tconstruct.common.data.model.TinkerItemModelProvider;
-import slimeknights.tconstruct.common.data.model.TinkerSpriteSourceProvider;
-import slimeknights.tconstruct.common.data.render.RenderFluidProvider;
-import slimeknights.tconstruct.common.data.render.RenderItemProvider;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.json.predicate.BlockVariableRangePredicate;
@@ -190,15 +182,6 @@ public final class TinkerCommons extends TinkerModule {
   void gatherData(final GatherDataEvent event) {
     DataGenerator generator = event.getGenerator();
     PackOutput output = generator.getPackOutput();
-    ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-    boolean client = event.includeClient();
-    generator.addProvider(client, new ModelSpriteProvider(output, existingFileHelper));
-    generator.addProvider(client, new TinkerSpriteSourceProvider(output, event.getLookupProvider(), existingFileHelper));
-    generator.addProvider(client, new TinkerItemModelProvider(output, existingFileHelper));
-    generator.addProvider(client, new TinkerBlockStateProvider(output, existingFileHelper));
-    generator.addProvider(client, new RenderFluidProvider(output));
-    generator.addProvider(client, new RenderItemProvider(output));
-    generator.addProvider(client, new SimpleBlockStateProvider(output));
     generator.addProvider(event.includeServer(), new CommonRecipeProvider(output));
   }
 

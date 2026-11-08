@@ -45,12 +45,9 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.client.FluidBlockstateModelProvider;
-import slimeknights.mantle.data.client.FluidBucketModelProvider;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.InvertedFluid;
 import slimeknights.mantle.fluid.MantleFluids;
-import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
 import slimeknights.mantle.item.ConstantFluidHandlerItem;
 import slimeknights.mantle.item.EdibleItem;
 import slimeknights.mantle.registration.holder.DeferredEntity;
@@ -61,8 +58,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.registration.FluidDeferredRegisterExtension;
 import slimeknights.tconstruct.fluids.data.FluidEffectProvider;
-import slimeknights.tconstruct.fluids.data.FluidTextureProvider;
-import slimeknights.tconstruct.fluids.data.FluidTooltipProvider;
 import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.fluids.fluids.SlimeFluid;
 import slimeknights.tconstruct.fluids.item.BottleItem;
@@ -284,13 +279,6 @@ public final class TinkerFluids extends TinkerModule {
     DataGenerator generator = event.getGenerator();
     PackOutput packOutput = generator.getPackOutput();
     generator.addProvider(event.includeServer(), new FluidEffectProvider(packOutput, event.getLookupProvider()));
-    boolean client = event.includeClient();
-    generator.addProvider(client, new FluidTooltipProvider(packOutput));
-    FluidTextureProvider textureProvider = new FluidTextureProvider(packOutput);
-    generator.addProvider(client, textureProvider);
-    generator.addProvider(client, new FluidTextureCameraProvider(packOutput, event.getExistingFileHelper(), textureProvider));
-    generator.addProvider(client, new FluidBucketModelProvider(packOutput, TConstruct.MOD_ID));
-    generator.addProvider(client, new FluidBlockstateModelProvider(packOutput, TConstruct.MOD_ID));
   }
 
   @SubscribeEvent
