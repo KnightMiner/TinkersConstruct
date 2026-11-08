@@ -29,7 +29,6 @@ public class SlimeNyliumBlock extends Block implements BonemealableBlock {
     return i < reader.getMaxLightLevel();
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource random) {
     if (!isDarkEnough(state, worldIn, pos)) {
@@ -38,7 +37,7 @@ public class SlimeNyliumBlock extends Block implements BonemealableBlock {
   }
 
   @Override
-  public boolean isValidBonemealTarget(LevelReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
+  public boolean isValidBonemealTarget(LevelReader worldIn, BlockPos pos, BlockState state) {
     return worldIn.getBlockState(pos.above()).isAir();
   }
 

@@ -1,28 +1,44 @@
 package slimeknights.tconstruct.world.worldgen.trees;
 
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.world.TinkerStructures;
 import slimeknights.tconstruct.world.block.FoliageType;
 
-public class SlimeTree extends AbstractTreeGrower {
+import java.util.Optional;
 
-  private final FoliageType foliageType;
+/** {@link TreeGrower} instances for all slimy saplings. */
+public class SlimeTree {
+  public static final TreeGrower GREENHEART = tree("greenheart", TinkerStructures.earthSlimeTree);
+  public static final TreeGrower SKYROOT = tree("skyroot", TinkerStructures.skySlimeTree);
+  public static final TreeGrower BLOODSHROOM = tree("bloodshroom", TinkerStructures.bloodSlimeFungus);
+  public static final TreeGrower ICHOR = tree("ichor", TinkerStructures.ichorSlimeFungus);
+  public static final TreeGrower ENDERBARK = new TreeGrower(
+    TConstruct.resourceString("enderbark"), 0.85f,
+    Optional.empty(), Optional.empty(),
+    Optional.of(TinkerStructures.enderSlimeTree),
+    Optional.of(TinkerStructures.enderSlimeTreeTall),
+    Optional.empty(), Optional.empty()
+  );
 
-  public SlimeTree(FoliageType foliageType) {
-    this.foliageType = foliageType;
+  private SlimeTree() {}
+
+  /** Gets the tree for the given foliage type */
+  public static TreeGrower getTree(FoliageType type) {
+    return switch (type) {
+      case EARTH -> GREENHEART;
+      case SKY -> SKYROOT;
+      case ICHOR -> ICHOR;
+      case BLOOD -> BLOODSHROOM;
+      case ENDER -> ENDERBARK;
+    };
   }
 
-  @Override
-  protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean largeHive) {
-    return switch (this.foliageType) {
-      case EARTH -> TinkerStructures.earthSlimeTree;
-      case SKY -> TinkerStructures.skySlimeTree;
-      case ENDER -> random.nextFloat() < 0.85f ? TinkerStructures.enderSlimeTreeTall : TinkerStructures.enderSlimeTree;
-      case BLOOD -> TinkerStructures.bloodSlimeFungus;
-      case ICHOR -> TinkerStructures.ichorSlimeFungus;
-    };
+
+  /** Creates a standard tinkers tree, with no flowers or mega tree */
+  private static TreeGrower tree(String name, ResourceKey<ConfiguredFeature<?,?>> tree) {
+    return new TreeGrower(TConstruct.resourceString(name), Optional.empty(), Optional.of(tree), Optional.empty());
   }
 }

@@ -1,40 +1,20 @@
 package slimeknights.tconstruct.world.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.PlantType;
-import slimeknights.tconstruct.world.TinkerWorld;
+import slimeknights.tconstruct.common.TinkerTags;
 
-import javax.annotation.Nonnull;
-
+/** Sapling that may only be placed on slimy dirt or slimy grass. */
 public class SlimeSaplingBlock extends SaplingBlock {
-  private final FoliageType foliageType;
-  public SlimeSaplingBlock(AbstractTreeGrower treeIn, FoliageType foliageType, Properties properties) {
-    super(treeIn, properties);
-    this.foliageType = foliageType;
+  public SlimeSaplingBlock(TreeGrower tree, Properties properties) {
+    super(tree, properties);
   }
 
   @Override
   protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-    Block block = state.getBlock();
-    return TinkerWorld.slimeDirt.contains(block) || TinkerWorld.vanillaSlimeGrass.contains(block) || TinkerWorld.earthSlimeGrass.contains(block) || TinkerWorld.skySlimeGrass.contains(block) || TinkerWorld.enderSlimeGrass.contains(block) || TinkerWorld.ichorSlimeGrass.contains(block);
-  }
-
-  @Nonnull
-  @Override
-  public PlantType getPlantType(BlockGetter world, BlockPos pos) {
-    return TinkerWorld.SLIME_PLANT_TYPE;
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override
-  @Deprecated
-  public boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
-    return false;
+    return state.is(TinkerTags.Blocks.SLIMY_SOIL);
   }
 }

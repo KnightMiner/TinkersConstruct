@@ -280,6 +280,10 @@ public class BlockTagProvider extends BlockTagsProvider {
     tagBlocks(BlockTags.REPLACEABLE, TinkerWorld.slimeTallGrass, TinkerWorld.slimeFern);
     tagBlocks(BlockTags.REPLACEABLE_BY_TREES, TinkerWorld.slimeTallGrass, TinkerWorld.slimeFern);
     tagBlocks(BlockTags.AZALEA_ROOT_REPLACEABLE, TinkerWorld.slimeTallGrass, TinkerWorld.slimeFern);
+    // make vanilla slime grass valid to support dirt plants
+    // TODO: do we want to reintroduce slime dirt doing that?
+    IntrinsicTagAppender<Block> dirt = this.tag(BlockTags.DIRT);
+    TinkerWorld.vanillaSlimeGrass.forEach(block -> dirt.add(block));
 
     Consumer<Block> flowerPotAppender = this.tag(BlockTags.FLOWER_POTS)::add;
     TinkerWorld.pottedSlimeFern.forEach(flowerPotAppender);
