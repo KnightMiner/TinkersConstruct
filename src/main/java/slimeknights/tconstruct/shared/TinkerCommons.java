@@ -43,6 +43,7 @@ import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.common.data.model.ModelSpriteProvider;
+import slimeknights.tconstruct.common.data.model.SimpleBlockStateProvider;
 import slimeknights.tconstruct.common.data.model.TinkerBlockStateProvider;
 import slimeknights.tconstruct.common.data.model.TinkerItemModelProvider;
 import slimeknights.tconstruct.common.data.model.TinkerSpriteSourceProvider;
@@ -197,6 +198,7 @@ public final class TinkerCommons extends TinkerModule {
     generator.addProvider(client, new TinkerBlockStateProvider(output, existingFileHelper));
     generator.addProvider(client, new RenderFluidProvider(output));
     generator.addProvider(client, new RenderItemProvider(output));
+    generator.addProvider(client, new SimpleBlockStateProvider(output));
     generator.addProvider(event.includeServer(), new CommonRecipeProvider(output));
   }
 
