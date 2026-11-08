@@ -65,6 +65,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay {
+  /** Gets all armor types worn by players. */
+  public static final Type[] STANDARD_ARMOR = {Type.HELMET, Type.CHESTPLATE, Type.LEGGINGS, Type.BOOTS};
   /** Volatile modifier tag to make piglins neutal when worn */
   public static final ResourceLocation PIGLIN_NEUTRAL = TConstruct.getResource("piglin_neutral");
   /** Volatile modifier tag to make this item an elytra */

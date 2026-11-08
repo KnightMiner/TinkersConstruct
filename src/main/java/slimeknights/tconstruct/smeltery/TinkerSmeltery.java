@@ -42,6 +42,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.object.CastItemObject;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.recipe.FluidValues;
+import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.ClearGlassPaneBlock;
@@ -373,7 +374,7 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final CastItemObject bootsPlatingCast = ITEMS.registerCast("boots_plating", () -> new PartCastItem(ITEM_PROPS, () -> TinkerToolParts.plating.get(ArmorItem.Type.BOOTS)));
   public static final CastItemObject mailleCast = ITEMS.registerCast(TinkerToolParts.maille, ITEM_PROPS);
   // dummy cast creation items
-  public static final EnumObject<ArmorItem.Type,Item> dummyPlating = ITEMS.registerEnum(ArmorItem.Type.values(), "plating_dummy", type -> new DummyMaterialItem(ITEM_PROPS));
+  public static final EnumObject<ArmorItem.Type,Item> dummyPlating = ITEMS.registerEnum(ModifiableArmorItem.STANDARD_ARMOR, "plating_dummy", type -> new DummyMaterialItem(ITEM_PROPS));
 
 
   /*
