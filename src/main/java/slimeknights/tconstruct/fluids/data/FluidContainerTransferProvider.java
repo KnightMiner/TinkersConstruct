@@ -1,30 +1,36 @@
-package slimeknights.tconstruct.smeltery.data;
+package slimeknights.tconstruct.fluids.data;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.crafting.conditions.ItemExistsCondition;
+import net.neoforged.neoforge.common.conditions.ItemExistsCondition;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.fluid.transfer.AbstractFluidContainerTransferProvider;
 import slimeknights.mantle.fluid.transfer.EmptyFluidContainerTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
-import slimeknights.mantle.recipe.data.ItemNameIngredient;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.common.data.FakeRegistryEntry;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.shared.block.SlimeType;
 
+import java.util.concurrent.CompletableFuture;
+
+/** Handles fluid transfer added by tinkers */
+@Internal
 public class FluidContainerTransferProvider extends AbstractFluidContainerTransferProvider {
-  public FluidContainerTransferProvider(PackOutput packOutput) {
-    super(packOutput, TConstruct.MOD_ID);
+  public FluidContainerTransferProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
+    super(packOutput, TConstruct.MOD_ID, registries);
   }
 
   @Override
-  protected void addTransfers() {
+  protected void addTransfers(HolderLookup.Provider registries) {
     addFillEmpty("meat_soup_", TinkerFluids.meatSoupBowl, Items.BOWL, TinkerFluids.meatSoup, FluidValues.BOWL, false);
     // these bottles are fluid handlers, but glass bottles are not
     addBottleFill("venom_bottle_fill", TinkerFluids.venomBottle, TinkerFluids.venom);
@@ -47,10 +53,9 @@ public class FluidContainerTransferProvider extends AbstractFluidContainerTransf
   }
 
   /** Adds a recipe to empty an item, returning no container */
-  @SuppressWarnings("removal")
   protected void addContainerlessEmpty(String name, String domain, FluidOutput fluid) {
-    ResourceLocation id = new ResourceLocation(domain, name);
-    addTransfer(domain + '_' + name, new EmptyFluidContainerTransfer(ItemNameIngredient.from(id), ItemOutput.EMPTY, fluid), new ItemExistsCondition(id));
+    ResourceLocation id = ResourceLocation.fromNamespaceAndPath(domain, name);
+    addTransfer(domain + '_' + name, new EmptyFluidContainerTransfer(Ingredient.of(FakeRegistryEntry.item(id)), ItemOutput.EMPTY, fluid), new ItemExistsCondition(id));
   }
 
   @Override

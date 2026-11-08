@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.fluids;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.data.DataGenerator;
@@ -57,6 +58,7 @@ import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.registration.FluidDeferredRegisterExtension;
+import slimeknights.tconstruct.fluids.data.FluidContainerTransferProvider;
 import slimeknights.tconstruct.fluids.data.FluidEffectProvider;
 import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.fluids.fluids.SlimeFluid;
@@ -78,6 +80,7 @@ import slimeknights.tconstruct.world.TinkerWorld;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static slimeknights.mantle.Mantle.commonResource;
 import static slimeknights.mantle.block.fluid.BurningLiquidBlock.createBurning;
@@ -278,7 +281,10 @@ public final class TinkerFluids extends TinkerModule {
   void gatherData(final GatherDataEvent event) {
     DataGenerator generator = event.getGenerator();
     PackOutput packOutput = generator.getPackOutput();
-    generator.addProvider(event.includeServer(), new FluidEffectProvider(packOutput, event.getLookupProvider()));
+    CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+    boolean server = event.includeServer();
+    generator.addProvider(server, new FluidContainerTransferProvider(packOutput, lookupProvider));
+    generator.addProvider(server, new FluidEffectProvider(packOutput, lookupProvider));
   }
 
   @SubscribeEvent
