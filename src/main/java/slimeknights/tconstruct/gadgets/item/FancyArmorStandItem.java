@@ -1,9 +1,7 @@
 package slimeknights.tconstruct.gadgets.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,9 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -26,22 +22,16 @@ import net.minecraft.world.phys.Vec3;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.gadgets.entity.FancyArmorStandEntity;
 import slimeknights.tconstruct.gadgets.entity.FancyArmorStandEntity.StandType;
+import slimeknights.tconstruct.shared.item.SelfTooltipItem;
 
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Consumer;
 
 /** Item to place {@link FancyArmorStandEntity} */
-public class FancyArmorStandItem extends Item {
+public class FancyArmorStandItem extends SelfTooltipItem {
   private final StandType type;
   public FancyArmorStandItem(Properties pProperties, StandType type) {
     super(pProperties);
     this.type = type;
-  }
-
-  @Override
-  public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-    tooltip.add(Component.translatable(getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
   }
 
   /** Based on {@link net.minecraft.world.item.ArmorStandItem#useOn(UseOnContext)} */
@@ -64,7 +54,7 @@ public class FancyArmorStandItem extends Item {
     if (level instanceof ServerLevel server) {
       Player player = context.getPlayer();
       Consumer<FancyArmorStandEntity> consumer = EntityType.createDefaultStackConfig(server, stack, player);
-      FancyArmorStandEntity stand = TinkerGadgets.armorStandEntity.get().create(server, stack.getTag(), consumer, pos, MobSpawnType.SPAWN_EGG, true, true);
+      FancyArmorStandEntity stand = TinkerGadgets.armorStandEntity.get().create(server, consumer, pos, MobSpawnType.SPAWN_EGG, true, true);
       if (stand == null) {
         return InteractionResult.FAIL;
       }

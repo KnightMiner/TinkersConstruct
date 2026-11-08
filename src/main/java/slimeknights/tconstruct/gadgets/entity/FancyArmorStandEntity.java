@@ -1,11 +1,13 @@
 package slimeknights.tconstruct.gadgets.entity;
 
 import lombok.Getter;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -34,10 +36,10 @@ public class FancyArmorStandEntity extends ArmorStand {
   /* Data */
 
   @Override
-  protected void defineSynchedData() {
-    super.defineSynchedData();
-    this.entityData.define(VARIANT, 0);
-    this.entityData.define(LEFT_HANDED, false);
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(VARIANT, 0);
+    builder.define(LEFT_HANDED, false);
   }
 
   @Override
@@ -140,14 +142,11 @@ public class FancyArmorStandEntity extends ArmorStand {
   }
 
   @Override
-  protected void brokenByPlayer(DamageSource source) {
+  protected void brokenByPlayer(ServerLevel level, DamageSource source) {
     ItemStack stack = new ItemStack(getStandItem());
-    if (this.hasCustomName()) {
-      stack.setHoverName(this.getCustomName());
-    }
+    stack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
     Block.popResource(this.level(), this.blockPosition(), stack);
-
-    this.brokenByAnything(source);
+    this.brokenByAnything(level, source);
   }
 
 

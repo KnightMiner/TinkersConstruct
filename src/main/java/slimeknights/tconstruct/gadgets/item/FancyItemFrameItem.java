@@ -1,36 +1,26 @@
 package slimeknights.tconstruct.gadgets.item;
 
-import net.minecraft.ChatFormatting;
+import com.mojang.datafixers.util.Function3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import slimeknights.tconstruct.shared.item.SelfTooltipItem;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
-public class FancyItemFrameItem extends Item {
-
-  private final TriFunction<? extends HangingEntity, Level, BlockPos, Direction> entityProvider;
-
-  public FancyItemFrameItem(Properties props, TriFunction<? extends HangingEntity, Level, BlockPos, Direction> entityProvider) {
+public class FancyItemFrameItem extends SelfTooltipItem {
+  private final Function3<Level, BlockPos, Direction, ? extends HangingEntity> entityProvider;
+  public FancyItemFrameItem(Properties props, Function3<Level, BlockPos, Direction, ? extends HangingEntity> entityProvider) {
     super(props);
     this.entityProvider = entityProvider;
-  }
-
-  @Override
-  public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-    tooltip.add(Component.translatable(getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
   }
 
   @Override
@@ -47,9 +37,9 @@ public class FancyItemFrameItem extends Item {
 
     Level world = context.getLevel();
     HangingEntity frame = this.entityProvider.apply(world, placeLocation, facing);
-    CompoundTag tag = stack.getTag();
-    if (tag != null) {
-      EntityType.updateCustomEntityTag(world, player, frame, tag);
+    CustomData customData = stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
+    if (!customData.isEmpty()) {
+      EntityType.updateCustomEntityTag(world, player, frame, customData);
     }
 
     if (frame.survives()) {
@@ -65,10 +55,5 @@ public class FancyItemFrameItem extends Item {
 
   private boolean canPlace(Player player, Direction facing, ItemStack stack, BlockPos pos) {
     return !player.level().isOutsideBuildHeight(pos) && player.mayUseItemAt(pos, facing, stack);
-  }
-
-  @FunctionalInterface
-  public interface TriFunction<R, T, U, V> {
-    R apply(T t, U u, V v);
   }
 }

@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -31,9 +31,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class PunjiBlock extends Block {
-
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
-
   private static final BooleanProperty NORTH = BlockStateProperties.NORTH;
   private static final BooleanProperty EAST = BlockStateProperties.EAST;
   private static final BooleanProperty NORTHEAST = BooleanProperty.create("northeast");
@@ -53,12 +51,10 @@ public class PunjiBlock extends Block {
 
   @Nullable
   @Override
-  public BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-    return BlockPathTypes.DAMAGE_OTHER;
+  public PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    return PathType.DAMAGE_OTHER;
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
   public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
     if (state.getValue(WATERLOGGED)) {
@@ -91,6 +87,7 @@ public class PunjiBlock extends Block {
     builder.add(FACING, NORTH, EAST, NORTHEAST, NORTHWEST, WATERLOGGED);
   }
 
+  @Nullable
   @Override
   public BlockState getStateForPlacement(BlockPlaceContext context) {
     Direction direction = context.getClickedFace().getOpposite();
@@ -164,8 +161,6 @@ public class PunjiBlock extends Block {
     return facing.getClockWise();
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
   public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
     Direction direction = state.getValue(FACING);
@@ -173,7 +168,6 @@ public class PunjiBlock extends Block {
     return world.getBlockState(target).isFaceSturdy(world, target, direction.getOpposite());
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   @Deprecated
   public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
@@ -211,15 +205,11 @@ public class PunjiBlock extends Block {
     BOUNDS.put(Direction.WEST, Shapes.box(0, 0.1875, 0.1875, 0.375, 0.8125, 0.8125));
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return BOUNDS.get(state.getValue(FACING));
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
     return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);

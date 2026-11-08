@@ -22,15 +22,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import slimeknights.mantle.item.tooltip.TooltipItem;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.TinkerEffects;
+import slimeknights.tconstruct.shared.item.SelfTooltipItem;
 
 import java.util.function.Consumer;
 
-public class PiggyBackPackItem extends TooltipItem {
+public class PiggyBackPackItem extends SelfTooltipItem {
   private static final int MAX_ENTITY_STACK = 3; // how many entities can be carried at once
   public PiggyBackPackItem(Properties props) {
     super(props);
