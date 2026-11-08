@@ -26,6 +26,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.common.data.ConfigurationDataProvider;
 import slimeknights.tconstruct.common.data.DamageTypeProvider;
+import slimeknights.tconstruct.common.data.TinkerDataMapProvider;
 import slimeknights.tconstruct.common.data.advancement.AdvancementsProvider;
 import slimeknights.tconstruct.common.data.advancement.FunctionProvider;
 import slimeknights.tconstruct.common.data.loot.GlobalLootModifiersProvider;
@@ -196,6 +197,7 @@ public class TConstruct {
     generator.addProvider(server, new LootTableInjectionProvider(packOutput, lookupProvider));
     generator.addProvider(server, new ConfigurationDataProvider(packOutput));
     generator.addProvider(server, new FunctionProvider(packOutput));
+    generator.addProvider(server, new TinkerDataMapProvider(packOutput, lookupProvider));
   }
 
   /* FIXME: move to aliases on the deferred register

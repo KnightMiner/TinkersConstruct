@@ -26,7 +26,6 @@ import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -354,17 +353,7 @@ public final class TinkerWorld extends TinkerModule {
 
   @SubscribeEvent
   void commonSetup(final FMLCommonSetupEvent event) {
-    // compostables
     event.enqueueWork(() -> {
-      slimeLeaves.forEach((type, block) -> ComposterBlock.add(type.isNether() ? 0.85f : 0.35f, block));
-      slimeSapling.forEach(block -> ComposterBlock.add(0.35f, block));
-      slimeTallGrass.forEach(block -> ComposterBlock.add(0.35f, block));
-      slimeFern.forEach(block -> ComposterBlock.add(0.65f, block));
-      slimeGrassSeeds.forEach(block -> ComposterBlock.add(0.35F, block));
-      ComposterBlock.add(0.5f, skySlimeVine);
-      ComposterBlock.add(0.5f, enderSlimeVine);
-      ComposterBlock.add(0.4f, enderbarkRoots);
-
       // head equipping
       DispenseItemBehavior dispenseArmor = new OptionalDispenseItemBehavior() {
         @Override
@@ -376,9 +365,6 @@ public final class TinkerWorld extends TinkerModule {
       TinkerWorld.heads.forEach(head -> DispenserBlock.registerBehavior(head, dispenseArmor));
       // heads in firework stars
       TinkerWorld.heads.forEach(head -> FireworkStarRecipe.SHAPE_BY_ITEM.put(head.asItem(), FireworkExplosion.Shape.CREEPER));
-      // inject heads into the tile entity type
-      event.enqueueWork(() -> {
-      });
     });
 
     // flammability
