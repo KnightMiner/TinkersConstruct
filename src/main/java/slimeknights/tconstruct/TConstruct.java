@@ -24,9 +24,9 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
-import slimeknights.tconstruct.common.data.AdvancementsProvider;
 import slimeknights.tconstruct.common.data.ConfigurationDataProvider;
 import slimeknights.tconstruct.common.data.DamageTypeProvider;
+import slimeknights.tconstruct.common.data.advancement.AdvancementsProvider;
 import slimeknights.tconstruct.common.data.advancement.FunctionProvider;
 import slimeknights.tconstruct.common.data.loot.GlobalLootModifiersProvider;
 import slimeknights.tconstruct.common.data.loot.LootTableInjectionProvider;
@@ -50,6 +50,7 @@ import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.TinkerItemDisplays;
+import slimeknights.tconstruct.library.advancement.TinkerAdvancements;
 import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -108,6 +109,7 @@ public class TConstruct {
     TinkerAttributes.init(modEventBus);
     TinkerData.register(modEventBus);
     TinkerLoot.init(modEventBus);
+    TinkerAdvancements.register(modEventBus);
     TinkerEffects.register(modEventBus);
     TinkerRecipes.init(modEventBus);
     TinkerCreativeTabs.register(modEventBus);
@@ -189,7 +191,7 @@ public class TConstruct {
 
     // other datagen
     generator.addProvider(server, new TConstructLootTableProvider(packOutput));
-    generator.addProvider(server, new AdvancementsProvider(packOutput));
+    generator.addProvider(server, new AdvancementsProvider(packOutput, lookupProvider));
     generator.addProvider(server, new GlobalLootModifiersProvider(packOutput, lookupProvider));
     generator.addProvider(server, new LootTableInjectionProvider(packOutput, lookupProvider));
     generator.addProvider(server, new ConfigurationDataProvider(packOutput));
