@@ -1647,15 +1647,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "能让你跳得更高，位于末地时生成末影史莱姆",
 
   "item.tconstruct.earth_slime_grass_seeds": "大地黏液种子",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "种植在泥土或黏液泥土上来制造黏液草方块",
   "item.tconstruct.sky_slime_grass_seeds": "碧空黏液种子",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "种植在泥土或黏液泥土上来制造黏液草方块，或种植在藤蔓上获取黏液藤蔓",
   "item.tconstruct.blood_slime_grass_seeds": "黏血种子",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "种植在泥土或黏液泥土上来制造黏液菌岩",
   "item.tconstruct.ichor_slime_grass_seeds": "灵浆种子",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "种植在泥土或黏液泥土上来制造黏液菌岩",
   "item.tconstruct.ender_slime_grass_seeds": "末影黏液种子",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "种植在泥土或黏液泥土上来制造黏液草方块，或种植在藤蔓上获取黏液藤蔓",
+  "item.tconstruct.slime_grass_seeds.no_vines": "种植在泥土或黏液泥土上来制造黏液草方块",
+  "item.tconstruct.slime_grass_seeds.vines": "种植在泥土或黏液泥土上来制造黏液草方块，或种植在藤蔓上获取黏液藤蔓",
+  "item.tconstruct.slime_grass_seeds.nether": "种植在泥土或黏液泥土上来制造黏液菌岩",
 
   "block.tconstruct.earth_slime_leaves": "大地黏液树叶",
   "block.tconstruct.sky_slime_leaves": "碧空黏液树叶",

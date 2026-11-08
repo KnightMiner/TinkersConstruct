@@ -1457,15 +1457,13 @@
 "block.tconstruct.ender_ender_slime_grass.tooltip": "Permite que você pule mais alto e gera slimes-ender no End",
 
 "item.tconstruct.earth_slime_grass_seeds": "Sementes de Slime-da-Terra",
-"item.tconstruct.earth_slime_grass_seeds.tooltip": "Plante em terra ou terra escorregadia para fazer grama escorregadia",
 "item.tconstruct.sky_slime_grass_seeds": "Sementes de Slime-do-Céu",
-"item.tconstruct.sky_slime_grass_seeds.tooltip": "Plante em terra ou terra escorregadia para fazer grama escorregadia, ou em trepadeiras para obter trepadeiras escorregadias",
 "item.tconstruct.blood_slime_grass_seeds": "Sementes Sangrentas",
-"item.tconstruct.blood_slime_grass_seeds.tooltip": "Plante em terra ou terra escorregadia para fazer nílio escorregadio",
 "item.tconstruct.ichor_slime_grass_seeds": "Sementes de Icor",
-"item.tconstruct.ichor_slime_grass_seeds.tooltip": "Plante em terra ou terra escorregadia para fazer nílio escorregadio",
 "item.tconstruct.ender_slime_grass_seeds": "Sementes de Slime-do-Ender",
-"item.tconstruct.ender_slime_grass_seeds.tooltip": "Plante em terra ou terra escorregadia para fazer grama escorregadia, ou em trepadeiras para obter trepadeiras escorregadias",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Plante em terra ou terra escorregadia para fazer grama escorregadia",
+  "item.tconstruct.slime_grass_seeds.vines": "Plante em terra ou terra escorregadia para fazer grama escorregadia, ou em trepadeiras para obter trepadeiras escorregadias",
+  "item.tconstruct.slime_grass_seeds.nether": "Plante em terra ou terra escorregadia para fazer nílio escorregadio",
 
 "block.tconstruct.earth_slime_leaves": "Folhas Escorregadias",
 "block.tconstruct.sky_slime_leaves": "Folhas Escorregadias",

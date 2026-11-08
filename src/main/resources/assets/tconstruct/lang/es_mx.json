@@ -1576,15 +1576,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Te permite saltar más alto y genera enderslimes en el End",
 
   "item.tconstruct.earth_slime_grass_seeds": "Semillas de slime de tierra",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Plántalas en tierra o tierra babosa para crear pasto baboso",
   "item.tconstruct.sky_slime_grass_seeds": "Semillas de slime celeste",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Plántalas en tierra o tierra babosa para crear pasto baboso, o en lianas para obtener lianas babosas",
   "item.tconstruct.blood_slime_grass_seeds": "Semillas sangrientas",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Plántalas en tierra o tierra babosa para crear nylium baboso",
   "item.tconstruct.ichor_slime_grass_seeds": "Semillas de ícor",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Plántalas en tierra o tierra babosa para crear nylium baboso",
   "item.tconstruct.ender_slime_grass_seeds": "Semillas de enderslime",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Plántalas en tierra o tierra babosa para crear pasto baboso, o en lianas para obtener lianas babosas",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Plántalas en tierra o tierra babosa para crear pasto baboso",
+  "item.tconstruct.slime_grass_seeds.vines": "Plántalas en tierra o tierra babosa para crear pasto baboso, o en lianas para obtener lianas babosas",
+  "item.tconstruct.slime_grass_seeds.nether": "Plántalas en tierra o tierra babosa para crear nylium baboso",
 
   "block.tconstruct.earth_slime_leaves": "Hojas babosas",
   "block.tconstruct.sky_slime_leaves": "Hojas babosas",

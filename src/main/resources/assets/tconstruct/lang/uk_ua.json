@@ -1630,15 +1630,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Дає вам змогу вище стрибати та породжує ендерслимаків в Енді",
 
   "item.tconstruct.earth_slime_grass_seeds": "Слизувате насіння",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизувату траву",
   "item.tconstruct.sky_slime_grass_seeds": "Слизувате насіння",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизувату траву, або на лозу для слизуватої лози",
   "item.tconstruct.blood_slime_grass_seeds": "Слизувате насіння",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизуватий нілій",
   "item.tconstruct.ichor_slime_grass_seeds": "Слизувате насіння",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизуватий нілій",
   "item.tconstruct.ender_slime_grass_seeds": "Слизувате насіння",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизувату траву, або на лозу для слизуватої лози",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизувату траву",
+  "item.tconstruct.slime_grass_seeds.vines": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизувату траву, або на лозу для слизуватої лози",
+  "item.tconstruct.slime_grass_seeds.nether": "Посадіть на ґрунт чи слизуватий ґрунт, щоб створити слизуватий нілій",
 
   "block.tconstruct.earth_slime_leaves": "Слизувате листя",
   "block.tconstruct.sky_slime_leaves": "Слизувате листя",

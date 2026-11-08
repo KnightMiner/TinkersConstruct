@@ -976,15 +976,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Pozwala na wyższe skoki i przyzywa enderowe szlamy w Endzie",
 
   "item.tconstruct.earth_slime_grass_seeds": "Blok enderowej szlamistej trawy",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć blok szlamistej trawy",
   "item.tconstruct.sky_slime_grass_seeds": "Nasiona podniebnej szlamistej trawy",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć blok szlamistej trawy",
   "item.tconstruct.blood_slime_grass_seeds": "Nasiona krwawego szlamistego nylium",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć szlamiste nylium",
   "item.tconstruct.ichor_slime_grass_seeds": "Nasiona ichorowego szlamistego nylium",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć szlamiste nylium",
   "item.tconstruct.ender_slime_grass_seeds": "Nasiona enderowej szlamistej trawy",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć blok szlamistej trawy",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć blok szlamistej trawy",
+  "item.tconstruct.slime_grass_seeds.vines": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć blok szlamistej trawy",
+  "item.tconstruct.slime_grass_seeds.nether": "Posadź na ziemi lub szlamistej ziemi aby wytworzyć szlamiste nylium",
 
   "block.tconstruct.earth_slime_leaves": "Szlamiste liście",
   "block.tconstruct.sky_slime_leaves": "Podniebne szlamiste liście",

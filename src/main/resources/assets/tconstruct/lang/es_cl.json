@@ -1580,15 +1580,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Te deja saltar más alto y genera Slimes Ender en el end",
 
   "item.tconstruct.earth_slime_grass_seeds": "Semillas de Slime Terrestre",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Planta en tierra o tierra slime para hacer pasto slime",
   "item.tconstruct.sky_slime_grass_seeds": "Semillas de Slime Celestial",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Planta en tierra o tierra slime para hacer pasto slime, o en enredaderas para conseguir enredaderas slime",
   "item.tconstruct.blood_slime_grass_seeds": "Semillas Sangrientas",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Planta en tierra o tierra slime para hacer nicelio slime",
   "item.tconstruct.ichor_slime_grass_seeds": "Semillas de Ícor",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Planta en tierra o tierra slime para hacer nicelio slime",
   "item.tconstruct.ender_slime_grass_seeds": "Semillas de Slime Ender",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Planta en tierra o tierra slime para hacer pasto slime, o en enredaderas para conseguir enredaderas slime",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Planta en tierra o tierra slime para hacer pasto slime",
+  "item.tconstruct.slime_grass_seeds.vines": "Planta en tierra o tierra slime para hacer pasto slime, o en enredaderas para conseguir enredaderas slime",
+  "item.tconstruct.slime_grass_seeds.nether": "Planta en tierra o tierra slime para hacer nicelio slime",
 
   "block.tconstruct.earth_slime_leaves": "Hojas de slime terrestre",
   "block.tconstruct.sky_slime_leaves": "Hojas de slime celesital",

@@ -1110,16 +1110,14 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Låter dig hoppa högre och skapar enderslemkuber i end",
   
   "item.tconstruct.earth_slime_grass_seeds": "Slemmiga frön",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Planteras på jord eller slemmig jord för att skapa slemmigt gräs",
   "item.tconstruct.sky_slime_grass_seeds": "Slemmiga frön",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Planteras på jord eller slemmig jord för att skapa slemmigt gräs, eller på klätterväxter för att få slemmiga klätterväxter",
   "item.tconstruct.blood_slime_grass_seeds": "Slemmiga frön",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Planteras på jord eller slemmig jord för att skapa slemmig nycel",
   "item.tconstruct.ichor_slime_grass_seeds": "Slemmiga frön",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Planteras på jord eller slemmig jord för att skapa slemmig nycel",
   "item.tconstruct.ender_slime_grass_seeds": "Slemmiga frön",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Planteras på jord eller slemmig jord för att skapa slemmigt gräs, eller på klätterväxter för att få slemmiga klätterväxter",
-  
+  "item.tconstruct.slime_grass_seeds.no_vines": "Planteras på jord eller slemmig jord för att skapa slemmigt gräs",
+  "item.tconstruct.slime_grass_seeds.vines": "Planteras på jord eller slemmig jord för att skapa slemmigt gräs, eller på klätterväxter för att få slemmiga klätterväxter",
+  "item.tconstruct.slime_grass_seeds.nether": "Planteras på jord eller slemmig jord för att skapa slemmig nycel",
+
   "block.tconstruct.earth_slime_leaves": "Slemmiga löv",
   "block.tconstruct.sky_slime_leaves": "Slemmiga löv",
   "block.tconstruct.blood_slime_leaves": "Slemmiga vårtor",

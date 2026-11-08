@@ -1159,15 +1159,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Te permite saltar más alto y genera enderslimes en el End",
 
   "item.tconstruct.earth_slime_grass_seeds": "Semillas de Earthslime",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Plántalas sobre tierra o tierra resbaladiza para crear hierba resbaladiza",
   "item.tconstruct.sky_slime_grass_seeds": "Semillas de Skyslime",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Plántalas sobre tierra o tierra resbaladiza para crear hierba resbaladiza, o sobre Enredaderaes para obtener Enredaderaes resbaladizas",
   "item.tconstruct.blood_slime_grass_seeds": "Semillas Sangrientas",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Plántalas sobre tierra o tierra resbaladiza para crear nylium resbaladizo",
   "item.tconstruct.ichor_slime_grass_seeds": "Semillas de Ichor",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Plántalas sobre tierra o tierra resbaladiza para crear nylium resbaladizo",
   "item.tconstruct.ender_slime_grass_seeds": "Semillas de Enderslime",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Plántalas sobre tierra o tierra resbaladiza para crear hierba resbaladiza, o sobre Enredaderaes para obtener Enredaderaes resbaladizas",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Plántalas sobre tierra o tierra resbaladiza para crear hierba resbaladiza",
+  "item.tconstruct.slime_grass_seeds.vines": "Plántalas sobre tierra o tierra resbaladiza para crear hierba resbaladiza, o sobre Enredaderaes para obtener Enredaderaes resbaladizas",
+  "item.tconstruct.slime_grass_seeds.nether": "Plántalas sobre tierra o tierra resbaladiza para crear nylium resbaladizo",
 
   "block.tconstruct.earth_slime_leaves": "Hojas Resbaladizas",
   "block.tconstruct.sky_slime_leaves": "Hojas Resbaladizas",

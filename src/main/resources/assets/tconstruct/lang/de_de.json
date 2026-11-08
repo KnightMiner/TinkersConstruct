@@ -1095,15 +1095,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Lässt dich höher springen und erzeugt am Ende Enderslimes",
 
   "item.tconstruct.earth_slime_grass_seeds": "Schleimige Samen",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Gras zu machen",
   "item.tconstruct.sky_slime_grass_seeds": "Schleimige Samen",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Gras zu machen, oder auf Ranken, um schleimige Ranken zu bekommen",
   "item.tconstruct.blood_slime_grass_seeds": "Schleimige Samen",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Nylium herzustellen",
   "item.tconstruct.ichor_slime_grass_seeds": "Schleimige Samen",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Nylium herzustellen",
   "item.tconstruct.ender_slime_grass_seeds": "Schleimige Samen",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Gras zu machen, oder auf Ranken, um schleimige Ranken zu bekommen",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Gras zu machen",
+  "item.tconstruct.slime_grass_seeds.vines": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Gras zu machen, oder auf Ranken, um schleimige Ranken zu bekommen",
+  "item.tconstruct.slime_grass_seeds.nether": "Pflanze auf Erde oder schleimiger Erde, um schleimiges Nylium herzustellen",
 
   "block.tconstruct.earth_slime_leaves": "Schleimige Blätter",
   "block.tconstruct.sky_slime_leaves": "Schleimige Blätter",

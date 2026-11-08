@@ -1205,15 +1205,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Daha yükseğe zıplamanı sağlar ve end üzerindeyken enderbalçığı oluşturur",
 
   "item.tconstruct.earth_slime_grass_seeds": "Karabalçığı Tohumu",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Balçığımsı çimen yapabilmek için toprak ya da balçığımsı toprağa dik",
   "item.tconstruct.sky_slime_grass_seeds": "Gökbalçığı Tohum",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Balçığımsı çimen yapabilmek için toprak ya da balçığımsı toprağa dik veya sarmaşığa dikerek balçığımsı sarmaşık elde et",
   "item.tconstruct.blood_slime_grass_seeds": "Kanlı Tohum",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Balçığımsı nesilyum yapabilmek için toprak ya da balçığımsı toprağa dik",
   "item.tconstruct.ichor_slime_grass_seeds": "Od Tohumu",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Balçığımsı nesilyum yapabilmek için toprak ya da balçığımsı toprağa dik",
   "item.tconstruct.ender_slime_grass_seeds": "Enderbalçığı Tohumu",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Balçığımsı çimen yapabilmek için toprak ya da balçığımsı toprağa dik veya sarmaşığa dikerek balçığımsı sarmaşık elde et",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Balçığımsı çimen yapabilmek için toprak ya da balçığımsı toprağa dik",
+  "item.tconstruct.slime_grass_seeds.vines": "Balçığımsı çimen yapabilmek için toprak ya da balçığımsı toprağa dik veya sarmaşığa dikerek balçığımsı sarmaşık elde et",
+  "item.tconstruct.slime_grass_seeds.nether": "Balçığımsı nesilyum yapabilmek için toprak ya da balçığımsı toprağa dik",
 
   "block.tconstruct.earth_slime_leaves": "Balçığımsı Yaprak",
   "block.tconstruct.sky_slime_leaves": "Balçığımsı Yaprak",

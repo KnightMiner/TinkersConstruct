@@ -1,5 +1,6 @@
 package slimeknights.tconstruct;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
@@ -287,6 +288,16 @@ public class TConstruct {
    */
   public static MutableComponent makeTranslation(String base, String name, Object... arguments) {
     return Component.translatable(makeTranslationKey(base, name), arguments);
+  }
+
+  /**
+   * Makes a translation tooltip component using {@link ChatFormatting#GRAY)}.
+   * @param base  Base name, such as "block" or "gui"
+   * @param name  Object name
+   * @return  Translation key
+   */
+  public static MutableComponent makeTooltip(String base, String name) {
+    return makeTranslation(base, name).withStyle(ChatFormatting.GRAY);
   }
 
   /**

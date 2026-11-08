@@ -1652,15 +1652,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Lets you jump higher and spawns enderslimes in the end",
 
   "item.tconstruct.earth_slime_grass_seeds": "Earthslime Seeds",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Plant on dirt or slimy dirt to make slimy grass",
   "item.tconstruct.sky_slime_grass_seeds": "Skyslime Seeds",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Plant on dirt or slimy dirt to make slimy grass, or on vines to get slimy vines",
   "item.tconstruct.blood_slime_grass_seeds": "Bloody Seeds",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Plant on dirt or slimy dirt to make slimy nylium",
   "item.tconstruct.ichor_slime_grass_seeds": "Ichor Seeds",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Plant on dirt or slimy dirt to make slimy nylium",
   "item.tconstruct.ender_slime_grass_seeds": "Enderslime Seeds",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Plant on dirt or slimy dirt to make slimy grass, or on vines to get slimy vines",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Plant on dirt or slimy dirt to make slimy grass",
+  "item.tconstruct.slime_grass_seeds.vines": "Plant on dirt or slimy dirt to make slimy grass, or on vines to get slimy vines",
+  "item.tconstruct.slime_grass_seeds.nether": "Plant on dirt or slimy dirt to make slimy nylium",
 
   "block.tconstruct.earth_slime_leaves": "Slimy Leaves",
   "block.tconstruct.sky_slime_leaves": "Slimy Leaves",

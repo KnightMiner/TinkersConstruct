@@ -1,9 +1,13 @@
 package slimeknights.tconstruct.world.item;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -11,7 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import slimeknights.mantle.item.TooltipItem;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.world.TinkerWorld;
 import slimeknights.tconstruct.world.block.DirtType;
 import slimeknights.tconstruct.world.block.FoliageType;
@@ -19,8 +23,13 @@ import slimeknights.tconstruct.world.block.SlimeVineBlock;
 import slimeknights.tconstruct.world.block.SlimeVineBlock.VineStage;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
-public class SlimeGrassSeedItem extends TooltipItem {
+public class SlimeGrassSeedItem extends Item {
+  private static final Component NO_VINES = TConstruct.makeTooltip("item", "slime_grass_seeds.no_vines");
+  private static final Component VINES = TConstruct.makeTooltip("item", "slime_grass_seeds.vines");
+  private static final Component NETHER = TConstruct.makeTooltip("item", "slime_grass_seeds.nether");
+
   private final FoliageType foliage;
   public SlimeGrassSeedItem(Properties properties, FoliageType foliage) {
     super(properties);
@@ -46,6 +55,17 @@ public class SlimeGrassSeedItem extends TooltipItem {
       case ENDER -> TinkerWorld.enderSlimeVine.get();
       default -> null;
     };
+  }
+
+  @Override
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    if (foliage.isNether()) {
+      tooltip.add(NETHER);
+    } else if (foliage == FoliageType.EARTH) {
+      tooltip.add(NO_VINES);
+    } else {
+      tooltip.add(VINES);
+    }
   }
 
   @Override

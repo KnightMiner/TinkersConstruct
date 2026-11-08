@@ -1607,15 +1607,13 @@
   "block.tconstruct.ender_ender_slime_grass.tooltip": "Позволяет прыгать выше и призывает эндер-слизней в Энде.",
 
   "item.tconstruct.earth_slime_grass_seeds": "Земные слизневые семена",
-  "item.tconstruct.earth_slime_grass_seeds.tooltip": "Используйте на земле или слизневой земле, чтобы получить земной слизневый дёрн.",
   "item.tconstruct.sky_slime_grass_seeds": "Небесные слизневые семена",
-  "item.tconstruct.sky_slime_grass_seeds.tooltip": "Используйте на земле или на слизневой земле, чтобы получить небесный слизневый дёрн, или на лозе, чтобы получить небесную слизневую лозу.",
   "item.tconstruct.blood_slime_grass_seeds": "Кровавые слизневые семена",
-  "item.tconstruct.blood_slime_grass_seeds.tooltip": "Используйте на земле или слизневой земле, чтобы получить кровавый слизневый дёрн.",
   "item.tconstruct.ichor_slime_grass_seeds": "Ихоровые слизневые семена",
-  "item.tconstruct.ichor_slime_grass_seeds.tooltip": "Используйте на земле или слизневой земле, чтобы получить ихоровый слизневый дёрн.",
   "item.tconstruct.ender_slime_grass_seeds": "Эндер-слизневые семена",
-  "item.tconstruct.ender_slime_grass_seeds.tooltip": "Используйте на земле или на слизневой земле, чтобы получить эндер-слизневый дёрн, или на лозе, чтобы получить эндер-слизневую лозу.",
+  "item.tconstruct.slime_grass_seeds.no_vines": "Используйте на земле или слизневой земле, чтобы получить земной слизневый дёрн.",
+  "item.tconstruct.slime_grass_seeds.vines": "Используйте на земле или на слизневой земле, чтобы получить небесный слизневый дёрн, или на лозе, чтобы получить небесную слизневую лозу.",
+  "item.tconstruct.slime_grass_seeds.nether": "Используйте на земле или слизневой земле, чтобы получить кровавый слизневый дёрн.",
 
   "block.tconstruct.earth_slime_leaves": "Земные слизневые листья",
   "block.tconstruct.sky_slime_leaves": "Небесные слизневые листья",
