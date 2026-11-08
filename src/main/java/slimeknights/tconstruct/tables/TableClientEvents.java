@@ -1,16 +1,14 @@
 package slimeknights.tconstruct.tables;
 
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import slimeknights.mantle.client.render.InventoryBlockEntityRenderer;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
@@ -22,8 +20,7 @@ import slimeknights.tconstruct.tables.client.inventory.PartBuilderScreen;
 import slimeknights.tconstruct.tables.client.inventory.TinkerChestScreen;
 import slimeknights.tconstruct.tables.client.inventory.TinkerStationScreen;
 
-@SuppressWarnings("unused")
-@EventBusSubscriber(modid=TConstruct.MOD_ID, value=Dist.CLIENT, bus=Bus.MOD)
+@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class TableClientEvents extends ClientEventBase {
   @SubscribeEvent
   static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -35,12 +32,12 @@ public class TableClientEvents extends ClientEventBase {
   }
 
   @SubscribeEvent
-  static void setupClient(final FMLClientSetupEvent event) {
-    MenuScreens.register(TinkerTables.craftingStationContainer.get(), CraftingStationScreen::new);
-    MenuScreens.register(TinkerTables.tinkerStationContainer.get(), TinkerStationScreen::new);
-    MenuScreens.register(TinkerTables.partBuilderContainer.get(), PartBuilderScreen::new);
-    MenuScreens.register(TinkerTables.modifierWorktableContainer.get(), ModifierWorktableScreen::new);
-    MenuScreens.register(TinkerTables.tinkerChestContainer.get(), TinkerChestScreen::new);
+  static void registerScreens(RegisterMenuScreensEvent event) {
+    event.register(TinkerTables.craftingStationContainer.get(), CraftingStationScreen::new);
+    event.register(TinkerTables.tinkerStationContainer.get(), TinkerStationScreen::new);
+    event.register(TinkerTables.partBuilderContainer.get(), PartBuilderScreen::new);
+    event.register(TinkerTables.modifierWorktableContainer.get(), ModifierWorktableScreen::new);
+    event.register(TinkerTables.tinkerChestContainer.get(), TinkerChestScreen::new);
   }
 
   @SubscribeEvent
@@ -58,6 +55,6 @@ public class TableClientEvents extends ClientEventBase {
 
   @SubscribeEvent
   static void registerItemColors(final RegisterColorHandlersEvent.Item event) {
-    event.register((stack, index) -> ((DyeableLeatherItem)stack.getItem()).getColor(stack), TinkerTables.tinkersChest.asItem());
+    event.register((stack, index) -> DyedItemColor.getOrDefault(stack, TinkersChestBlockEntity.DEFAULT_COLOR));
   }
 }
