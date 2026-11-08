@@ -3,7 +3,6 @@ package slimeknights.tconstruct.smeltery;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -17,24 +16,25 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import net.minecraft.world.level.block.state.BlockBehaviour.StatePredicate;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.block.GaugeBlock;
+import slimeknights.mantle.registration.holder.DeferredBlockEntity;
+import slimeknights.mantle.registration.holder.DeferredMenu;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
-import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.common.TinkerModule;
@@ -119,46 +119,58 @@ public final class TinkerSmeltery extends TinkerModule {
 
   /* Bricks */
   /* Crafting related items */
-  public static final ItemObject<Block> grout = BLOCKS.register("grout", builder(MapColor.COLOR_LIGHT_GRAY, SoundType.SAND).instrument(NoteBlockInstrument.SNARE).strength(3.0f).friction(0.8F), TOOLTIP_BLOCK_ITEM);
-  public static final ItemObject<Block> netherGrout = BLOCKS.register("nether_grout", builder(MapColor.COLOR_BROWN, SoundType.SOUL_SOIL).instrument(NoteBlockInstrument.SNARE).strength(3.0f).friction(0.8F), TOOLTIP_BLOCK_ITEM);
+  public static final DeferredBlock<Block> grout = BLOCKS.register("grout", builder(MapColor.COLOR_LIGHT_GRAY, SoundType.SAND).instrument(NoteBlockInstrument.SNARE).strength(3.0f).friction(0.8F), TOOLTIP_BLOCK_ITEM);
+  public static final DeferredBlock<Block> netherGrout = BLOCKS.register("nether_grout", builder(MapColor.COLOR_BROWN, SoundType.SOUL_SOIL).instrument(NoteBlockInstrument.SNARE).strength(3.0f).friction(0.8F), TOOLTIP_BLOCK_ITEM);
 
   // seared blocks
   public static final BuildingBlockObject searedStone, searedPaver;
   public static final WallBuildingBlockObject searedCobble, searedBricks;
-  public static final ItemObject<Block> searedCrackedBricks, searedFancyBricks, searedTriangleBricks;
+  public static final DeferredBlock<Block> searedCrackedBricks, searedFancyBricks, searedTriangleBricks;
   static {
+    // use default block item to simplify builders
+    BLOCKS.optionalBlockTooltip();
+
     Properties properties = searedSolidProps(1);
-    Supplier<SearedBlock> searedBlock = () -> new SearedBlock(properties, false);
-    searedStone = BLOCKS.registerBuilding("seared_stone", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedCobble = BLOCKS.registerWallBuilding("seared_cobble", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedPaver = BLOCKS.registerBuilding("seared_paver", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedBricks = BLOCKS.registerWallBuilding("seared_bricks", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedCrackedBricks = BLOCKS.register("seared_cracked_bricks", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedFancyBricks = BLOCKS.register("seared_fancy_bricks", searedBlock, TOOLTIP_BLOCK_ITEM);
-    searedTriangleBricks = BLOCKS.register("seared_triangle_bricks", searedBlock, TOOLTIP_BLOCK_ITEM);
+    Function<BlockBehaviour.Properties,Block> searedBuilding = props -> new SearedBlock(props, false);
+    searedStone  = BLOCKS.registerBuilding("seared_stone",  properties).block(searedBuilding).build();
+    searedCobble = BLOCKS.registerBuilding("seared_cobble", properties).block(searedBuilding).wall();
+    searedPaver  = BLOCKS.registerBuilding("seared_paver",  properties).block(searedBuilding).build();
+    searedBricks = BLOCKS.registerBuilding("seared_bricks", properties).block(searedBuilding).wall();
+    Supplier<Block> searedBlock = () -> new SearedBlock(properties, false);
+    searedCrackedBricks  = BLOCKS.register("seared_cracked_bricks", searedBlock);
+    searedFancyBricks    = BLOCKS.register("seared_fancy_bricks",   searedBlock);
+    searedTriangleBricks = BLOCKS.register("seared_triangle_bricks", searedBlock);
+    // restore default block item
+    BLOCKS.defaultBlockItem();
   }
-  public static final ItemObject<Block> searedLamp = BLOCKS.register("seared_lamp", () -> new SearedBlock(searedSolidProps(1).lightLevel(state -> 15), false), TOOLTIP_BLOCK_ITEM);
+  public static final DeferredBlock<Block> searedLamp = BLOCKS.register("seared_lamp", () -> new SearedBlock(searedSolidProps(1).lightLevel(state -> 15), false), TOOLTIP_BLOCK_ITEM);
 
   // scorched blocks
-  public static final ItemObject<Block> scorchedStone, polishedScorchedStone, chiseledScorchedBricks;
+  public static final DeferredBlock<Block> scorchedStone, polishedScorchedStone, chiseledScorchedBricks;
   public static final FenceBuildingBlockObject scorchedBricks;
   public static final BuildingBlockObject scorchedRoad;
   static {
+    // use default block item to simplify builders
+    // TODO: synchronize?
+    BLOCKS.optionalBlockTooltip();
+
     Properties properties = scorchedSolidProps(1);
     Supplier<SearedPillarBlock> pillar = () -> new SearedPillarBlock(properties, false);
-    scorchedStone = BLOCKS.register("scorched_stone", pillar, TOOLTIP_BLOCK_ITEM);
-    polishedScorchedStone = BLOCKS.register("polished_scorched_stone", pillar, TOOLTIP_BLOCK_ITEM);
-    Supplier<SearedBlock> block = () -> new SearedBlock(properties, false);
-    scorchedBricks = BLOCKS.registerFenceBuilding("scorched_bricks", block, TOOLTIP_BLOCK_ITEM);
-    scorchedRoad = BLOCKS.registerBuilding("scorched_road", block, TOOLTIP_BLOCK_ITEM);
-    chiseledScorchedBricks = BLOCKS.register("chiseled_scorched_bricks", block, TOOLTIP_BLOCK_ITEM);
+    scorchedStone          = BLOCKS.register("scorched_stone",           pillar);
+    polishedScorchedStone  = BLOCKS.register("polished_scorched_stone",  pillar);
+    chiseledScorchedBricks = BLOCKS.register("chiseled_scorched_bricks", () -> new SearedBlock(properties, false));
+    Function<BlockBehaviour.Properties, Block> building = props -> new SearedBlock(props, false);
+    scorchedBricks = BLOCKS.registerBuilding("scorched_bricks", properties).block(building).fence();
+    scorchedRoad   = BLOCKS.registerBuilding("scorched_road",   properties).block(building).build();
+    // restore default block item
+    BLOCKS.defaultBlockItem();
   }
-  public static final ItemObject<Block> scorchedLamp = BLOCKS.register("scorched_lamp", () -> new SearedBlock(scorchedSolidProps(1).lightLevel(state -> 15), false), TOOLTIP_BLOCK_ITEM);
+  public static final DeferredBlock<Block> scorchedLamp = BLOCKS.register("scorched_lamp", () -> new SearedBlock(scorchedSolidProps(1).lightLevel(state -> 15), false), TOOLTIP_BLOCK_ITEM);
 
   // glass
-  public static final ItemObject<SearedGlassBlock> searedGlass, scorchedGlass;
-  public static final ItemObject<ClearGlassPaneBlock> searedGlassPane, scorchedGlassPane;
-  public static final ItemObject<SearedTintedGlassBlock> searedTintedGlass, scorchedTintedGlass;
+  public static final DeferredBlock<SearedGlassBlock> searedGlass, scorchedGlass;
+  public static final DeferredBlock<ClearGlassPaneBlock> searedGlassPane, scorchedGlassPane;
+  public static final DeferredBlock<SearedTintedGlassBlock> searedTintedGlass, scorchedTintedGlass;
   static {
     Properties seared = searedNonSolidProps(SoundType.GLASS);
     searedGlass = BLOCKS.register("seared_glass", () -> new SearedGlassBlock(seared), TOOLTIP_BLOCK_ITEM);
@@ -171,8 +183,8 @@ public final class TinkerSmeltery extends TinkerModule {
     scorchedGlassPane = BLOCKS.register("scorched_glass_pane", () -> new ClearGlassPaneBlock(scorched), TOOLTIP_BLOCK_ITEM);
   }
   // soul glass
-  public static final ItemObject<SearedSoulGlassBlock> searedSoulGlass, scorchedSoulGlass;
-  public static final ItemObject<SoulGlassPaneBlock> searedSoulGlassPane, scorchedSoulGlassPane;
+  public static final DeferredBlock<SearedSoulGlassBlock> searedSoulGlass, scorchedSoulGlass;
+  public static final DeferredBlock<SoulGlassPaneBlock> searedSoulGlassPane, scorchedSoulGlassPane;
   static {
     Properties seared = searedNonSolidProps(SoundType.GLASS).noCollission().speedFactor(0.1f).isViewBlocking((state, getter, pos) -> true);
     searedSoulGlass = BLOCKS.register("seared_soul_glass", () -> new SearedSoulGlassBlock(seared), TOOLTIP_BLOCK_ITEM);
@@ -184,8 +196,8 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   // peripherals
-  public static final ItemObject<Block> searedDrain, searedDuct, searedChute;
-  public static final ItemObject<Block> scorchedDrain, scorchedDuct, scorchedChute;
+  public static final DeferredBlock<Block> searedDrain, searedDuct, searedChute;
+  public static final DeferredBlock<Block> scorchedDrain, scorchedDuct, scorchedChute;
   static {
     Properties seared = searedSolidProps(2);
     searedDrain = BLOCKS.register("seared_drain", () -> new SearedDrainBlock(seared), TOOLTIP_BLOCK_ITEM);
@@ -199,12 +211,12 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   // non-solid blocks
-  public static final ItemObject<SearedLadderBlock> searedLadder, scorchedLadder;
-  public static final ItemObject<FaucetBlock> searedFaucet, scorchedFaucet;
-  public static final ItemObject<ChannelBlock> searedChannel, scorchedChannel;
-  public static final ItemObject<CastingBasinBlock> searedBasin, scorchedBasin;
-  public static final ItemObject<CastingTableBlock> searedTable, scorchedTable;
-  public static final ItemObject<ProxyTankBlock> scorchedProxyTank;
+  public static final DeferredBlock<SearedLadderBlock> searedLadder, scorchedLadder;
+  public static final DeferredBlock<FaucetBlock> searedFaucet, scorchedFaucet;
+  public static final DeferredBlock<ChannelBlock> searedChannel, scorchedChannel;
+  public static final DeferredBlock<CastingBasinBlock> searedBasin, scorchedBasin;
+  public static final DeferredBlock<CastingTableBlock> searedTable, scorchedTable;
+  public static final DeferredBlock<ProxyTankBlock> scorchedProxyTank;
   static {
     Properties seared = searedNonSolidProps(SoundType.METAL);
     searedLadder = BLOCKS.register("seared_ladder", () -> new SearedLadderBlock(seared), TOOLTIP_BLOCK_ITEM);
@@ -223,10 +235,10 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   // tank
-  public static final EnumObject<TankType,SearedTankBlock> searedTank, scorchedTank;
-  public static final ItemObject<CastingTankBlock> searedCastingTank;
-  public static final ItemObject<FluidCannonBlock> searedFluidCannon, scorchedFluidCannon, endFluidCannon;
-  public static final ItemObject<SearedLanternBlock> searedLantern, scorchedLantern;
+  public static final EnumObject<TankType,Block> searedTank, scorchedTank;
+  public static final DeferredBlock<CastingTankBlock> searedCastingTank;
+  public static final DeferredBlock<FluidCannonBlock> searedFluidCannon, scorchedFluidCannon, endFluidCannon;
+  public static final DeferredBlock<SearedLanternBlock> searedLantern, scorchedLantern;
   static {
     Function<Block, BlockItem> tankItem = b -> new TankItem(b, ITEM_PROPS, true);
     Function<Block, BlockItem> lanternItem = b -> new TankItem(b, ITEM_PROPS, false);
@@ -246,7 +258,7 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   // utility
-  public static final ItemObject<GaugeBlock> copperGauge, obsidianGauge;
+  public static final DeferredBlock<GaugeBlock> copperGauge, obsidianGauge;
   static {
     Properties gaugeProperties = Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).noCollission().strength(0.5F).noOcclusion().requiresCorrectToolForDrops();
     copperGauge = BLOCKS.register("copper_gauge", () -> new GaugeBlock(gaugeProperties), TOOLTIP_BLOCK_ITEM);
@@ -254,12 +266,12 @@ public final class TinkerSmeltery extends TinkerModule {
   }
 
   // controllers
-  public static final ItemObject<SmelteryControllerBlock> smelteryController;
-  public static final ItemObject<FoundryControllerBlock> foundryController;
+  public static final DeferredBlock<SmelteryControllerBlock> smelteryController;
+  public static final DeferredBlock<FoundryControllerBlock> foundryController;
   // tiny
-  public static final ItemObject<MelterBlock> searedMelter;
-  public static final ItemObject<HeaterBlock> searedHeater;
-  public static final ItemObject<AlloyerBlock> scorchedAlloyer;
+  public static final DeferredBlock<MelterBlock> searedMelter;
+  public static final DeferredBlock<HeaterBlock> searedHeater;
+  public static final DeferredBlock<AlloyerBlock> scorchedAlloyer;
   static {
     Supplier<Properties> seared = () -> builder(MapColor.COLOR_GRAY, SoundType.METAL).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(8.0F, 28F).lightLevel(s -> s.getValue(ControllerBlock.ACTIVE) ? 13 : 0);
     Supplier<Properties> scorched = () -> builder(MapColor.TERRACOTTA_BROWN, SoundType.BASALT).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(9.0F, 35f).lightLevel(s -> s.getValue(ControllerBlock.ACTIVE) ? 13 : 0);
@@ -275,7 +287,7 @@ public final class TinkerSmeltery extends TinkerModule {
    * Tile entities
    */
   // smeltery
-  public static final RegistryObject<BlockEntityType<SmelteryComponentBlockEntity>> smelteryComponent = BLOCK_ENTITIES.register("smeltery_component", SmelteryComponentBlockEntity::new, set -> {
+  public static final DeferredBlockEntity<SmelteryComponentBlockEntity> smelteryComponent = BLOCK_ENTITIES.register("smeltery_component", SmelteryComponentBlockEntity::new, set -> {
     // seared
     set.addAll(searedStone.values());
     set.addAll(searedCobble.values());
@@ -287,43 +299,43 @@ public final class TinkerSmeltery extends TinkerModule {
     set.addAll(scorchedBricks.values());
     set.addAll(scorchedRoad.values());
   });
-  public static final RegistryObject<BlockEntityType<SmelteryFluidIO>> drain = BLOCK_ENTITIES.register("drain", DrainBlockEntity::new, set -> set.add(searedDrain.get(), scorchedDrain.get()));
-  public static final RegistryObject<BlockEntityType<ChuteBlockEntity>> chute = BLOCK_ENTITIES.register("chute", ChuteBlockEntity::new, set -> set.add(searedChute.get(), scorchedChute.get()));
-  public static final RegistryObject<BlockEntityType<DuctBlockEntity>> duct = BLOCK_ENTITIES.register("duct", DuctBlockEntity::new, set -> set.add(searedDuct.get(), scorchedDuct.get()));
-  public static final RegistryObject<BlockEntityType<TankBlockEntity>> tank = BLOCK_ENTITIES.register("tank", TankBlockEntity::new, set -> {
+  public static final DeferredBlockEntity<SmelteryFluidIO> drain = BLOCK_ENTITIES.register("drain", DrainBlockEntity::new, set -> set.add(searedDrain.get(), scorchedDrain.get()));
+  public static final DeferredBlockEntity<ChuteBlockEntity> chute = BLOCK_ENTITIES.register("chute", ChuteBlockEntity::new, set -> set.add(searedChute.get(), scorchedChute.get()));
+  public static final DeferredBlockEntity<DuctBlockEntity> duct = BLOCK_ENTITIES.register("duct", DuctBlockEntity::new, set -> set.add(searedDuct.get(), scorchedDuct.get()));
+  public static final DeferredBlockEntity<TankBlockEntity> tank = BLOCK_ENTITIES.register("tank", TankBlockEntity::new, set -> {
     set.addAll(searedTank.values());
     set.addAll(scorchedTank.values());
   });
-  public static final RegistryObject<BlockEntityType<FluidCannonBlockEntity>> fluidCannon = BLOCK_ENTITIES.register("fluid_cannon", FluidCannonBlockEntity::new, set -> set.add(searedFluidCannon.get(), scorchedFluidCannon.get(), endFluidCannon.get()));
-  public static final RegistryObject<BlockEntityType<LanternBlockEntity>> lantern = BLOCK_ENTITIES.register("lantern", LanternBlockEntity::new, set -> set.add(searedLantern.get(), scorchedLantern.get()));
+  public static final DeferredBlockEntity<FluidCannonBlockEntity> fluidCannon = BLOCK_ENTITIES.register("fluid_cannon", FluidCannonBlockEntity::new, set -> set.add(searedFluidCannon.get(), scorchedFluidCannon.get(), endFluidCannon.get()));
+  public static final DeferredBlockEntity<LanternBlockEntity> lantern = BLOCK_ENTITIES.register("lantern", LanternBlockEntity::new, set -> set.add(searedLantern.get(), scorchedLantern.get()));
   // controller
-  public static final RegistryObject<BlockEntityType<MelterBlockEntity>> melter = BLOCK_ENTITIES.register("melter", MelterBlockEntity::new, searedMelter);
-  public static final RegistryObject<BlockEntityType<SmelteryBlockEntity>> smeltery = BLOCK_ENTITIES.register("smeltery", SmelteryBlockEntity::new, smelteryController);
-  public static final RegistryObject<BlockEntityType<FoundryBlockEntity>> foundry = BLOCK_ENTITIES.register("foundry", FoundryBlockEntity::new, foundryController);
-  public static final RegistryObject<BlockEntityType<HeaterBlockEntity>> heater = BLOCK_ENTITIES.register("heater", HeaterBlockEntity::new, searedHeater);
-  public static final RegistryObject<BlockEntityType<AlloyerBlockEntity>> alloyer = BLOCK_ENTITIES.register("alloyer", AlloyerBlockEntity::new, scorchedAlloyer);
+  public static final DeferredBlockEntity<MelterBlockEntity> melter = BLOCK_ENTITIES.register("melter", MelterBlockEntity::new, searedMelter);
+  public static final DeferredBlockEntity<SmelteryBlockEntity> smeltery = BLOCK_ENTITIES.register("smeltery", SmelteryBlockEntity::new, smelteryController);
+  public static final DeferredBlockEntity<FoundryBlockEntity> foundry = BLOCK_ENTITIES.register("foundry", FoundryBlockEntity::new, foundryController);
+  public static final DeferredBlockEntity<HeaterBlockEntity> heater = BLOCK_ENTITIES.register("heater", HeaterBlockEntity::new, searedHeater);
+  public static final DeferredBlockEntity<AlloyerBlockEntity> alloyer = BLOCK_ENTITIES.register("alloyer", AlloyerBlockEntity::new, scorchedAlloyer);
   // fluid transfer
-  public static final RegistryObject<BlockEntityType<FaucetBlockEntity>> faucet = BLOCK_ENTITIES.register("faucet", FaucetBlockEntity::new, set -> set.add(searedFaucet.get(), scorchedFaucet.get()));
-  public static final RegistryObject<BlockEntityType<ChannelBlockEntity>> channel = BLOCK_ENTITIES.register("channel", ChannelBlockEntity::new, set -> set.add(searedChannel.get(), scorchedChannel.get()));
-  public static final RegistryObject<BlockEntityType<GaugeBlockEntity>> gauge = BLOCK_ENTITIES.register("gauge", GaugeBlockEntity::new, obsidianGauge);
+  public static final DeferredBlockEntity<FaucetBlockEntity> faucet = BLOCK_ENTITIES.register("faucet", FaucetBlockEntity::new, set -> set.add(searedFaucet.get(), scorchedFaucet.get()));
+  public static final DeferredBlockEntity<ChannelBlockEntity> channel = BLOCK_ENTITIES.register("channel", ChannelBlockEntity::new, set -> set.add(searedChannel.get(), scorchedChannel.get()));
+  public static final DeferredBlockEntity<GaugeBlockEntity> gauge = BLOCK_ENTITIES.register("gauge", GaugeBlockEntity::new, obsidianGauge);
   // casting
-  public static final RegistryObject<BlockEntityType<CastingBlockEntity>> basin = BLOCK_ENTITIES.register("basin", CastingBlockEntity.Basin::new, set -> set.add(searedBasin.get(), scorchedBasin.get()));
-  public static final RegistryObject<BlockEntityType<CastingBlockEntity>> table = BLOCK_ENTITIES.register("table", CastingBlockEntity.Table::new, set -> set.add(searedTable.get(), scorchedTable.get()));
-  public static final RegistryObject<BlockEntityType<ProxyTankBlockEntity>> proxyTank = BLOCK_ENTITIES.register("proxy_tank", ProxyTankBlockEntity::new, scorchedProxyTank);
+  public static final DeferredBlockEntity<CastingBlockEntity> basin = BLOCK_ENTITIES.register("basin", CastingBlockEntity.Basin::new, set -> set.add(searedBasin.get(), scorchedBasin.get()));
+  public static final DeferredBlockEntity<CastingBlockEntity> table = BLOCK_ENTITIES.register("table", CastingBlockEntity.Table::new, set -> set.add(searedTable.get(), scorchedTable.get()));
+  public static final DeferredBlockEntity<ProxyTankBlockEntity> proxyTank = BLOCK_ENTITIES.register("proxy_tank", ProxyTankBlockEntity::new, scorchedProxyTank);
   // casting tank
-  public static final RegistryObject<BlockEntityType<CastingTankBlockEntity>> castingTank = BLOCK_ENTITIES.register("casting_tank", CastingTankBlockEntity::new, set -> set.add(searedCastingTank.get()));
+  public static final DeferredBlockEntity<CastingTankBlockEntity> castingTank = BLOCK_ENTITIES.register("casting_tank", CastingTankBlockEntity::new, set -> set.add(searedCastingTank.get()));
 
   /*
    * Items
    */
-  public static final ItemObject<Item> searedBrick = ITEMS.register("seared_brick", ITEM_PROPS);
-  public static final ItemObject<Item> scorchedBrick = ITEMS.register("scorched_brick", ITEM_PROPS);
-  public static final ItemObject<Item> copperCan = ITEMS.register("copper_can", () -> new CopperCanItem(new Item.Properties().stacksTo(16)));
+  public static final DeferredItem<Item> searedBrick = ITEMS.register("seared_brick", ITEM_PROPS);
+  public static final DeferredItem<Item> scorchedBrick = ITEMS.register("scorched_brick", ITEM_PROPS);
+  public static final DeferredItem<Item> copperCan = ITEMS.register("copper_can", () -> new CopperCanItem(new Item.Properties().stacksTo(16)));
 
   // casts
   // basic
-  public static final ItemObject<Item> blankSandCast  = ITEMS.register("blank_sand_cast", ITEM_PROPS);
-  public static final ItemObject<Item> blankRedSandCast  = ITEMS.register("blank_red_sand_cast", ITEM_PROPS);
+  public static final DeferredItem<Item> blankSandCast  = ITEMS.register("blank_sand_cast", ITEM_PROPS);
+  public static final DeferredItem<Item> blankRedSandCast  = ITEMS.register("blank_red_sand_cast", ITEM_PROPS);
   public static final CastItemObject ingotCast  = ITEMS.registerCast("ingot", ITEM_PROPS);
   public static final CastItemObject nuggetCast = ITEMS.registerCast("nugget", ITEM_PROPS);
   public static final CastItemObject gemCast    = ITEMS.registerCast("gem", ITEM_PROPS);
@@ -353,7 +365,7 @@ public final class TinkerSmeltery extends TinkerModule {
   // bow
   public static final CastItemObject bowLimbCast = ITEMS.registerCast(TinkerToolParts.bowLimb, ITEM_PROPS);
   public static final CastItemObject bowGripCast = ITEMS.registerCast(TinkerToolParts.bowGrip, ITEM_PROPS);
-  public static final ItemObject<Item> arrowCast = ITEMS.register("arrow_cast", TOOLTIP_ITEM);
+  public static final DeferredItem<Item> arrowCast = ITEMS.registerFixedTooltip("arrow_cast");
   // armor
   public static final CastItemObject helmetPlatingCast = ITEMS.registerCast("helmet_plating", () -> new PartCastItem(ITEM_PROPS, () -> TinkerToolParts.plating.get(ArmorItem.Type.HELMET)));
   public static final CastItemObject chestplatePlatingCast = ITEMS.registerCast("chestplate_plating", () -> new PartCastItem(ITEM_PROPS, () -> TinkerToolParts.plating.get(ArmorItem.Type.CHESTPLATE)));
@@ -361,16 +373,16 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final CastItemObject bootsPlatingCast = ITEMS.registerCast("boots_plating", () -> new PartCastItem(ITEM_PROPS, () -> TinkerToolParts.plating.get(ArmorItem.Type.BOOTS)));
   public static final CastItemObject mailleCast = ITEMS.registerCast(TinkerToolParts.maille, ITEM_PROPS);
   // dummy cast creation items
-  public static final EnumObject<ArmorItem.Type,DummyMaterialItem> dummyPlating = ITEMS.registerEnum(ArmorItem.Type.values(), "plating_dummy", type -> new DummyMaterialItem(ITEM_PROPS));
+  public static final EnumObject<ArmorItem.Type,Item> dummyPlating = ITEMS.registerEnum(ArmorItem.Type.values(), "plating_dummy", type -> new DummyMaterialItem(ITEM_PROPS));
 
 
   /*
    * Inventory
    */
-  public static final RegistryObject<MenuType<MelterContainerMenu>> melterContainer = MENUS.register("melter", MelterContainerMenu::new);
-  public static final RegistryObject<MenuType<HeatingStructureContainerMenu>> smelteryContainer = MENUS.register("smeltery", HeatingStructureContainerMenu::new);
-  public static final RegistryObject<MenuType<SingleItemContainerMenu>> singleItemContainer = MENUS.register("single_item", SingleItemContainerMenu::new);
-  public static final RegistryObject<MenuType<AlloyerContainerMenu>> alloyerContainer = MENUS.register("alloyer", AlloyerContainerMenu::new);
+  public static final DeferredMenu<MelterContainerMenu> melterContainer = MENUS.register("melter", MelterContainerMenu::new);
+  public static final DeferredMenu<HeatingStructureContainerMenu> smelteryContainer = MENUS.register("smeltery", HeatingStructureContainerMenu::new);
+  public static final DeferredMenu<SingleItemContainerMenu> singleItemContainer = MENUS.register("single_item", SingleItemContainerMenu::new);
+  public static final DeferredMenu<AlloyerContainerMenu> alloyerContainer = MENUS.register("alloyer", AlloyerContainerMenu::new);
 
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {
@@ -387,7 +399,7 @@ public final class TinkerSmeltery extends TinkerModule {
     DataGenerator generator = event.getGenerator();
     PackOutput packOutput = generator.getPackOutput();
     generator.addProvider(server, new SmelteryRecipeProvider(packOutput));
-    generator.addProvider(server, new FluidContainerTransferProvider(packOutput));
+    generator.addProvider(server, new FluidContainerTransferProvider(packOutput, event.getLookupProvider()));
   }
 
   /** Adds all relevant items to the creative tab */

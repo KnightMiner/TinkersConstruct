@@ -15,9 +15,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import slimeknights.mantle.registration.holder.DeferredEntity;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.ModifierTagProvider;
@@ -304,7 +304,7 @@ public final class TinkerModifiers extends TinkerModule {
    * Items
    */
   public static final DeferredItem<Item> silkyCloth = ITEMS.register("silky_cloth", ITEM_PROPS);
-  public static final DeferredItem<Item> dragonScale = ITEMS.register("dragon_scale", () -> new DragonScaleItem(new Item.Properties().rarity(Rarity.RARE)));
+  public static final DeferredItem<Item> dragonScale = ITEMS.register("dragon_scale", id -> new DragonScaleItem(id, new Item.Properties().rarity(Rarity.RARE)));
   // durability reinforcements
   public static final DeferredItem<Item> emeraldReinforcement = ITEMS.register("emerald_reinforcement", ITEM_PROPS);
   public static final DeferredItem<Item> slimesteelReinforcement = ITEMS.register("slimesteel_reinforcement", ITEM_PROPS);
@@ -318,7 +318,7 @@ public final class TinkerModifiers extends TinkerModule {
   public static final DeferredItem<Item> modifierCrystal = ITEMS.register("modifier_crystal", () -> new ModifierCrystalItem(new Item.Properties().stacksTo(16)));
   public static final DeferredItem<CreativeSlotItem> creativeSlotItem = ITEMS.register("creative_slot", () -> new CreativeSlotItem(ITEM_PROPS));
 
-  public static final DeferredHolder<EntityType<?>,EntityType<CustomFireball>> fireball = ENTITIES.register("fireball", () -> EntityType.Builder.<CustomFireball>of(CustomFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4).updateInterval(10));
+  public static final DeferredEntity<CustomFireball> fireball = ENTITIES.registerNoEgg("fireball", () -> EntityType.Builder.<CustomFireball>of(CustomFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4).updateInterval(10));
 
   /*
    * Modifiers
@@ -389,18 +389,6 @@ public final class TinkerModifiers extends TinkerModule {
   // modifiers with deprecated API
   /** Use API from {@link slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule} */
   public static final StaticModifier<OverslimeModifier> overslime = MODIFIERS.register("overslime", OverslimeModifier::new);
-
-  /*
-   * Recipes
-   */
-  // worktable
-  /**
-   * Loot
-   */
-
-  /*
-   * Events
-   */
 
   @SubscribeEvent
   void registerSerializers(RegisterEvent event) {

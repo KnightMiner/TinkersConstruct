@@ -7,26 +7,23 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.TabVisibility;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
-import slimeknights.mantle.item.BlockTooltipItem;
-import slimeknights.mantle.item.TooltipItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.deferred.BlockEntityTypeDeferredRegister;
+import slimeknights.mantle.registration.deferred.BlockItemBuilder;
 import slimeknights.mantle.registration.deferred.EntityTypeDeferredRegister;
 import slimeknights.mantle.registration.deferred.MenuTypeDeferredRegister;
-import slimeknights.mantle.registration.deferred.SynchronizedDeferredRegister;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.tconstruct.TConstruct;
@@ -38,7 +35,6 @@ import slimeknights.tconstruct.library.materials.definition.MaterialId;
 
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Contains base helpers for all Tinker modules. Should not be extended by other mods, this is only for internal usage.
@@ -50,9 +46,10 @@ public abstract class TinkerModule {
 
   // deferred register instances
   // gameplay singleton
+  // TODO: synchronize these?
   protected static final BlockDeferredRegisterExtension BLOCKS = new BlockDeferredRegisterExtension(TConstruct.MOD_ID);
   protected static final ItemDeferredRegisterExtension ITEMS = new ItemDeferredRegisterExtension(TConstruct.MOD_ID);
-  protected static final SynchronizedDeferredRegister<ParticleType<?>> PARTICLE_TYPES = SynchronizedDeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, TConstruct.MOD_ID);
+  protected static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, TConstruct.MOD_ID);
   // gameplay instances
   protected static final BlockEntityTypeDeferredRegister BLOCK_ENTITIES = new BlockEntityTypeDeferredRegister(TConstruct.MOD_ID);
   protected static final EntityTypeDeferredRegister ENTITIES = new EntityTypeDeferredRegister(TConstruct.MOD_ID);
@@ -61,10 +58,7 @@ public abstract class TinkerModule {
   // base item properties
   protected static final Item.Properties ITEM_PROPS = new Item.Properties();
   protected static final Item.Properties UNSTACKABLE_PROPS = new Item.Properties().stacksTo(1);
-  protected static final Function<Block,? extends BlockItem> BLOCK_ITEM = (b) -> new BlockItem(b, ITEM_PROPS);
-  protected static final Function<Block,? extends BlockItem> TOOLTIP_BLOCK_ITEM = (b) -> new BlockTooltipItem(b, ITEM_PROPS);
-  protected static final Function<Block,? extends BlockItem> UNSTACKABLE_BLOCK_ITEM = (b) -> new BlockTooltipItem(b, UNSTACKABLE_PROPS);
-  protected static final Supplier<Item> TOOLTIP_ITEM = () -> new TooltipItem(ITEM_PROPS);
+  protected static final Function<? super Block,BlockItem> TOOLTIP_BLOCK_ITEM = BlockItemBuilder.OPTIONAL_TOOLTIP_ITEM;
 
   /** Called during construction to initialize the registers for this mod */
   public static void initRegisters(IEventBus bus) {
@@ -98,12 +92,16 @@ public abstract class TinkerModule {
     return builder(color, SoundType.METAL).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresCorrectToolForDrops().strength(5.0f);
   }
 
+  /* Never predicates */
+  protected static final BlockBehaviour.StatePredicate NEVER = (state, level, pos) -> false;
+  protected static final BlockBehaviour.StateArgumentPredicate<EntityType<?>> NEVER_VALID_SPAWN = (state, level, pos, entity) -> false;
+
   /** Builder that pre-supplies glass properties */
   protected static BlockBehaviour.Properties glassBuilder(MapColor color) {
     return builder(color, SoundType.GLASS)
       .instrument(NoteBlockInstrument.HAT)
-      .strength(0.3F).noOcclusion().isValidSpawn(Blocks::never)
-      .isRedstoneConductor(Blocks::never).isSuffocating(Blocks::never).isViewBlocking(Blocks::never);
+      .strength(0.3F).noOcclusion().isValidSpawn(NEVER_VALID_SPAWN)
+      .isRedstoneConductor(NEVER).isSuffocating(NEVER).isViewBlocking(NEVER);
   }
 
   /** Builder that pre-supplies glass properties */
@@ -129,18 +127,18 @@ public abstract class TinkerModule {
     accept(output, items, TabVisibility.PARENT_AND_SEARCH_TABS);
   }
 
-  /** Adds an building block object to the given tab with default visbility */
+  /** Adds a building block object to the given tab with default visbility */
   protected static void accept(CreativeModeTab.Output output, BuildingBlockObject object, TabVisibility visibility) {
     object.forEach(item -> output.accept(item, visibility));
   }
 
-  /** Adds an building block object to the given tab with default visbility */
+  /** Adds a building block object to the given tab with default visbility */
   protected static void accept(CreativeModeTab.Output output, BuildingBlockObject object) {
     accept(output, object, TabVisibility.PARENT_AND_SEARCH_TABS);
   }
 
   /** Accepts the given item if the passed tag has items */
-  @SuppressWarnings({"deprecation", "SameParameterValue"})
+  @SuppressWarnings("SameParameterValue")
   protected static boolean acceptIfTag(CreativeModeTab.Output output, ItemLike item, TabVisibility visibility, TagKey<Item> tagCondition) {
     Optional<Named<Item>> tag = BuiltInRegistries.ITEM.getTag(tagCondition);
     if (tag.isPresent() && tag.get().size() > 0) {

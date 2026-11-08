@@ -118,10 +118,10 @@ public class TConstruct {
     modEventBus.register(new TinkerGadgets());
     // world
     modEventBus.register(new TinkerWorld());
-    modEventBus.register(new TinkerStructures());
+    modEventBus.register(new TinkerStructures(modEventBus));
     // tools
     modEventBus.register(new TinkerTables());
-    modEventBus.register(new TinkerModifiers());
+    modEventBus.register(new TinkerModifiers(modEventBus));
     modEventBus.register(new TinkerToolParts());
     modEventBus.register(new TinkerTools());
     // smeltery
