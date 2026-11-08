@@ -15,7 +15,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,14 +40,14 @@ public class IslandPiece extends TemplateStructurePiece {
   private ChunkGenerator chunkGenerator;
 
   public IslandPiece(StructureTemplateManager manager, IslandStructure structure, ResourceLocation templateName, BlockPos templatePos, @Nullable ConfiguredFeature<?,?> tree, Rotation rotation, Mirror mirror) {
-    super(TinkerStructures.islandPiece.get(), 0, manager, templateName, templateName.toString(), makeSettings(rotation, mirror), templatePos);
+    super(TinkerStructures.islandPiece.value(), 0, manager, templateName, templateName.toString(), makeSettings(rotation, mirror), templatePos);
     this.structure = structure;
     this.numberOfTreesPlaced = 0;
     this.tree = tree;
   }
 
   public IslandPiece(StructurePieceSerializationContext context, CompoundTag nbt) {
-    super(TinkerStructures.islandPiece.get(), nbt, context.structureTemplateManager(), id -> makeSettings(Rotation.valueOf(nbt.getString("Rot")), Mirror.valueOf(nbt.getString("Mi"))));
+    super(TinkerStructures.islandPiece.value(), nbt, context.structureTemplateManager(), id -> makeSettings(Rotation.valueOf(nbt.getString("Rot")), Mirror.valueOf(nbt.getString("Mi"))));
     RegistryAccess access = context.registryAccess();
     if (find(access.registryOrThrow(Registries.STRUCTURE), nbt.getString("Structure")) instanceof IslandStructure island) {
       this.structure = island;
@@ -104,7 +103,7 @@ public class IslandPiece extends TemplateStructurePiece {
           if (plant.isPresent()) {
             Block block = plant.get();
             BlockState state = block.defaultBlockState();
-            if (block instanceof BushBlock bush && bush.canSurvive(state, level, pos)) {
+            if (state.canSurvive(level, pos)) {
               level.setBlock(pos, state, 2);
             }
           }

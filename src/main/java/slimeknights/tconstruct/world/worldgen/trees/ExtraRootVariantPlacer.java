@@ -2,7 +2,9 @@ package slimeknights.tconstruct.world.worldgen.trees;
 
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -37,7 +39,7 @@ import java.util.function.Predicate;
 
 /** Extension of {@link MangroveRootPlacer} to allow more root variants */
 public class ExtraRootVariantPlacer extends MangroveRootPlacer {
-  public static final Codec<ExtraRootVariantPlacer> CODEC = RecordCodecBuilder.create(inst -> rootPlacerParts(inst).and(inst.group(
+  public static final MapCodec<ExtraRootVariantPlacer> CODEC = RecordCodecBuilder.mapCodec(inst -> rootPlacerParts(inst).and(inst.group(
     MangroveRootPlacement.CODEC.fieldOf("mangrove_root_placement").forGetter(p -> p.mangroveRootPlacement),
     RootVariant.CODEC.listOf().fieldOf("root_variants").forGetter(p -> p.rootVariants))).apply(inst, ExtraRootVariantPlacer::new));
 
@@ -83,6 +85,7 @@ public class ExtraRootVariantPlacer extends MangroveRootPlacer {
   /** Builder for mangrove style roots */
   @Setter
   @Accessors(fluent = true)
+  @CanIgnoreReturnValue
   public static class Builder {
     private IntProvider trunkOffset = null;
     @Setter
@@ -98,7 +101,6 @@ public class ExtraRootVariantPlacer extends MangroveRootPlacer {
     private Builder() {}
 
     /** Sets the root to a block */
-    @CanIgnoreReturnValue
     public Builder rootBlock(Block block) {
       return roots(BlockStateProvider.simple(block));
     }
@@ -109,7 +111,6 @@ public class ExtraRootVariantPlacer extends MangroveRootPlacer {
      * @param state   Replacement state
      * @return  Builder instance
      */
-    @CanIgnoreReturnValue
     public Builder rootVariant(HolderSet<Block> holder, BlockStateProvider state) {
       rootVariants.add(new RootVariant(holder, state));
       return this;
@@ -122,7 +123,6 @@ public class ExtraRootVariantPlacer extends MangroveRootPlacer {
      * @return  Builder instance
      */
     @SuppressWarnings("deprecation")  // no idea why mojang deprecates the one API for that thing
-    @CanIgnoreReturnValue
     public Builder rootVariant(Block rootVariant, Block... replace) {
       return rootVariant(HolderSet.direct(Block::builtInRegistryHolder, replace), BlockStateProvider.simple(rootVariant));
     }
@@ -132,20 +132,18 @@ public class ExtraRootVariantPlacer extends MangroveRootPlacer {
      * @param slimyRoots  Slimy roots to add
      * @return  Builder instance
      */
-    @CanIgnoreReturnValue
     public Builder slimyRoots(EnumObject<SlimeType,Block> slimyRoots) {
       slimyRoots.forEach((type, block) -> rootVariant(block, block, TinkerWorld.congealedSlime.get(type)));
       return this;
     }
 
     /** Sets the blocks that the roots can grow though */
-    @SuppressWarnings("deprecation")
-    @CanIgnoreReturnValue
     public Builder canGrowThroughTag(TagKey<Block> tag) {
       return canGrowThrough(BuiltInRegistries.BLOCK.getOrCreateTag(tag));
     }
 
     /** Builds the final placer */
+    @CheckReturnValue
     public MangroveRootPlacer build() {
       if (trunkOffset == null) throw new IllegalStateException("Must set trunk offset");
       if (roots == null) throw new IllegalStateException("Must set roots");
