@@ -54,7 +54,7 @@ public class SlimeVineBlock extends VineBlock {
     if (hasNoHorizontalSides(state)) {
       // randomly choose sides to add
       BlockState newState = state;
-      boolean onLeaves = worldIn.getBlockState(pos.above()).is(TinkerTags.Blocks.SLIMY_LEAVES);
+      boolean onLeaves = worldIn.getBlockState(pos.above()).is(TinkerTags.BlockItems.SLIMY_LEAVES.block());
       for (Direction side : Direction.Plane.HORIZONTAL) {
         // must be hanging from leaves or have a valid side
         if ((onLeaves || isAcceptableNeighbour(worldIn, pos.relative(side), side)) && random.nextInt(6) == 0) {
@@ -240,7 +240,7 @@ public class SlimeVineBlock extends VineBlock {
     }
     // if not supported, try finding a vine or leaves there
     BlockState upState = world.getBlockState(pos.above());
-    if (upState.is(TinkerTags.Blocks.SLIMY_LEAVES)) {
+    if (upState.is(TinkerTags.BlockItems.SLIMY_LEAVES.block())) {
       return true;
     }
     // otherwise, if not up try a supporting vine (must not be end to support)

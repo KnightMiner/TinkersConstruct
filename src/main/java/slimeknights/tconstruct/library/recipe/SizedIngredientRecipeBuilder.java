@@ -5,6 +5,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.registration.object.BlockItemTagKey;
 
 /** Recipe builder for a recipe taking sized ingredients. Can be a single or multiple inputs. */
 public interface SizedIngredientRecipeBuilder<T> {
@@ -60,5 +61,14 @@ public interface SizedIngredientRecipeBuilder<T> {
    */
   default T input(TagKey<Item> tag) {
     return input(tag, 1);
+  }
+
+  /**
+   * Adds an input to the recipe
+   * @param tag     Tag input
+   * @return  Builder instance
+   */
+  default T input(BlockItemTagKey tag) {
+    return input(tag.item(), 1);
   }
 }

@@ -20,9 +20,10 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
+import slimeknights.mantle.Mantle;
+import slimeknights.mantle.registration.object.BlockItemTagKey;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -40,6 +41,7 @@ public class TinkerTags {
   /** Called on mod construct to set up tags */
   public static void init() {
     // TODO: is this really needed anymore?
+    BlockItems.init();
     Blocks.init();
     Items.init();
     Fluids.init();
@@ -53,12 +55,11 @@ public class TinkerTags {
     Potions.init();
     CreativeTabs.init();
     Instruments.init();
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TagsUpdatedEvent.class, event -> tagsLoaded = true);
+    NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, event -> tagsLoaded = true);
   }
 
   /** Resource location of the hidden from recipe tags used in JEI. */
-  @SuppressWarnings("removal")
-  public static final ResourceLocation HIDDEN_FROM_RECIPE_VIEWERS = new ResourceLocation("c", "hidden_from_recipe_viewers");
+  public static final ResourceLocation HIDDEN_FROM_RECIPE_VIEWERS = Mantle.commonResource("hidden_from_recipe_viewers");
 
   /** Creates a tag that hides things from JEI */
   @SuppressWarnings("SameParameterValue") // there really is no benefit to migrating to new constructors early; just lose Neo compat
@@ -66,47 +67,92 @@ public class TinkerTags {
     return TagKey.create(registry, HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
-  public static class Blocks {
+  /** Tags that are both block and item tags */
+  public static class BlockItems {
     private static void init() {}
-    public static final TagKey<Block> WORKBENCHES = common("workbenches");
-    public static final TagKey<Block> TABLES = local("tables");
-    public static final TagKey<Block> GLASS_PANES_SILICA = common("glass_panes/silica");
+
+    public static final BlockItemTagKey WORKBENCHES = common("workbenches");
+    public static final BlockItemTagKey TABLES = local("tables");
+    public static final BlockItemTagKey GLASS_BLOCKS_SILICA = common("glass_blocks/silica");
+    public static final BlockItemTagKey GLASS_PANES_SILICA = common("glass_panes/silica");
 
     /** Compat: allows other mods to add normal stone variants which can be used to create stone tools.
      * Note this tag includes both stone and cobblestone, unlike the default forge/vanilla tags that include one or the other
      * Also does not include other items that can be used as stone in crafting */
-    public static final TagKey<Block> STONE = common("normal_stone");
+    public static final BlockItemTagKey STONE = common("normal_stone");
     /** Compat: allows other mods to add granite variants which can be used to create granite tools */
-    public static final TagKey<Block> GRANITE = common("granite");
+    public static final BlockItemTagKey GRANITE = common("granite");
     /** Compat: allows other mods to add diorite variants which can be used to create diorite tools */
-    public static final TagKey<Block> DIORITE = common("diorite");
+    public static final BlockItemTagKey DIORITE = common("diorite");
     /** Compat: allows other mods to add andesite variants which can be used to create andesite tools */
-    public static final TagKey<Block> ANDESITE = common("andesite");
+    public static final BlockItemTagKey ANDESITE = common("andesite");
     /** Compat: allows other mods to add blackstone variants which can be used to create blackstone tools */
-    public static final TagKey<Block> BLACKSTONE = common("blackstone");
+    public static final BlockItemTagKey BLACKSTONE = common("blackstone");
     /** Compat: allows other mods to add deepslate variants which can be used to create deepslate tools */
-    public static final TagKey<Block> DEEPSLATE = common("deepslate");
+    public static final BlockItemTagKey DEEPSLATE = common("deepslate");
     /** Compat: allows other mods to add basalt variants which can be used to create basalt tools */
-    public static final TagKey<Block> BASALT = common("basalt");
+    public static final BlockItemTagKey BASALT = common("basalt");
+
+    /** Materials that can be used to craft wooden tool tables */
+    public static final BlockItemTagKey PLANKLIKE = local("planklike");
+    /** Metals that can be used to craft the anvil */
+    public static final BlockItemTagKey WORKSTATION_ROCK = local("workstation_rock");
+    /** Metals that can be used to craft the anvil */
+    public static final BlockItemTagKey ANVIL_METAL = local("anvil_metal");
+
+    /** Materials that can be used to craft the smeltery controller */
+    public static final BlockItemTagKey SMELTERY_BRICKS = local("smeltery_bricks");
+    /** Materials that can be used to craft the foundry controller */
+    public static final BlockItemTagKey FOUNDRY_BRICKS = local("foundry_bricks");
+
+    /** Copper platform variants */
+    public static final BlockItemTagKey COPPER_PLATFORMS = local("copper_platforms");
+
+    public static final BlockItemTagKey SLIME_BLOCK = local("slime_block");
+    public static final BlockItemTagKey CONGEALED_SLIME = local("congealed_slime");
+    public static final BlockItemTagKey SLIMY_LOGS = local("slimy_logs");
+    public static final BlockItemTagKey SLIMY_PLANKS = local("slimy_planks");
+    public static final BlockItemTagKey SLIMY_LEAVES = local("slimy_leaves");
+    public static final BlockItemTagKey SLIMY_VINES = local("slimy_vines");
+    public static final BlockItemTagKey SLIMY_SAPLINGS = local("slimy_saplings");
+    /** All variants of enderbark roots */
+    public static final BlockItemTagKey ENDERBARK_ROOTS = local("enderbark/roots");
+    /** Blocks that are slime grass on top of dirt */
+    public static final BlockItemTagKey SLIMY_GRASS = local("slimy_grass");
+    /** Blocks that are slime fungus on top of dirt */
+    public static final BlockItemTagKey SLIMY_NYLIUM = local("slimy_nylium");
+    /** Slime grass, slime fungus, or slime dirt */
+    public static final BlockItemTagKey SLIMY_SOIL = local("slimy_soil");
+
+    public static final BlockItemTagKey ORES_COBALT = common("ores/cobalt");
+    public static final BlockItemTagKey RAW_BLOCK_COBALT = common("storage_blocks/raw_cobalt");
+
+    public static final BlockItemTagKey SEARED_BLOCKS = local("seared_blocks");
+    public static final BlockItemTagKey SEARED_BRICKS = local("seared_bricks");
+    public static final BlockItemTagKey SEARED_TANKS = local("seared_tanks");
+    public static final BlockItemTagKey SCORCHED_BLOCKS = local("scorched_blocks");
+    public static final BlockItemTagKey SCORCHED_TANKS = local("scorched_tanks");
+
+
+    /** Makes a block item tag in the tinkers domain */
+    private static BlockItemTagKey local(String name) {
+      return BlockItemTagKey.create(getResource(name));
+    }
+
+    /** Makes a block item tag in the common domain */
+    private static BlockItemTagKey common(String name) {
+      return BlockItemTagKey.create(commonResource(name));
+    }
+  }
+
+  public static class Blocks {
+    private static void init() {}
 
     /** Blocks that render a transparent overlay when you are inside */
     public static final TagKey<Block> TRANSPARENT_OVERLAY = local("transparent_overlay");
 
-    /** Materials that can be used to craft wooden tool tables */
-    public static final TagKey<Block> PLANKLIKE = local("planklike");
-    /** Metals that can be used to craft the anvil */
-    public static final TagKey<Block> WORKSTATION_ROCK = local("workstation_rock");
-    /** Metals that can be used to craft the anvil */
-    public static final TagKey<Block> ANVIL_METAL = local("anvil_metal");
-    /** Materials that can be used to craft the smeltery controller */
-    public static final TagKey<Block> SMELTERY_BRICKS = local("smeltery_bricks");
-    /** Materials that can be used to craft the foundry controller */
-    public static final TagKey<Block> FOUNDRY_BRICKS = local("foundry_bricks");
-
     /** Things the platform connects to */
     public static final TagKey<Block> PLATFORM_CONNECTIONS = local("platform_connections");
-    /** Copper platform variants */
-    public static final TagKey<Block> COPPER_PLATFORMS = local("copper_platforms");
 
     // Slime spawn
     /** Blocks skyslimes can spawn on in the overworld */
@@ -116,38 +162,12 @@ public class TinkerTags {
     /** Blocks enderslimes can spawn on in the end */
     public static final TagKey<Block> ENDER_SLIME_SPAWN = local("slime_spawn/ender");
 
-    public static final TagKey<Block> SLIME_BLOCK = local("slime_block");
-    public static final TagKey<Block> CONGEALED_SLIME = local("congealed_slime");
-    public static final TagKey<Block> SLIMY_LOGS = local("slimy_logs");
-    public static final TagKey<Block> SLIMY_PLANKS = local("slimy_planks");
-    public static final TagKey<Block> SLIMY_LEAVES = local("slimy_leaves");
-    public static final TagKey<Block> SLIMY_VINES = local("slimy_vines");
-    public static final TagKey<Block> SLIMY_SAPLINGS = local("slimy_saplings");
-    /** All variants of enderbark roots */
-    public static final TagKey<Block> ENDERBARK_ROOTS = local("enderbark/roots");
-    /** Blocks that are slime grass on top of dirt */
-    public static final TagKey<Block> SLIMY_GRASS = local("slimy_grass");
-    /** Blocks that are slime fungus on top of dirt */
-    public static final TagKey<Block> SLIMY_NYLIUM = local("slimy_nylium");
-    /** Slime grass, slime fungus, or slime dirt */
-    public static final TagKey<Block> SLIMY_SOIL = local("slimy_soil");
     /** Blocks enderbark logs can replace */
     public static final TagKey<Block> ENDERBARK_LOGS_CAN_GROW_THROUGH = local("enderbark/logs_can_grow_through");
     /** Blocks enderbark roots can replace */
     public static final TagKey<Block> ENDERBARK_ROOTS_CAN_GROW_THROUGH = local("enderbark/roots_can_grow_through");
     /** Blocks slimy fungus (any of the three types) can replace */
     public static final TagKey<Block> SLIMY_FUNGUS_CAN_GROW_THROUGH = local("slimy_fungus_can_grow_through");
-
-    public static final TagKey<Block> ORES_COBALT = common("ores/cobalt");
-    public static final TagKey<Block> RAW_BLOCK_COBALT = common("storage_blocks/raw_cobalt");
-
-    public static final TagKey<Block> SEARED_BLOCKS = local("seared_blocks");
-    public static final TagKey<Block> SEARED_BRICKS = local("seared_bricks");
-    public static final TagKey<Block> SEARED_TANKS = local("seared_tanks");
-
-    public static final TagKey<Block> SCORCHED_BLOCKS = local("scorched_blocks");
-    public static final TagKey<Block> SCORCHED_TANKS = local("scorched_tanks");
-
 
     /** Blocks which make a heater part of a structure, when placed above a heater */
     public static final TagKey<Block> HEATER_CONTROLLERS = local("heater_controllers");
@@ -212,17 +232,16 @@ public class TinkerTags {
     // misc compat
     public static final TagKey<Block> BUDDING = common("budding");
     // ceramics compat
-    @SuppressWarnings("removal")
-    public static final TagKey<Block> CISTERN_CONNECTIONS = TagKey.create(Registries.BLOCK, new ResourceLocation("ceramics", "cistern_connections"));
+    public static final TagKey<Block> CISTERN_CONNECTIONS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("ceramics", "cistern_connections"));
     // create compat
-    @SuppressWarnings("removal")
-    public static final TagKey<Block> CREATE_ROOTS = TagKey.create(Registries.BLOCK, new ResourceLocation("create", "roots"));
+    public static final TagKey<Block> CREATE_ROOTS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("create", "roots"));
 
     /** Makes a tag in the tinkers domain */
     private static TagKey<Block> local(String name) {
       return TagKey.create(Registries.BLOCK, getResource(name));
     }
 
+    /** Makes a tag in the common domain */
     private static TagKey<Block> common(String name) {
       return TagKey.create(Registries.BLOCK, commonResource(name));
     }
@@ -230,63 +249,15 @@ public class TinkerTags {
 
   public static class Items {
     private static void init() {}
-    public static final TagKey<Item> WORKBENCHES = common("workbenches");
-    public static final TagKey<Item> TABLES = local("tables");
-    public static final TagKey<Item> GLASS_PANES_SILICA = common("glass_panes/silica");
-
-    /** Compat: allows other mods to add normal stone variants which can be used to create stone tools.
-     * Note this tag includes both stone and cobblestone, unlike the default forge/vanilla tags that include one or the other
-     * Also does not include other items that can be used as stone in crafting */
-    public static final TagKey<Item> STONE = common("normal_stone");
-    /** Compat: allows other mods to add granite variants which can be used to create granite tools */
-    public static final TagKey<Item> GRANITE = common("granite");
-    /** Compat: allows other mods to add diorite variants which can be used to create diorite tools */
-    public static final TagKey<Item> DIORITE = common("diorite");
-    /** Compat: allows other mods to add andesite variants which can be used to create andesite tools */
-    public static final TagKey<Item> ANDESITE = common("andesite");
-    /** Compat: allows other mods to add blackstone variants which can be used to create blackstone tools */
-    public static final TagKey<Item> BLACKSTONE = common("blackstone");
-    /** Compat: allows other mods to add deepslate variants which can be used to create deepslate tools */
-    public static final TagKey<Item> DEEPSLATE = common("deepslate");
-    /** Compat: allows other mods to add basalt variants which can be used to create basalt tools */
-    public static final TagKey<Item> BASALT = common("basalt");
-
-    /** Materials that can be used to craft wooden tool tables */
-    public static final TagKey<Item> PLANKLIKE = local("planklike");
-    /** Metals that can be used to craft the anvil */
-    public static final TagKey<Item> WORKSTATION_ROCK = local("workstation_rock");
-    /** Metals that can be used to craft the anvil */
-    public static final TagKey<Item> ANVIL_METAL = local("anvil_metal");
-    /** Materials that can be used to craft the smeltery controller */
-    public static final TagKey<Item> SMELTERY_BRICKS = local("smeltery_bricks");
-    /** Materials that can be used to craft the foundry controller */
-    public static final TagKey<Item> FOUNDRY_BRICKS = local("foundry_bricks");
-    /** Copper platform variants */
-    public static final TagKey<Item> COPPER_PLATFORMS = local("copper_platforms");
 
     /** Planks in this tag are skipped in the default wood crafting recipe as they have their own variant. Tagging your planks here will allow you to add another wood variant */
     public static final TagKey<Item> VARIANT_PLANKS = local("wood_variants/planks");
     /** Logs in this tag are skipped in the default wood crafting recipe as they have their own variant. Tagging your logs here will allow you to add another wood variant */
     public static final TagKey<Item> VARIANT_LOGS = local("wood_variants/logs");
 
-    public static final TagKey<Item> SLIME_BLOCK = local("slime_block");
-    public static final TagKey<Item> CONGEALED_SLIME = local("congealed_slime");
-    public static final TagKey<Item> SLIMY_LOGS = local("slimy_logs");
-    public static final TagKey<Item> SLIMY_PLANKS = local("slimy_planks");
-    public static final TagKey<Item> SLIMY_LEAVES = local("slimy_leaves");
-    public static final TagKey<Item> SLIMY_VINES = local("slimy_vines");
-    public static final TagKey<Item> SLIMY_SAPLINGS = local("slimy_saplings");
-    /** All variants of enderbark roots */
-    public static final TagKey<Item> ENDERBARK_ROOTS = local("enderbark/roots");
-
-    public static final TagKey<Item> SEARED_BLOCKS = local("seared_blocks");
-    public static final TagKey<Item> SEARED_BRICKS = local("seared_bricks");
-    public static final TagKey<Item> SCORCHED_BLOCKS = local("scorched_blocks");
     public static final TagKey<Item> SMELTERY = local("smeltery");
     public static final TagKey<Item> FOUNDRY = local("foundry");
 
-    public static final TagKey<Item> ORES_COBALT = common("ores/cobalt");
-    public static final TagKey<Item> RAW_BLOCK_COBALT = common("storage_blocks/raw_cobalt");
     public static final TagKey<Item> RAW_COBALT = common("raw_materials/cobalt");
 
     // non-standard prefix for items that smelt into 1 nugget but are not in fact nuggets
@@ -323,8 +294,6 @@ public class TinkerTags {
     public static final TagKey<Item> REUSABLE_PATTERNS = local("patterns/reusable");
 
     /** All basic tinkers tanks */
-    public static final TagKey<Item> SEARED_TANKS = local("seared_tanks");
-    public static final TagKey<Item> SCORCHED_TANKS = local("scorched_tanks");
     public static final TagKey<Item> TANKS = local("tanks");
 
     /** Bones that drop from normal skeletons or some equivalent. Intentionally does not use {@link net.neoforged.neoforge.common.Tags.Items#BONES} as that includes many weird bones. */
@@ -550,8 +519,7 @@ public class TinkerTags {
     /** Tag of trophies from bosses, to grant an additional upgrade slot to tools. Meant for Twilight Forest boss trophies, but suppose you can add other bosses that are not easily farmed. */
     public static final TagKey<Item> BOSS_TROPHIES = local("boss_trophies");
     /** Create tree attachments */
-    @SuppressWarnings("removal")
-    public static final TagKey<Item> TREE_ATTACHMENTS = TagKey.create(Registries.ITEM, new ResourceLocation("create", "tree_attachments"));
+    public static final TagKey<Item> TREE_ATTACHMENTS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("create", "tree_attachments"));
 
     /** Fluids in this tag won't show in JEI */
     public static final TagKey<Item> HIDDEN_IN_RECIPE_VIEWERS = hiddenFromRecipeViewers(Registries.ITEM);

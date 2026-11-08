@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class MenuTypeTagProvider extends BuiltinRegistryTagProvider<MenuType<?>> {
-  @SuppressWarnings("deprecation")
   public MenuTypeTagProvider(PackOutput packOutput, CompletableFuture<Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
     super(packOutput, BuiltInRegistries.MENU, lookupProvider, TConstruct.MOD_ID, existingFileHelper);
   }

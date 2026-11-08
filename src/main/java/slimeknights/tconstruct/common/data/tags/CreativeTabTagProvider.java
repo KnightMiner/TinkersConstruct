@@ -8,8 +8,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.data.BuiltinRegistryTagProvider;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.fluids.TinkerFluids;
-import slimeknights.tconstruct.tables.TinkerTables;
+import slimeknights.tconstruct.shared.TinkerCreativeTabs;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +20,6 @@ public class CreativeTabTagProvider extends BuiltinRegistryTagProvider<CreativeM
 
   @Override
   protected void addTags(Provider provider) {
-    this.tag(TinkerTags.CreativeTabs.HIDDEN_IN_RECIPE_VIEWERS).add(TinkerTables.tabTables.get(), TinkerFluids.tabFluids.get());
+    this.tag(TinkerTags.CreativeTabs.HIDDEN_IN_RECIPE_VIEWERS).add(TinkerCreativeTabs.tables.get(), TinkerCreativeTabs.fluids.get());
   }
 }

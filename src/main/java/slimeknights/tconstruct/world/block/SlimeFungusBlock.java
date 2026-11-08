@@ -18,11 +18,11 @@ public class SlimeFungusBlock extends FungusBlock {
 
   @Override
   protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-    return state.is(TinkerTags.Blocks.SLIMY_SOIL);
+    return state.is(TinkerTags.BlockItems.SLIMY_SOIL.block());
   }
 
   @Override
   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-    return level.getBlockState(pos.below()).is(TinkerTags.Blocks.SLIMY_SOIL);
+    return level.getBlockState(pos.below()).is(TinkerTags.BlockItems.SLIMY_SOIL.block());
   }
 }

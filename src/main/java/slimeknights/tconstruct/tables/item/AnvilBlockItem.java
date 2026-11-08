@@ -7,7 +7,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -64,9 +63,9 @@ public class AnvilBlockItem extends MaterialBlockItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     // ditch the super call advanced tooltip material ID, we will handle it ourselves later
-    this.getBlock().appendHoverText(stack, level, tooltip, flag);
+    this.getBlock().appendHoverText(stack, context, tooltip, flag);
     MaterialVariantId material = getMaterial(stack);
     if (!MaterialId.UNKNOWN.equals(material)) {
       // put tool material in tooltip. Its technically below texture but the two should never coexist.
@@ -90,7 +89,7 @@ public class AnvilBlockItem extends MaterialBlockItem {
     RetexturedHelper.addTagVariants(stack -> {
       items.accept(stack);
       return false;
-    }, this, TinkerTags.Items.ANVIL_METAL);
+    }, this, TinkerTags.BlockItems.ANVIL_METAL.item());
     super.addVariants(items, showOnlyMaterial);
   }
 }

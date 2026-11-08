@@ -18,7 +18,7 @@ public class WaxedPlatformBlock extends PlatformBlock {
 
   @Override
   protected boolean verticalConnect(BlockState state) {
-    return state.is(TinkerTags.Blocks.COPPER_PLATFORMS);
+    return state.is(TinkerTags.BlockItems.COPPER_PLATFORMS.block());
   }
 
   @Nullable

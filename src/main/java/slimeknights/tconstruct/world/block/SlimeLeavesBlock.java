@@ -50,7 +50,7 @@ public class SlimeLeavesBlock extends LeavesBlock {
   }
 
   private static int getDistance(BlockState neighbor) {
-    if (neighbor.is(TinkerTags.Blocks.SLIMY_LOGS)) {
+    if (neighbor.is(TinkerTags.BlockItems.SLIMY_LOGS.block())) {
       return 0;
     } else {
       return neighbor.getBlock() instanceof SlimeLeavesBlock ? neighbor.getValue(DISTANCE) : 7;

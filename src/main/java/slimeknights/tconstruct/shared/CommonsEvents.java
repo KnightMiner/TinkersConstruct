@@ -45,7 +45,7 @@ public class CommonsEvents {
 
     if (TinkerWorld.congealedSlime.contains(block)) {
       bounce(event.getEntity(), 0.25f);
-    } else if (state.is(TinkerTags.Blocks.SLIMY_SOIL)) {
+    } else if (state.is(TinkerTags.BlockItems.SLIMY_SOIL.block())) {
       bounce(event.getEntity(), 0.06f);
     }
   }

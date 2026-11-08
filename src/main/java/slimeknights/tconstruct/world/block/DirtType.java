@@ -1,12 +1,10 @@
 package slimeknights.tconstruct.world.block;
 
 import lombok.Getter;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Tiers;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
+import slimeknights.mantle.registration.object.BlockItemTagKey;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.shared.block.SlimeType;
 
@@ -29,17 +27,16 @@ public enum DirtType implements StringRepresentable {
   private final Tiers harvestTier;
   /** Color for this block on maps */
   private final MapColor mapColor;
-  @Getter
   private final String serializedName = this.name().toLowerCase(Locale.ROOT);
 
   /* Tags */
   /** Tag for dirt blocks of this type, including blocks with grass on top */
-  private final TagKey<Block> blockTag;
+  private final BlockItemTagKey tag;
 
   DirtType(Tiers harvestTier, MapColor mapColor) {
     this.harvestTier = harvestTier;
     this.mapColor = mapColor;
-    this.blockTag = BlockTags.create(TConstruct.getResource("slimy_soil/" + this.getSerializedName()));
+    this.tag = BlockItemTagKey.create(TConstruct.getResource("slimy_soil/" + this.getSerializedName()));
   }
 
   private SlimeType slimeType;

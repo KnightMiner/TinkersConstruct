@@ -51,7 +51,7 @@ public enum SlimeType implements StringRepresentable {
     this.nether = nether;
     this.lightLevel = lightLevel;
     // tags
-    slimeballTag = ItemTags.create(commonResource("slimeball/" + this.getSerializedName()));
+    slimeballTag = ItemTags.create(commonResource("slime_balls/" + this.getSerializedName()));
   }
 
   SlimeType(int color, MapColor mapColor, boolean nether) {

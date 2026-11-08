@@ -68,7 +68,7 @@ public class SlimePropaguleBlock extends SlimeSaplingBlock {
   @Override
   public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
     return state.getValue(HANGING)
-           ? level.getBlockState(pos.above()).is(TinkerTags.Blocks.SLIMY_LEAVES)
+           ? level.getBlockState(pos.above()).is(TinkerTags.BlockItems.SLIMY_LEAVES.block())
            : super.canSurvive(state, level, pos);
   }
 

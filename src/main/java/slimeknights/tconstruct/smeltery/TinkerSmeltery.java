@@ -511,14 +511,14 @@ public final class TinkerSmeltery extends TinkerModule {
       output.accept(stack);
       return false;
     };
-    RetexturedHelper.addTagVariants(variant, smelteryController, TinkerTags.Items.SEARED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, searedDrain, TinkerTags.Items.SEARED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, searedDuct, TinkerTags.Items.SEARED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, searedChute, TinkerTags.Items.SEARED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, foundryController, TinkerTags.Items.SCORCHED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, scorchedDrain, TinkerTags.Items.SCORCHED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, scorchedDuct, TinkerTags.Items.SCORCHED_BLOCKS);
-    RetexturedHelper.addTagVariants(variant, scorchedChute, TinkerTags.Items.SCORCHED_BLOCKS);
+    RetexturedHelper.addTagVariants(variant, smelteryController, TinkerTags.BlockItems.SMELTERY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, searedDrain, TinkerTags.BlockItems.SMELTERY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, searedDuct, TinkerTags.BlockItems.SMELTERY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, searedChute, TinkerTags.BlockItems.SMELTERY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, foundryController, TinkerTags.BlockItems.FOUNDRY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, scorchedDrain, TinkerTags.BlockItems.FOUNDRY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, scorchedDuct, TinkerTags.BlockItems.FOUNDRY_BRICKS.item());
+    RetexturedHelper.addTagVariants(variant, scorchedChute, TinkerTags.BlockItems.FOUNDRY_BRICKS.item());
   }
 
   /** Adds adds all casts of the given type to the tab */

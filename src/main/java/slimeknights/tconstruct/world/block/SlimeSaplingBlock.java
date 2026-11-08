@@ -15,6 +15,6 @@ public class SlimeSaplingBlock extends SaplingBlock {
 
   @Override
   protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-    return state.is(TinkerTags.Blocks.SLIMY_SOIL);
+    return state.is(TinkerTags.BlockItems.SLIMY_SOIL.block());
   }
 }

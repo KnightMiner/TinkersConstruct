@@ -254,7 +254,7 @@ public class SlimeTreeFeature extends Feature<SlimeTreeConfig> {
   }
 
   private static boolean isSlimySoilAt(LevelSimulatedReader reader, BlockPos blockPos) {
-    return reader.isStateAtPosition(blockPos, state -> state.is(TinkerTags.Blocks.SLIMY_SOIL));
+    return reader.isStateAtPosition(blockPos, state -> state.is(TinkerTags.BlockItems.SLIMY_SOIL.block()));
   }
 
   public static boolean isReplaceableAt(LevelSimulatedReader reader, BlockPos blockPos) {

@@ -910,7 +910,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     ModifierRecipeBuilder.modifier(ModifierIds.minimap)
       .setTools(TinkerTags.Items.HELMETS)
       .input(Items.COMPASS)
-      .input(Tags.Items.SLIMEBALLS)
+      .input(Tags.Items.SLIME_BALLS)
       .input(Items.PAPER)
       .setSlots(SlotType.UPGRADE, 1)
       .saveSalvage(consumer, prefix(ModifierIds.minimap, upgradeSalvage))
@@ -1400,8 +1400,8 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .input(TinkerWorld.skySlimeVine)
       .input(TinkerMaterials.slimesteel.getIngotTag())
       .input(TinkerWorld.skySlimeVine)
-      .input(TinkerTags.Items.SLIMY_LOGS)
-      .input(TinkerTags.Items.SLIMY_LOGS)
+      .input(TinkerTags.BlockItems.SLIMY_LOGS)
+      .input(TinkerTags.BlockItems.SLIMY_LOGS)
       .setSlots(SlotType.ABILITY, 1)
       .setMaxLevel(1).checkTraitLevel()
       // staff exclusive ranged option, though notably melting pan is a staff
@@ -1631,12 +1631,12 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     Ingredient bonusSkulls = IntersectionIngredient.of(Ingredient.of(TinkerTags.Items.BONUS_SLOTS), Ingredient.of(TinkerTags.Items.SKULLS));
     ModifierRecipeBuilder.modifier(ModifierIds.recapitated)
       .setTools(bonusSkulls)
-      .addInput(standardSkulls).input(Tags.Items.SLIMEBALLS)
+      .addInput(standardSkulls).input(Tags.Items.SLIME_BALLS)
       .setMaxLevel(1)
       .save(consumer, wrap(ModifierIds.recapitated, slotlessFolder, "_for_skull"));
     ModifierRecipeBuilder.modifier(ModifierIds.forecast)
                          .setTools(TinkerTags.Items.BONUS_SLOTS)
-                         .input(ingredientFromTags(Tags.Items.ORES_DIAMOND, Tags.Items.ORES_EMERALD, TinkerTags.Items.ORES_COBALT))
+                         .input(ingredientFromTags(Tags.Items.ORES_DIAMOND, Tags.Items.ORES_EMERALD, TinkerTags.BlockItems.ORES_COBALT.item()))
                          .setMaxLevel(1)
                          .save(consumer, prefix(ModifierIds.forecast, slotlessFolder));
     ModifierRecipeBuilder.modifier(ModifierIds.embossed)
@@ -1651,7 +1651,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .save(consumer, wrap(ModifierIds.draconic, slotlessFolder, "_from_head"));
     ModifierRecipeBuilder.modifier(ModifierIds.draconic)
       .setTools(bonusSkulls)
-      .input(Items.DRAGON_HEAD).input(Tags.Items.SLIMEBALLS)
+      .input(Items.DRAGON_HEAD).input(Tags.Items.SLIME_BALLS)
       .setMaxLevel(1)
       .save(consumer, wrap(ModifierIds.draconic, slotlessFolder, "_for_skull"));
     ModifierRecipeBuilder.modifier(ModifierIds.draconic)

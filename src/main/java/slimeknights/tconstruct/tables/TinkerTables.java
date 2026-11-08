@@ -169,7 +169,7 @@ public final class TinkerTables extends TinkerModule {
     RetexturedHelper.addTagVariants(variants, partBuilder, ItemTags.PLANKS);
     RetexturedHelper.addTagVariants(variants, tinkerStation, ItemTags.PLANKS);
     // stone tables
-    RetexturedHelper.addTagVariants(variants, modifierWorktable, TinkerTags.Items.WORKSTATION_ROCK);
+    RetexturedHelper.addTagVariants(variants, modifierWorktable, TinkerTags.BlockItems.WORKSTATION_ROCK.item());
     // end with smeltery controller and drain variants
     TinkerSmeltery.addTableVariants(itemDisplayParameters, output);
   }

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class PotionTagProvider extends BuiltinRegistryTagProvider<Potion> {
-  @SuppressWarnings("deprecation")
   public PotionTagProvider(PackOutput packOutput, CompletableFuture<Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
     super(packOutput, BuiltInRegistries.POTION, lookupProvider, TConstruct.MOD_ID, existingFileHelper);
   }

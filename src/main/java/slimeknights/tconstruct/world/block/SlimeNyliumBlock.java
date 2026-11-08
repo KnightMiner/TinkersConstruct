@@ -48,6 +48,6 @@ public class SlimeNyliumBlock extends Block implements BonemealableBlock {
 
   @Override
   public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState state) {
-    SlimeGrassBlock.growGrass(world, rand, pos, TinkerTags.Blocks.SLIMY_NYLIUM, foliageType, true, true);
+    SlimeGrassBlock.growGrass(world, rand, pos, TinkerTags.BlockItems.SLIMY_NYLIUM.block(), foliageType, true, true);
   }
 }

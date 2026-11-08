@@ -13,8 +13,8 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import slimeknights.mantle.recipe.data.ICommonRecipeHelper;
-import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
+import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.common.registration.object.GeodeItemObject;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.SlimeType;
@@ -84,17 +84,17 @@ public class WorldRecipeProvider extends BaseRecipeProvider implements ICommonRe
     ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, Blocks.STICKY_PISTON)
                        .pattern("#")
                        .pattern("P")
-                       .define('#', Tags.Items.SLIMEBALLS)
+                       .define('#', Tags.Items.SLIME_BALLS)
                        .define('P', Blocks.PISTON)
-                       .unlockedBy("has_slime_ball", has(Tags.Items.SLIMEBALLS))
+                       .unlockedBy("has_slime_ball", has(Tags.Items.SLIME_BALLS))
                        .save(slimeConsumer, location("common/slime/sticky_piston"));
     ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.LEAD, 2)
                        .define('~', Items.STRING)
-                       .define('O', Tags.Items.SLIMEBALLS)
+                       .define('O', Tags.Items.SLIME_BALLS)
                        .pattern("~~ ")
                        .pattern("~O ")
                        .pattern("  ~")
-                       .unlockedBy("has_slime_ball", has(Tags.Items.SLIMEBALLS))
+                       .unlockedBy("has_slime_ball", has(Tags.Items.SLIME_BALLS))
                        .save(slimeConsumer, location("common/slime/lead"));
 
     // wood

@@ -99,7 +99,7 @@ public class SlimeGrassBlock extends SnowyDirtBlock implements BonemealableBlock
 
   @Override
   public void performBonemeal(ServerLevel world, RandomSource rand, BlockPos pos, BlockState state) {
-    growGrass(world, rand, pos, TinkerTags.Blocks.SLIMY_GRASS, foliageType, false, false);
+    growGrass(world, rand, pos, TinkerTags.BlockItems.SLIMY_GRASS.block(), foliageType, false, false);
   }
 
   /* Spreading */

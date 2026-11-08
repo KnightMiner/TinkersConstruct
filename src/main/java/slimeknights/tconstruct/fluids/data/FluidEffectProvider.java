@@ -291,7 +291,7 @@ public class FluidEffectProvider extends AbstractFluidEffectProvider {
       .offsetBlockEffect(plants, FluidEffect.REMOVE_BLOCK)
       .addBlockEffect(new OffsetBlockFluidEffect(new ConditionalFluidEffect.BlockContext(plants, FluidEffect.REMOVE_BLOCK), Direction.UP))
       // replace grass and farmland with dirt
-      .addBlockEffect(BlockPredicate.or(BlockPredicate.set(Blocks.GRASS_BLOCK, Blocks.MYCELIUM, Blocks.PODZOL, Blocks.FARMLAND), BlockPredicate.tag(DirtType.VANILLA.getBlockTag())), new SetBlockFluidEffect(Blocks.DIRT))
+      .addBlockEffect(BlockPredicate.or(BlockPredicate.set(Blocks.GRASS_BLOCK, Blocks.MYCELIUM, Blocks.PODZOL, Blocks.FARMLAND), BlockPredicate.tag(DirtType.VANILLA.getTag().block())), new SetBlockFluidEffect(Blocks.DIRT))
       // discard leaves
       .addBlockEffect(BlockPredicate.tag(BlockTags.LEAVES), FluidEffect.REMOVE_BLOCK);
     // plant oil - its edible but makes you feel sick
