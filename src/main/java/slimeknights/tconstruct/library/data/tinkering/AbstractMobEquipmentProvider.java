@@ -2,16 +2,15 @@ package slimeknights.tconstruct.library.data.tinkering;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.conditions.ModLoadedCondition;
-import slimeknights.mantle.data.GenericDataProvider;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import slimeknights.mantle.data.GenericRegistryDataProvider;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.tconstruct.library.loot.equipment.MobEquipment;
@@ -23,23 +22,22 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /** Data provider for {@link EquipmentJson} */
-public abstract class AbstractMobEquipmentProvider extends GenericDataProvider {
+public abstract class AbstractMobEquipmentProvider extends GenericRegistryDataProvider {
   private final Map<String, EquipmentJson> equipment = new HashMap<>();
   private final String modId;
 
-  public AbstractMobEquipmentProvider(PackOutput output, String modId) {
-    super(output, Target.DATA_PACK, MobEquipmentManager.FOLDER, JsonHelper.DEFAULT_GSON);
+  public AbstractMobEquipmentProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
+    super(output, MobEquipmentManager.FOLDER, registries);
     this.modId = modId;
   }
 
   /** Adds all equipment for this provider */
-  protected abstract void addEquipment();
+  protected abstract void addEquipment(HolderLookup.Provider registries);
 
-  @SuppressWarnings("removal")
   @Override
-  public CompletableFuture<?> run(CachedOutput cache) {
-    addEquipment();
-    return allOf(equipment.entrySet().stream().map(entry -> saveJson(cache, new ResourceLocation(modId, entry.getKey()), entry.getValue().serialize())));
+  public CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
+    addEquipment(registries);
+    return allOf(equipment.entrySet().stream().map(entry -> saveJson(cache, ResourceLocation.fromNamespaceAndPath(modId, entry.getKey()), entry.getValue().serialize())));
   }
 
   /** Creates a builder for the given entity */
@@ -116,7 +114,7 @@ public abstract class AbstractMobEquipmentProvider extends GenericDataProvider {
       json.add("equip", MobEquipment.LIST_LOADABLE.serialize(equipment.build()));
       // serialize conditions
       if (conditions.length > 0) {
-        json.add("conditions", CraftingHelper.serialize(conditions));
+        json.add("neoforge:conditions", JsonHelper.serializeArray(ICondition.CODEC, conditions));
       }
       return json;
     }

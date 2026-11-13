@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Loadable;
@@ -28,6 +28,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.mantle.recipe.helper.ItemOutput;
+import slimeknights.mantle.recipe.ingredient.IngredientHelper;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
@@ -36,19 +37,18 @@ import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** JSON object representing equipment replacement encoded in JSON */
-public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemOutput tool, List<RandomMaterial> materials, @Nullable TagKey<Fluid> fluid, float chance, int priority) {
+public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemOutput tool, List<RandomMaterial> materials, HolderSet<Fluid> fluid, float chance, int priority) {
   public static final RecordLoadable<MobEquipment> LOADABLE = RecordLoadable.create(
     TinkerLoadables.EQUIPMENT_SLOT.requiredField("slot", MobEquipment::slot),
     ItemPredicate.LOADER.defaultField("match", MobEquipment::match),
-    ItemOutput.Loadable.REQUIRED_STACK.requiredField("tool", MobEquipment::tool),
+    ItemOutput.REQUIRED_STACK_LOADABLE.requiredField("tool", MobEquipment::tool),
     RandomMaterial.LOADER.list(0).defaultField("materials", List.of(), false, MobEquipment::materials),
-    Loadables.FLUID_TAG.nullableField("fluid", MobEquipment::fluid),
+    Loadables.FLUID_SET.defaultField("fluid", HolderSet.empty(), MobEquipment::fluid),
     FloatLoadable.PERCENT.defaultField("chance", 0.05f, true, MobEquipment::chance),
     IntLoadable.FROM_ZERO.defaultField("priority", 100, true, MobEquipment::priority),
     MobEquipment::new);
@@ -66,7 +66,7 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
 
   /** Applies this replacement to the target mob */
   @SuppressWarnings({"deprecation", "OverrideOnly"})  // in that event, I can't call the event method, or I'll get a stack overflow
-  public static boolean apply(List<MobEquipment> replace, Mob mob, FinalizeSpawn event) {
+  public static boolean apply(List<MobEquipment> replace, Mob mob, FinalizeSpawnEvent event) {
     // first, figure out which slots are going to apply. This is because we take over mob finalizing only if at least one applies
     RandomSource random = mob.getRandom();
     List<MobEquipment> apply = new ArrayList<>(replace.size());
@@ -80,7 +80,7 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
     // since this is risky, only do this if we know we want our equipment there
     if (!apply.isEmpty()) {
       ServerLevelAccessor level = event.getLevel();
-      mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), event.getSpawnType(), event.getSpawnData(), event.getSpawnTag());
+      mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), event.getSpawnType(), event.getSpawnData());
 
       // apply any replacements
       for (MobEquipment slot : apply) {
@@ -92,7 +92,6 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
   }
 
   /** Applies this replacement to the target */
-  @SuppressWarnings("deprecation")
   public void apply(Mob mob) {
     // check if the slot is replaceable
     if (match.matches(mob.getItemBySlot(slot).getItem())) {
@@ -108,16 +107,13 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
           tool.rebuildStats();
         }
         // if requested, fill with fluid
-        if (fluid != null) {
+        if (fluid.size() > 0) {
           // fill with between 0mb and the max amount
           int capacity = ToolTankHelper.TANK_HELPER.getCapacity(tool);
           int amount = random.nextInt(capacity + 1);
           if (amount > 0) {
             // select fluid from tag
-            Fluid fluid = BuiltInRegistries.FLUID.getTag(this.fluid)
-              .flatMap(tag -> tag.getRandomElement(random))
-              .map(Holder::get)
-              .orElse(Fluids.EMPTY);
+            Fluid fluid = this.fluid.getRandomElement(random).map(Holder::value).orElse(Fluids.EMPTY);
             if (fluid != Fluids.EMPTY) {
               ToolTankHelper.TANK_HELPER.setFluid(tool, new FluidStack(fluid, amount));
             }
@@ -159,8 +155,7 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
       /** List of materials to assign to the tool */
       private final List<RandomMaterial> materials = new ArrayList<>();
       /** Tool will be filled with a random fluid from the passed tag. If null, no fluid is used. */
-      @Nullable
-      private TagKey<Fluid> fluid = null;
+      private HolderSet<Fluid> fluid = HolderSet.empty();
       /** Chance the tool is given to the entity */
       private float chance = 0.05f;
       /** Order this entry applies if multiple entries are on the same target. Higher numbers run earlier. */
@@ -187,6 +182,11 @@ public record MobEquipment(EquipmentSlot slot, IJsonPredicate<Item> match, ItemO
       public SlotBuilder material(RandomMaterial... materials) {
         Collections.addAll(this.materials, materials);
         return this;
+      }
+
+      /** Sets the fluid in the builder to a tag */
+      public SlotBuilder fluidTag(TagKey<Fluid> fluid) {
+        return fluid(IngredientHelper.fluidSet(fluid));
       }
 
       /** Builds the final equipment */

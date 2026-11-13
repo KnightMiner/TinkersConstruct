@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -12,18 +13,15 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
 
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ public class MobEquipmentManager extends SimpleJsonResourceReloadListener {
 
   /** Map of active replacements */
   private Map<EntityType<?>,List<MobEquipment>> replacements = Map.of();
-  private IContext context = IContext.EMPTY;
 
   private MobEquipmentManager() {
     super(JsonHelper.DEFAULT_GSON, FOLDER);
@@ -54,8 +51,8 @@ public class MobEquipmentManager extends SimpleJsonResourceReloadListener {
   /** @apiNote no need for addons to call this */
   @Internal
   public static void init() {
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, INSTANCE::addDataPackListeners);
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, FinalizeSpawn.class, INSTANCE::finalizeSpawn);
+    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(INSTANCE));
+    NeoForge.EVENT_BUS.addListener(FinalizeSpawnEvent.class, INSTANCE::finalizeSpawn);
   }
 
   @Override
@@ -66,16 +63,18 @@ public class MobEquipmentManager extends SimpleJsonResourceReloadListener {
     // location of the objects only matters for debug, just parse each one
     Map<EntityType<?>, List<MobEquipment>> parsed = new HashMap<>();
     Function<EntityType<?>, List<MobEquipment>> ifAbsent = type -> new ArrayList<>();
+    ICondition.IContext context = getContext();
+    HolderLookup.Provider registries = getRegistryLookup();
     for (Entry<ResourceLocation,JsonElement> entry : jsons.entrySet()) {
       ResourceLocation key = entry.getKey();
       try {
         JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), key.toString());
         // skip if conditions fail
-        if (!CraftingHelper.processConditions(json, "conditions", context)) {
+        if (!JsonHelper.processConditions(json, "neoforge:conditions", context)) {
           continue;
         }
         // parse the object
-        List<MobEquipment> equipment = MobEquipment.LIST_LOADABLE.getIfPresent(json, "equip", TypedMapBuilder.builder().put(ContextKey.ID, key).put(ContextKey.DEBUG, "Mob Equipment " + key).build());
+        List<MobEquipment> equipment = MobEquipment.LIST_LOADABLE.getIfPresent(json, "equip", ContextKey.lookupContext(registries).put(ContextKey.ID, key).put(ContextKey.DEBUG, "Mob Equipment " + key).build());
 
         // determine the entities
         JsonElement entityElement = JsonHelper.getElement(json, "entity");
@@ -87,7 +86,7 @@ public class MobEquipmentManager extends SimpleJsonResourceReloadListener {
             // need to use the condition context to fetch tag values as they are not yet in the mananger
             TagKey<EntityType<?>> tag = Loadables.ENTITY_TYPE_TAG.parseString(type.substring(1), "entity");
             for (Holder<EntityType<?>> holder : context.getTag(tag)) {
-              parsed.computeIfAbsent(holder.get(), ifAbsent).addAll(equipment);
+              parsed.computeIfAbsent(holder.value(), ifAbsent).addAll(equipment);
             }
           } else {
             parsed.computeIfAbsent(Loadables.ENTITY_TYPE.parseString(type, "entity"), ifAbsent).addAll(equipment);
@@ -123,14 +122,8 @@ public class MobEquipmentManager extends SimpleJsonResourceReloadListener {
 
   /* Events */
 
-  /** Adds the managers as datapack listeners */
-  private void addDataPackListeners(AddReloadListenerEvent event) {
-    event.addListener(this);
-    context = event.getConditionContext();
-  }
-
   /** Handler for the finalize spawn event */
-  private void finalizeSpawn(FinalizeSpawn event) {
+  private void finalizeSpawn(FinalizeSpawnEvent event) {
     Mob mob = event.getEntity();
     List<MobEquipment> equipment = get(mob.getType());
     if (!equipment.isEmpty() && MobEquipment.apply(equipment, mob, event)) {

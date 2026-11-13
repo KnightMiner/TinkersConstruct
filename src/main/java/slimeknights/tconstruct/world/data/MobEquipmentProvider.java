@@ -1,12 +1,13 @@
 package slimeknights.tconstruct.world.data;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.crafting.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
-import slimeknights.mantle.recipe.data.ItemNameOutput;
+import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.data.FakeRegistryEntry;
@@ -14,15 +15,16 @@ import slimeknights.tconstruct.library.data.tinkering.AbstractMobEquipmentProvid
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.tools.TinkerTools;
 
+import java.util.concurrent.CompletableFuture;
+
 /** Provider for custom mob equipment */
 public class MobEquipmentProvider extends AbstractMobEquipmentProvider {
-  public MobEquipmentProvider(PackOutput output) {
-    super(output, TConstruct.MOD_ID);
+  public MobEquipmentProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, registries, TConstruct.MOD_ID);
   }
 
-  @SuppressWarnings("removal")
   @Override
-  protected void addEquipment() {
+  protected void addEquipment(HolderLookup.Provider registries) {
     RandomMaterial random = RandomMaterial.ancient();
 
     // piglins spawn with battle signs
@@ -38,12 +40,12 @@ public class MobEquipmentProvider extends AbstractMobEquipmentProvider {
       // only replace empty hand
       .match(ItemPredicate.set(Items.AIR))
       .tool(TinkerTools.swasher)
-      .fluid(TinkerTags.Fluids.DROWNED_SWASHER)
+      .fluidTag(TinkerTags.Fluids.DROWNED_SWASHER)
       .material(random, random, random);
     equip("wither_skeleton", TinkerTags.EntityTypes.SPAWNS_WITH_SWASHER_WITHER_SKELETON)
       .slot(EquipmentSlot.MAINHAND)
       .tool(TinkerTools.swasher)
-      .fluid(TinkerTags.Fluids.WITHER_SKELETON_SWASHER)
+      .fluidTag(TinkerTags.Fluids.WITHER_SKELETON_SWASHER)
       .material(random, random, random);
     // zombies spawn with melting pans
     equip("melting_pan", TinkerTags.EntityTypes.SPAWNS_WITH_MELTING_PAN)
@@ -57,9 +59,9 @@ public class MobEquipmentProvider extends AbstractMobEquipmentProvider {
       .material(random, random, random);
     // twilight forest compat
     String tf = "twilightforest";
-    equip(FakeRegistryEntry.entity(new ResourceLocation(tf, "minotaur")), new ModLoadedCondition(tf))
+    equip("minotaur", ResourceLocation.fromNamespaceAndPath(tf, "minotaur"), new ModLoadedCondition(tf))
       .slot(EquipmentSlot.MAINHAND)
-      .tool(ItemNameOutput.fromName(TinkerTools.minotaurAxe.getId()))
+      .tool(ItemOutput.fromItem(FakeRegistryEntry.item(TinkerTools.minotaurAxe.getId())))
       .material(random, random, random);
   }
 
