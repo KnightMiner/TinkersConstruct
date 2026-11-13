@@ -1,16 +1,20 @@
 package slimeknights.tconstruct.world.entity;
 
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -20,12 +24,14 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import slimeknights.tconstruct.TConstruct;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
@@ -37,9 +43,10 @@ public abstract class ArmoredSlimeEntity extends Slime {
   public ArmoredSlimeEntity(EntityType<? extends ArmoredSlimeEntity> type, Level world) {
     super(type, world);
     if (!world.isClientSide) {
-      tryAddAttribute(Attributes.ARMOR, new AttributeModifier("tconstruct.small_armor_bonus", 3, Operation.MULTIPLY_TOTAL));
-      tryAddAttribute(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("tconstruct.small_toughness_bonus", 3, Operation.MULTIPLY_TOTAL));
-      tryAddAttribute(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier("tconstruct.small_resistence_bonus", 3, Operation.MULTIPLY_TOTAL));
+      ResourceLocation id = TConstruct.getResource("small_armor");
+      tryAddAttribute(Attributes.ARMOR, new AttributeModifier(id, 3, Operation.ADD_MULTIPLIED_TOTAL));
+      tryAddAttribute(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(id, 3, Operation.ADD_MULTIPLIED_TOTAL));
+      tryAddAttribute(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(id, 3, Operation.ADD_MULTIPLIED_TOTAL));
     }
     this.entityData.set(METAL, false);
   }
@@ -51,9 +58,9 @@ public abstract class ArmoredSlimeEntity extends Slime {
   }
 
   @Override
-  protected void defineSynchedData() {
-    super.defineSynchedData();
-    this.entityData.define(METAL, false);
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(METAL, false);
   }
 
   @Override
@@ -80,24 +87,26 @@ public abstract class ArmoredSlimeEntity extends Slime {
   }
 
   /** Adds an attribute if possible */
-  private void tryAddAttribute(Attribute attribute, AttributeModifier modifier) {
+  private void tryAddAttribute(Holder<Attribute> attribute, AttributeModifier modifier) {
     AttributeInstance instance = getAttribute(attribute);
     if (instance != null) {
       instance.addTransientModifier(modifier);
     }
   }
 
-  @Nullable
+  @javax.annotation.Nullable
   @Override
-  public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance difficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-    SpawnGroupData spawnData = super.finalizeSpawn(pLevel, difficulty, pReason, pSpawnData, pDataTag);
+  public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    SpawnGroupData spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     this.setCanPickUpLoot(this.random.nextFloat() < (0.55f * difficulty.getSpecialMultiplier()));
 
     this.populateDefaultEquipmentSlots(random, difficulty);
+    this.populateDefaultEquipmentEnchantments(level, random, difficulty);
 
     // pumpkins on halloween
     if (this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
       LocalDate localdate = LocalDate.now();
+      //noinspection RedundantJavaTimeOperations  matching mojang code
       if (localdate.get(ChronoField.MONTH_OF_YEAR) == 10 && localdate.get(ChronoField.DAY_OF_MONTH) == 31 && this.random.nextFloat() < 0.25F) {
         this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
         this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 0.0F;
@@ -111,8 +120,8 @@ public abstract class ArmoredSlimeEntity extends Slime {
   protected abstract void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty);
 
   @Override
-  protected void populateDefaultEquipmentEnchantments(RandomSource random, DifficultyInstance difficulty) {
-    // no-op, unused
+  protected void populateDefaultEquipmentEnchantments(ServerLevelAccessor level, RandomSource random, DifficultyInstance difficulty) {
+    // most slimes don't want this. Terracube will implement a more direct version
   }
 
   @Override
@@ -127,7 +136,7 @@ public abstract class ArmoredSlimeEntity extends Slime {
   }
 
   @Override
-  protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+  protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
     ItemStack stack = this.getItemBySlot(EquipmentSlot.HEAD);
     float slotChance = this.getEquipmentDropChance(EquipmentSlot.HEAD);
     // items do not always drop if a large slime, increases chance of inheritance
@@ -136,8 +145,11 @@ public abstract class ArmoredSlimeEntity extends Slime {
       slotChance = 0.25f;
     }
     boolean alwaysDrop = slotChance > 1.0F;
-    if (!stack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(stack) && (recentlyHit || alwaysDrop)) {
-      if ((this.random.nextFloat() - (looting * 0.01f)) < slotChance) {
+    if (!stack.isEmpty() && !EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && (recentlyHit || alwaysDrop)) {
+      if (source.getEntity() instanceof LivingEntity attacker) {
+        slotChance = EnchantmentHelper.processEquipmentDropChance(level, attacker, source, slotChance, EquipmentSlot.HEAD);
+      }
+      if (this.random.nextFloat() < slotChance) {
         if (!alwaysDrop && stack.isDamageableItem()) {
           int max = stack.getMaxDamage();
           stack.setDamageValue(max - this.random.nextInt(1 + this.random.nextInt(Math.max(max - 3, 1))));
@@ -184,7 +196,7 @@ public abstract class ArmoredSlimeEntity extends Slime {
         slime.setInvulnerable(invulnerable);
         slime.setSize(newSize, true);
         if (metal) {
-          slime.setMetal(metal);
+          slime.setMetal(true);
         }
         if (i == helmetIndex) {
           slime.setItemSlot(EquipmentSlot.HEAD, helmet.copy());
@@ -198,11 +210,16 @@ public abstract class ArmoredSlimeEntity extends Slime {
     }
 
     // calling supper does the split reason again, but we need to transfer armor
+    // from Entity
     this.setRemoved(reason);
     if (reason == Entity.RemovalReason.KILLED) {
       this.gameEvent(GameEvent.ENTITY_DIE);
     }
-    this.invalidateCaps();
+    // from LivingEntity
+    if (reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) {
+      this.triggerOnDeathMobEffects(reason);
+    }
+    this.brain.clearMemories();
   }
 
   @Override
