@@ -1,19 +1,18 @@
 package slimeknights.tconstruct.shared.block;
 
-import net.minecraft.world.level.block.AbstractGlassBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.util.StringRepresentable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
-public class ClearStainedGlassBlock extends AbstractGlassBlock {
-
+public class ClearStainedGlassBlock extends TransparentBlock {
   private final GlassColor glassColor;
   public ClearStainedGlassBlock(Properties properties, GlassColor glassColor) {
     super(properties);
@@ -22,11 +21,13 @@ public class ClearStainedGlassBlock extends AbstractGlassBlock {
 
   @Nullable
   @Override
-  public float[] getBeaconColorMultiplier(BlockState state, LevelReader world, BlockPos pos, BlockPos beaconPos) {
-    return this.glassColor.getRgb();
+  public Integer getBeaconColorMultiplier(BlockState state, LevelReader world, BlockPos pos, BlockPos beaconPos) {
+    return this.glassColor.getColor();
   }
 
   /** Enum used for registration of this and the pane block */
+  @Getter
+  @RequiredArgsConstructor
   public enum GlassColor implements StringRepresentable {
     WHITE(0xffffff, DyeColor.WHITE),
     ORANGE(0xd87f33, DyeColor.ORANGE),
@@ -45,60 +46,15 @@ public class ClearStainedGlassBlock extends AbstractGlassBlock {
     RED(0x993333, DyeColor.RED),
     BLACK(0x191919, DyeColor.BLACK);
 
+    /** Variant color to reduce number of models */
     private final int color;
-    private final DyeColor dye;
-    private final float[] rgb;
-    private final String name;
-
-    GlassColor(int color, DyeColor dye) {
-      this.color = color;
-      this.dye = dye;
-      this.rgb = calcRGB(color);
-      this.name = this.name().toLowerCase(Locale.US);
-    }
-
-    /**
-     * Converts the color into an RGB float array
-     * @param color  Color input
-     * @return  Float array
-     */
-    private static float[] calcRGB(int color) {
-      float[] out = new float[3];
-      out[0] = ((color >> 16) & 0xFF) / 255f;
-      out[1] = ((color >> 8) & 0xFF) / 255f;
-      out[2] = (color & 0xFF) / 255f;
-      return out;
-    }
-
-    /**
-     * Variant color to reduce number of models
-     * @return  Variant color for BlockColors and ItemColors
-     */
-    public int getColor() {
-      return this.color;
-    }
-
     /** Gets the vanilla dye color associated with this color */
-    public DyeColor getDye() {
-      return dye;
-    }
-
-    /**
-     * Gets the RGB value for this color as an array
-     * @return  Color RGB for beacon
-     */
-    public float[] getRgb() {
-      return this.rgb;
-    }
-
-    @Override
-    public String getSerializedName() {
-      return name;
-    }
+    private final DyeColor dye;
+    private final String serializedName = this.name().toLowerCase(Locale.US);
 
     @Override
     public String toString() {
-      return name;
+      return serializedName;
     }
   }
 }

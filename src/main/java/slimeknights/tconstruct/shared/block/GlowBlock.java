@@ -44,13 +44,11 @@ public class GlowBlock extends Block {
     BOUNDS.put(Direction.WEST,  Block.box( 0.0D,  0.0D,  0.0D,  1.0D, 16.0D, 16.0D));
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return Objects.requireNonNull(BOUNDS.get(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return Shapes.empty();
@@ -81,13 +79,11 @@ public class GlowBlock extends Block {
     return null;
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public BlockState rotate(BlockState state, Rotation rot) {
     return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public BlockState mirror(BlockState state, Mirror mirrorIn) {
     return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
@@ -98,7 +94,6 @@ public class GlowBlock extends Block {
     builder.add(FACING);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean p_220069_6_) {
     if (!this.canSurvive(state, worldIn, pos)) {
@@ -108,7 +103,6 @@ public class GlowBlock extends Block {
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, p_220069_6_);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
     Direction facing = state.getValue(FACING);
