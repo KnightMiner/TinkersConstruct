@@ -12,6 +12,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.client.render.FluidRenderer;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
 
+import javax.annotation.Nullable;
+
 /** Particle type that renders a fluid still texture */
 public class FluidParticle extends TextureSheetParticle {
   private final FluidStack fluid;
@@ -65,6 +67,7 @@ public class FluidParticle extends TextureSheetParticle {
 
   /** Factory to create a fluid particle */
   public static class Factory implements ParticleProvider<FluidParticleData> {
+    @Nullable
     @Override
     public Particle createParticle(FluidParticleData data, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
       FluidStack fluid = data.getFluid();

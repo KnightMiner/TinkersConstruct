@@ -61,7 +61,6 @@ import slimeknights.tconstruct.shared.block.SoulGlassBlock;
 import slimeknights.tconstruct.shared.block.SoulGlassPaneBlock;
 import slimeknights.tconstruct.shared.block.WaxedPlatformBlock;
 import slimeknights.tconstruct.shared.block.WeatheringPlatformBlock;
-import slimeknights.tconstruct.shared.command.TConstructCommand;
 import slimeknights.tconstruct.shared.data.CommonRecipeProvider;
 import slimeknights.tconstruct.shared.item.CheeseBlockItem;
 import slimeknights.tconstruct.shared.item.CheeseItem;
@@ -139,7 +138,6 @@ public final class TinkerCommons extends TinkerModule {
     .build();
 
   public TinkerCommons() {
-    TConstructCommand.init();
     NeoForge.EVENT_BUS.addListener(RecipeCacheInvalidator::onReloadListenerReload);
   }
 

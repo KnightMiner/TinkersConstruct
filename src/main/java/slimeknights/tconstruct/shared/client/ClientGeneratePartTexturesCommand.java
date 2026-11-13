@@ -193,14 +193,13 @@ public class ClientGeneratePartTexturesCommand {
   private record GeneratorConfiguration(Collection<PartSpriteInfo> sprites, StatOverride statOverrides) {}
 
   /** Loads all part sprites file */
-  @SuppressWarnings("removal")
   private static GeneratorConfiguration loadGeneratorConfig(ResourceManager manager) {
     Map<ResourceLocation,PartSpriteInfo> builder = new HashMap<>();
     StatOverride.Builder stats = new StatOverride.Builder();
 
     // each namespace loads separately
     for (String namespace : manager.getNamespaces()) {
-      ResourceLocation location = new ResourceLocation(namespace, GENERATOR_PART_TEXTURES);
+      ResourceLocation location = ResourceLocation.fromNamespaceAndPath(namespace, GENERATOR_PART_TEXTURES);
       List<Resource> resources = manager.getResourceStack(location);
       if (!resources.isEmpty()) {
         // if the namespace has the file, we will start building

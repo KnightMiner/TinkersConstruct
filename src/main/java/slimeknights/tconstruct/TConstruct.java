@@ -68,6 +68,7 @@ import slimeknights.tconstruct.plugin.jsonthings.JsonThingsPlugin;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerCreativeTabs;
 import slimeknights.tconstruct.shared.TinkerMaterials;
+import slimeknights.tconstruct.shared.command.TConstructCommand;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.TinkerModifiers;
@@ -114,6 +115,7 @@ public class TConstruct {
     TinkerEffects.register(modEventBus);
     TinkerRecipes.init(modEventBus);
     TinkerCreativeTabs.register(modEventBus);
+    TConstructCommand.init(modEventBus);
 
     // base
     modEventBus.register(new TinkerCommons());
