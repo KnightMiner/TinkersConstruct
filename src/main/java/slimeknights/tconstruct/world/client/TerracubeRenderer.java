@@ -15,7 +15,7 @@ public class TerracubeRenderer extends MobRenderer<Slime,LavaSlimeModel<Slime>> 
   private static final ResourceLocation TEXTURE = TConstruct.getResource("textures/entity/terracube.png");
   public TerracubeRenderer(EntityRendererProvider.Context context) {
     super(context, new LavaSlimeModel<>(context.bakeLayer(ModelLayers.MAGMA_CUBE)), 0.25F);
-    addLayer(new SlimeArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelSet(), true));
+    addLayer(new SlimeArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelSet(), context.getModelManager(), true));
   }
 
   @Override
