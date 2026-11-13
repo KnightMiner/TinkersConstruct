@@ -157,7 +157,6 @@ public class WorldgenProvider {
   }
 
   /** Registers all configured features */
-  @SuppressWarnings("deprecation")
   private static void registerConfiguredFeatures(BootstrapContext<ConfiguredFeature<?,?>> context) {
     // sapling trees
     register(context, earthSlimeTree, slimeTree,

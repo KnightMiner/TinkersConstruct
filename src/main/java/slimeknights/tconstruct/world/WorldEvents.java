@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.world;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,11 +9,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.SkullBlock;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent.LivingVisibilityEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.world.logic.AncientToolItemListing;
@@ -22,7 +21,7 @@ import slimeknights.tconstruct.world.logic.AncientToolItemListing;
 import java.util.Collections;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = TConstruct.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TConstruct.MOD_ID)
 public class WorldEvents {
   /* Heads */
 
@@ -43,17 +42,14 @@ public class WorldEvents {
 
   @SubscribeEvent
   static void creeperKill(LivingDropsEvent event) {
-    DamageSource source = event.getSource();
-    if (source != null) {
-      Entity entity = source.getEntity();
-      if (entity instanceof Creeper creeper) {
-        if (creeper.canDropMobsSkull()) {
-          LivingEntity dying = event.getEntity();
-          TinkerHeadType headType = TinkerHeadType.fromEntityType(dying.getType());
-          if (headType != null && Config.COMMON.headDrops.get(headType).get()) {
-            creeper.increaseDroppedSkulls();
-            event.getDrops().add(dying.spawnAtLocation(TinkerWorld.heads.get(headType)));
-          }
+    Entity entity = event.getSource().getEntity();
+    if (entity instanceof Creeper creeper) {
+      if (creeper.canDropMobsSkull()) {
+        LivingEntity dying = event.getEntity();
+        TinkerHeadType headType = TinkerHeadType.fromEntityType(dying.getType());
+        if (headType != null && Config.COMMON.headDrops.get(headType).get()) {
+          creeper.increaseDroppedSkulls();
+          event.getDrops().add(dying.spawnAtLocation(TinkerWorld.heads.get(headType)));
         }
       }
     }
