@@ -35,7 +35,6 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
@@ -58,12 +57,11 @@ import slimeknights.tconstruct.library.client.model.tools.MaterialModel;
 import slimeknights.tconstruct.library.client.model.tools.ToolModel;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager;
 import slimeknights.tconstruct.library.client.particle.AttackParticle;
-import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.HarvestTiers;
-import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.effect.AntigravityEffect;
 import slimeknights.tconstruct.tools.client.CrystalshotRenderer;
 import slimeknights.tconstruct.tools.client.ShieldBannerModifierSpriteSource;
@@ -280,9 +278,9 @@ public class ToolClientEvents extends ClientEventBase {
 
     // modifier crystal
     event.register((stack, index) -> {
-      ModifierId modifier = ModifierCrystalItem.getModifier(stack);
-      if (modifier != null) {
-        return ResourceColorManager.getColor(Util.makeTranslationKey("modifier", modifier));
+      ModifierHolder modifier = ModifierCrystalItem.getModifier(stack);
+      if (modifier.isBound()) {
+        return modifier.get().getColor();
       }
       return -1;
     }, TinkerModifiers.modifierCrystal);

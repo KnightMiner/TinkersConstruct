@@ -15,8 +15,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.client.modifiers.ModifierIconManager;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.ModifierManager;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -258,10 +257,10 @@ public class ModifierWorktableScreen extends ToolTableScreen<ModifierWorktableBl
         updateModifierPanel(result);
       } else {
         // modifier crystals can show their modifier, along with anything else with a modifier there
-        ModifierId modifierId = ModifierCrystalItem.getModifier(lazyResult.getStack());
-        if (modifierId != null) {
-          Modifier modifier = ModifierManager.getValue(modifierId);
+        ModifierHolder holder = ModifierCrystalItem.getModifier(lazyResult.getStack());
+        if (holder.isBound()) {
           modifierInfo.setCaption(MODIFIERS);
+          Modifier modifier = holder.get();
           modifierInfo.setText(Collections.singletonList(modifier.getDisplayName()), Collections.singletonList(modifier.getDescription()));
         }
       }

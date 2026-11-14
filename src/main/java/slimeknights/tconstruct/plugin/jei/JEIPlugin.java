@@ -524,9 +524,16 @@ public class JEIPlugin implements IModPlugin {
       SlotType slotType = CreativeSlotItem.getSlot(stack);
       return slotType != null ? slotType.getName() : "";
     });
-    registry.registerSubtypeInterpreter(TinkerModifiers.modifierCrystal.get(), (stack, context) -> {
-      ModifierId id = ModifierCrystalItem.getModifier(stack);
-      return id == null ? "" : id.toString();
+    registry.registerSubtypeInterpreter(TinkerModifiers.modifierCrystal.get(), new ISubtypeInterpreter<>() {
+      @Override
+      public ModifierId getSubtypeData(ItemStack stack, UidContext context) {
+        return ModifierCrystalItem.getModifier(stack).id();
+      }
+
+      @Override
+      public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
+        return getSubtypeData(stack, context).toString();
+      }
     });
   }
 

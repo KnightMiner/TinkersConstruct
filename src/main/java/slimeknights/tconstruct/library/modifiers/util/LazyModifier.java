@@ -13,7 +13,11 @@ import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/** Supplier that will return a modifier once they are fully registered, typically used with {@link ModifierDeferredRegister} */
+/**
+ * Supplier that will return a modifier once they are fully registered, typically used with {@link ModifierDeferredRegister}
+ * @deprecated migrating to {@link slimeknights.tconstruct.library.modifiers.ModifierHolder}
+ */
+@Deprecated(forRemoval = true)
 @RequiredArgsConstructor
 public class LazyModifier implements Supplier<Modifier>, IdAwareObject {
   /** ID of the modifier to fetch */

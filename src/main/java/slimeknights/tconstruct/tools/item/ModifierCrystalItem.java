@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.tools.item;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
@@ -11,14 +10,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.fluid.FluidTransferHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.TinkerTags.Modifiers;
-import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
@@ -37,7 +36,6 @@ public class ModifierCrystalItem extends Item {
   private static final Component TOOLTIP_MISSING = TConstruct.makeTranslation("item", "modifier_crystal.missing").withStyle(ChatFormatting.GRAY);
   private static final Component TOOLTIP_APPLY = TConstruct.makeTranslation("item", "modifier_crystal.tooltip").withStyle(ChatFormatting.GRAY);
   private static final String MODIFIER_KEY = TConstruct.makeTranslationKey("item", "modifier_crystal.modifier_id");
-  private static final String TAG_MODIFIER = "modifier";
   public ModifierCrystalItem(Properties props) {
     super(props);
   }
@@ -49,14 +47,13 @@ public class ModifierCrystalItem extends Item {
 
   @Override
   public Component getName(ItemStack stack) {
-    ModifierId id = getModifier(stack);
-    if (id != null) {
-      Modifier modifier = ModifierManager.getValue(id);
+    ModifierHolder modifier = getModifier(stack);
+    if (modifier.isPresent()) {
       Component modifierName;
-      if (modifier != ModifierManager.INSTANCE.getDefaultValue()) {
-        modifierName = modifier.getDisplayName();
+      if (modifier.isBound()) {
+        modifierName = modifier.get().getDisplayName();
       } else {
-        modifierName = Component.translatable(Util.makeTranslationKey("modifier", id));
+        modifierName = Component.translatable(Util.makeTranslationKey("modifier", modifier.id().id()));
       }
       return Component.translatable(getDescriptionId(stack) + ".format", modifierName).setStyle(modifierName.getStyle());
     }
@@ -64,15 +61,15 @@ public class ModifierCrystalItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag advanced) {
-    ModifierId id = getModifier(stack);
-    if (id != null) {
-      if (ModifierManager.INSTANCE.contains(id)) {
-        tooltip.addAll(ModifierManager.INSTANCE.get(id).getDescriptionList());
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
+    ModifierHolder modifier = getModifier(stack);
+    if (modifier.isPresent()) {
+      if (modifier.isBound()) {
+        tooltip.addAll(modifier.get().getDescriptionList());
       }
       tooltip.add(TOOLTIP_APPLY);
       if (advanced.isAdvanced()) {
-        tooltip.add((Component.translatable(MODIFIER_KEY, id.toString())).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add((Component.translatable(MODIFIER_KEY, modifier.id().toString())).withStyle(ChatFormatting.DARK_GRAY));
       }
     } else {
       tooltip.add(TOOLTIP_MISSING);
@@ -82,9 +79,9 @@ public class ModifierCrystalItem extends Item {
   @Nullable
   @Override
   public String getCreatorModId(ItemStack stack) {
-    ModifierId modifier = getModifier(stack);
-    if (modifier != null) {
-      return modifier.getNamespace();
+    ModifierHolder modifier = getModifier(stack);
+    if (modifier.isPresent()) {
+      return modifier.id().getNamespace();
     }
     return null;
   }
@@ -97,15 +94,16 @@ public class ModifierCrystalItem extends Item {
 
     // must be op or in creative, right-clicking onto a modifiable slot
     if (action == ClickAction.SECONDARY && slot.allowModification(player) && CreativeSlotItem.canApply(player)) {
-      ModifierId modifier = getModifier(stack);
+      ModifierHolder modifier = getModifier(stack);
       ItemStack toolItem = slot.getItem();
       // slot must have a tool, NBT must be valid
-      if (modifier != null && !toolItem.isEmpty() && toolItem.is(TinkerTags.Items.MODIFIABLE)) {
+      if (modifier.isBound() && !toolItem.isEmpty() && toolItem.is(TinkerTags.Items.MODIFIABLE)) {
         if (!player.level().isClientSide || (player.isCreative() && player.containerMenu.menuType == null)) {
           ToolStack tool = ToolStack.copyFrom(toolItem);
 
           // add modifier
-          tool.addModifier(modifier, stack.getCount());
+          // TODO: this method should take a holder
+          tool.addModifier(modifier.id(), stack.getCount());
 
           // ensure no modifier problems after adding
           Component toolValidation = tool.tryValidate();
@@ -132,14 +130,14 @@ public class ModifierCrystalItem extends Item {
     // must be op or in creative, right-clicking onto a modifiable slot with a tool
     if (action == ClickAction.SECONDARY && slot.allowModification(player) && !toolItem.isEmpty() && toolItem.is(TinkerTags.Items.MODIFIABLE) && (player.isCreative() || player.hasPermissions(MantleCommand.PERMISSION_GAME_COMMANDS))) {
       // NBT must be valid
-      ModifierId modifier = getModifier(stack);
-      if (modifier != null) {
+      ModifierHolder modifier = getModifier(stack);
+      if (modifier.isBound()) {
         if (!player.level().isClientSide || (player.isCreative() && player.containerMenu.menuType == null)) {
           ToolStack original = ToolStack.from(toolItem);
           ToolStack tool = original.copy();
 
           // ensure we have something to remove
-          ModifierEntry entry = tool.getUpgrades().getEntry(modifier);
+          ModifierEntry entry = tool.getUpgrades().getEntry(modifier.id());
           if (entry.getLevel() <= 0) {
             return true;
           }
@@ -148,7 +146,7 @@ public class ModifierCrystalItem extends Item {
           if (newLevel <= 0) {
             entry.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, entry.getModifier(), tool.getRestrictedNBT());
           }
-          tool.removeModifier(modifier, stack.getCount());
+          tool.removeModifier(modifier.id(), stack.getCount());
 
           // ensure no modifier problems after adding
           Component toolValidation = tool.tryValidate();
@@ -181,7 +179,7 @@ public class ModifierCrystalItem extends Item {
   /** Creates a stack with the given modifier */
   public static ItemStack withModifier(ModifierId modifier, int count) {
     ItemStack stack = new ItemStack(TinkerModifiers.modifierCrystal.get(), count);
-    stack.getOrCreateTag().putString(TAG_MODIFIER, modifier.toString());
+    stack.set(TinkerData.MODIFIER, ModifierHolder.create(modifier));
     return stack;
   }
 
@@ -191,13 +189,8 @@ public class ModifierCrystalItem extends Item {
   }
 
   /** Gets the modifier stored on this stack */
-  @Nullable
-  public static ModifierId getModifier(ItemStack stack) {
-    CompoundTag tag = stack.getTag();
-    if (tag != null) {
-      return ModifierId.tryParse(tag.getString(TAG_MODIFIER));
-    }
-    return null;
+  public static ModifierHolder getModifier(ItemStack stack) {
+    return stack.getOrDefault(TinkerData.MODIFIER, ModifierHolder.EMPTY);
   }
 
   /** Gets all variants of this item */

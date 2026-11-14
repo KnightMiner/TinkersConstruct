@@ -23,6 +23,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -191,8 +192,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
     }
     // give back unenchanted item if requested
     if (returnInput && isServer) {
-      ModifierId modifier = ModifierCrystalItem.getModifier(result.getStack());
-      assert modifier != null;
+      ModifierHolder modifier = ModifierCrystalItem.getModifier(result.getStack());
       ItemStack current = inv.getTinkerableStack();
       // returnInput drops just 1 level of the enchantment
       // worth noting, its possible multiple match, if thats the case we just extract the first we find
@@ -200,7 +200,7 @@ public class EnchantmentConvertingRecipe extends AbstractWorktableRecipe {
       for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
         Holder<Enchantment> enchantment = entry.getKey();
         Modifier enchantmentModifier = ModifierManager.INSTANCE.get(enchantment);
-        if (enchantmentModifier != null && enchantmentModifier.id().equals(modifier)) {
+        if (enchantmentModifier != null && modifier.is(enchantmentModifier)) {
           ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(enchantments);
           mutable.set(enchantment, entry.getIntValue() - 1);
           enchantments = mutable.toImmutable();

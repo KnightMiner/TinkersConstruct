@@ -102,6 +102,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   private Map<TagKey<Modifier>,List<Modifier>> tags = Map.of();
   /** Map from modifier to tags on the modifier */
   private Map<ModifierId,Set<TagKey<Modifier>>> reverseTags = Map.of();
+  /** Map of holder cache, stored as data components */
+  private final Map<ModifierId,ModifierHolder> holders = new HashMap<>();
 
   /** Entry for a tag holder set */
   record EnchantmentTag(HolderSet.Named<Enchantment> tag, Modifier modifier) {}
@@ -143,6 +145,11 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   private void addDataPackListeners(final AddReloadListenerEvent event) {
     event.addListener(this);
     conditionContext = event.getConditionContext();
+  }
+
+  /** Clears the cache for all holders. */
+  private void clearHolderCache() {
+    holders.values().forEach(ModifierHolder::clearCache);
   }
 
   @Override
@@ -290,6 +297,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     this.enchantmentModifiers = Set.copyOf(enchantmentModifiers);
     log.info("Loaded {} enchantment to modifier mappings for {} modifiers in {} ms", enchantmentMap.size() + enchantmentTags.size(), enchantmentModifiers.size(), (System.nanoTime() - timeStep) / 1000000f);
 
+    clearHolderCache();
     NeoForge.EVENT_BUS.post(new ModifiersLoadedEvent());
   }
 
@@ -344,6 +352,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     this.enchantmentMap = packet.getEnchantmentMap();
     this.enchantmentTags = packet.getEnchantmentTags();
     this.enchantmentModifiers = Stream.concat(enchantmentMap.values().stream(), enchantmentTags.stream().map(EnchantmentTag::modifier)).collect(Collectors.toSet());
+    clearHolderCache();
     NeoForge.EVENT_BUS.post(new ModifiersLoadedEvent());
   }
 
@@ -374,6 +383,14 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     }
     // second priority is dynamic modifiers, fallback to the default
     return dynamicModifiers.getOrDefault(id, defaultValue);
+  }
+
+  /** Gets a holder for the given ID */
+  ModifierHolder getHolder(ModifierId id) {
+    if (id.equals(ModifierId.EMPTY)) {
+      return ModifierHolder.EMPTY;
+    }
+    return holders.computeIfAbsent(id, ModifierHolder::new);
   }
 
   /**

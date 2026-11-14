@@ -182,7 +182,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
     // add variant info for the sake of rebalanced
     ModDataNBT persistentData = new ModDataNBT();
     if (!variant.isEmpty()) {
-      persistentData.putString(result.id(), variant);
+      persistentData.putString(result.id().id(), variant);
     }
     // build volatile data, will read that for slot info
     ToolDataNBT volatileData = new ToolDataNBT();
@@ -222,8 +222,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
           return false;
         }
         // found a crystal, make sure we have enough and the ID matches
-        ModifierId modifier = ModifierCrystalItem.getModifier(stack);
-        if (!match.equals(modifier)) {
+        if (ModifierCrystalItem.getModifier(stack).is(match)) {
           return false;
         }
         found = true;
