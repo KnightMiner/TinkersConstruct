@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MaterialTraitsManagerTest extends BaseMcTest {
   // file containing just default traits
-  private static final MaterialId DEFAULT_TRAITS = new MaterialId(TConstruct.getResource("default"));
+  private static final MaterialId DEFAULT_TRAITS = MaterialId.create(TConstruct.MOD_ID, "default");
   // file containing just traits per stat type
-  private static final MaterialId PER_STAT_TRAITS = new MaterialId(TConstruct.getResource("per_stat"));
+  private static final MaterialId PER_STAT_TRAITS = MaterialId.create(TConstruct.MOD_ID, "per_stat");
   // file containing both, and lists
-  private static final MaterialId MULTIPLE_TRAITS = new MaterialId(TConstruct.getResource("multiple"));
+  private static final MaterialId MULTIPLE_TRAITS = MaterialId.create(TConstruct.MOD_ID, "multiple");
   // file containing optionals
-  private static final MaterialId OPTIONAL_TRAITS = new MaterialId(TConstruct.getResource("optional"));
+  private static final MaterialId OPTIONAL_TRAITS = MaterialId.create(TConstruct.MOD_ID, "optional");
 
   private final MaterialTraitsManager traitsManager = new MaterialTraitsManager();
   private final MergingJsonFileLoader<MaterialTraits.Builder> fileLoader = new MergingJsonFileLoader<>(traitsManager);
@@ -35,7 +35,7 @@ class MaterialTraitsManagerTest extends BaseMcTest {
 
   @Test
   void empty() {
-    MaterialId empty = new MaterialId(TConstruct.getResource("empty"));
+    MaterialId empty = MaterialId.create(TConstruct.MOD_ID, "empty");
     fileLoader.loadAndParseFiles(null, empty);
 
     // ensure we got this far and there were no errors

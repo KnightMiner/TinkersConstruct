@@ -33,7 +33,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
   public static final RecordLoadable<CompositeCastingRecipe> LOADER = RecordLoadable.create(
     LoadableRecipeSerializer.TYPE.requiredField(), LoadableRecipeSerializer.SERIALIZER.requiredField(),
     LoadableRecipeSerializer.RECIPE_GROUP, ITEM_COST_FIELD, RESULT_FIELD, MATERIALS_FIELD,
-    MaterialStatsId.PARSER.nullableField("casting_stat_conflict", r -> r.castingStatConflict),
+    MaterialStatsId.LOADABLE.nullableField("casting_stat_conflict", r -> r.castingStatConflict),
     CompositeCastingRecipe::new);
 
   @Nullable
@@ -107,7 +107,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
         // expand input into a list of variants if no variant is matched
         MaterialVariantId inputId = input.getVariant();
         List<ItemStack> inputs;
-        if (inputId.getVariant().isEmpty()) {
+        if (inputId.variant().isEmpty()) {
           // skip outputs that are the same variant as the input; those are not valid recipes
           inputs = MaterialRecipeCache.getVariants(input.getId()).stream().filter(material -> !output.sameVariant(material)).map(result::withMaterial).toList();
         } else {

@@ -34,7 +34,6 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
-import slimeknights.tconstruct.library.tools.stat.ToolStatId;
 import slimeknights.tconstruct.library.tools.stat.impl.IntegerToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.PercentToolStat;
 import slimeknights.tconstruct.library.utils.Util;
@@ -57,13 +56,13 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   /** Predicate for valid tools using the stats */
   private static final IJsonPredicate<Item> VALID_TOOLS = ItemPredicate.or(ItemPredicate.tag(TinkerTags.Items.INTERACTABLE_CHARGE), ItemPredicate.tag(TinkerTags.Items.ARMOR));
   /** Tool stat for the amount of hunger restored upon eating this. Supports conditional stats, but it's important to have at least a flat 1 to allow the tool to be eaten. */
-  public static final IntegerToolStat HUNGER = new IntegerToolStat(new ToolStatId(TConstruct.MOD_ID, "hunger"), 0xFFF0A8A4, 0, 0, 200, VALID_TOOLS);
+  public static final IntegerToolStat HUNGER = new IntegerToolStat(TConstruct.resourceId("hunger"), 0xFFF0A8A4, 0, 0, 200, VALID_TOOLS);
   /** Tool stat for the amount of saturation restored upon eating this. Supports conditional stats. */
-  public static final FloatToolStat SATURATION = new FloatToolStat(new ToolStatId(TConstruct.MOD_ID, "saturation"), 0xFFF0A8A4, 0, 0, 200, VALID_TOOLS);
+  public static final FloatToolStat SATURATION = new FloatToolStat(TConstruct.resourceId("saturation"), 0xFFF0A8A4, 0, 0, 200, VALID_TOOLS);
   /** Tool stat for the time it takes to eat the food. Does not support conditional stats. */
-  public static final FloatToolStat EAT_DURATION = new FloatToolStat(new ToolStatId(TConstruct.MOD_ID, "eat_duration"), 0xFFF0A8A4, 16, 0, 100, VALID_TOOLS);
+  public static final FloatToolStat EAT_DURATION = new FloatToolStat(TConstruct.resourceId("eat_duration"), 0xFFF0A8A4, 16, 0, 100, VALID_TOOLS);
   /** Tool stat for chance of edible triggering when attacked. */
-  public static final PercentToolStat COUNTER_CHANCE = new PercentToolStat(new ToolStatId(TConstruct.MOD_ID, "edible_counter_chance"), 0xFFF0A8A4, 0, 0, 1, VALID_TOOLS);
+  public static final PercentToolStat COUNTER_CHANCE = new PercentToolStat(TConstruct.resourceId("edible_counter_chance"), 0xFFF0A8A4, 0, 0, 1, VALID_TOOLS);
 
   /** Module for adding a modifier with this module to the tool */
   public static final ModifierModule EDIBLE_TRAIT = new ModifierTraitModule(TinkerModifiers.edible.id(), 1, true);

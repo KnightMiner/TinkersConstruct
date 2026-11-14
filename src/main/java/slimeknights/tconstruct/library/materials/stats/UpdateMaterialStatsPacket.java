@@ -43,7 +43,7 @@ public record UpdateMaterialStatsPacket(Map<MaterialId, Collection<IMaterialStat
       int materialCount = buffer.readInt();
       Map<MaterialId, Collection<IMaterialStats>> materialToStats = new HashMap<>(materialCount);
       for (int i = 0; i < materialCount; i++) {
-        MaterialId id = new MaterialId(buffer.readResourceLocation());
+        MaterialId id = MaterialId.create(buffer.readResourceLocation());
         int statCount = buffer.readInt();
         List<IMaterialStats> statList = new ArrayList<>();
         for (int j = 0; j < statCount; j++) {
@@ -84,7 +84,7 @@ public record UpdateMaterialStatsPacket(Map<MaterialId, Collection<IMaterialStat
     @SuppressWarnings("unchecked")
     private <T extends IMaterialStats> void encodeStat(RegistryFriendlyByteBuf buffer, IMaterialStats stat, MaterialStatType<T> type, MaterialId material) {
       try {
-        MaterialStatsId.PARSER.encode(buffer, type.getId());
+        MaterialStatsId.LOADABLE.encode(buffer, type.getId());
         type.getLoadable().encode(buffer, (T) stat);
       } catch (RuntimeException e) {
         TConstruct.LOG.error("Could not encode stat {} for material {}", stat.getIdentifier(), material, e);

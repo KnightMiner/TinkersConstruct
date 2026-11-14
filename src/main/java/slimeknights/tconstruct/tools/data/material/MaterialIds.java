@@ -179,6 +179,6 @@ public final class MaterialIds {
    * @return  Material ID object
    */
   private static MaterialId id(String name) {
-    return new MaterialId(TConstruct.MOD_ID, name);
+    return MaterialId.create(TConstruct.MOD_ID, name);
   }
 }

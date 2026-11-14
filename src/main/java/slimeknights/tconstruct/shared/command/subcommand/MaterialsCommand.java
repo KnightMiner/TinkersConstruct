@@ -134,7 +134,7 @@ public class MaterialsCommand {
 
   /** Sets the material at the index */
   private static int stats(CommandContext<CommandSourceStack> context, float scale) throws CommandSyntaxException {
-    MaterialId material = MaterialArgument.getMaterial(context, "material").getIdentifier();
+    MaterialId material = MaterialArgument.getMaterial(context, "material").getId();
     MaterialStatType<?> statType = MaterialStatsArgument.getStat(context, "stat_type");
     Optional<IMaterialStats> stats = MaterialRegistry.getInstance().getMaterialStats(material, statType.getId());
     if (stats.isPresent()) {
@@ -158,7 +158,7 @@ public class MaterialsCommand {
 
   /** Sets the material at the index */
   private static int traits(CommandContext<CommandSourceStack> context, @Nullable MaterialStatType<?> statType) {
-    MaterialId material = MaterialArgument.getMaterial(context, "material").getIdentifier();
+    MaterialId material = MaterialArgument.getMaterial(context, "material").getId();
     List<ModifierEntry> traits;
     MutableComponent output;
     if (statType == null) {

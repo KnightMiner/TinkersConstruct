@@ -1,8 +1,8 @@
 package slimeknights.tconstruct.library.modifiers;
 
 public class ModifierFixture {
-  public static final ModifierId TEST_1 = new ModifierId("test", "modifier_1");
-  public static final ModifierId TEST_2 = new ModifierId("test", "modifier_2");
+  public static final ModifierId TEST_1 = ModifierId.create("test", "modifier_1");
+  public static final ModifierId TEST_2 = ModifierId.create("test", "modifier_2");
 
   public static final Modifier TEST_MODIFIER_1 = new Modifier();
   public static final Modifier TEST_MODIFIER_2 = new Modifier();

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UpdateMaterialStatsPacketTest extends BaseMcTest {
 
-  public static final MaterialId MATERIAL_ID = MaterialFixture.MATERIAL_1.getIdentifier();
+  public static final MaterialId MATERIAL_ID = MaterialFixture.MATERIAL_1.getId();
   private static final IdAwareComponentRegistry<MaterialStatType<?>> LOADER = new IdAwareComponentRegistry<>("Unknown stat type");
   static {
     LOADER.register(MaterialStatsFixture.COMPLEX_TYPE);

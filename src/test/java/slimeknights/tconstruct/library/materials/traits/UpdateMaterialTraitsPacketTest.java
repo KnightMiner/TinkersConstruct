@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SuppressWarnings("ALL")
 class UpdateMaterialTraitsPacketTest extends BaseMcTest {
 
-  public static final MaterialId MATERIAL_ID_1 = MaterialFixture.MATERIAL_1.getIdentifier();
-  public static final MaterialId MATERIAL_ID_2 = MaterialFixture.MATERIAL_2.getIdentifier();
+  public static final MaterialId MATERIAL_ID_1 = MaterialFixture.MATERIAL_1.getId();
+  public static final MaterialId MATERIAL_ID_2 = MaterialFixture.MATERIAL_2.getId();
 
   @BeforeAll
   static void beforeAll() {

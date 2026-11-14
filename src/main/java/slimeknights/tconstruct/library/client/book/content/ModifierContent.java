@@ -101,7 +101,7 @@ public class ModifierContent extends PageContent {
       if (this.modifierID == null) {
         this.modifierID = this.parent.name;
       }
-      this.modifier = ModifierManager.getValue(new ModifierId(this.modifierID));
+      this.modifier = ModifierManager.getValue(ModifierId.parse(this.modifierID));
     }
     return this.modifier;
   }

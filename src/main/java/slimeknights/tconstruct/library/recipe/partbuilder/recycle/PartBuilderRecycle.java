@@ -51,7 +51,7 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, MultiNamedRecipe<
   public static final RecordLoadable<PartBuilderRecycle> LOADER = RecordLoadable.create(
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tool", r -> r.tool),
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("pattern", r -> r.pattern),
-    Pattern.PARSER.mapWithValues(ItemOutput.REQUIRED_STACK_LOADABLE).requiredField("results", r -> r.results),
+    Pattern.LOADABLE.mapWithValues(ItemOutput.REQUIRED_STACK_LOADABLE).requiredField("results", r -> r.results),
     PartBuilderRecycle::new);
 
   private final Ingredient tool;

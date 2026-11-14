@@ -9,7 +9,7 @@ import java.util.Set;
 
 /** Predicate matching materials with an exact ID, ignoring variants */
 public record MaterialIdPredicate(Set<MaterialId> ids) implements MaterialPredicate {
-  public static final RecordLoadable<MaterialIdPredicate> LOADER = RecordLoadable.create(MaterialId.PARSER.set(ArrayLoadable.COMPACT).requiredField("id", MaterialIdPredicate::ids), MaterialIdPredicate::new);
+  public static final RecordLoadable<MaterialIdPredicate> LOADER = RecordLoadable.create(MaterialId.LOADABLE.set(ArrayLoadable.COMPACT).requiredField("id", MaterialIdPredicate::ids), MaterialIdPredicate::new);
 
   public MaterialIdPredicate(MaterialId... ids) {
     this(Set.of(ids));
@@ -17,7 +17,7 @@ public record MaterialIdPredicate(Set<MaterialId> ids) implements MaterialPredic
 
   @Override
   public boolean matches(MaterialVariantId variant) {
-    return ids.contains(variant.getId());
+    return ids.contains(variant.material());
   }
 
   @Override

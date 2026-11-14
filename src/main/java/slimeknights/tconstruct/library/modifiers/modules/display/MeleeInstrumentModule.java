@@ -48,7 +48,7 @@ import java.util.List;
 public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instrument> tag, IJsonPredicate<LivingEntity> attacker, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements ModifierModule, ConditionalModule<IToolStackView>, MonsterMeleeHitModifierHook.RedirectBefore, DamageDealtModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeInstrumentModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.DAMAGE_DEALT);
   public static final RecordLoadable<MeleeInstrumentModule> LOADER = RecordLoadable.create(
-    MaterialId.PARSER.nullableField("instrument_material", MeleeInstrumentModule::material),
+    MaterialId.LOADABLE.nullableField("instrument_material", MeleeInstrumentModule::material),
     TinkerLoadables.INSTRUMENT_TAGS.requiredField("instrument_tag", MeleeInstrumentModule::tag),
     LivingEntityPredicate.LOADER.defaultField("attacker", MeleeInstrumentModule::attacker),
     LivingEntityPredicate.LOADER.defaultField("target", MeleeInstrumentModule::target),
@@ -74,7 +74,7 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
         for (MaterialVariant material : tool.getMaterials()) {
           if (this.material.equals(material.getId())) {
             // need to convert the variant into an instrument, start by replacing the first . with a :
-            String variant = material.getVariant().getVariant();
+            String variant = material.getVariant().variant();
             int index = variant.indexOf('.');
             if (index != -1) {
               StringBuilder builder = new StringBuilder(variant);

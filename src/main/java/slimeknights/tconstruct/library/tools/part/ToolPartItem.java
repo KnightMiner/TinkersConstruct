@@ -49,7 +49,7 @@ public class ToolPartItem extends MaterialItem implements IToolPart {
       return;
     }
     MaterialVariantId materialVariant = self.getMaterial(stack);
-    MaterialId id = materialVariant.getId();
+    MaterialId id = materialVariant.material();
     if (!materialVariant.equals(MaterialId.UNKNOWN)) {
       // internal material ID
       if (flag.isAdvanced()) {

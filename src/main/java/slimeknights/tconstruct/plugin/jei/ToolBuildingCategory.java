@@ -93,7 +93,7 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
         for (int i = 0; i < partCount; i++) {
           IMaterialItem part = parts.get(i);
           MaterialVariantId material = materials.getMaterial(i);
-          if (part.canUseMaterial(material.getId())) {
+          if (part.canUseMaterial(material.material())) {
             partsAndExtras.set(i, List.of(part.withMaterialForDisplay(material)));
           }
         }

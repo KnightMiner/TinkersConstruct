@@ -89,11 +89,11 @@ class StatsNBTTest extends BaseMcTest {
       .build();
     CompoundTag nbt = testStatsNBT.serializeToNBT();
     
-    assertThat(nbt.getInt(ToolStats.DURABILITY.getName().toString())).isEqualTo(1);
-    assertThat(nbt.getString(ToolStats.HARVEST_TIER.getName().toString())).isEqualTo(Objects.requireNonNull(TierSortingRegistry.getName(Tiers.NETHERITE)).toString());
-    assertThat(nbt.getFloat(ToolStats.ATTACK_DAMAGE.getName().toString())).isEqualTo(3);
-    assertThat(nbt.getFloat(ToolStats.MINING_SPEED.getName().toString())).isEqualTo(4);
-    assertThat(nbt.getFloat(ToolStats.ATTACK_SPEED.getName().toString())).isEqualTo(5);
+    assertThat(nbt.getInt(ToolStats.DURABILITY.getId().toString())).isEqualTo(1);
+    assertThat(nbt.getString(ToolStats.HARVEST_TIER.getId().toString())).isEqualTo(Objects.requireNonNull(TierSortingRegistry.getName(Tiers.NETHERITE)).toString());
+    assertThat(nbt.getFloat(ToolStats.ATTACK_DAMAGE.getId().toString())).isEqualTo(3);
+    assertThat(nbt.getFloat(ToolStats.MINING_SPEED.getId().toString())).isEqualTo(4);
+    assertThat(nbt.getFloat(ToolStats.ATTACK_SPEED.getId().toString())).isEqualTo(5);
   }
 
   @Test
@@ -106,11 +106,11 @@ class StatsNBTTest extends BaseMcTest {
   @Test
   void deserialize() {
     CompoundTag nbt = new CompoundTag();
-    nbt.putInt(ToolStats.DURABILITY.getName().toString(), 6);
-    nbt.putString(ToolStats.HARVEST_TIER.getName().toString(), Objects.requireNonNull(TierSortingRegistry.getName(Tiers.GOLD)).toString());
-    nbt.putFloat(ToolStats.ATTACK_DAMAGE.getName().toString(), 4);
-    nbt.putFloat(ToolStats.MINING_SPEED.getName().toString(), 3.5f);
-    nbt.putFloat(ToolStats.ATTACK_SPEED.getName().toString(), 2);
+    nbt.putInt(ToolStats.DURABILITY.getId().toString(), 6);
+    nbt.putString(ToolStats.HARVEST_TIER.getId().toString(), Objects.requireNonNull(TierSortingRegistry.getName(Tiers.GOLD)).toString());
+    nbt.putFloat(ToolStats.ATTACK_DAMAGE.getId().toString(), 4);
+    nbt.putFloat(ToolStats.MINING_SPEED.getId().toString(), 3.5f);
+    nbt.putFloat(ToolStats.ATTACK_SPEED.getId().toString(), 2);
 
     StatsNBT statsNBT = StatsNBT.readFromNBT(nbt);
 

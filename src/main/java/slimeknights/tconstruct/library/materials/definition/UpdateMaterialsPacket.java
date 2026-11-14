@@ -28,7 +28,7 @@ public record UpdateMaterialsPacket(Map<MaterialId,IMaterial> materials, Map<Mat
       ImmutableMap.Builder<MaterialId,IMaterial> materialBuilder = ImmutableMap.builder();
 
       for (int i = 0; i < materialCount; i++) {
-        MaterialId id = new MaterialId(buffer.readResourceLocation());
+        MaterialId id = MaterialId.create(buffer.readResourceLocation());
         int tier = buffer.readVarInt();
         int sortOrder = buffer.readVarInt();
         Rarity rarity = buffer.readEnum(Rarity.class);
@@ -45,11 +45,11 @@ public record UpdateMaterialsPacket(Map<MaterialId,IMaterial> materials, Map<Mat
       } else {
         redirects = new HashMap<>(redirectCount);
         for (int i = 0; i < redirectCount; i++) {
-          redirects.put(new MaterialId(buffer.readUtf()), new MaterialId(buffer.readUtf()));
+          redirects.put(MaterialId.create(buffer.readResourceLocation()), MaterialId.create(buffer.readResourceLocation()));
         }
         redirects = Map.copyOf(redirects);
       }
-      Map<TagKey<IMaterial>,List<IMaterial>> tags = GenericTagUtil.decodeTags(buffer, MaterialManager.REGISTRY_KEY, id -> materials.get(new MaterialId(id)));
+      Map<TagKey<IMaterial>,List<IMaterial>> tags = GenericTagUtil.decodeTags(buffer, MaterialManager.REGISTRY_KEY, id -> materials.get(MaterialId.create(id)));
       return new UpdateMaterialsPacket(materials, redirects, tags);
     }
 
@@ -57,7 +57,7 @@ public record UpdateMaterialsPacket(Map<MaterialId,IMaterial> materials, Map<Mat
     public void encode(FriendlyByteBuf buffer, UpdateMaterialsPacket packet) {
       buffer.writeInt(packet.materials.size());
       for (IMaterial material : packet.materials.values()) {
-        buffer.writeResourceLocation(material.getIdentifier());
+        buffer.writeResourceLocation(material.getId().id());
         buffer.writeVarInt(material.getTier());
         buffer.writeVarInt(material.getSortOrder());
         buffer.writeEnum(material.getRarity());
@@ -66,10 +66,10 @@ public record UpdateMaterialsPacket(Map<MaterialId,IMaterial> materials, Map<Mat
       }
       buffer.writeVarInt(packet.redirects.size());
       for (Entry<MaterialId,MaterialId> entry : packet.redirects.entrySet()) {
-        buffer.writeUtf(entry.getKey().toString());
-        buffer.writeUtf(entry.getValue().toString());
+        buffer.writeResourceLocation(entry.getKey().id());
+        buffer.writeResourceLocation(entry.getValue().id());
       }
-      GenericTagUtil.encodeTags(buffer, IMaterial::getIdentifier, packet.tags);
+      GenericTagUtil.encodeTags(buffer, material -> material.getId().id(), packet.tags);
     }
   };
 

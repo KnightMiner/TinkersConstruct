@@ -13,7 +13,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
-import slimeknights.tconstruct.library.utils.IdParser;
+import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +27,7 @@ public class ModifierArgument implements ArgumentType<Modifier> {
 
   @Override
   public Modifier parse(StringReader reader) throws CommandSyntaxException {
-    ModifierId loc = new ModifierId(IdParser.read(TConstruct.MOD_ID, reader));
+    ModifierId loc = ModifierId.create(ResourceLocationUtils.read(TConstruct.MOD_ID, reader));
     if (!ModifierManager.INSTANCE.contains(loc)) {
       throw MODIFIER_NOT_FOUND.create(loc);
     }

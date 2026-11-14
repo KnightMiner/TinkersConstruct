@@ -38,12 +38,12 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Loadable instance for parsing. Does not handle incremental, we currently disallow incremental as traits */
   public static final RecordLoadable<ModifierEntry> LOADABLE = RecordLoadable.create(
-    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::id),
+    ModifierId.LOADABLE.requiredField(TAG_MODIFIER, ModifierEntry::id),
     IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
     ModifierEntry::new);
   /** Loadable instance for parsing with optional modifiers. If the boolean is set, modifier does not error when missing. */
   public static final RecordLoadable<ModifierEntry> OPTIONAL_LOADABLE = RecordLoadable.create(
-    ModifierId.PARSER.requiredField(TAG_MODIFIER, ModifierEntry::id),
+    ModifierId.LOADABLE.requiredField(TAG_MODIFIER, ModifierEntry::id),
     IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
     BooleanLoadable.INSTANCE.defaultField("optional", false, false, e -> e.getLazyModifier() instanceof OptionalModifier),
     (id, level, optional) -> {

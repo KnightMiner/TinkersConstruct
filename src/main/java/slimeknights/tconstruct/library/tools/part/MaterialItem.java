@@ -89,7 +89,7 @@ public class MaterialItem extends Item implements IMaterialItem {
       }
     }
     // if variant did not work, do base material
-    Component component = getName(key, material.getId());
+    Component component = getName(key, material.material());
     if (component != null) {
       return component;
     }
@@ -104,12 +104,12 @@ public class MaterialItem extends Item implements IMaterialItem {
 
   @Override
   public Rarity getRarity(ItemStack stack) {
-    return MaterialRegistry.getMaterial(getMaterial(stack).getId()).getRarity();
+    return MaterialRegistry.getMaterial(getMaterial(stack).material()).getRarity();
   }
 
   @Override
   public boolean isFoil(ItemStack stack) {
-    return MaterialRegistry.getInstance().isInTag(getMaterial(stack).getId(), TinkerTags.Materials.SHINY);
+    return MaterialRegistry.getInstance().isInTag(getMaterial(stack).material(), TinkerTags.Materials.SHINY);
   }
 
   /** Helper to append the material ID to the tool part. */
@@ -132,7 +132,7 @@ public class MaterialItem extends Item implements IMaterialItem {
   public static String getCreatorModId(IMaterialItem self, ItemStack stack) {
     MaterialVariantId material = self.getMaterial(stack);
     if (!MaterialId.UNKNOWN.equals(material)) {
-      String namespace = material.getId().getNamespace();
+      String namespace = material.material().getNamespace();
       // skip if it's a tinkers material; we want addon tool parts to prefer showing their mod ID as end users mistake those for us
       if (!TConstruct.MOD_ID.equals(namespace)) {
         return namespace;
@@ -152,10 +152,10 @@ public class MaterialItem extends Item implements IMaterialItem {
     // if the material exists and was changed, update it
     MaterialVariantId id = getMaterialId(nbt);
     if (!id.equals(MaterialId.UNKNOWN)) {
-      MaterialId original = id.getId();
+      MaterialId original = id.material();
       MaterialId resolved = MaterialRegistry.getInstance().resolve(original);
       if (original != resolved) {
-        nbt.putString(MATERIAL_TAG, MaterialVariantId.create(resolved, id.getVariant()).toString());
+        nbt.putString(MATERIAL_TAG, MaterialVariantId.create(resolved, id.variant()).toString());
       }
     }
   }

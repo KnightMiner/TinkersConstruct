@@ -18,7 +18,7 @@ import java.util.List;
 
 /** Primary stats for a bow */
 public record LimbMaterialStats(int durability, float drawSpeed, float velocity, float accuracy) implements IRepairableMaterialStats.ScaledTooltip {
-  public static final MaterialStatsId ID = new MaterialStatsId(TConstruct.getResource("limb"));
+  public static final MaterialStatsId ID = MaterialStatsId.create(TConstruct.MOD_ID, "limb");
   public static final MaterialStatType<LimbMaterialStats> TYPE = new MaterialStatType<>(ID, new LimbMaterialStats(1, 0f, 0f, 0f), RecordLoadable.create(
     IRepairableMaterialStats.DURABILITY_FIELD,
     FloatLoadable.ANY.defaultField("draw_speed", 0f, true, LimbMaterialStats::drawSpeed),

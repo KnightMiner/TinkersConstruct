@@ -40,7 +40,7 @@ public class MaterialPartRecipeBuilder extends AbstractRecipeBuilder<MaterialPar
 
   /** Sets the pattern in the builder */
   public MaterialPartRecipeBuilder setPattern(ResourceLocation pattern) {
-    return setPattern(new Pattern(pattern));
+    return setPattern(Pattern.create(pattern));
   }
 
   /** Sets the pattern to match the given item */
@@ -64,7 +64,6 @@ public class MaterialPartRecipeBuilder extends AbstractRecipeBuilder<MaterialPar
     if (this.pattern == null) {
       throw new IllegalStateException("recipe " + id + " has no pattern associated with it");
     }
-    ResourceLocation advancementId = this.buildOptionalAdvancement(id, "parts");
-    output(id, new MaterialPartRecipe(group, pattern, patternItem, cost, allowUncraftable, result, resultCount), buildOptionalAdvancement(output, id, "parts"));
+    output.accept(id, new MaterialPartRecipe(group, pattern, patternItem, cost, allowUncraftable, result, resultCount), buildOptionalAdvancement(output, id, "parts"));
   }
 }

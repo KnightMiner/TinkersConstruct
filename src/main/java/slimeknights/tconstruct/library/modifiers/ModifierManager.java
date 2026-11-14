@@ -194,9 +194,9 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
 
     // load modifier tags
     TagLoader<Modifier> tagLoader = new TagLoader<>(id -> {
-      Modifier modifier = ModifierManager.getValue(new ModifierId(id));
+      Modifier modifier = ModifierManager.getValue(ModifierId.create(id));
       // only allow the default modifier if it's explicitly set to empty
-      if (modifier == defaultValue && !id.equals(ModifierId.EMPTY)) {
+      if (modifier == defaultValue && !id.equals(ModifierId.EMPTY.id())) {
         return Optional.empty();
       }
       return Optional.of(modifier);
@@ -227,7 +227,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
             if (optional) {
               modifierStr = modifierStr.substring(0, length - 1);
             }
-            ModifierId modifierId = ModifierId.PARSER.parseString(modifierStr, key);
+            ModifierId modifierId = ModifierId.LOADABLE.parseString(modifierStr, key);
             Modifier modifier = get(modifierId);
             if (modifier == defaultValue) {
               if (optional) {
@@ -294,8 +294,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   }
 
   /** Creates context for modifier parsing */
-  public static TypedMapBuilder contextBuilder(ResourceLocation modifier) {
-    return TypedMapBuilder.builder().put(ContextKey.ID, modifier).put(ContextKey.DEBUG, "Modifier " + modifier);
+  public static TypedMapBuilder contextBuilder(ModifierId modifier) {
+    return TypedMapBuilder.builder().put(ContextKey.ID, modifier.id()).put(ModifierId.CONTEXT_KEY, modifier).put(ContextKey.DEBUG, "Modifier " + modifier);
   }
 
   /** Loads a modifier from JSON */
@@ -309,9 +309,9 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
         for (JsonRedirect redirect : JsonHelper.parseList(json, "redirects", JsonRedirect::fromJson)) {
           ICondition redirectCondition = redirect.getCondition();
           if (redirectCondition == null || redirectCondition.test(conditionContext)) {
-            ModifierId redirectTarget = new ModifierId(redirect.getId());
+            ModifierId redirectTarget = ModifierId.create(redirect.getId());
             log.debug("Redirecting modifier {} to {}", key, redirectTarget);
-            redirects.put(new ModifierId(key), redirectTarget);
+            redirects.put(ModifierId.create(key), redirectTarget);
             return null;
           }
         }
@@ -324,8 +324,9 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
       }
 
       // fallback to actual modifier
-      Modifier modifier = ComposableModifier.LOADER.deserialize(json, contextBuilder(key).put(ContextKey.CONDITION_CONTEXT, conditionContext).build());
-      modifier.setId(new ModifierId(key));
+      ModifierId id = ModifierId.create(key);
+      Modifier modifier = ComposableModifier.LOADER.deserialize(json, contextBuilder(id).put(ContextKey.CONDITION_CONTEXT, conditionContext).build());
+      modifier.setId(id);
       return modifier;
     } catch (JsonSyntaxException e) {
       log.error("Failed to load modifier {}", key, e);
@@ -415,7 +416,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     // filter out redirects (redirects are any modifiers where the ID does not match the key
     return Stream.concat(staticModifiers.entrySet().stream(), dynamicModifiers.entrySet().stream())
                  .filter(entry -> entry.getKey().equals(entry.getValue().id()))
-                 .map(Entry::getKey);
+                 .map(entry -> entry.getKey().id());
   }
 
   /** Gets a stream of all modifier values */
@@ -486,11 +487,12 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     private final ModContainer container;
 
     /** Validates the namespace of the container registering */
-    private void checkModNamespace(ResourceLocation name) {
+    private void checkModNamespace(ModifierId name) {
       // check mod container, should be the active mod
       // don't want mods registering stuff in Tinkers namespace, or Minecraft
       String activeMod = container.getNamespace();
       if (!name.getNamespace().equals(activeMod)) {
+        // TODO: neo no longer does this, ditch?
         TConstruct.LOG.warn("Potentially Dangerous alternative prefix for name `{}`, expected `{}`. This could be a intended override, but in most cases indicates a broken mod.", name, activeMod);
       }
     }

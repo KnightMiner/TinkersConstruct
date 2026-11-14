@@ -11,7 +11,7 @@ public record MaterialHasPartPredicate(IMaterialItem part) implements MaterialPr
 
   @Override
   public boolean matches(MaterialVariantId variant) {
-    return part.canUseMaterial(variant.getId());
+    return part.canUseMaterial(variant.material());
   }
 
   @Override

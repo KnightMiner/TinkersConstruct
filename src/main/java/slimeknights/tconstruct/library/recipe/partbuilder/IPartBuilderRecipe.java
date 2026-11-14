@@ -22,7 +22,7 @@ public interface IPartBuilderRecipe extends ICommonRecipe<PartBuilderInput> {
   /** Default patterns in a part builder recipe, Forge has cache invalidation for vanilla, so this is fine as long as that persists. TODO: neo no longer has that */
   Ingredient DEFAULT_PATTERNS = Ingredient.of(TinkerTags.Items.DEFAULT_PATTERNS);
   /** Pattern to use for recipes that don't implement the standard pattern behavior */
-  Pattern MISSING = new Pattern(TConstruct.MOD_ID, "missingno");
+  Pattern MISSING = Pattern.create(TConstruct.MOD_ID, "missingno");
 
   /** Gets the pattern needed for this recipe,
    * if there are multiple recipes with the same pattern, they are effectively merged */

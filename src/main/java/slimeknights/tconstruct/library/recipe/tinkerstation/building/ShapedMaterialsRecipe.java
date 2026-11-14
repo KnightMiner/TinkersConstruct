@@ -108,8 +108,8 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
               break;
             } else if (!current.matchesVariant(matched)) {
               // if same material but different variants, just discard the variant
-              if (current.getId().equals(matched.getId())) {
-                materials[p] = current.getId();
+              if (current.material().equals(matched.material())) {
+                materials[p] = current.material();
                 break;
               } else {
                 // if different materials, no match

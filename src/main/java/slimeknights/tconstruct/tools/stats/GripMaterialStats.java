@@ -19,7 +19,7 @@ import static slimeknights.tconstruct.tools.stats.LimbMaterialStats.ACCURACY_PRE
 
 /** Secondary stats for a bow */
 public record GripMaterialStats(float durability, float accuracy, float meleeDamage) implements IMaterialStats.ScaledTooltip {
-  public static final MaterialStatsId ID = new MaterialStatsId(TConstruct.getResource("grip"));
+  public static final MaterialStatsId ID = MaterialStatsId.create(TConstruct.MOD_ID, "grip");
   public static final MaterialStatType<GripMaterialStats> TYPE = new MaterialStatType<>(ID, new GripMaterialStats(0f, 0f, 0f), RecordLoadable.create(
     FloatLoadable.ANY.defaultField("durability", 0f, true, GripMaterialStats::durability),
     FloatLoadable.ANY.defaultField("accuracy", 0f, true, GripMaterialStats::accuracy),

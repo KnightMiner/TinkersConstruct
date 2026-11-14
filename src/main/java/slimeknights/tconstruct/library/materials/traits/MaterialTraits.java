@@ -68,7 +68,7 @@ public class MaterialTraits {
     int statTypeCount = buffer.readVarInt();
     Map<MaterialStatsId,List<ModifierEntry>> statsTraits = new HashMap<>(statTypeCount);
     for (int i = 0; i < statTypeCount; i++) {
-      MaterialStatsId statsId = new MaterialStatsId(buffer.readResourceLocation());
+      MaterialStatsId statsId = MaterialStatsId.create(buffer.readResourceLocation());
       List<ModifierEntry> traitsList = readTraitList(buffer);
       statsTraits.put(statsId, traitsList);
     }

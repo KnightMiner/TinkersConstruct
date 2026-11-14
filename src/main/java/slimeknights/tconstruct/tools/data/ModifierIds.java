@@ -357,6 +357,6 @@ public class ModifierIds {
    * @return  Material ID object
    */
   private static ModifierId id(String name) {
-    return new ModifierId(TConstruct.MOD_ID, name);
+    return ModifierId.create(TConstruct.MOD_ID, name);
   }
 }

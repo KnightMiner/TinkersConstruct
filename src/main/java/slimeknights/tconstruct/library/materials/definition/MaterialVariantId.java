@@ -14,8 +14,8 @@ import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
-import slimeknights.tconstruct.library.utils.IdParser;
 
 import javax.annotation.Nullable;
 
@@ -42,23 +42,23 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
   String DEFAULT_VARIANT = "default";
 
   /** Gets the material ID */
-  MaterialId getId();
+  MaterialId material();
 
   /** Gets the variant */
-  String getVariant();
+  String variant();
 
   /** Returns true if this ID has a variant */
   boolean hasVariant();
 
   /** Checks if this is the default variant */
   default boolean isDefaultVariant() {
-    return DEFAULT_VARIANT.equals(getVariant());
+    return DEFAULT_VARIANT.equals(variant());
   }
 
   /** Replaces the default variant with the ID by itself */
   default MaterialVariantId normalizeVariant() {
     if (isDefaultVariant()) {
-      return getId();
+      return material();
     }
     return this;
   }
@@ -91,19 +91,20 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
 
   /** Checks if two material variants match */
   default boolean sameId(MaterialVariantId other) {
-    return this.getId().equals(other.getId());
+    return this.material().equals(other.material());
   }
 
   /** Checks if two material variants match */
   default boolean sameVariant(MaterialVariantId other) {
-    return this.sameId(other) && this.getVariant().equals(other.getVariant());
+    return this.sameId(other) && this.variant().equals(other.variant());
   }
+
 
   /* Constructors */
 
   /** Creates a material variant instance */
   static MaterialVariantId create(String domain, String path, String variant) {
-    return create(new MaterialId(domain, path), variant);
+    return create(MaterialId.create(domain, path), variant);
   }
 
   /** Creates a material variant instance */
@@ -137,12 +138,12 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
       }
       string = string.substring(0, index);
     }
-    String[] parts = IdParser.decompose(defaultDomain, string);
-    MaterialId materialId = MaterialId.tryBuild(parts[0], parts[1]);
-    if (materialId == null) {
+    String[] parts = ResourceLocationUtils.decompose(defaultDomain, string);
+    ResourceLocation location = ResourceLocation.tryBuild(parts[0], parts[1]);
+    if (location == null) {
       return null;
     }
-    return create(materialId, variant);
+    return create(MaterialId.create(location), variant);
   }
 
   /**
@@ -168,7 +169,7 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
   @Nullable
   static MaterialVariantId read(String defaultDomain, StringReader reader) {
     int start = reader.getCursor();
-    while(reader.canRead() && isAllowed(reader.peek())) {
+    while (reader.canRead() && isAllowed(reader.peek())) {
       reader.skip();
     }
     String substring = reader.getString().substring(start, reader.getCursor());

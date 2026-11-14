@@ -95,12 +95,12 @@ public class MaterialIdNBT {
     ImmutableList.Builder<MaterialVariantId> builder = ImmutableList.builder();
     IMaterialRegistry registry = MaterialRegistry.getInstance();
     for (MaterialVariantId id : materials) {
-      MaterialId original = id.getId();
+      MaterialId original = id.material();
       MaterialId resolved = registry.resolve(original);
       if (resolved != original) {
         changed = true;
       }
-      builder.add(MaterialVariantId.create(resolved, id.getVariant()));
+      builder.add(MaterialVariantId.create(resolved, id.variant()));
     }
     // return a new instance only if things changed
     if (changed) {

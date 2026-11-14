@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /** Helper for modules that provide capacity to be able to specify a target */
 public interface CapacitySourceModule {
   /** Owner field instance */
-  LoadableField<ModifierId,CapacitySourceModule> OWNER_FIELD = ModifierId.PARSER.nullableField("owner", CapacitySourceModule::owner);
+  LoadableField<ModifierId,CapacitySourceModule> OWNER_FIELD = ModifierId.LOADABLE.nullableField("owner", CapacitySourceModule::owner);
 
   /** Bar owner. If null, uses the modifier itself */
   @Nullable

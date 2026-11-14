@@ -62,7 +62,7 @@ public record CustomMaterialName(int index, String suffix) implements ToolNameHo
     }
     // if that did not work, do base material
     if (material.hasVariant()) {
-      materialKey = MaterialTooltipCache.getKey(material.getId()) + '.' + suffix;
+      materialKey = MaterialTooltipCache.getKey(material.material()) + '.' + suffix;
       if (Util.canTranslate(materialKey)) {
         return Component.translatable(materialKey);
       }

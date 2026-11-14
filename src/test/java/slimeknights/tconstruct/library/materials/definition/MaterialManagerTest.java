@@ -52,7 +52,7 @@ class MaterialManagerTest extends BaseMcTest {
     Collection<IMaterial> allMaterials = materialManager.getAllMaterials();
     assertThat(allMaterials).hasSize(1);
     IMaterial testMaterial = allMaterials.iterator().next();
-    assertThat(testMaterial.getIdentifier()).isEqualByComparingTo(new MaterialId("tconstruct", "full"));
+    assertThat(testMaterial.getId()).isEqualTo(MaterialId.create(TConstruct.MOD_ID, "full"));
     assertThat(testMaterial.isCraftable()).isTrue();
     assertThat(testMaterial.getTier()).isEqualTo(15);
     assertThat(testMaterial.getSortOrder()).isEqualTo(4);
@@ -68,7 +68,7 @@ class MaterialManagerTest extends BaseMcTest {
     Collection<IMaterial> allMaterials = materialManager.getAllMaterials();
     assertThat(allMaterials).hasSize(1);
     IMaterial testMaterial = allMaterials.iterator().next();
-    assertThat(testMaterial.getIdentifier()).isEqualByComparingTo(new MaterialId("tconstruct", "minimal"));
+    assertThat(testMaterial.getId()).isEqualTo(MaterialId.create(TConstruct.MOD_ID, "minimal"));
     assertThat(testMaterial.isCraftable()).isFalse();
     assertThat(testMaterial.getTier()).isEqualTo(0);
     assertThat(testMaterial.getSortOrder()).isEqualTo(100);
@@ -124,7 +124,7 @@ class MaterialManagerTest extends BaseMcTest {
 
     Collection<IMaterial> allMaterials = materialManager.getAllMaterials();
     assertThat(allMaterials).hasSize(1);
-    assertThat(materialManager.resolveRedirect(new MaterialId("tconstruct:redirect_always"))).isEqualTo(new MaterialId("tconstruct:full"));
+    assertThat(materialManager.resolveRedirect(MaterialId.create(TConstruct.MOD_ID, "redirect_always"))).isEqualTo(MaterialId.create(TConstruct.MOD_ID, "full"));
   }
 
   @Test
@@ -134,7 +134,7 @@ class MaterialManagerTest extends BaseMcTest {
 
     Collection<IMaterial> allMaterials = materialManager.getAllMaterials();
     assertThat(allMaterials).isEmpty();
-    assertThat(materialManager.resolveRedirect(new MaterialId("tconstruct:redirect_always"))).isEqualTo(new MaterialId("tconstruct:redirect_always"));
+    assertThat(materialManager.resolveRedirect(MaterialId.create(TConstruct.MOD_ID, "redirect_always"))).isEqualTo(MaterialId.create(TConstruct.MOD_ID, "redirect_always"));
   }
 
   @Test
@@ -144,6 +144,6 @@ class MaterialManagerTest extends BaseMcTest {
 
     Collection<IMaterial> allMaterials = materialManager.getAllMaterials();
     assertThat(allMaterials).hasSize(2);
-    assertThat(materialManager.resolveRedirect(new MaterialId("tconstruct:redirect_conditional"))).isEqualTo(new MaterialId("tconstruct:minimal"));
+    assertThat(materialManager.resolveRedirect(MaterialId.create(TConstruct.MOD_ID, "redirect_conditional"))).isEqualTo(MaterialId.create(TConstruct.MOD_ID, "minimal"));
   }
 }

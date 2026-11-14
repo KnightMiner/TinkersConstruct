@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,8 @@ import java.util.List;
 import static java.util.Objects.requireNonNullElse;
 
 /**
- * A full layout for the tinker station
+ * A full layout for the tinker station.
+ * TODO: convert to loadables
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class StationSlotLayout {
@@ -91,7 +92,7 @@ public class StationSlotLayout {
   /* Buffers */
 
   /** Reads a slot from the packet buffer */
-  public static StationSlotLayout read(FriendlyByteBuf buffer) {
+  public static StationSlotLayout read(RegistryFriendlyByteBuf buffer) {
     ResourceLocation name = buffer.readResourceLocation();
     String translationKey = buffer.readUtf(Short.MAX_VALUE);
     LayoutIcon icon = LayoutIcon.read(buffer);
@@ -111,7 +112,7 @@ public class StationSlotLayout {
   }
 
   /** Writes a slot to the packet buffer */
-  public void write(FriendlyByteBuf buffer) {
+  public void write(RegistryFriendlyByteBuf buffer) {
     buffer.writeResourceLocation(name);
     buffer.writeUtf(getTranslationKey());
     icon.write(buffer);
@@ -160,7 +161,7 @@ public class StationSlotLayout {
 
   @Accessors(fluent = true)
   public static class Builder {
-    private static final Pattern PICKAXE = new Pattern(TConstruct.MOD_ID, "pickaxe");
+    private static final Pattern PICKAXE = Pattern.create(TConstruct.MOD_ID, "pickaxe");
 
     @Setter
     private String translationKey = null;

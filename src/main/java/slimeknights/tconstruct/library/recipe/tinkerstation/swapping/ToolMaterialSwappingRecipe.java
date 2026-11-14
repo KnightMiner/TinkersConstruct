@@ -163,7 +163,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         // start making recipes
         for (int i = 0; i < stats.size(); i++) {
           MaterialStatsId stat = stats.get(i);
-          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getIdentifier(), stat).isPresent()).toList();
+          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getId(), stat).isPresent()).toList();
           ToolStack copy = tool.copy();
           setMaterials(copy, i, renderMaterials.get(i));
           List<ItemStack> withoutMaterial = List.of(copy.createStack().copy());
@@ -228,7 +228,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         MaterialVariantId material = MaterialIdNBT.getMaterial(focus, index);
         // if focusing on the output, display a sacrifice that would create this tool
         if (focusOutput) {
-          if (statType.canUseMaterial(material.getId())) {
+          if (statType.canUseMaterial(material.material())) {
             ToolStack tool = displayTool.copy();
             tool.replaceMaterial(index, material);
             return List.of(tool.createStack());

@@ -24,7 +24,7 @@ public class DyedArmorTextureSupplier implements ArmorTextureSupplier {
   public static final RecordLoadable<DyedArmorTextureSupplier> LOADER = RecordLoadable.create(
     Loadables.RESOURCE_LOCATION.requiredField("prefix", s -> s.prefix),
     StringLoadable.DEFAULT.defaultField("suffix", "", s -> s.suffix),
-    ModifierId.PARSER.defaultField("modifier", TinkerModifiers.dyed.id(), s -> s.modifier),
+    ModifierId.LOADABLE.defaultField("modifier", TinkerModifiers.dyed.id(), s -> s.modifier),
     ColorLoadable.NO_ALPHA.nullableField("default_color", s -> s.alwaysRender ? s.defaultColor : null),
     IntLoadable.range(0, 15).defaultField("luminosity", 0, false, s -> s.luminosity),
     DyedArmorTextureSupplier::new);

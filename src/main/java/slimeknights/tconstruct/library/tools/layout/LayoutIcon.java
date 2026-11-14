@@ -9,15 +9,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.data.loadable.common.ItemStackLoadable;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 
 import javax.annotation.Nullable;
@@ -36,7 +32,7 @@ public abstract class LayoutIcon {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(RegistryFriendlyByteBuf buffer) {
       buffer.writeEnum(Type.EMPTY);
     }
 
@@ -61,24 +57,20 @@ public abstract class LayoutIcon {
   public abstract <T> T getValue(Class<T> clazz);
 
   /** Reads the button icon from the buffer */
-  public static LayoutIcon read(FriendlyByteBuf buffer) {
+  public static LayoutIcon read(RegistryFriendlyByteBuf buffer) {
     Type type = buffer.readEnum(Type.class);
-    switch (type) {
-      case EMPTY: return EMPTY;
-      case ITEM: {
-        ItemStack stack = buffer.readItem();
-        return new ItemStackIcon(stack);
+    return switch (type) {
+      case EMPTY -> EMPTY;
+      case ITEM -> new ItemStackIcon(ItemStack.STREAM_CODEC.decode(buffer));
+      case PATTERN -> {
+        Pattern pattern = Pattern.create(buffer.readResourceLocation());
+        yield new PatternIcon(pattern);
       }
-      case PATTERN: {
-        Pattern pattern = new Pattern(buffer.readResourceLocation());
-        return new PatternIcon(pattern);
-      }
-    }
-    throw new DecoderException("Invalid LayoutButtonIcon " + type);
+    };
   }
 
   /** Writes this to the packet buffer */
-  public abstract void write(FriendlyByteBuf buffer);
+  public abstract void write(RegistryFriendlyByteBuf buffer);
 
   /** Writes this object to json */
   public abstract JsonObject toJson();
@@ -89,6 +81,7 @@ public abstract class LayoutIcon {
     private final ItemStack stack;
 
     @SuppressWarnings("unchecked")
+    @Nullable
     @Override
     public <T> T getValue(Class<T> clazz) {
       if (clazz == ItemStack.class) {
@@ -98,19 +91,15 @@ public abstract class LayoutIcon {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(RegistryFriendlyByteBuf buffer) {
       buffer.writeEnum(Type.ITEM);
-      buffer.writeItem(stack);
+      ItemStack.STREAM_CODEC.encode(buffer, stack);
     }
 
     @Override
     public JsonObject toJson() {
       JsonObject json = new JsonObject();
-      json.add("item", Loadables.ITEM.serialize(stack.getItem()));
-      CompoundTag tag = stack.getTag();
-      if (tag != null) {
-        json.addProperty("nbt", tag.toString());
-      }
+      ItemStackLoadable.REQUIRED_ITEM_DATA.serializeInto(stack, json);
       return json;
     }
   }
@@ -121,6 +110,7 @@ public abstract class LayoutIcon {
     private final Pattern pattern;
 
     @SuppressWarnings("unchecked")
+    @Nullable
     @Override
     public <T> T getValue(Class<T> clazz) {
       if (clazz == Pattern.class) {
@@ -130,9 +120,9 @@ public abstract class LayoutIcon {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(RegistryFriendlyByteBuf buffer) {
       buffer.writeEnum(Type.PATTERN);
-      buffer.writeResourceLocation(pattern);
+      buffer.writeResourceLocation(pattern.id());
     }
 
     @Override
@@ -156,12 +146,11 @@ public abstract class LayoutIcon {
     public LayoutIcon deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
       JsonObject object = GsonHelper.convertToJsonObject(json, "button_icon");
       if (object.has("pattern")) {
-        Pattern pattern = new Pattern(JsonHelper.getResourceLocation(object, "pattern"));
+        Pattern pattern = Pattern.LOADABLE.getIfPresent(object, "pattern");
         return new PatternIcon(pattern);
       }
       if (object.has("item")) {
-        ItemStack stack = CraftingHelper.getItemStack(object, true);
-        return new ItemStackIcon(stack);
+        return new ItemStackIcon(ItemStackLoadable.REQUIRED_ITEM_DATA.deserialize(object));
       }
       // not sure why this would be needed, but might as well
       if (object.entrySet().isEmpty()) {

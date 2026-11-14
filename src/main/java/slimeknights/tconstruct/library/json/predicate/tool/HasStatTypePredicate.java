@@ -16,7 +16,7 @@ import java.util.List;
  */
 public record HasStatTypePredicate(MaterialStatsId statType, @Nullable MaterialVariantId material) implements ToolContextPredicate {
   public static final RecordLoadable<HasStatTypePredicate> LOADER = RecordLoadable.create(
-    MaterialStatsId.PARSER.requiredField("stat_type", HasStatTypePredicate::statType),
+    MaterialStatsId.LOADABLE.requiredField("stat_type", HasStatTypePredicate::statType),
     MaterialVariantId.LOADABLE.nullableField("material", HasStatTypePredicate::material),
     HasStatTypePredicate::new);
 

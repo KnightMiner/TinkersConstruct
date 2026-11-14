@@ -18,6 +18,7 @@ import net.neoforged.neoforge.common.TierSortingRegistry;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.HarvestTiers;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -29,7 +30,7 @@ import java.util.Objects;
 @Getter @RequiredArgsConstructor
 public class ToolTierStat implements IToolStat<Tier> {
   /** Name of this tool stat */
-  private final ToolStatId name;
+  private final ResourceId<IToolStat<?>> id;
 
   @Override
   public boolean supports(Item item) {
@@ -84,7 +85,7 @@ public class ToolTierStat implements IToolStat<Tier> {
 
   @Override
   public Tier deserialize(JsonElement json) {
-    ResourceLocation id = JsonHelper.convertToResourceLocation(json, getName().toString());
+    ResourceLocation id = JsonHelper.convertToResourceLocation(json, getId().toString());
     Tier tier = TierSortingRegistry.byName(id);
     if (tier != null) {
       return tier;
@@ -114,12 +115,12 @@ public class ToolTierStat implements IToolStat<Tier> {
 
   @Override
   public Component formatValue(Tier value) {
-    return Component.translatable(Util.makeTranslationKey("tool_stat", getName())).append(HarvestTiers.getName(value));
+    return Component.translatable(Util.makeTranslationKey("tool_stat", getId())).append(HarvestTiers.getName(value));
   }
 
   @Override
   public String toString() {
-    return "ToolTierStat{" + name + '}';
+    return "ToolTierStat{" + id + '}';
   }
 
   /** Builder for a tier object */

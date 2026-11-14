@@ -116,7 +116,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
         }
 
         // ensure this material is valid for the tool. If its not its really the recipes fault, but better a valid tool
-        if (MaterialRegistry.getInstance().getMaterialStats(material.getId(), materials.get(index)).isEmpty()) {
+        if (MaterialRegistry.getInstance().getMaterialStats(material.material(), materials.get(index)).isEmpty()) {
           return INVALID_MATERIAL;
         }
 

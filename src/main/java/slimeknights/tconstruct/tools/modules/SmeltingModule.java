@@ -90,7 +90,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
     InventoryModule.LOADER.directField(SmeltingModule::input),
     OutputKeyField.INSTANCE,
     // TODO 1.21: remove default value
-    Pattern.PARSER.defaultField("output_pattern", Patterns.RESULT, true, m -> m.output.pattern()),
+    Pattern.LOADABLE.defaultField("output_pattern", Patterns.RESULT, true, m -> m.output.pattern()),
     SmeltingModule::new);
 
   /** @apiNote use {@link #SmeltingModule(RecipeType, float, InventoryModule, ResourceLocation, Pattern)} */

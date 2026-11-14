@@ -26,8 +26,8 @@ class MaterialNBTTest extends BaseMcTest {
 
     assertThat(nbtList).hasSize(2);
     assertThat(nbtList).extracting(Tag::getAsString).containsExactly(
-      TEST_MATERIAL_1.getIdentifier().toString(),
-      TEST_MATERIAL_2.getIdentifier().toString()
+      TEST_MATERIAL_1.getId().toString(),
+      TEST_MATERIAL_2.getId().toString()
     );
   }
 
@@ -42,8 +42,8 @@ class MaterialNBTTest extends BaseMcTest {
   void deserialize() {
     ListTag nbtList = new ListTag();
     // note we switched the order here to ensure that the order is as defined, and not ordered in some way
-    nbtList.add(StringTag.valueOf(TEST_MATERIAL_2.getIdentifier().toString()));
-    nbtList.add(StringTag.valueOf(TEST_MATERIAL_1.getIdentifier().toString()));
+    nbtList.add(StringTag.valueOf(TEST_MATERIAL_2.getId().toString()));
+    nbtList.add(StringTag.valueOf(TEST_MATERIAL_1.getId().toString()));
 
     MaterialNBT materialNBT = MaterialNBT.readFromNBT(nbtList);
 
@@ -86,7 +86,7 @@ class MaterialNBTTest extends BaseMcTest {
     assertThat(nbt.get(1).get()).isEqualTo(IMaterial.UNKNOWN);
 
     // note 1 is out of bounds of empty, but replace material needs to be able to extend the material list to deal with errors
-    nbt = nbt.replaceMaterial(1, MaterialFixture.MATERIAL_1.getIdentifier());
+    nbt = nbt.replaceMaterial(1, MaterialFixture.MATERIAL_1.getId());
 
     assertThat(nbt).overridingErrorMessage("replaceMaterial should not modify the original").isNotSameAs(MaterialNBT.EMPTY);
     assertThat(nbt.get(1).get()).isEqualTo(MaterialFixture.MATERIAL_1);

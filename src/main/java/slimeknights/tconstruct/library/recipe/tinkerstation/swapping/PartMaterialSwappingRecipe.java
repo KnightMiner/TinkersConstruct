@@ -155,10 +155,10 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         return IntStream.range(0, parts.size()).mapToObj(i -> {
           IToolPart part = parts.get(i);
           ToolStack copy = tool.copy();
-          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getIdentifier(), part.getStatType()).isPresent()).toList();
+          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getId(), part.getStatType()).isPresent()).toList();
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/part_" + i), parent, new PartDisplayRecipe(i,
             // one part per material
-            filtered.stream().map(mat -> part.withMaterialForDisplay(mat.getIdentifier())).toList(),
+            filtered.stream().map(mat -> part.withMaterialForDisplay(mat.getId())).toList(),
             // single tool with the material to swap left blank
             List.of(withMaterial(copy, i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0))).copy()),
             // one output per material

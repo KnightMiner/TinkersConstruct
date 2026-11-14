@@ -148,7 +148,7 @@ public class MaterialTraitsManager extends MergingJsonDataLoader<MaterialTraits.
     ImmutableMap.Builder<MaterialId,MaterialTraits> builder = ImmutableMap.builder();
     map.entrySet().stream().sorted(Entry.comparingByKey()).forEach(entry -> {
       MaterialTraits traits = entry.getValue().build(statTypeFallbacks);
-      builder.put(new MaterialId(entry.getKey()), traits);
+      builder.put(MaterialId.create(entry.getKey()), traits);
       if (log.isDebugEnabled() && JsonUtils.debugLogResourceValues()) {
         log.debug("Loaded traits for material '{}': \n\tDefault - {}{}",
           entry.getKey(),

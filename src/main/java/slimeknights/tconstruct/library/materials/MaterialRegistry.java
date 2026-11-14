@@ -37,13 +37,13 @@ import java.util.function.Function;
 
 public final class MaterialRegistry {
   /** Internal material stats ID for the sake of adding traits exclusive to melee or harvest materials */
-  public static final MaterialStatsId MELEE_HARVEST = new MaterialStatsId(TConstruct.getResource("melee_harvest"));
+  public static final MaterialStatsId MELEE_HARVEST = MaterialStatsId.create(TConstruct.MOD_ID, "melee_harvest");
   /** Internal material stats ID for the sake of adding traits exclusive to ranged materials */
-  public static final MaterialStatsId RANGED = new MaterialStatsId(TConstruct.getResource("ranged"));
+  public static final MaterialStatsId RANGED = MaterialStatsId.create(TConstruct.MOD_ID, "ranged");
   /** Internal material stats ID for the sake of adding traits exclusive to armor materials */
-  public static final MaterialStatsId ARMOR = new MaterialStatsId(TConstruct.getResource("armor"));
+  public static final MaterialStatsId ARMOR = MaterialStatsId.create(TConstruct.MOD_ID, "armor");
   /** Internal material stats ID for the sake of adding traits exclusive to ammo materials */
-  public static final MaterialStatsId AMMO = new MaterialStatsId(TConstruct.getResource("ammo"));
+  public static final MaterialStatsId AMMO = MaterialStatsId.create(TConstruct.MOD_ID, "ammo");
 
   static MaterialRegistry INSTANCE;
 
@@ -208,7 +208,7 @@ public final class MaterialRegistry {
   private static final Function<MaterialStatsId,IMaterial> FIRST_LOADER = statsId -> {
     IMaterialRegistry instance = getInstance();
     for (IMaterial material : instance.getVisibleMaterials()) {
-      if (!material.isHidden() && instance.getMaterialStats(material.getIdentifier(), statsId).isPresent()) {
+      if (!material.isHidden() && instance.getMaterialStats(material.getId(), statsId).isPresent()) {
         return material;
       }
     }

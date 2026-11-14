@@ -19,7 +19,7 @@ import java.util.List;
 
 /** Stats for melee/harvest head stats */
 public record HeadMaterialStats(int durability, float miningSpeed, Tier tier, float attack) implements IRepairableMaterialStats.ScaledTooltip {
-  public static final MaterialStatsId ID = new MaterialStatsId(TConstruct.getResource("head"));
+  public static final MaterialStatsId ID = MaterialStatsId.create(TConstruct.MOD_ID, "head");
   public static final MaterialStatType<HeadMaterialStats> TYPE = new MaterialStatType<>(ID, new HeadMaterialStats(1, 1f, Tiers.WOOD, 1f), RecordLoadable.create(
     IRepairableMaterialStats.DURABILITY_FIELD,
     FloatLoadable.FROM_ZERO.defaultField("mining_speed", 1f, true, HeadMaterialStats::miningSpeed),

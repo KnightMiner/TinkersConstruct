@@ -11,12 +11,13 @@ import lombok.ToString;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
-import slimeknights.tconstruct.library.tools.stat.ToolStatId;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,6 @@ import java.util.Set;
 /**
  * Generic container for tool stats, allows addons to select which stats they wish to use
  */
-@SuppressWarnings("ClassCanBeRecord")
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode
 @ToString
@@ -88,7 +88,7 @@ public class StatsNBT {
   /** Reads a tool stat ID from a NBT string */
   @Nullable
   static IToolStat<?> readStatIdFromNBT(String name) {
-    ToolStatId statName = ToolStatId.tryParse(name);
+    ResourceId<IToolStat<?>> statName = ResourceId.tryParse(name);
     if (statName != null) {
       IToolStat<?> stat = ToolStats.getToolStat(statName);
       if (stat != null) {
@@ -97,7 +97,7 @@ public class StatsNBT {
     }
     if (!StatsNBT.ERRORED_IDS.contains(name)) {
       StatsNBT.ERRORED_IDS.add(name);
-      TConstruct.LOG.error("Ignoring unknown stat " + name + " in tool stat NBT");
+      TConstruct.LOG.error("Ignoring unknown stat {} in tool stat NBT", name);
     }
     return null;
   }
@@ -141,7 +141,7 @@ public class StatsNBT {
       IToolStat<?> stat = entry.getKey();
       Tag serialized = serialize(stat, entry.getValue());
       if (serialized != null) {
-        nbt.put(stat.getName().toString(), serialized);
+        nbt.put(stat.getId().toString(), serialized);
       }
     }
     return nbt;
@@ -161,13 +161,13 @@ public class StatsNBT {
     buffer.writeVarInt(stats.size());
     for (Entry<IToolStat<?>,Object> entry : stats.entrySet()) {
       IToolStat<?> stat = entry.getKey();
-      buffer.writeUtf(stat.getName().toString());
+      buffer.writeUtf(stat.getId().toString());
       toNetwork(buffer, stat, entry.getValue());
     }
   }
 
   /** Reads a tool definition stat object from a packet buffer */
-  public static StatsNBT fromNetwork(FriendlyByteBuf buffer) {
+  public static StatsNBT fromNetwork(RegistryFriendlyByteBuf buffer) {
     ImmutableMap.Builder<IToolStat<?>, Object> builder = ImmutableMap.builder();
     int max = buffer.readVarInt();
     for (int i = 0; i < max; i++) {
@@ -221,20 +221,20 @@ public class StatsNBT {
     }
 
     @Override
-    public void serialize(StatsNBT stats, JsonObject json) {
+    public void serializeInto(StatsNBT stats, JsonObject json, TypedMap context) {
       for (Entry<IToolStat<?>,Object> entry : stats.stats.entrySet()) {
         IToolStat<?> stat = entry.getKey();
-        json.add(stat.getName().toString(), serialize(stat, entry.getValue()));
+        json.add(stat.getId().toString(), serialize(stat, entry.getValue()));
       }
     }
 
     @Override
-    public StatsNBT decode(FriendlyByteBuf buffer, TypedMap context) {
+    public StatsNBT decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       return StatsNBT.fromNetwork(buffer);
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, StatsNBT stats) {
+    public void encode(RegistryFriendlyByteBuf buffer, StatsNBT stats, TypedMap context) {
       stats.toNetwork(buffer);
     }
   };

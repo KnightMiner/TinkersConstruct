@@ -1,41 +1,41 @@
 package slimeknights.tconstruct.library.materials.definition;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.resource.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
-import slimeknights.tconstruct.library.utils.IdParser;
-import slimeknights.tconstruct.library.utils.ResourceId;
+import slimeknights.tconstruct.library.utils.SimpleCache;
 
 import javax.annotation.Nullable;
 
 /**
  * This is just a copy of ResourceLocation for type safety in material JSON.
  */
-public final class MaterialId extends ResourceId implements MaterialVariantId {
-  public static final IdParser<MaterialId> PARSER = new IdParser<>(MaterialId::new, "Material");
+public record MaterialId(ResourceLocation id) implements ResourceId<IMaterial>, MaterialVariantId {
+  private static final SimpleCache<ResourceLocation,MaterialId> CACHE = new SimpleCache<>(MaterialId::new);
+  /** Loader instance */
+  public static final ResourceIdLoadable<MaterialId> LOADABLE = new ResourceIdLoadable<>(CACHE);
+  /** Codec instance */
+  public static final Codec<MaterialId> CODEC = ResourceId.codec(CACHE);
+  /** Stream codec instance for network buffer */
+  public static final StreamCodec<ByteBuf,MaterialId> STREAM_CODEC = ResourceId.streamCodec(CACHE);
+
   /** ID of fallback material */
-  public static final MaterialId UNKNOWN = new MaterialId(TConstruct.MOD_ID, "unknown");
+  public static final MaterialId UNKNOWN = create(TConstruct.MOD_ID, "unknown");
 
-  public MaterialId(String resourceName) {
-    super(resourceName);
-  }
-
-  public MaterialId(String namespaceIn, String pathIn) {
-    super(namespaceIn, pathIn);
-  }
-
-  public MaterialId(ResourceLocation location) {
-    super(location);
-  }
-
-  private MaterialId(String namespace, String path, @Nullable Dummy pDummy) {
-    super(namespace, path, pDummy);
-  }
+  /** @apiNote use {@link #create(ResourceLocation)} */
+  @Internal
+  public MaterialId {}
 
   /** Checks if this ID matches the given material */
   public boolean matches(IMaterial material) {
-    return this.equals(material.getIdentifier());
+    return this.equals(material.getId());
   }
 
   /** Checks if this ID matches the given stack */
@@ -44,12 +44,12 @@ public final class MaterialId extends ResourceId implements MaterialVariantId {
   }
 
   @Override
-  public MaterialId getId() {
+  public MaterialId material() {
     return this;
   }
 
   @Override
-  public String getVariant() {
+  public String variant() {
     return "";
   }
 
@@ -65,31 +65,45 @@ public final class MaterialId extends ResourceId implements MaterialVariantId {
 
   @Override
   public ResourceLocation getLocation(char separator) {
-    return this;
+    return id;
   }
 
   @Override
   public String getSuffix() {
-    return getNamespace() + '_' + getPath();
+    return id.getNamespace() + '_' + id.getPath();
   }
 
   @Override
   public boolean matchesVariant(MaterialVariantId other) {
-    return this.equals(other.getId());
+    return this.equals(other.material());
+  }
+
+  @Override
+  public String toString() {
+    return id.toString();
   }
 
 
-  /* Helpers */
+  /* Constructors */
+
+  /** Parses a pattern from the given string */
+  public static MaterialId create(ResourceLocation id) {
+    return CACHE.apply(id);
+  }
+
+  /** {@return Material ID, or throws if invalid} */
+  public static MaterialId create(String domain, String name) {
+    return create(ResourceLocation.fromNamespaceAndPath(domain, name));
+  }
+
+  /** {@return Material ID, or throws if invalid} */
+  public static MaterialId parse(String string) {
+    return create(ResourceLocation.parse(string));
+  }
 
   /** {@return Material ID, or null if invalid} */
   @Nullable
   public static MaterialId tryParse(String string) {
-    return tryParse(string, (namespace, path) -> new MaterialId(namespace, path, null));
-  }
-
-  /** {@return Material ID, or null if invalid} */
-  @Nullable
-  public static MaterialId tryBuild(String namespace, String path) {
-    return tryBuild(namespace, path, (n, p) -> new MaterialId(namespace, path, null));
+    return LOADABLE.tryParse(string);
   }
 }

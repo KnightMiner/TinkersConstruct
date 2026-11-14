@@ -41,7 +41,7 @@ public enum StatlessMaterialStats implements IMaterialStats {
   // no stats
 
   StatlessMaterialStats(String name) {
-    this.type = MaterialStatType.singleton(new MaterialStatsId(TConstruct.getResource(name)), this);
+    this.type = MaterialStatType.singleton(MaterialStatsId.create(TConstruct.MOD_ID, name), this);
   }
 
   @Override

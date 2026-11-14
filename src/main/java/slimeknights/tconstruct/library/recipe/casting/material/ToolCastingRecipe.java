@@ -346,7 +346,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     public List<ItemStack> getCastItems(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
         MaterialVariantId castMaterial = MaterialIdNBT.getMaterial(focus, castIndex);
-        if (castItem.canUseMaterial(castMaterial.getId())) {
+        if (castItem.canUseMaterial(castMaterial.material())) {
           return List.of(castItem.withMaterialForDisplay(castMaterial));
         }
       }
@@ -357,7 +357,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     public List<FluidStack> getFluids(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
         MaterialVariantId material = MaterialIdNBT.getMaterial(focus, fluidIndex);
-        if (materials.matches(material) && castItem.canUseMaterial(material.getId())) {
+        if (materials.matches(material) && castItem.canUseMaterial(material.material())) {
           List<FluidStack> fluids = MaterialCastingLookup.getCastingFluids(material).stream()
             .flatMap(recipe -> recipe.getFluids().stream().map(ToolCastingRecipe.this::resizeFluid))
             .toList();

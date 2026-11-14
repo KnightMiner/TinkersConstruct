@@ -34,10 +34,10 @@ public class MaterialRegistryExtension implements BeforeEachCallback, AfterAllCa
     Map<IMaterial, List<IMaterialStats>> materialSetup = MaterialFixture.ALL_MATERIAL_FIXTURES;
 
     Map<MaterialId, IMaterial> materials = materialSetup.keySet().stream()
-      .collect(Collectors.toMap(IMaterial::getIdentifier, Function.identity()));
+      .collect(Collectors.toMap(IMaterial::getId, Function.identity()));
     Map<MaterialId, Map<MaterialStatsId, IMaterialStats>> stats = materialSetup.entrySet().stream()
       .collect(Collectors.toMap(
-        entry -> entry.getKey().getIdentifier(),
+        entry -> entry.getKey().getId(),
         entry -> entry.getValue().stream().collect(Collectors.toMap(
           IMaterialStats::getIdentifier,
           Function.identity()

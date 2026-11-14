@@ -283,7 +283,7 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
 
     // plate armor
     String plateFolder = armorFolder + "plate/";
-    TinkerTools.plateArmor.forEach(item -> toolBuilding(consumer, item, plateFolder, Patterns.PLATE_ARMOR));
+    TinkerTools.plateArmor.forEachTyped(item -> toolBuilding(consumer, item, plateFolder, Patterns.PLATE_ARMOR));
     MaterialCastingRecipeBuilder.tableRecipe(TinkerTools.plateShield.get())
                                 .setPart(TinkerToolParts.shieldCore, true)
                                 .setItemCost(3)
@@ -407,12 +407,12 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
     // crafting table tool recycling
     // flint and brick loses the brick as we don't know if you used seared or scorched
     PartBuilderRecycleBuilder.tool(TinkerTools.flintAndBrick)
-      .result(new Pattern(TConstruct.MOD_ID, "shard"), Items.FLINT, 1)
+      .result(Pattern.create(TConstruct.MOD_ID, "shard"), Items.FLINT, 1)
       .save(consumer, location(folder + "flint_and_brick"));
     // slimestaff
-    Pattern log = new Pattern(TConstruct.MOD_ID, "block");
-    Pattern ingot = new Pattern(TConstruct.MOD_ID, "ingot");
-    Pattern crystal = new Pattern(TConstruct.MOD_ID, "crystal");
+    Pattern log = Pattern.create(TConstruct.MOD_ID, "block");
+    Pattern ingot = Pattern.create(TConstruct.MOD_ID, "ingot");
+    Pattern crystal = Pattern.create(TConstruct.MOD_ID, "crystal");
     PartBuilderRecycleBuilder.tool(TinkerTools.earthStaff)
       .result(crystal, TinkerWorld.earthGeode, 2)
       .result(log, TinkerWorld.greenheart.getLog(), 2)

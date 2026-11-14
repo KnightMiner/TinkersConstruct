@@ -10,10 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.datamap.RegistryDataMapLoader;
 import slimeknights.mantle.data.listener.IEarlySafeManagerReloadListener;
 import slimeknights.mantle.data.loadable.field.ContextKey;
@@ -46,15 +46,14 @@ public class MaterialRenderInfoLoader implements IEarlySafeManagerReloadListener
   /** Folder to scan for material render info JSONS */
   public static final String FOLDER = "tinkering/materials";
 
-  /**
-   * Called on mod construct to register the resource listener
-   */
-  public static void init()  {
+  /** Called on mod construct to register the resource listener */
+  @Internal
+  public static void init(IEventBus bus)  {
     // bit of a hack: instead of registering our resource listener to the list as we should, we use the additional model registration event
     // we do this as we need to guarantee we run before models are baked, which happens in the first stage of listeners in the bakery constructor
     // the other option would be to wait until the atlas stitch event, though that would make it more difficult to know which sprites we need
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, ModelEvent.RegisterAdditional.class, event -> {
-      if(ModLoader.isLoadingStateValid()) {
+    bus.addListener(ModelEvent.RegisterAdditional.class, event -> {
+      if (!ModLoader.hasErrors()) {
         INSTANCE.onReloadSafe(Minecraft.getInstance().getResourceManager());
       }
     });
@@ -87,7 +86,7 @@ public class MaterialRenderInfoLoader implements IEarlySafeManagerReloadListener
       }
     }
     // no variant or the variant was not found? default to the material
-    return Optional.ofNullable(renderInfos.get(variantId.getId()));
+    return Optional.ofNullable(renderInfos.get(variantId.material()));
   }
 
   /** Gets the variant for the given render info path */
@@ -140,7 +139,7 @@ public class MaterialRenderInfoLoader implements IEarlySafeManagerReloadListener
     // store the list immediately, otherwise it is not in place in time for models to load
     this.renderInfos = Map.copyOf(map);
     if (log.isDebugEnabled() && JsonUtils.debugLogResourceValues()) {
-      log.debug("Loaded material render infos: {}", Util.toIndentedStringList(map.keySet().stream().sorted(Comparator.comparing(MaterialVariantId::getId).thenComparing(MaterialVariantId::getVariant)).toList()));
+      log.debug("Loaded material render infos: {}", Util.toIndentedStringList(map.keySet().stream().sorted(Comparator.comparing(MaterialVariantId::material).thenComparing(MaterialVariantId::variant)).toList()));
     }
     log.info("{} material render infos loaded", map.size());
   }

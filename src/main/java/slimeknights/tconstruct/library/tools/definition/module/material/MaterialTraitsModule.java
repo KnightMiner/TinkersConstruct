@@ -27,9 +27,9 @@ import java.util.List;
 @AllArgsConstructor
 public final class MaterialTraitsModule implements ToolTraitHook, ToolModule {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MaterialTraitsModule>defaultHooks(ToolHooks.TOOL_TRAITS);
-  private static final MaterialStatsId MISSING = new MaterialStatsId(TConstruct.MOD_ID, "missingno");
+  private static final MaterialStatsId MISSING = MaterialStatsId.create(TConstruct.MOD_ID, "missingno");
   public static final RecordLoadable<MaterialTraitsModule> LOADER = RecordLoadable.create(
-    MaterialStatsId.PARSER.nullableField("stat_type", m -> m.statType),
+    MaterialStatsId.LOADABLE.nullableField("stat_type", m -> m.statType),
     IntLoadable.FROM_ZERO.requiredField("material_index", m -> m.materialIndex),
     MaterialTraitsModule::new);
 

@@ -38,7 +38,7 @@ public class GeneratePartTexturesCommand {
 
   /** Runs the command, filtered by a material */
   private static int runMaterial(CommandContext<CommandSourceStack> context, Operation filter) throws CommandSyntaxException {
-    MaterialId material = MaterialArgument.getMaterial(context, "material").getIdentifier();
+    MaterialId material = MaterialArgument.getMaterial(context, "material").getId();
     return run(context, filter, material.getNamespace(), material.getPath());
   }
 

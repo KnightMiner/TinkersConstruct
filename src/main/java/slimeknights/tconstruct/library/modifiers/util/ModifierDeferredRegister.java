@@ -1,8 +1,7 @@
 package slimeknights.tconstruct.library.modifiers.util;
 
 import lombok.RequiredArgsConstructor;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
-import net.neoforged.neoforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager.ModifierRegistrationEvent;
@@ -29,7 +28,7 @@ public class ModifierDeferredRegister {
 
   /** Registers the deferred register with the relevant forge event busses */
   public void register(IEventBus bus) {
-    bus.addListener(EventPriority.NORMAL, false, ModifierRegistrationEvent.class, this::handleEvent);
+    bus.addListener(ModifierRegistrationEvent.class, this::handleEvent);
   }
 
   /**
@@ -45,7 +44,7 @@ public class ModifierDeferredRegister {
     if (seenRegisterEvent) {
       throw new IllegalStateException("Cannot register new entries to DeferredRegister after ModifierRegistrationEvent has been fired.");
     }
-    ModifierId id = new ModifierId(modId, name);
+    ModifierId id = ModifierId.create(modId, name);
     if (expected.contains(id)) {
       throw new IllegalArgumentException("Already registered as an dynamic modifier " + id);
     }
@@ -65,7 +64,7 @@ public class ModifierDeferredRegister {
     if (seenRegisterEvent) {
       throw new IllegalStateException("Cannot register new entries to DeferredRegister after ModifierRegistrationEvent has been fired.");
     }
-    ModifierId id = new ModifierId(modId, name);
+    ModifierId id = ModifierId.create(modId, name);
     if (entries.containsKey(id)) {
       throw new IllegalArgumentException("Already registered as a static modifier " + id);
     }

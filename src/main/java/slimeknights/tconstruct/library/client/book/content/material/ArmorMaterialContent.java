@@ -118,7 +118,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     MaterialVariantId materialVariant = getMaterialVariant();
-    MaterialId material = materialVariant.getId();
+    MaterialId material = materialVariant.material();
     this.addTitle(list, getTitle(), true, MaterialTooltipCache.getColor(materialVariant).getValue());
 
     // the cool tools to the left/right
@@ -186,7 +186,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
   private int addTraits(int x, int y, List<BookElement> list, Component title, MaterialStatsId statsId) {
     IMaterialRegistry registry = MaterialRegistry.getInstance();
     MaterialVariantId material = getMaterialVariant();
-    if (registry.getMaterialStats(material.getId(), statsId).isEmpty()) {
+    if (registry.getMaterialStats(material.material(), statsId).isEmpty()) {
       return y;
     }
 
@@ -195,7 +195,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
     y += 12;
 
     List<TextComponentData> lineData = Lists.newArrayList();
-    addTraitLines(lineData, registry.getTraits(material.getId(), statsId));
+    addTraitLines(lineData, registry.getTraits(material.material(), statsId));
     list.add(new TextComponentElement(x, y, STAT_WIDTH, BookScreen.PAGE_HEIGHT, lineData));
 
     // TODO: calculate actual height to properly wrap long lines?
@@ -208,7 +208,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
 
     // add stats
     List<PlatingMaterialStats> stats = TOP_DOWN_STATS.stream()
-      .flatMap(id -> MaterialRegistry.getInstance().<PlatingMaterialStats>getMaterialStats(getMaterial().getIdentifier(), id).stream())
+      .flatMap(id -> MaterialRegistry.getInstance().<PlatingMaterialStats>getMaterialStats(getMaterial().getId(), id).stream())
       .toList();
     if (!stats.isEmpty()) {
       HtmlElement divider = HtmlElement.div().classes("row").style("gap", 32)

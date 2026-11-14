@@ -14,13 +14,13 @@ public interface IMaterial extends Comparable<IMaterial> {
    * <p>
    * The fallback material needs to have all part types associated with it.
    */
-  IMaterial UNKNOWN = new Material(MaterialId.UNKNOWN, false, true);
+  IMaterial UNKNOWN = new Material(MaterialId.UNKNOWN, 0, -1, false, true, Rarity.COMMON);
 
   /**
    * Used to identify the material in NBT and other constructs.
    * Basically everywhere where the material has to be referenced and persisted.
    */
-  MaterialId getIdentifier();
+  MaterialId getId();
 
   /**
    * If the material can be crafted into items in the part builder.
@@ -59,12 +59,12 @@ public interface IMaterial extends Comparable<IMaterial> {
     if (this.getSortOrder() != other.getSortOrder()) {
       return Integer.compare(this.getSortOrder(), other.getSortOrder());
     }
-    return this.getIdentifier().compareTo(other.getIdentifier());
+    return this.getId().compareTo(other.getId());
   }
 
   /** Checks if the given material is the same material as the other, matches by ID */
   default boolean matches(IMaterial other) {
-    return this == other || this.getIdentifier().matches(other);
+    return this == other || this.getId().matches(other);
   }
 
 

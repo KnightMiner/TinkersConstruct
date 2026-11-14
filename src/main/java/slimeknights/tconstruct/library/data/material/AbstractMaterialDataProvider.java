@@ -10,7 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.common.crafting.conditions.AndCondition;
 import net.neoforged.neoforge.common.crafting.conditions.ICondition;
@@ -18,8 +17,8 @@ import net.neoforged.neoforge.common.crafting.conditions.OrCondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
-import slimeknights.tconstruct.library.json.JsonRedirect;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
+import slimeknights.tconstruct.library.json.JsonRedirect;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.materials.json.MaterialJson;
@@ -226,14 +225,14 @@ public abstract class AbstractMaterialDataProvider extends GenericDataProvider {
     }
 
     /** Adds a redirect to the builder */
-    public MaterialBuilder redirect(ResourceLocation id, ICondition... conditions) {
+    public MaterialBuilder redirect(MaterialId id, ICondition... conditions) {
       ICondition combined = null;
       if (conditions.length == 1) {
         combined = conditions[0];
       } else if (conditions.length > 1) {
         combined = new AndCondition(conditions);
       }
-      return redirect(new JsonRedirect(id, combined));
+      return redirect(new JsonRedirect(id.id(), combined));
     }
 
 

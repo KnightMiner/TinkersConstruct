@@ -762,7 +762,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.strength).addModule(AttributeModule.builder(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_TOTAL).slots(armorSlots).eachLevel(0.1f));
     buildModifier(TinkerModifiers.sleeves)
       .addModule(SleevesModule.INSTANCE)
-      .addModule(InventoryModule.builder().flatLimit(16).filter(ItemPredicate.tag(TinkerTags.Items.THROWABLE)).pattern(new Pattern(TConstruct.MOD_ID, "shuriken")).slotsPerLevel(3));
+      .addModule(InventoryModule.builder().flatLimit(16).filter(ItemPredicate.tag(TinkerTags.Items.THROWABLE)).pattern(Pattern.create(TConstruct.MOD_ID, "shuriken")).slotsPerLevel(3));
     // leggings
     // pocket is an internal modifier to keep the NBT structure for inventory modifiers the smae
     buildModifier(ModifierIds.pocket).showInTooltips(ShowInTooltips.NEVER)
@@ -805,7 +805,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.featherFalling)
       .addModule(ProtectionModule.builder().source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.FALL_PROTECTION))
         .toolContext(HasModifierPredicate.hasModifier(ModifierIds.longFall, 1).inverted()).eachLevel(3));
-    addRedirect(new ModifierId(TConstruct.MOD_ID, "feather_fall"), redirect(ModifierIds.featherFalling));
+    addRedirect(ModifierId.create(TConstruct.MOD_ID, "feather_fall"), redirect(ModifierIds.featherFalling));
     buildModifier(ModifierIds.longFall)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(ModifierRequirementsModule.builder().requirement(HasModifierPredicate.hasModifier(ModifierIds.featherFalling, 4)).modifierKey(ModifierIds.longFall).build())
@@ -1709,6 +1709,6 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
 
   /** Short helper to get a modifier ID */
   private static Pattern pattern(String name) {
-    return new Pattern(TConstruct.MOD_ID, name);
+    return Pattern.create(TConstruct.MOD_ID, name);
   }
 }

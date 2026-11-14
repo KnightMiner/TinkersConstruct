@@ -44,7 +44,7 @@ public record PlatingMaterialStats(MaterialStatType<?> getType, int durability, 
   public static final MaterialStatType<PlatingMaterialStats> LEGGINGS = makeType("plating_leggings");
   public static final MaterialStatType<PlatingMaterialStats> BOOTS = makeType("plating_boots");
   /** Shield loadable does not support armor */
-  public static final MaterialStatType<PlatingMaterialStats> SHIELD = new MaterialStatType<PlatingMaterialStats>(new MaterialStatsId(TConstruct.MOD_ID, "plating_shield"), type -> new PlatingMaterialStats(type, 1, 0, 0, 0), RecordLoadable.create(
+  public static final MaterialStatType<PlatingMaterialStats> SHIELD = new MaterialStatType<PlatingMaterialStats>(MaterialStatsId.create(TConstruct.MOD_ID, "plating_shield"), type -> new PlatingMaterialStats(type, 1, 0, 0, 0), RecordLoadable.create(
     MaterialStatType.CONTEXT_KEY.requiredField(), IRepairableMaterialStats.DURABILITY_FIELD, TOUGHNESS, KNOCKBACK_RESISTANCE,
     (type, durability, toughness, knockbackResistance) -> new PlatingMaterialStats(type, durability, 0, toughness, knockbackResistance)));
   /** All types including shield */
@@ -76,7 +76,7 @@ public record PlatingMaterialStats(MaterialStatType<?> getType, int durability, 
 
   /** Makes a stat type for the given name */
   private static MaterialStatType<PlatingMaterialStats> makeType(String name) {
-    return new MaterialStatType<PlatingMaterialStats>(new MaterialStatsId(TConstruct.MOD_ID, name), type -> new PlatingMaterialStats(type, 1, 0, 0, 0), LOADABLE);
+    return new MaterialStatType<PlatingMaterialStats>(MaterialStatsId.create(TConstruct.MOD_ID, name), type -> new PlatingMaterialStats(type, 1, 0, 0, 0), LOADABLE);
   }
 
 

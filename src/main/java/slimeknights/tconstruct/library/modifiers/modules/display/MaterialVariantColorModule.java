@@ -22,7 +22,7 @@ import java.util.List;
  * @see ModifierVariantColorModule
  */
 public record MaterialVariantColorModule(MaterialId material) implements ModifierModule, DisplayNameModifierHook {
-  public static final RecordLoadable<MaterialVariantColorModule> LOADER = RecordLoadable.create(MaterialId.PARSER.requiredField("material", MaterialVariantColorModule::material), MaterialVariantColorModule::new);
+  public static final RecordLoadable<MaterialVariantColorModule> LOADER = RecordLoadable.create(MaterialId.LOADABLE.requiredField("material", MaterialVariantColorModule::material), MaterialVariantColorModule::new);
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MaterialVariantColorModule>defaultHooks(ModifierHooks.DISPLAY_NAME);
 
   @Override

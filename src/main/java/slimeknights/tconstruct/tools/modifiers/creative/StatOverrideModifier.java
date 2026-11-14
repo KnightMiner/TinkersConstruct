@@ -16,6 +16,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHoo
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -23,7 +24,6 @@ import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
-import slimeknights.tconstruct.library.tools.stat.ToolStatId;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.Util;
@@ -70,7 +70,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
     if (persistentData.contains(key, Tag.TAG_COMPOUND)) {
       CompoundTag nbt = persistentData.getCompound(key);
       for (String name : nbt.getAllKeys()) {
-        ToolStatId id = ToolStatId.tryParse(name);
+        ResourceId<IToolStat<?>> id = ResourceId.tryParse(name);
         if (id != null) {
           IToolStat<?> stat = ToolStats.getToolStat(id);
           if (stat != null) {
@@ -115,7 +115,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
       boolean first = true;
       for (String key : stats.getAllKeys()) {
         // ignore invalid stat names
-        ToolStatId id = ToolStatId.tryParse(key);
+        ResourceId<IToolStat<?>> id = ResourceId.tryParse(key);
         if (id != null) {
           IToolStat<?> stat = ToolStats.getToolStat(id);
           if (stat != null) {
@@ -198,7 +198,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
     IModDataView data = tool.getPersistentData();
     if (data.contains(groupKey, Tag.TAG_COMPOUND)) {
       CompoundTag nbt = data.getCompound(groupKey);
-      String name = stat.getName().toString();
+      String name = stat.getId().toString();
       if (nbt.contains(name, Tag.TAG_FLOAT)) {
         return nbt.getFloat(name);
       }
@@ -220,7 +220,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
       return false;
     }
     // if setting to 0, remove the tag, otherwise set it
-    String name = stat.getName().toString();
+    String name = stat.getId().toString();
     if (value != neutralValue) {
       nbt.putFloat(name, value);
       return true;
@@ -255,7 +255,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
       return false;
     }
     // if we have something to store, do so
-    String name = stat.getName().toString();
+    String name = stat.getId().toString();
     if (storeValue) {
       Tag tag = stat.write(value);
       if (tag != null) {
@@ -315,7 +315,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
       return false;
     }
     // remove the value
-    nbt.remove(stat.getName().toString());
+    nbt.remove(stat.getId().toString());
     if (nbt.getAllKeys().isEmpty()) {
       tool.getPersistentData().remove(StatOverrideModifier.KEY_BONUS);
       return false;

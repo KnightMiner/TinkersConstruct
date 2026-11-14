@@ -108,7 +108,7 @@ public class TinkerBook extends BookData {
         // 4: plating
         // 5: shield core
         IMaterialRegistry registry = MaterialRegistry.getInstance();
-        MaterialId id = mat.getIdentifier();
+        MaterialId id = mat.getId();
 
         // anything with a cuirass goes first
         if (registry.getMaterialStats(id, StatlessMaterialStats.CUIRASS.getIdentifier()).isPresent()) {

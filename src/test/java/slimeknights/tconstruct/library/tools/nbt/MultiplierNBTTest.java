@@ -78,10 +78,10 @@ class MultiplierNBTTest extends BaseMcTest {
 
     // 1 is ignored as default
     assertThat(nbt.getAllKeys()).hasSize(3);
-    assertThat(nbt.contains(ToolStats.DURABILITY.getName().toString())).isFalse();
-    assertThat(nbt.getFloat(ToolStats.ATTACK_DAMAGE.getName().toString())).isEqualTo(3);
-    assertThat(nbt.getFloat(ToolStats.MINING_SPEED.getName().toString())).isEqualTo(4);
-    assertThat(nbt.getFloat(ToolStats.ATTACK_SPEED.getName().toString())).isEqualTo(5);
+    assertThat(nbt.contains(ToolStats.DURABILITY.getId().toString())).isFalse();
+    assertThat(nbt.getFloat(ToolStats.ATTACK_DAMAGE.getId().toString())).isEqualTo(3);
+    assertThat(nbt.getFloat(ToolStats.MINING_SPEED.getId().toString())).isEqualTo(4);
+    assertThat(nbt.getFloat(ToolStats.ATTACK_SPEED.getId().toString())).isEqualTo(5);
   }
 
   @Test
@@ -93,11 +93,11 @@ class MultiplierNBTTest extends BaseMcTest {
   @Test
   void deserialize() {
     CompoundTag nbt = new CompoundTag();
-    nbt.putInt(ToolStats.DURABILITY.getName().toString(), 6);
-    nbt.putFloat(ToolStats.ATTACK_DAMAGE.getName().toString(), 4);
-    nbt.putFloat(ToolStats.MINING_SPEED.getName().toString(), 3.5f);
-    nbt.putFloat(ToolStats.ATTACK_SPEED.getName().toString(), 2);
-    nbt.putFloat(ToolStats.ARMOR.getName().toString(), 1);
+    nbt.putInt(ToolStats.DURABILITY.getId().toString(), 6);
+    nbt.putFloat(ToolStats.ATTACK_DAMAGE.getId().toString(), 4);
+    nbt.putFloat(ToolStats.MINING_SPEED.getId().toString(), 3.5f);
+    nbt.putFloat(ToolStats.ATTACK_SPEED.getId().toString(), 2);
+    nbt.putFloat(ToolStats.ARMOR.getId().toString(), 1);
 
     MultiplierNBT multipliers = MultiplierNBT.readFromNBT(nbt);
 

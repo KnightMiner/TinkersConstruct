@@ -53,7 +53,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MaterialStatsModule>defaultHooks(ToolHooks.TOOL_STATS, ToolHooks.TOOL_TRAITS, ToolHooks.TOOL_MATERIALS, ToolHooks.MATERIAL_REPAIR, ToolHooks.VOLATILE_DATA);
   protected static final LoadableField<Integer,MaterialStatsModule> PRIMARY_PART_FIELD = IntLoadable.FROM_MINUS_ONE.defaultField("primary_part", 0, true, m -> m.primaryPart);
   public static final RecordLoadable<MaterialStatsModule> LOADER = RecordLoadable.create(
-    new OptionallyNestedLoadable<>(MaterialStatsId.PARSER, "stat").list().requiredField("stat_types", m -> m.statTypes),
+    new OptionallyNestedLoadable<>(MaterialStatsId.LOADABLE, "stat").list().requiredField("stat_types", m -> m.statTypes),
     new StatScaleField("stat", "stat_types"),
     PRIMARY_PART_FIELD,
     MaterialStatsModule::new);

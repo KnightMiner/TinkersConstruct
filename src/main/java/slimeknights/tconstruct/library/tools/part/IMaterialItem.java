@@ -28,7 +28,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
 
   /** Sets the material on the existing stack. */
   default ItemStack setMaterial(ItemStack stack, MaterialVariantId material) {
-    if (canUseMaterial(material.getId())) {
+    if (canUseMaterial(material.material())) {
       return setMaterialForced(stack, material);
     }
     return stack;
@@ -62,7 +62,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
 
   /** Returns true if the material can be used for this toolpart, simply an alias for {@link #canUseMaterial(MaterialId)} */
   default boolean canUseMaterial(IMaterial mat) {
-    return canUseMaterial(mat.getIdentifier());
+    return canUseMaterial(mat.getId());
   }
 
   /** Adds all variants of the material item to the given item stack list */
@@ -73,7 +73,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
       boolean added = false;
       if (!showOnlyMaterial.isEmpty()) {
         MaterialVariantId materialId = MaterialVariantId.tryParse(showOnlyMaterial);
-        if (materialId != null && canUseMaterial(materialId.getId())) {
+        if (materialId != null && canUseMaterial(materialId.material())) {
           items.accept(this.withMaterialForDisplay(materialId));
           added = true;
         }
@@ -81,7 +81,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
       // add all applicable materials to the tab, and possibly to serach
       if (!added) {
         for (IMaterial material : MaterialRegistry.getInstance().getVisibleMaterials()) {
-          MaterialId id = material.getIdentifier();
+          MaterialId id = material.getId();
           if (this.canUseMaterial(id)) {
             items.accept(this.withMaterial(id));
             // if filter is set we wanted just the 1 item

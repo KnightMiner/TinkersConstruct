@@ -146,7 +146,7 @@ public abstract class AbstractPartSpriteProvider {
     /** Loadable instance */
     public static final RecordLoadable<PartSpriteInfo> LOADABLE = RecordLoadable.create(
       Loadables.RESOURCE_LOCATION.requiredField("path", i -> i.path),
-      MaterialStatsId.PARSER.set(CollectionLoadable.COMPACT).requiredField("stat_type", i -> i.statTypes),
+      MaterialStatsId.LOADABLE.set(CollectionLoadable.COMPACT).requiredField("stat_type", i -> i.statTypes),
       BooleanLoadable.INSTANCE.defaultField("allow_animated", true, false, i -> i.allowAnimated),
       BooleanLoadable.INSTANCE.defaultField("skip_variants", false, false, i -> i.skipVariants),
       PartSpriteInfo::new);

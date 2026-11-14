@@ -75,7 +75,7 @@ public class PartSwappingOverrideRecipe extends MaterialIndexSwappingRecipe impl
       IMaterialRegistry registry = MaterialRegistry.getInstance();
       MaterialStatsId statType = part.getStatType();
       // since we know the part ahead of time, only need to filter materials once
-      List<IMaterial> materials = registry.getVisibleMaterials().stream().filter(mat -> registry.getMaterialStats(mat.getIdentifier(), statType).isPresent()).toList();
+      List<IMaterial> materials = registry.getVisibleMaterials().stream().filter(mat -> registry.getMaterialStats(mat.getId(), statType).isPresent()).toList();
       // create a recipe per tool, then per index, matching standard part swapping
       List<ResourceLocation> parent = List.of(id);
       multiRecipes = Arrays.stream(this.tools.getItems()).flatMap(stack -> {
@@ -90,7 +90,7 @@ public class PartSwappingOverrideRecipe extends MaterialIndexSwappingRecipe impl
           ToolStack copy = tool.copy();
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/part_" + i), parent, new PartDisplayRecipe(i,
             // one part per material
-            materials.stream().map(mat -> part.withMaterialForDisplay(mat.getIdentifier())).toList(),
+            materials.stream().map(mat -> part.withMaterialForDisplay(mat.getId())).toList(),
             // single tool with the material to swap left blank
             List.of(withMaterial(copy, i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0))).copy()),
             // one output per material

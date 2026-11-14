@@ -1,6 +1,8 @@
 package slimeknights.tconstruct.library.data;
 
 import com.google.common.collect.Maps;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
@@ -11,6 +13,7 @@ import net.minecraft.tags.TagFile;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.registration.object.IdAwareObject;
 
 import java.util.List;
 import java.util.Map;
@@ -83,8 +86,8 @@ public abstract class AbstractTagProvider<T> extends GenericDataProvider {
   /* Make builders */
 
   /** Prepares a tag builder */
-  protected TagAppender<T> tag(TagKey<T> pTag) {
-    return new TagAppender<>(modId, this.getOrCreateRawBuilder(pTag), keyGetter);
+  protected TagAppender<T> tag(TagKey<T> tag) {
+    return new TagAppender<>(modId, this.getOrCreateRawBuilder(tag), keyGetter);
   }
 
   /** Raw method to make a builder */
@@ -119,10 +122,30 @@ public abstract class AbstractTagProvider<T> extends GenericDataProvider {
       return this;
     }
 
+    /** Adds an ID to the tag */
+    public TagAppender<T> add(IdAwareObject value) {
+      this.internalBuilder.addElement(value.id());
+      return this;
+    }
+
+    /** Adds a list of IDs to the tag */
+    public TagAppender<T> add(IdAwareObject... values) {
+      Stream.of(values).map(IdAwareObject::id).forEach(this.internalBuilder::addElement);
+      return this;
+    }
+
     /** Adds an optional ID to the tag */
     public TagAppender<T> addOptional(ResourceLocation... ids) {
       for (ResourceLocation id : ids) {
         this.internalBuilder.addOptionalElement(id);
+      }
+      return this;
+    }
+
+    /** Adds an optional ID to the tag */
+    public TagAppender<T> addOptional(IdAwareObject... ids) {
+      for (IdAwareObject id : ids) {
+        this.internalBuilder.addOptionalElement(id.id());
       }
       return this;
     }

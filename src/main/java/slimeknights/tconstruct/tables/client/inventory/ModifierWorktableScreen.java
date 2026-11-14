@@ -34,9 +34,9 @@ public class ModifierWorktableScreen extends ToolTableScreen<ModifierWorktableBl
   private static final Component MODIFIERS = TConstruct.makeTranslation("gui", "tinker_station.modifiers");
   private static final ResourceLocation BACKGROUND = TConstruct.getResource("textures/gui/worktable.png");
   private static final Pattern[] INPUT_PATTERNS = {
-    new Pattern(TConstruct.MOD_ID, "pickaxe"),
-    new Pattern(TConstruct.MOD_ID, "ingot"),
-    new Pattern(TConstruct.MOD_ID, "quartz")
+    Pattern.create(TConstruct.MOD_ID, "pickaxe"),
+    Pattern.create(TConstruct.MOD_ID, "ingot"),
+    Pattern.create(TConstruct.MOD_ID, "quartz")
   };
 
   // locations

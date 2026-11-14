@@ -14,7 +14,7 @@ public interface MaterialDefinitionPredicate extends MaterialPredicate {
 
   @Override
   default boolean matches(MaterialVariantId input) {
-    return matches(MaterialRegistry.getMaterial(input.getId()));
+    return matches(MaterialRegistry.getMaterial(input.material()));
   }
 
 

@@ -189,7 +189,7 @@ public class MaterialStatsManager extends MergingJsonDataLoader<Map<ResourceLoca
     // Take the final structure and actually load the different material stats. This drops all invalid stats
     materialToStatsPerType = map.entrySet().stream()
                                 .collect(Collectors.toMap(
-                                  entry -> new MaterialId(entry.getKey()),
+                                  entry -> MaterialId.create(entry.getKey()),
                                   entry -> deserializeMaterialStatsFromContent(entry.getKey(), entry.getValue())));
 
     if (log.isDebugEnabled() && JsonUtils.debugLogResourceValues()) {
@@ -232,7 +232,7 @@ public class MaterialStatsManager extends MergingJsonDataLoader<Map<ResourceLoca
     ImmutableMap.Builder<MaterialStatsId, IMaterialStats> builder = ImmutableMap.builder();
     for (Entry<ResourceLocation, JsonObject> entry : contentsMap.entrySet()) {
       try {
-        MaterialStatsId statType = new MaterialStatsId(entry.getKey());
+        MaterialStatsId statType = MaterialStatsId.create(entry.getKey());
         JsonObject json = entry.getValue();
         MaterialStatType<?> type = getStatType(statType);
         if (type == null) {

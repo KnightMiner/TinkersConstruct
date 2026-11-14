@@ -14,6 +14,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.util.RegistryHelper;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -26,14 +27,14 @@ import java.util.function.IntFunction;
 @AllArgsConstructor
 public class MaxToolStat implements IToolStat<Integer> {
   @Getter
-  private final ToolStatId name;
+  private final ResourceId<IToolStat<?>> id;
   private final int defaultValue;
   private final IntFunction<Component> displayName;
   @Nullable
   private final TagKey<Item> tag;
 
-  public MaxToolStat(ToolStatId name, int defaultValue, IntFunction<Component> displayName) {
-    this(name, defaultValue, displayName, null);
+  public MaxToolStat(ResourceId<IToolStat<?>> id, int defaultValue, IntFunction<Component> displayName) {
+    this(id, defaultValue, displayName, null);
   }
 
   @Override
@@ -88,7 +89,7 @@ public class MaxToolStat implements IToolStat<Integer> {
 
   @Override
   public Integer deserialize(JsonElement json) {
-    return GsonHelper.convertToInt(json, getName().toString());
+    return GsonHelper.convertToInt(json, getId().toString());
   }
 
   @Override
@@ -108,12 +109,12 @@ public class MaxToolStat implements IToolStat<Integer> {
 
   @Override
   public Component formatValue(Integer number) {
-    return Component.translatable(Util.makeTranslationKey("tool_stat", getName())).append(displayName.apply(number));
+    return Component.translatable(Util.makeTranslationKey("tool_stat", getId().id())).append(displayName.apply(number));
   }
 
   @Override
   public String toString() {
-    return "TierToolStat{" + name + '}';
+    return "TierToolStat{" + id + '}';
   }
 
   /** Internal int storage, basically just a int wrapper */

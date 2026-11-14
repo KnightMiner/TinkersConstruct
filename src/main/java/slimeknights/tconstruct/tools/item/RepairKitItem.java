@@ -74,7 +74,7 @@ public class RepairKitItem extends MaterialItem implements IRepairKitItem {
       ItemStack toolItem = slot.getItem();
       if (!toolItem.isEmpty() && toolItem.is(TinkerTags.Items.MODIFIABLE)) {
         ToolStack tool = ToolStack.from(toolItem);
-        MaterialId material = getMaterial(stack).getId();
+        MaterialId material = getMaterial(stack).material();
         // tool must be damaged for us to repair it, and we must have a material
         if (tool.getDamage() > 0 && material != MaterialId.UNKNOWN) {
           // ask the tool how much this material is worth

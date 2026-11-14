@@ -58,7 +58,7 @@ public class MaterialRecipeBuilder extends AbstractRecipeBuilder<MaterialRecipeB
 
   @Override
   public void save(RecipeOutput output) {
-    this.save(output, material.getId());
+    this.save(output, material.material());
   }
 
   @Override

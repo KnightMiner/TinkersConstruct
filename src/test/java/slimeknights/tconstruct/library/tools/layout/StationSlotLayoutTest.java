@@ -1,11 +1,13 @@
 package slimeknights.tconstruct.library.tools.layout;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.Test;
+import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.test.BaseMcTest;
 
@@ -14,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StationSlotLayoutTest extends BaseMcTest {
   @Test
   void layoutSlot_bufferReadWrite() {
-    LayoutSlot slot = new LayoutSlot(new Pattern("test:pattern"), "name", 5, 6, Ingredient.of(Items.BOOK));
-    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+    LayoutSlot slot = new LayoutSlot(Pattern.create("test", "pattern"), "name", 5, 6, Ingredient.of(Items.BOOK));
+    RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryHelper.BUILTIN_REGISTRY_ACCESS, ConnectionType.OTHER);
     slot.write(buffer);
 
     LayoutSlot decoded = LayoutSlot.read(buffer);
@@ -30,7 +32,7 @@ class StationSlotLayoutTest extends BaseMcTest {
     ItemStack[] stacks = ingredient.getItems();
     assertThat(stacks).hasSize(1);
     assertThat(stacks[0].getItem()).isEqualTo(Items.BOOK);
-    assertThat(stacks[0].getTag()).isNull();
+    assertThat(stacks[0].getComponentsPatch().isEmpty()).isTrue();
   }
 
   @Test

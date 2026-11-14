@@ -15,21 +15,21 @@ import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
  */
 public class TinkerPartSpriteProvider extends AbstractPartSpriteProvider {
   /** Used for wooden embellishments */
-  public static final MaterialStatsId WOOD = new MaterialStatsId(TConstruct.MOD_ID, "wood");
+  public static final MaterialStatsId WOOD = MaterialStatsId.create(TConstruct.MOD_ID, "wood");
   /** Used for slimesuit slime on armor models */
-  public static final MaterialStatsId SLIMESUIT = new MaterialStatsId(TConstruct.MOD_ID, "slimesuit");
+  public static final MaterialStatsId SLIMESUIT = MaterialStatsId.create(TConstruct.MOD_ID, "slimesuit");
   /** Used for slimesuit ribcage and laces on armor models */
-  public static final MaterialStatsId SLIMESUIT_OVERLAY = new MaterialStatsId(TConstruct.MOD_ID, "slimesuit_overlay");
+  public static final MaterialStatsId SLIMESUIT_OVERLAY = MaterialStatsId.create(TConstruct.MOD_ID, "slimesuit_overlay");
   /** Plating on armor models */
-  public static final MaterialStatsId ARMOR_PLATING = new MaterialStatsId(TConstruct.MOD_ID, "armor_plating");
+  public static final MaterialStatsId ARMOR_PLATING = MaterialStatsId.create(TConstruct.MOD_ID, "armor_plating");
   /** Maille on armor models */
-  public static final MaterialStatsId ARMOR_MAILLE = new MaterialStatsId(TConstruct.MOD_ID, "armor_maille");
+  public static final MaterialStatsId ARMOR_MAILLE = MaterialStatsId.create(TConstruct.MOD_ID, "armor_maille");
   /** Curiass on travelers armor model */
-  public static final MaterialStatsId ARMOR_CUIRASS = new MaterialStatsId(TConstruct.MOD_ID, "armor_cuirass");
+  public static final MaterialStatsId ARMOR_CUIRASS = MaterialStatsId.create(TConstruct.MOD_ID, "armor_cuirass");
   /** Fake ingots used for fallbacks for mod compat materials */
-  public static final MaterialStatsId INGOT = new MaterialStatsId(TConstruct.MOD_ID, "ingot");
+  public static final MaterialStatsId INGOT = MaterialStatsId.create(TConstruct.MOD_ID, "ingot");
   /** Fake storage blocks used for fallbacks for mod compat materials */
-  public static final MaterialStatsId STORAGE_BLOCK = new MaterialStatsId(TConstruct.MOD_ID, "storage_block");
+  public static final MaterialStatsId STORAGE_BLOCK = MaterialStatsId.create(TConstruct.MOD_ID, "storage_block");
 
   public TinkerPartSpriteProvider() {
     super(TConstruct.MOD_ID);

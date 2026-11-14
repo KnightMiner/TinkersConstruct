@@ -28,7 +28,7 @@ public class MaterialTraitsJson {
       return Collections.emptyMap();
     }
     Map<MaterialStatsId,List<ModifierEntry>> newMap = new HashMap<>(perStat.size());
-    perStat.forEach((key, value) -> newMap.put(new MaterialStatsId(key), value));
+    perStat.forEach((key, value) -> newMap.put(MaterialStatsId.create(key), value));
     return newMap;
   }
 }

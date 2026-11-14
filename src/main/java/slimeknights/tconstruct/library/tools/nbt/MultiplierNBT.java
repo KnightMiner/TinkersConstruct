@@ -87,7 +87,7 @@ public class MultiplierNBT {
   public CompoundTag serializeToNBT() {
     CompoundTag nbt = new CompoundTag();
     for (Entry<INumericToolStat<?>,Float> entry : stats.entrySet()) {
-      nbt.putFloat(entry.getKey().getName().toString(), entry.getValue());
+      nbt.putFloat(entry.getKey().getId().toString(), entry.getValue());
     }
     return nbt;
   }

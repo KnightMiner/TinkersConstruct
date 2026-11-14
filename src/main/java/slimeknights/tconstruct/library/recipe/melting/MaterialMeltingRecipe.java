@@ -106,7 +106,7 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<I
         MaterialVariantId inputId = input.getVariant();
         List<Entry<IMaterialItem>> entries = MaterialCastingLookup
           .getAllItemCosts().stream()
-          .filter(entry -> entry.getKey().canUseMaterial(inputId.getId()))
+          .filter(entry -> entry.getKey().canUseMaterial(inputId.material()))
           .sorted(Comparator.<Entry<IMaterialItem>,Integer>comparing(Entry::getIntValue).thenComparing(entry -> Loadables.ITEM.getKey(entry.getKey().asItem())))
           .toList();
         // if we found nothing, do nothing. Should never happen so error

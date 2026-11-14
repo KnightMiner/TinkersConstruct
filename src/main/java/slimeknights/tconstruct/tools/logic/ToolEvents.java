@@ -252,7 +252,7 @@ public class ToolEvents {
   }
 
   /** Modifier ID used for the extra correction damage on armor. Needs to be a "real modifier" for the tag so we use protection as a reasonable enough source. */
-  private static final ModifierId ARMOR_DAMAGE = new ModifierId(TConstruct.MOD_ID, "protection");
+  private static final ModifierId ARMOR_DAMAGE = ModifierId.create(TConstruct.MOD_ID, "protection");
 
   // low priority to minimize conflict as we apply reduction as if we are the final change to damage before vanilla
   @SubscribeEvent(priority = EventPriority.LOW)

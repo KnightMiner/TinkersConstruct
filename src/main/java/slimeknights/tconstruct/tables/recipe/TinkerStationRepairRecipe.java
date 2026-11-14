@@ -77,7 +77,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
     // try repair kit first
     ItemStack item = inv.getInput(slot);
     if (item.getItem() instanceof IRepairKitItem kit) {
-      return kit.getMaterial(item).getId();
+      return kit.getMaterial(item).material();
     }
     // material recipe fallback
     MaterialRecipe recipe = inv.getInputMaterial(slot);
@@ -409,7 +409,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
         // fetch info on the input item, will change how we repair later
         ItemStack materialItem = inputs.get(0);
         IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
-        MaterialId material = repairKit.getMaterial(materialItem).getId();
+        MaterialId material = repairKit.getMaterial(materialItem).material();
         // did we find a material?
         if (!MaterialId.UNKNOWN.equals(material)) {
           ItemStack toolStack = toolSlot.get();

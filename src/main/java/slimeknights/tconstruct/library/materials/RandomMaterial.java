@@ -145,7 +145,7 @@ public abstract class RandomMaterial implements IHaveLoader {
 
     @Override
     public MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random) {
-      return MaterialRegistry.firstWithStatType(statType).getIdentifier();
+      return MaterialRegistry.firstWithStatType(statType).getId();
     }
 
     @Override
@@ -199,12 +199,12 @@ public abstract class RandomMaterial implements IHaveLoader {
         .getAllMaterials()
         .stream()
         .filter(material -> {
-          MaterialId id = material.getIdentifier();
+          MaterialId id = material.getId();
           return this.tier.test(material.getTier()) && (allowHidden || !material.isHidden())
-                 && this.material.matches(material.getIdentifier())
+                 && this.material.matches(material.getId())
                  && registry.getMaterialStats(id, statType).isPresent();
         })
-        .map(IMaterial::getIdentifier)
+        .map(IMaterial::getId)
         .toList();
       if (choices.isEmpty()) {
         TConstruct.LOG.warn("Random material found no options for statType={}, tier={}, allowHidden={}, predicate={}", statType, tier, allowHidden, material);
@@ -223,7 +223,7 @@ public abstract class RandomMaterial implements IHaveLoader {
       if (materialChoices.isEmpty()) {
         // if we have no options, just get the first with the stat type
         // either this stat type is empty (and thus we end up with unknown), or the filter is too strict (so we end up with a useful material at least)
-        return MaterialRegistry.firstWithStatType(statType).getIdentifier();
+        return MaterialRegistry.firstWithStatType(statType).getId();
       }
       return materialChoices.get(random.nextInt(materialChoices.size()));
     }
@@ -261,11 +261,11 @@ public abstract class RandomMaterial implements IHaveLoader {
         .getAllMaterials()
         .stream()
         .map(material -> {
-          MaterialId id = material.getIdentifier();
+          MaterialId id = material.getId();
           if (registry.getMaterialStats(id, statType).isEmpty()) {
             return List.<MaterialVariantId>of();
           }
-          return MaterialRecipeCache.getVariants(material.getIdentifier()).stream().filter(this.material::matches).toList();
+          return MaterialRecipeCache.getVariants(material.getId()).stream().filter(this.material::matches).toList();
         })
         .filter(list -> !list.isEmpty())
         .toList();
@@ -286,7 +286,7 @@ public abstract class RandomMaterial implements IHaveLoader {
       if (materialChoices.isEmpty()) {
         // if we have no options, just get the first with the stat type
         // either this stat type is empty (and thus we end up with unknown), or the filter is too strict (so we end up with a useful material at least)
-        return MaterialRegistry.firstWithStatType(statType).getIdentifier();
+        return MaterialRegistry.firstWithStatType(statType).getId();
       }
       List<MaterialVariantId> variantChoices = materialChoices.get(random.nextInt(materialChoices.size()));
       return variantChoices.get(random.nextInt(variantChoices.size()));

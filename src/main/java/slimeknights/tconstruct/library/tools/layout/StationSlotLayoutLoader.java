@@ -23,6 +23,8 @@ import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import slimeknights.mantle.data.gson.LoadableSerializer;
+import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 
@@ -46,7 +48,7 @@ public class StationSlotLayoutLoader extends SimpleJsonResourceReloadListener {
   public static final Gson GSON = (new GsonBuilder())
     .registerTypeHierarchyAdapter(Ingredient.class, new IngredientSerializer())
     .registerTypeHierarchyAdapter(LayoutIcon.class, LayoutIcon.SERIALIZER)
-    .registerTypeAdapter(Pattern.class, Pattern.PARSER)
+    .registerTypeAdapter(Pattern.class, new LoadableSerializer<>(Pattern.LOADABLE, TypedMapBuilder.EMPTY_CONSUMER))
     .setPrettyPrinting()
     .disableHtmlEscaping()
     .create();

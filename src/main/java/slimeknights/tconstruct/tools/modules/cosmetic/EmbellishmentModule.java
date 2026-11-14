@@ -58,11 +58,11 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
     ResourceLocation key = modifier.id();
     MaterialVariantId materialVariant = MaterialVariantId.tryParse(data.getString(key));
     if (materialVariant != null) {
-      MaterialId original = materialVariant.getId();
+      MaterialId original = materialVariant.material();
       MaterialId resolved = MaterialRegistry.getInstance().resolve(original);
       // instance check is safe here as resolve returns same instance if no redirect
       if (resolved != original) {
-        data.putString(key, MaterialVariantId.create(resolved, materialVariant.getVariant()).toString());
+        data.putString(key, MaterialVariantId.create(resolved, materialVariant.variant()).toString());
       }
     }
   }

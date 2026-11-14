@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.utils.IdParser;
+import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +27,7 @@ public class ModifierHookArgument implements ArgumentType<ModuleHook<?>> {
 
   @Override
   public ModuleHook<?> parse(StringReader reader) throws CommandSyntaxException {
-    ResourceLocation loc = IdParser.read(TConstruct.MOD_ID, reader);
+    ResourceLocation loc = ResourceLocationUtils.read(TConstruct.MOD_ID, reader);
     ModuleHook<?> hook = ModifierHooks.LOADER.getValue(loc);
     if (hook == null) {
       throw HOOK_NOT_FOUND.create(loc);

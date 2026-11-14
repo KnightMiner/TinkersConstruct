@@ -49,7 +49,7 @@ public interface TooltipModifierHook {
 
   /** Gets the name of the stat to display, uses a translation key built from the tool and the stat */
   static Component statName(Modifier modifier, IToolStat<?> stat) {
-    return Component.translatable(modifier.getTranslationKey() + "." + stat.getName().getPath());
+    return Component.translatable(modifier.getTranslationKey() + "." + stat.getId().getPath());
   }
 
   /** Adds a flat bonus tooltip */

@@ -34,7 +34,7 @@ public class TippedToolTransformRecipe extends ToolBuildingRecipe {
     LoadableRecipeSerializer.RECIPE_GROUP, RESULT_FIELD, LAYOUT_FIELD,
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", r -> r.ingredients.get(0)),
     MaterialVariantId.LOADABLE.list(0).defaultField("materials", List.of(), false, r -> r.materials),
-    ModifierId.PARSER.requiredField("modifier", r -> r.modifier),
+    ModifierId.LOADABLE.requiredField("modifier", r -> r.modifier),
     TippedToolTransformRecipe::new);
 
   protected final ModifierId modifier;

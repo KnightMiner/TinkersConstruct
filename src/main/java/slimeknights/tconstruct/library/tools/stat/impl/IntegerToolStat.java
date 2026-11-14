@@ -4,9 +4,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
-import slimeknights.tconstruct.library.tools.stat.ToolStatId;
 
 import javax.annotation.Nullable;
 
@@ -15,16 +15,16 @@ import javax.annotation.Nullable;
  * @see slimeknights.tconstruct.library.tools.nbt.StatsNBT#getInt(IToolStat)
  */
 public class IntegerToolStat extends FloatToolStat {
-  public IntegerToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {
-    super(name, color, defaultValue, minValue, maxValue, items);
+  public IntegerToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {
+    super(id, color, defaultValue, minValue, maxValue, items);
   }
 
-  public IntegerToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue, @Nullable TagKey<Item> tag) {
-    super(name, color, defaultValue, minValue, maxValue, tag);
+  public IntegerToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, @Nullable TagKey<Item> tag) {
+    super(id, color, defaultValue, minValue, maxValue, tag);
   }
 
-  public IntegerToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue) {
-    super(name, color, defaultValue, minValue, maxValue);
+  public IntegerToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue) {
+    super(id, color, defaultValue, minValue, maxValue);
   }
 
   /** Formats the integer value */

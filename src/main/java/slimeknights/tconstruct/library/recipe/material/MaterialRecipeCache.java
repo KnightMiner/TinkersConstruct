@@ -177,7 +177,7 @@ public class MaterialRecipeCache {
   /** Registers a material variant for the lookups. */
   public static void addKnownVariant(MaterialVariantId variant) {
     LISTENER.checkClear();
-    KNOWN_VARIANTS.put(variant.getId(), variant);
+    KNOWN_VARIANTS.put(variant.material(), variant);
     // null cache of sorted variants as its outdated now
     SORTED_VARIANTS = null;
     HIDDEN_VARIANTS = null;
@@ -195,11 +195,11 @@ public class MaterialRecipeCache {
   /** Gets a sorted list of all known non-hidden material variants */
   public static List<MaterialVariantId> getAllVariants() {
     if (SORTED_VARIANTS == null) {
-      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::getVariant);
+      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::variant);
       SORTED_VARIANTS = MaterialRegistry.getInstance().getVisibleMaterials().stream()
         .flatMap(material -> {
           // if no variants are registered, just list the material itself; useful for uncraftable materials
-          MaterialId id = material.getIdentifier();
+          MaterialId id = material.getId();
           Collection<MaterialVariantId> variants = KNOWN_VARIANTS.get(id);
           if (variants.isEmpty()) {
             return Stream.of(id);
@@ -213,12 +213,12 @@ public class MaterialRecipeCache {
   /** Gets a sorted list of all known hidden material variants. Should not be directly displayed in recipes, rather added as a hidden input. */
   public static List<MaterialVariantId> getHiddenVariants() {
     if (HIDDEN_VARIANTS == null) {
-      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::getVariant);
+      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::variant);
       HIDDEN_VARIANTS = MaterialRegistry.getInstance().getAllMaterials().stream()
         .filter(IMaterial::isHidden).sorted()
         .flatMap(material -> {
           // if no variants are registered, just list the material itself; useful for uncraftable materials
-          MaterialId id = material.getIdentifier();
+          MaterialId id = material.getId();
           Collection<MaterialVariantId> variants = KNOWN_VARIANTS.get(id);
           if (variants.isEmpty()) {
             return Stream.of(id);

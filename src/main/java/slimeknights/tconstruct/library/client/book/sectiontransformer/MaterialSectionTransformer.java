@@ -124,7 +124,7 @@ public class MaterialSectionTransformer extends BookTransformer {
         return false;
       }
       IMaterialRegistry registry = MaterialRegistry.getInstance();
-      MaterialId id = material.getIdentifier();
+      MaterialId id = material.getId();
       if (!predicate.matches(id)) {
         return false;
       }
@@ -218,7 +218,7 @@ public class MaterialSectionTransformer extends BookTransformer {
      */
     private ContentPageIconList addPages(SectionData sectionData, String prefix, List<PageData> newPages, ContentPageIconList overview, ListIterator<ContentPageIconList> iter, List<IMaterial> materials) {
       for (IMaterial material : materials) {
-        MaterialId materialId = material.getIdentifier();
+        MaterialId materialId = material.getId();
         AbstractMaterialContent contentMaterial = pageCreator.apply(materialId);
         contentMaterial.titleSuffix = titleSuffix;
         PageData page = createPage(sectionData, prefix + materialId, contentMaterial.getId(), contentMaterial);
@@ -299,7 +299,7 @@ public class MaterialSectionTransformer extends BookTransformer {
 
   /** Creates a feature extractor for a comparator that sorts based on a stat type being present, with order absent -> present */
   public static Function<IMaterial,Boolean> hasStatType(MaterialStatsId statType) {
-    return mat -> MaterialRegistry.getInstance().getMaterialStats(mat.getIdentifier(), statType).isPresent();
+    return mat -> MaterialRegistry.getInstance().getMaterialStats(mat.getId(), statType).isPresent();
   }
 
   /** Creates a feature extractor for a comparator that sorts based on a stat type being present, with order absent -> present */

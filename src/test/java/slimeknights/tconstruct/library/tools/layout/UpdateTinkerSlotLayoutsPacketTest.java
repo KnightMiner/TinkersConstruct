@@ -19,7 +19,7 @@ class UpdateTinkerSlotLayoutsPacketTest extends BaseMcTest {
     StationSlotLayout layout = StationSlotLayout
       .builder()
       .translationKey("slot_name")
-      .icon(new Pattern("test:pattern"))
+      .icon(Pattern.create("test", "pattern"))
       .sortIndex(3)
       .toolSlot(1, 2)
       .addInputSlot(null, 3, 4)
@@ -28,10 +28,10 @@ class UpdateTinkerSlotLayoutsPacketTest extends BaseMcTest {
     layout.setName(TestHelper.id("main_layout"));
     UpdateTinkerSlotLayoutsPacket packetToEncode = new UpdateTinkerSlotLayoutsPacket(Arrays.asList(StationSlotLayout.EMPTY, layout));
     FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-    packetToEncode.encode(buffer);
+    UpdateTinkerSlotLayoutsPacket.CODEC.encode(buffer, packetToEncode);
 
-    UpdateTinkerSlotLayoutsPacket decoded = new UpdateTinkerSlotLayoutsPacket(buffer);
-    Collection<StationSlotLayout> layouts = decoded.getLayouts();
+    UpdateTinkerSlotLayoutsPacket decoded = UpdateTinkerSlotLayoutsPacket.CODEC.decode(buffer);
+    Collection<StationSlotLayout> layouts = decoded.layouts();
     assertThat(layouts).hasSize(2);
 
     // first should be empty

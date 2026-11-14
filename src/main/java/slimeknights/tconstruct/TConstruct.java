@@ -55,6 +55,7 @@ import slimeknights.tconstruct.library.advancement.TinkerAdvancements;
 import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionLoader;
@@ -215,6 +216,15 @@ public class TConstruct {
    */
 
   /* Utils */
+
+  /**
+   * Gets a resource location for Tinkers
+   * @param name  Resource path
+   * @return  Location for tinkers
+   */
+  public static <T> ResourceId<T> resourceId(String name) {
+    return ResourceId.build(MOD_ID, name);
+  }
 
   /**
    * Gets a resource location for Tinkers

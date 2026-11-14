@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
@@ -25,7 +26,7 @@ import javax.annotation.Nullable;
 public class FloatToolStat implements INumericToolStat<Float> {
   /** Name of this tool stat */
   @Getter
-  private final ToolStatId name;
+  private final ResourceId<IToolStat<?>> id;
   /** Color for this stat type */
   @Getter
   private final TextColor color;
@@ -39,8 +40,8 @@ public class FloatToolStat implements INumericToolStat<Float> {
   private final float maxValue;
   private final IJsonPredicate<Item> items;
 
-  public FloatToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {
-    this.name = name;
+  public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {
+    this.id = id;
     this.color = TextColor.fromRgb(color);
     this.defaultValue = defaultValue;
     this.minValue = minValue;
@@ -48,12 +49,12 @@ public class FloatToolStat implements INumericToolStat<Float> {
     this.items = items;
   }
 
-  public FloatToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue, @Nullable TagKey<Item> tag) {
-    this(name, color, defaultValue, minValue, maxValue, tag == null ? ItemPredicate.ANY : ItemPredicate.tag(tag));
+  public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, @Nullable TagKey<Item> tag) {
+    this(id, color, defaultValue, minValue, maxValue, tag == null ? ItemPredicate.ANY : ItemPredicate.tag(tag));
   }
 
-  public FloatToolStat(ToolStatId name, int color, float defaultValue, float minValue, float maxValue) {
-    this(name, color, defaultValue, minValue, maxValue, ItemPredicate.ANY);
+  public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue) {
+    this(id, color, defaultValue, minValue, maxValue, ItemPredicate.ANY);
   }
 
   @Override
@@ -127,7 +128,7 @@ public class FloatToolStat implements INumericToolStat<Float> {
 
   @Override
   public Float deserialize(JsonElement json) {
-    return GsonHelper.convertToFloat(json, getName().toString());
+    return GsonHelper.convertToFloat(json, getId().toString());
   }
 
   @Override
@@ -153,7 +154,7 @@ public class FloatToolStat implements INumericToolStat<Float> {
 
   @Override
   public String toString() {
-    return "FloatToolStat{" + name + '}';
+    return "FloatToolStat{" + id + '}';
   }
 
   /** Internal builder to store the add and multiply value */

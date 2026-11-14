@@ -27,7 +27,7 @@ public class FixedArmorTextureSupplier implements ArmorTextureSupplier {
     StringLoadable.DEFAULT.defaultField("suffix", "", s -> s.suffix),
     ColorLoadable.ALPHA.defaultField("color", -1, s -> s.color),
     IntLoadable.range(0, 15).defaultField("luminosity", 0, false, s -> s.luminosity),
-    ModifierId.PARSER.nullableField("modifier", s -> s.modifier),
+    ModifierId.LOADABLE.nullableField("modifier", s -> s.modifier),
     FixedArmorTextureSupplier::new);
 
   private final ResourceLocation prefix;

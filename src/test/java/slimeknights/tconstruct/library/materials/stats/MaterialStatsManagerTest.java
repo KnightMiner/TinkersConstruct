@@ -12,9 +12,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MaterialStatsManagerTest extends BaseMcTest {
-  private static final MaterialStatsId STATS_ID_SIMPLE = new MaterialStatsId("test", "stat");
+  private static final MaterialStatsId STATS_ID_SIMPLE = MaterialStatsId.create("test", "stat");
   private static final MaterialStatType<ComplexTestStats> STATS_TYPE_SIMPLE = ComplexTestStats.makeType(STATS_ID_SIMPLE);
-  private static final MaterialStatsId STATS_ID_DONT_CARE = new MaterialStatsId("dont", "care");
+  private static final MaterialStatsId STATS_ID_DONT_CARE = MaterialStatsId.create("dont", "care");
 
   private final MaterialStatsManager materialStatsManager = new MaterialStatsManager(() -> {});
   private final MergingJsonFileLoader<?> fileLoader = new MergingJsonFileLoader<>(materialStatsManager);
@@ -23,7 +23,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
   void testLoadFile_statsExist() {
     materialStatsManager.registerStatType(STATS_TYPE_SIMPLE);
 
-    MaterialId material = new MaterialId(TConstruct.getResource("teststat"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "teststat");
     fileLoader.loadAndParseFiles(null, material);
 
     Optional<IMaterialStats> optionalStats = materialStatsManager.getStats(material, STATS_ID_SIMPLE);
@@ -34,7 +34,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
   void testLoadFile_complexStats() {
     materialStatsManager.registerStatType(STATS_TYPE_SIMPLE);
 
-    MaterialId material = new MaterialId(TConstruct.getResource("teststat"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "teststat");
     fileLoader.loadAndParseFiles(null, material);
 
     Optional<ComplexTestStats> optionalStats = materialStatsManager.getStats(material, STATS_ID_SIMPLE);
@@ -47,10 +47,10 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void testLoadFile_multipleStatsInOneFile() {
-    MaterialId material = new MaterialId(TConstruct.getResource("multiple"));
-    MaterialStatsId statId1 = new MaterialStatsId("test", "stat1");
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "multiple");
+    MaterialStatsId statId1 = MaterialStatsId.create("test", "stat1");
     materialStatsManager.registerStatType(ComplexTestStats.makeType(statId1, 1, 1f, "one"));
-    MaterialStatsId statId2 = new MaterialStatsId("test", "stat2");
+    MaterialStatsId statId2 = MaterialStatsId.create("test", "stat2");
     materialStatsManager.registerStatType(ComplexTestStats.makeType(statId2, 2, 2f, "two"));
 
     fileLoader.loadAndParseFiles(null, material);
@@ -61,7 +61,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void testLoadFileWithEmptyStats_ok() {
-    MaterialId material = new MaterialId(TConstruct.getResource("empty"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "empty");
     fileLoader.loadAndParseFiles(null, material);
 
     // ensure that we get this far and that querying the missing material causes no errors
@@ -71,7 +71,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void testLoadFileWithoutStats_ok() {
-    MaterialId material = new MaterialId(TConstruct.getResource("missing_stats"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "missing_stats");
     fileLoader.loadAndParseFiles(null, material);
 
     // ensure that we get this far and that querying the missing material causes no errors
@@ -81,11 +81,11 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void testLoadMultipleFiles_addDifferentStatsToSameMaterial() {
-    MaterialStatsId otherStatId = new MaterialStatsId("test", "otherstat");
+    MaterialStatsId otherStatId = MaterialStatsId.create("test", "otherstat");
     materialStatsManager.registerStatType(STATS_TYPE_SIMPLE);
     materialStatsManager.registerStatType(ComplexTestStats.makeType(otherStatId, 5, 8, "other"));
 
-    MaterialId material = new MaterialId(TConstruct.getResource("teststat"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "teststat");
     fileLoader.loadAndParseFiles("extrastats", material);
 
     assertThat(materialStatsManager.getStats(material, STATS_ID_SIMPLE)).isNotEmpty();
@@ -98,7 +98,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
   void testLoadMultipleFiles_addSameStatsFromDifferentSources_useFirst() {
     materialStatsManager.registerStatType(STATS_TYPE_SIMPLE);
 
-    MaterialId material = new MaterialId(TConstruct.getResource("teststat"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "teststat");
     fileLoader.loadAndParseFiles("duplicate", material);
 
     Optional<ComplexTestStats> stats = materialStatsManager.getStats(material, STATS_ID_SIMPLE);
@@ -113,7 +113,7 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void loadMissingFile_ignored() {
-    MaterialId material = new MaterialId(TConstruct.getResource("nonexistant"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "nonexistant");
     fileLoader.loadAndParseFiles(null);
 
     // ensure that we get this far and that querying the missing material causes no errors
@@ -123,19 +123,19 @@ class MaterialStatsManagerTest extends BaseMcTest {
 
   @Test
   void loadFileWithOnlyUnregisteredStats_doNothing() {
-    MaterialId material = new MaterialId(TConstruct.getResource("invalid"));
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "invalid");
     fileLoader.loadAndParseFiles(null, material);
 
-    Optional<ComplexTestStats> optionalStats = materialStatsManager.getStats(material, new MaterialStatsId("test", "fails"));
+    Optional<ComplexTestStats> optionalStats = materialStatsManager.getStats(material, MaterialStatsId.create("test", "fails");
     assertThat(optionalStats).isEmpty();
   }
 
   @Test
   void testLoadFile_removeStatOverride() {
-    MaterialId material = new MaterialId(TConstruct.getResource("multiple"));
-    MaterialStatsId statId1 = new MaterialStatsId("test", "stat1");
+    MaterialId material = MaterialId.create(TConstruct.MOD_ID, "multiple");
+    MaterialStatsId statId1 = MaterialStatsId.create("test", "stat1");
     materialStatsManager.registerStatType(ComplexTestStats.makeType(statId1, 1, 1f, "one"));
-    MaterialStatsId statId2 = new MaterialStatsId("test", "stat2");
+    MaterialStatsId statId2 = MaterialStatsId.create("test", "stat2");
     materialStatsManager.registerStatType(ComplexTestStats.makeType(statId2, 2, 2f, "two"));
 
     fileLoader.loadAndParseFiles("remove", material);

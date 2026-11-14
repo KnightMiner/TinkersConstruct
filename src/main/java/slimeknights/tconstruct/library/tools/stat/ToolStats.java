@@ -1,9 +1,11 @@
 package slimeknights.tconstruct.library.tools.stat;
 
 import slimeknights.mantle.data.loadable.ErrorFactory;
+import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.resource.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
 import slimeknights.tconstruct.library.tools.stat.impl.IntegerToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.PercentToolStat;
 
@@ -17,49 +19,52 @@ import java.util.Set;
 
 import static slimeknights.mantle.data.predicate.item.ItemPredicate.or;
 import static slimeknights.mantle.data.predicate.item.ItemPredicate.tag;
+import static slimeknights.tconstruct.TConstruct.resourceId;
 
 /**
  * Class handling all tool stats.
- *
+ * <p>
  * Custom stat types need to be initialized before item registration for most uses, and need to be registered before worldload. Safe to statically register as done for TConstruct stat types
  */
 public class ToolStats {
+  /** Loadable for a tool stat ID. */
+  public static final ResourceLocationLoadable<ResourceId<IToolStat<?>>> ID_LOADABLE = ResourceIdLoadable.loadable();
   /** Loader for general tool stats */
-  public static final StringLoadable<IToolStat<?>> LOADER = ToolStatId.PARSER.comapFlatMap((id, error) -> {
+  public static final StringLoadable<IToolStat<?>> LOADER = ID_LOADABLE.mapChecked((id, error) -> {
     IToolStat<?> stat = ToolStats.getToolStat(id);
     if (stat != null) {
       return stat;
     }
     throw error.create("Unknown stat type " + id);
-  }, IToolStat::getName);
+  }, (stat, error) -> stat.getId());
   /** Loader that filters to only numeric tool stats */
-  public static final StringLoadable<INumericToolStat<?>> NUMERIC_LOADER = LOADER.comapFlatMap((stat, error) -> {
+  public static final StringLoadable<INumericToolStat<?>> NUMERIC_LOADER = LOADER.mapChecked((stat, error) -> {
     if (stat instanceof INumericToolStat<?> numeric) {
       return numeric;
     }
-    throw error.create("Invalid tool stat " + stat.getName() + ", must be a numeric stat");
-  }, stat -> stat);
+    throw error.create("Invalid tool stat " + stat.getId() + ", must be a numeric stat");
+  }, (stat, error) -> stat);
 
 
   /** Map of ID to stat */
-  private static final Map<ToolStatId,IToolStat<?>> ALL_STATS = new HashMap<>();
+  private static final Map<ResourceId<IToolStat<?>>,IToolStat<?>> ALL_STATS = new HashMap<>();
   /** Set of stats supporting {@link slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook} */
   private static final Set<INumericToolStat<?>> CONDITIONAL = new HashSet<>();
 
   /** Gets the error for the given stat */
   private static String getError(INumericToolStat<?> stat) {
-    return "Tool stat " + stat.getName() + " does not support conditional stats but is used in a conditional stat loader.";
+    return "Tool stat " + stat.getId() + " does not support conditional stats but is used in a conditional stat loader.";
   }
 
   /** Loader that filters to only numeric tool stats */
-  public static final StringLoadable<INumericToolStat<?>> CONDITIONAL_LOADER = LOADER.xmap((stat, error) -> {
+  public static final StringLoadable<INumericToolStat<?>> CONDITIONAL_LOADER = LOADER.mapChecked((stat, error) -> {
     if (stat instanceof INumericToolStat<?> numeric) {
       if (error == ErrorFactory.JSON_SYNTAX_ERROR && !supportsConditional(numeric)) {
         throw error.create(getError(numeric));
       }
       return numeric;
     }
-    throw error.create("Invalid tool stat " + stat.getName() + ", must be a numeric stat");
+    throw error.create("Invalid tool stat " + stat.getId() + ", must be a numeric stat");
   }, (stat, error) -> {
     if (error == ErrorFactory.RUNTIME && !CONDITIONAL.contains(stat)) {
       throw error.create(getError(stat));
@@ -68,54 +73,54 @@ public class ToolStats {
   });
 
   /** Tools durability, determines how long it lasts */
-  public static final FloatToolStat DURABILITY = register(new IntegerToolStat(name("durability"), 0xFF47CC47, 1, 1, Integer.MAX_VALUE, TinkerTags.Items.DURABILITY));
+  public static final FloatToolStat DURABILITY = register(new IntegerToolStat(resourceId("durability"), 0xFF47CC47, 1, 1, Integer.MAX_VALUE, TinkerTags.Items.DURABILITY));
   /** Movement speed percentage when using this item, applicable to charging tools, pulling back bows, and shield blocking among other actions */
-  public static final FloatToolStat USE_ITEM_SPEED = register(new FloatToolStat(name("use_item_speed"), 0xFF78A0CD, 0.2f, 0, 1, TinkerTags.Items.HELD));
+  public static final FloatToolStat USE_ITEM_SPEED = register(new FloatToolStat(resourceId("use_item_speed"), 0xFF78A0CD, 0.2f, 0, 1, TinkerTags.Items.HELD));
 
   // melee
   /** Tools attack damage for melee */
-  public static final FloatToolStat ATTACK_DAMAGE = register(new FloatToolStat(name("attack_damage"), 0xFFD76464, 0, 0, 2048f, TinkerTags.Items.MELEE));
+  public static final FloatToolStat ATTACK_DAMAGE = register(new FloatToolStat(resourceId("attack_damage"), 0xFFD76464, 0, 0, 2048f, TinkerTags.Items.MELEE));
   /** Equivalent to the vanilla attack speed, which is effectively number of attacks per second. 4 is equal to any standard item */
-  public static final FloatToolStat ATTACK_SPEED = register(new FloatToolStat(name("attack_speed"), 0xFF8547CC, 1, 0, 1024f, TinkerTags.Items.MELEE_WEAPON));
+  public static final FloatToolStat ATTACK_SPEED = register(new FloatToolStat(resourceId("attack_speed"), 0xFF8547CC, 1, 0, 1024f, TinkerTags.Items.MELEE_WEAPON));
 
   // harvest
   /** How fast the tool breaks blocks */
-  public static final FloatToolStat MINING_SPEED = register(new FloatToolStat(name("mining_speed"), 0xFF78A0CD, 1, 0.1f, 2048f, TinkerTags.Items.HARVEST));
+  public static final FloatToolStat MINING_SPEED = register(new FloatToolStat(resourceId("mining_speed"), 0xFF78A0CD, 1, 0.1f, 2048f, TinkerTags.Items.HARVEST));
   /** Mining level for breaking blocks */
-  public static final ToolTierStat HARVEST_TIER = register(new ToolTierStat(name("harvest_tier")));
+  public static final ToolTierStat HARVEST_TIER = register(new ToolTierStat(resourceId("harvest_tier")));
 
   // armor
   /** Main armor value */
-  public static final FloatToolStat ARMOR = register(new FloatToolStat(name("armor"), 0xFF8547CC, 0, 0, 30, TinkerTags.Items.ARMOR));
+  public static final FloatToolStat ARMOR = register(new FloatToolStat(resourceId("armor"), 0xFF8547CC, 0, 0, 30, TinkerTags.Items.ARMOR));
   /** Hidden toughness value */
-  public static final FloatToolStat ARMOR_TOUGHNESS = register(new FloatToolStat(name("armor_toughness"), 0xFF8547CC, 0, 0, 20, TinkerTags.Items.ARMOR));
+  public static final FloatToolStat ARMOR_TOUGHNESS = register(new FloatToolStat(resourceId("armor_toughness"), 0xFF8547CC, 0, 0, 20, TinkerTags.Items.ARMOR));
   /** Knockback resistance percentage */
-  public static final FloatToolStat KNOCKBACK_RESISTANCE = register(new FloatToolStat(name("knockback_resistance"), 0xFF8547CC, 0, 0, 1, TinkerTags.Items.ARMOR));
+  public static final FloatToolStat KNOCKBACK_RESISTANCE = register(new FloatToolStat(resourceId("knockback_resistance"), 0xFF8547CC, 0, 0, 1, TinkerTags.Items.ARMOR));
 
   // shield
   /** Maximum damage blocked by the shield. If more than this number is dealt, the damage is reduced by this number */
-  public static final FloatToolStat BLOCK_AMOUNT = register(new FloatToolStat(name("block_amount"), 0xFF78A0CD, 5, 0, 2048, TinkerTags.Items.HELD));
+  public static final FloatToolStat BLOCK_AMOUNT = register(new FloatToolStat(resourceId("block_amount"), 0xFF78A0CD, 5, 0, 2048, TinkerTags.Items.HELD));
   /** Maximum angle of blocking in degrees. 180 is vanilla (90 degrees either direction). */
-  public static final FloatToolStat BLOCK_ANGLE = registerConditional(new FloatToolStat(name("block_angle"), 0xFF78A0CD, 120, 0, 180, TinkerTags.Items.HELD));
+  public static final FloatToolStat BLOCK_ANGLE = registerConditional(new FloatToolStat(resourceId("block_angle"), 0xFF78A0CD, 120, 0, 180, TinkerTags.Items.HELD));
 
   // ranged
   /** Number of times per second a tool can be used */
-  public static final FloatToolStat DRAW_SPEED = registerConditional(new FloatToolStat(name("draw_speed"), 0xFF8547CC, 1, 0, 1024f, TinkerTags.Items.RANGED));
+  public static final FloatToolStat DRAW_SPEED = registerConditional(new FloatToolStat(resourceId("draw_speed"), 0xFF8547CC, 1, 0, 1024f, TinkerTags.Items.RANGED));
   /** Starting velocity of the projectile launched from a ranged weapon */
-  public static final FloatToolStat VELOCITY = registerConditional(new FloatToolStat(name("velocity"), 0xFF78A0CD, 1, 0, 1024f, or(tag(TinkerTags.Items.RANGED), tag(TinkerTags.Items.AMMO))));
+  public static final FloatToolStat VELOCITY = registerConditional(new FloatToolStat(resourceId("velocity"), 0xFF78A0CD, 1, 0, 1024f, or(tag(TinkerTags.Items.RANGED), tag(TinkerTags.Items.AMMO))));
   /** Starting velocity of the projectile launched from a ranged weapon */
-  public static final FloatToolStat ACCURACY = registerConditional(new FloatToolStat(name("accuracy"), 0xFF8547CC, 0.75f, 0.1f, 1f, or(tag(TinkerTags.Items.RANGED), tag(TinkerTags.Items.AMMO))));
+  public static final FloatToolStat ACCURACY = registerConditional(new FloatToolStat(resourceId("accuracy"), 0xFF8547CC, 0.75f, 0.1f, 1f, or(tag(TinkerTags.Items.RANGED), tag(TinkerTags.Items.AMMO))));
   /** Base damage of the projectile, boosted by enchantments such as power. Assumes the arrow itself does 2 damage, so we boost on top of that */
   // TODO 1.21: rename to projectile power?
-  public static final FloatToolStat PROJECTILE_DAMAGE = registerConditional(new FloatToolStat(name("projectile_damage"), 0xFFD76464, 2f, 0f, 1024f, or(tag(TinkerTags.Items.LAUNCHERS), tag(TinkerTags.Items.AMMO))));
+  public static final FloatToolStat PROJECTILE_DAMAGE = registerConditional(new FloatToolStat(resourceId("projectile_damage"), 0xFFD76464, 2f, 0f, 1024f, or(tag(TinkerTags.Items.LAUNCHERS), tag(TinkerTags.Items.AMMO))));
   /** Projectile movement speed reduction while underwater */
-  public static final FloatToolStat WATER_INERTIA = registerConditional(new PercentToolStat(name("water_inertia"), 0xFF5A82F3, 0.6f, 0.01f, 0.99f));
+  public static final FloatToolStat WATER_INERTIA = registerConditional(new PercentToolStat(resourceId("water_inertia"), 0xFF5A82F3, 0.6f, 0.01f, 0.99f));
 
   // fishing
   /** Luck bonus applied to fishing rods */ // TODO 1.21: change field type to IntToolStat
-  public static final FloatToolStat SEA_LUCK = registerConditional(new IntegerToolStat(name("sea_luck"), 0xFF345EC3, 0, 0, 1024f, TinkerTags.Items.FISHING_RODS));
+  public static final FloatToolStat SEA_LUCK = registerConditional(new IntegerToolStat(resourceId("sea_luck"), 0xFF345EC3, 0, 0, 1024f, TinkerTags.Items.FISHING_RODS));
   /** Floored value will reduce fishing time by 5 seconds */
-  public static final FloatToolStat LURE = registerConditional(new IntegerToolStat(name("lure"), 0xFFCBCC18, 0, 0, 5, TinkerTags.Items.FISHING_RODS));
+  public static final FloatToolStat LURE = registerConditional(new IntegerToolStat(resourceId("lure"), 0xFFCBCC18, 0, 0, 5, TinkerTags.Items.FISHING_RODS));
 
   /**
    * Gets the tool stat for the given name
@@ -123,7 +128,7 @@ public class ToolStats {
    * @return  Tool stat
    */
   @Nullable
-  public static IToolStat<?> getToolStat(ToolStatId name) {
+  public static IToolStat<?> getToolStat(ResourceId<IToolStat<?>> name) {
     return ALL_STATS.get(name);
   }
 
@@ -135,21 +140,16 @@ public class ToolStats {
    * @throws IllegalArgumentException If duplicate tool stats are registered
    */
   public static <T extends IToolStat<?>> T register(T toolStat) {
-    if (ALL_STATS.containsKey(toolStat.getName())) {
-      throw new IllegalArgumentException("Attempt to register duplicate tool stat " + toolStat.getName());
+    if (ALL_STATS.containsKey(toolStat.getId())) {
+      throw new IllegalArgumentException("Attempt to register duplicate tool stat " + toolStat.getId());
     }
-    ALL_STATS.put(toolStat.getName(), toolStat);
+    ALL_STATS.put(toolStat.getId(), toolStat);
     return toolStat;
   }
 
   /** Gets a collection of all stat keys */
   public static Collection<IToolStat<?>> getAllStats() {
     return ALL_STATS.values();
-  }
-
-  /** Creates a resource location for a Tinkers stat */
-  private static ToolStatId name(String name) {
-    return new ToolStatId(TConstruct.MOD_ID, name);
   }
 
 

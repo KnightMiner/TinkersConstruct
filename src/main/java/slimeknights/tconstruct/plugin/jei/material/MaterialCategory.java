@@ -111,7 +111,7 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
   /** Cache of display parts for each material */
   private final SimpleCache<MaterialVariantId,List<ItemStack>> toolParts = new SimpleCache<>(material ->
     partItems.stream()
-      .filter(item -> item.canUseMaterial(material.getId()))
+      .filter(item -> item.canUseMaterial(material.material()))
       .map(item -> item.withMaterialForDisplay(material))
       .toList());
 

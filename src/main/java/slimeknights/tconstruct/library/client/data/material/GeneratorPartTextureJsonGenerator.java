@@ -11,8 +11,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.GenericDataProvider;
-import slimeknights.mantle.data.gson.ResourceLocationSerializer;
-import slimeknights.tconstruct.TConstruct;
+import slimeknights.mantle.data.gson.LoadableSerializer;
+import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.library.client.data.material.AbstractPartSpriteProvider.PartSpriteInfo;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -29,7 +29,7 @@ public class GeneratorPartTextureJsonGenerator extends GenericDataProvider {
   /** GSON adapter for material info deserializing */
   public static final Gson GSON = (new GsonBuilder())
     .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-    .registerTypeAdapter(MaterialStatsId.class, new ResourceLocationSerializer<>(MaterialStatsId::new, TConstruct.MOD_ID))
+    .registerTypeAdapter(MaterialStatsId.class, new LoadableSerializer<>(MaterialStatsId.LOADABLE, TypedMapBuilder.EMPTY_CONSUMER))
     .setPrettyPrinting()
     .disableHtmlEscaping()
     .create();

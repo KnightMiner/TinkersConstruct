@@ -99,7 +99,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
     ItemStack tool = inv.getItem();
     List<? extends IMaterialItem> parts = getParts(IModifiable.getToolDefinition(tool.getItem()));
     MaterialIdNBT materials = MaterialIdNBT.from(tool);
-    return IntStream.range(0, parts.size()).filter(i -> parts.get(i).canUseMaterial(materials.getMaterial(i).getId()))
+    return IntStream.range(0, parts.size()).filter(i -> parts.get(i).canUseMaterial(materials.getMaterial(i).material()))
       .mapToObj(i -> Pattern.fromItem(parts.get(i)))
       .distinct();
   }
@@ -150,7 +150,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
     }
     // special handling for oddball cases with ancient tool recycling
     MaterialVariantId variant = tool.getMaterial(matchIndex).getVariant();
-    if (!match.canUseMaterial(variant.getId())) {
+    if (!match.canUseMaterial(variant.material())) {
       return ItemStack.EMPTY;
     }
     return match.withMaterial(variant);

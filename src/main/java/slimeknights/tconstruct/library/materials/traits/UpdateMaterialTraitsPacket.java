@@ -22,7 +22,7 @@ public record UpdateMaterialTraitsPacket(Map<MaterialId,MaterialTraits> material
       int materialCount = buffer.readInt();
       Map<MaterialId,MaterialTraits> materialToTraits = new HashMap<>(materialCount);
       for (int i = 0; i < materialCount; i++) {
-        MaterialId id = new MaterialId(buffer.readResourceLocation());
+        MaterialId id = MaterialId.create(buffer.readResourceLocation());
         MaterialTraits traits = MaterialTraits.read(buffer);
         materialToTraits.put(id, traits);
       }

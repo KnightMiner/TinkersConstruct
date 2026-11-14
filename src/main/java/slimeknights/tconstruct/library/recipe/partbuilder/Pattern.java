@@ -1,43 +1,43 @@
 package slimeknights.tconstruct.library.recipe.partbuilder;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.tconstruct.library.utils.IdParser;
-import slimeknights.tconstruct.library.utils.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
+import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
 
 /**
- * Resource location variant for pattern buttons in the part builder. Also used in a few spots for convenient icon loading.
+ * Resource ID variant for pattern buttons in the part builder. Also used in a few spots for convenient icon loading.
  */
-public class Pattern extends ResourceId {
-  public static final IdParser<Pattern> PARSER = new IdParser<>(Pattern::new, "Pattern");
-
-  public Pattern(String resourceName) {
-    super(resourceName);
-  }
-
-  public Pattern(String namespaceIn, String pathIn) {
-    super(namespaceIn, pathIn);
-  }
-
-  public Pattern(ResourceLocation location) {
-    super(location);
-  }
-
-  private Pattern(String namespace, String path, @Nullable Dummy pDummy) {
-    super(namespace, path, pDummy);
-  }
+public record Pattern(ResourceLocation id) implements ResourceId<Pattern> {
+  private static final SimpleCache<ResourceLocation,Pattern> CACHE = new SimpleCache<>(Pattern::new);
+  /** {@link slimeknights.mantle.data.loadable.Loadable} instance. */
+  public static final ResourceIdLoadable<Pattern> LOADABLE = new ResourceIdLoadable<>(CACHE);
+  /** {@link Codec} instance. */
+  public static final Codec<Pattern> CODEC = ResourceId.codec(CACHE);
+  /** {@link StreamCodec} instance. */
+  public static final StreamCodec<ByteBuf,Pattern> STREAM_CODEC = ResourceId.streamCodec(CACHE);
+  
+  /** @apiNote use {@link #create(ResourceLocation)} */
+  @Internal
+  public Pattern {}
 
   /**
    * Gets the translation key for this pattern
    * @return  Translation key
    */
   public String getTranslationKey() {
-    return Util.makeTranslationKey("pattern", this);
+    // TODO: cache this?
+    return Util.makeTranslationKey("pattern", id);
   }
 
   /**
@@ -53,29 +53,46 @@ public class Pattern extends ResourceId {
    * @return  Pattern texture
    */
   public ResourceLocation getTexture() {
-    return withPrefix("gui/tinker_pattern/");
+    // TODO: migrate to GUI sprites
+    return id.withPrefix("gui/tinker_pattern/");
   }
 
   /** Checks if this pattern matches the give item, typically a tool part. */
   public boolean matches(ItemLike item) {
-    return this.equals(Loadables.ITEM.getKey(item.asItem()));
+    return id.equals(Loadables.ITEM.getKey(item.asItem()));
+  }
+
+  @Override
+  public String toString() {
+    return id.toString();
   }
 
 
-  /** {@return Pattern ID, or null if invalid} */
+  /* Constructors */
+
+  /** Parses a pattern from the given string */
+  public static Pattern create(ResourceLocation id) {
+    return CACHE.apply(id);
+  }
+
+  /** Parses a pattern from the given string */
+  public static Pattern create(String domain, String name) {
+    return create(ResourceLocation.fromNamespaceAndPath(domain, name));
+  }
+
+  /** Parses a pattern from the given string */
+  public static Pattern parse(String string) {
+    return create(ResourceLocation.parse(string));
+  }
+
+  /** Parses a pattern from the given string */
   @Nullable
   public static Pattern tryParse(String string) {
-    return tryParse(string, (namespace, path) -> new Pattern(namespace, path, null));
-  }
-
-  /** {@return Pattern ID, or null if invalid} */
-  @Nullable
-  public static Pattern tryBuild(String namespace, String path) {
-    return tryBuild(namespace, path, (n, p) -> new Pattern(namespace, path, null));
+    return LOADABLE.tryParse(string);
   }
 
   /** Gets the pattern for the given item ID */
   public static Pattern fromItem(ItemLike item) {
-    return new Pattern(Loadables.ITEM.getKey(item.asItem()));
+    return create(Loadables.ITEM.getKey(item.asItem()));
   }
 }

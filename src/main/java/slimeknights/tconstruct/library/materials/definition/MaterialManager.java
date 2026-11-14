@@ -193,7 +193,7 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
     this.materials = materials;
     this.redirects = redirects;
     this.tags = tags;
-    this.reverseTags = GenericTagUtil.reverseTags(IMaterial::getIdentifier, tags);
+    this.reverseTags = GenericTagUtil.reverseTags(IMaterial::getId, tags);
     onMaterialUpdate();
   }
 
@@ -206,7 +206,7 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
       .map(entry -> loadMaterial(entry.getKey(), entry.getValue().getAsJsonObject(), redirects))
       .filter(Objects::nonNull)
       .collect(Collectors.toMap(
-        IMaterial::getIdentifier,
+        IMaterial::getId,
         material -> material)
       );
     // validate redirects
@@ -230,9 +230,9 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
 
 
     // load modifier tags
-    TagLoader<IMaterial> tagLoader = new TagLoader<>(id -> getMaterial(new MaterialId(id)), TAG_FOLDER);
+    TagLoader<IMaterial> tagLoader = new TagLoader<>(id -> getMaterial(MaterialId.create(id)), TAG_FOLDER);
     this.tags = GenericTagUtil.mapLoaderResults(REGISTRY_KEY, tagLoader.loadAndBuild(resourceManagerIn));
-    this.reverseTags = GenericTagUtil.reverseTags(IMaterial::getIdentifier, tags);
+    this.reverseTags = GenericTagUtil.reverseTags(IMaterial::getId, tags);
     log.info("Loaded {} material tags for {} materials in {} ms", tags.size(), reverseTags.size(), (System.nanoTime() - timeStep) / 1000000f);
   }
 
@@ -260,8 +260,8 @@ public class MaterialManager extends SimpleJsonResourceReloadListener {
         for (JsonRedirect redirect : redirectsJson) {
           ICondition redirectCondition = redirect.getCondition();
           if (redirectCondition == null || redirectCondition.test(conditionContext)) {
-            MaterialId redirectTarget = new MaterialId(redirect.getId());
-            redirects.put(new MaterialId(materialId), redirectTarget);
+            MaterialId redirectTarget = MaterialId.create(redirect.getId());
+            redirects.put(MaterialId.create(materialId), redirectTarget);
             return null;
           }
         }

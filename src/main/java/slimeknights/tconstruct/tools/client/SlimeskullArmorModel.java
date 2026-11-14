@@ -71,7 +71,7 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
   /** Prepares the model */
   public Model setup(LivingEntity living, ItemStack stack, HumanoidModel<?> base, ArmorModel model) {
     super.setup(living, stack, EquipmentSlot.HEAD, base, model);
-    MaterialId materialId = MaterialIdNBT.from(stack).getMaterial(0).getId();
+    MaterialId materialId = MaterialIdNBT.from(stack).getMaterial(0).material();
     if (!materialId.equals(MaterialId.UNKNOWN)) {
       SkullModelBase skull = getHeadModel(materialId);
       ResourceLocation texture = HEAD_TEXTURES.get(materialId);

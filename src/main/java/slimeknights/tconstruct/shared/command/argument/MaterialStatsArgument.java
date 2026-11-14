@@ -13,7 +13,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
-import slimeknights.tconstruct.library.utils.IdParser;
+import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class MaterialStatsArgument implements ArgumentType<MaterialStatType<?>> 
 
     @Override
     public MaterialStatType<?> parse(StringReader reader) throws CommandSyntaxException {
-      MaterialStatsId loc = new MaterialStatsId(IdParser.read(TConstruct.MOD_ID, reader));
+      MaterialStatsId loc = MaterialStatsId.create(ResourceLocationUtils.read(TConstruct.MOD_ID, reader));
       MaterialStatType<?> statType = MaterialRegistry.getInstance().getStatType(loc);
       if (statType == null) {
         throw MODIFIER_NOT_FOUND.create(loc);

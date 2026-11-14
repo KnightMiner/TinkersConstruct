@@ -69,7 +69,7 @@ public interface NestedModifierModel extends ModifierModel {
    */
   record Crafted(ModifierId modifier, ModifierModel nested) implements NestedModifierModel {
     public static final RecordLoadable<Crafted> LOADER = RecordLoadable.create(
-      ModifierId.PARSER.requiredField("modifier", Crafted::modifier),
+      ModifierId.LOADABLE.requiredField("modifier", Crafted::modifier),
       NESTED_FIELD, Crafted::new);
 
     @Override
@@ -91,7 +91,7 @@ public interface NestedModifierModel extends ModifierModel {
    */
   record Trait(ModifierId modifier, ModifierModel nested) implements NestedModifierModel {
     public static final RecordLoadable<Trait> LOADER = RecordLoadable.create(
-      ModifierId.PARSER.requiredField("modifier", Trait::modifier),
+      ModifierId.LOADABLE.requiredField("modifier", Trait::modifier),
       NESTED_FIELD, Trait::new);
 
     @Override

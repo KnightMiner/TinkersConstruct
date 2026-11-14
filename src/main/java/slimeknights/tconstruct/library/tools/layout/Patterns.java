@@ -31,7 +31,7 @@ public class Patterns {
   public static final Pattern RESULT = pattern("result");
 
   private static Pattern pattern(String name) {
-    return new Pattern(TConstruct.MOD_ID, name);
+    return Pattern.create(TConstruct.MOD_ID, name);
   }
 
   private Patterns() {}

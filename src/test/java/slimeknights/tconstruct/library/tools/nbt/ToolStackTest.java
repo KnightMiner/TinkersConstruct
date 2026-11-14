@@ -294,7 +294,7 @@ class ToolStackTest extends ToolItemTest {
     assertThat(toolStack.getMaterial(2).get()).isEqualTo(MaterialFixture.MATERIAL_WITH_EXTRA);
 
     // ensure it updated and no side-effects
-    toolStack.replaceMaterial(0, MaterialFixture.MATERIAL_WITH_ALL_STATS.getIdentifier());
+    toolStack.replaceMaterial(0, MaterialFixture.MATERIAL_WITH_ALL_STATS.getId());
     assertThat(toolStack.getMaterials().size()).isEqualTo(3);
     assertThat(toolStack.getMaterial(0).get()).isEqualTo(MaterialFixture.MATERIAL_WITH_ALL_STATS);
     assertThat(toolStack.getMaterial(1).get()).isEqualTo(MaterialFixture.MATERIAL_WITH_HANDLE);

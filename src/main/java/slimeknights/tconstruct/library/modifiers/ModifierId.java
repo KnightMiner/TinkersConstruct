@@ -1,55 +1,65 @@
 package slimeknights.tconstruct.library.modifiers;
 
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.utils.IdParser;
-import slimeknights.tconstruct.library.utils.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceId;
+import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
+import slimeknights.tconstruct.library.utils.SimpleCache;
 
 import javax.annotation.Nullable;
-import java.util.function.Function;
 
 /**
- * This is just a copy of ResourceLocation for type safety in modifier JSON.
+ * {@link ResourceId} for {@link Modifier}
  */
-public class ModifierId extends ResourceId {
-  public static final IdParser<ModifierId> PARSER = new IdParser<>(ModifierId::new, "Modifier");
-  // TODO: reconsider how we do resource IDs
-  public static final Codec<ModifierId> CODEC = ResourceLocation.CODEC.xmap(ModifierId::new, Function.identity());
+public record ModifierId(ResourceLocation id) implements ResourceId<Modifier> {
+  private static final SimpleCache<ResourceLocation,ModifierId> CACHE = new SimpleCache<>(ModifierId::new);
+  /** {@link slimeknights.mantle.data.loadable.Loadable} instance. */
+  public static final ResourceIdLoadable<ModifierId> LOADABLE = new ResourceIdLoadable<>(CACHE);
+  /** {@link Codec} instance. */
+  public static final Codec<ModifierId> CODEC = ResourceId.codec(CACHE);
+  /** {@link StreamCodec} instance. */
+  public static final StreamCodec<ByteBuf, ModifierId> STREAM_CODEC = ResourceId.streamCodec(CACHE);
+
   /** ID of the default modifier. Used in a few contexts to indicate "no modifier" instead of using null. */
-  public static final ModifierId EMPTY = new ModifierId(TConstruct.MOD_ID, "empty");
-  /**
-   * Context key used in {@link slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager}.
-   * Note when the modifier itself is the JSON file (such as modifier JSON), {@link ContextKey#ID} will be used instead.
-   */
+  public static final ModifierId EMPTY = create(TConstruct.MOD_ID, "empty");
+  /** Context key for loadable parsing. Used in {@link slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager} and {@link ModifierManager} */
   public static final ContextKey<ModifierId> CONTEXT_KEY = new ContextKey<>("modifier");
 
-  public ModifierId(String resourceName) {
-    super(resourceName);
+  /** @apiNote use {@link #create(ResourceLocation)} */
+  @Internal
+  public ModifierId {}
+
+  @Override
+  public String toString() {
+    return id.toString();
   }
 
-  public ModifierId(String namespaceIn, String pathIn) {
-    super(namespaceIn, pathIn);
+
+  /* Constructors */
+
+  /** Parses a pattern from the given string */
+  public static ModifierId create(ResourceLocation id) {
+    return CACHE.apply(id);
   }
 
-  public ModifierId(ResourceLocation location) {
-    super(location);
+  /** Parses a pattern from the given string */
+  public static ModifierId create(String domain, String name) {
+    return create(ResourceLocation.fromNamespaceAndPath(domain, name));
   }
 
-  private ModifierId(String namespace, String path, @Nullable Dummy pDummy) {
-    super(namespace, path, pDummy);
+  /** Parses a pattern from the given string */
+  public static ModifierId parse(String string) {
+    return create(ResourceLocation.parse(string));
   }
 
-  /** {@return Modifier ID, or null if invalid} */
+  /** Parses a pattern from the given string */
   @Nullable
   public static ModifierId tryParse(String string) {
-    return tryParse(string, (namespace, path) -> new ModifierId(namespace, path, null));
-  }
-
-  /** {@return Modifier ID, or null if invalid} */
-  @Nullable
-  public static ModifierId tryBuild(String namespace, String path) {
-    return tryBuild(namespace, path, (n, p) -> new ModifierId(namespace, path, null));
+    return LOADABLE.tryParse(string);
   }
 }

@@ -93,7 +93,7 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
       return false;
     }
     // if the material is invalid
-    MaterialId inputMaterial = IMaterialItem.getMaterialFromStack(inputs.repairKit).getId();
+    MaterialId inputMaterial = IMaterialItem.getMaterialFromStack(inputs.repairKit).material();
     if (inputMaterial.equals(MaterialId.UNKNOWN)) {
       return false;
     }
@@ -104,7 +104,7 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
 
   /** Gets the amount to repair for the given material */
   protected float getRepairAmount(IToolStackView tool, ItemStack repairStack) {
-    return MaterialRepairToolHook.repairAmount(tool, IMaterialItem.getMaterialFromStack(repairStack).getId());
+    return MaterialRepairToolHook.repairAmount(tool, IMaterialItem.getMaterialFromStack(repairStack).material());
   }
 
   @Override

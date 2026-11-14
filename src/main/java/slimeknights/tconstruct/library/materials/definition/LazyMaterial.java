@@ -18,7 +18,7 @@ public class LazyMaterial implements Supplier<IMaterial> {
   private IMaterial material;
 
   protected LazyMaterial(IMaterial material) {
-    this.id = material.getIdentifier();
+    this.id = material.getId();
     this.material = material;
   }
 

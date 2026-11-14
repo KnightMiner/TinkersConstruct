@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UpdateMaterialPacketTest extends BaseMcTest {
 
-  public static final MaterialId MATERIAL_ID_1 = MaterialFixture.MATERIAL_1.getIdentifier();
-  public static final MaterialId MATERIAL_ID_2 = MaterialFixture.MATERIAL_2.getIdentifier();
-  public static final MaterialId REDIRECT_ID = new MaterialId("test", "redirect");
+  public static final MaterialId MATERIAL_ID_1 = MaterialFixture.MATERIAL_1.getId();
+  public static final MaterialId MATERIAL_ID_2 = MaterialFixture.MATERIAL_2.getId();
+  public static final MaterialId REDIRECT_ID = MaterialId.create("test", "redirect");
 
   @Test
   void testGenericEncodeDecode() {
@@ -40,7 +40,7 @@ class UpdateMaterialPacketTest extends BaseMcTest {
     // material 1
     Iterator<IMaterial> iterator = parsed.values().iterator();
     IMaterial parsedMat = iterator.next();
-    assertThat(parsedMat.getIdentifier()).isEqualTo(MATERIAL_ID_1);
+    assertThat(parsedMat.getId()).isEqualTo(MATERIAL_ID_1);
     assertThat(parsedMat.getTier()).isEqualTo(1);
     assertThat(parsedMat.getSortOrder()).isEqualTo(2);
     assertThat(parsedMat.isCraftable()).isTrue();
@@ -49,7 +49,7 @@ class UpdateMaterialPacketTest extends BaseMcTest {
 
     // material 2
     parsedMat = iterator.next();
-    assertThat(parsedMat.getIdentifier()).isEqualTo(MATERIAL_ID_2);
+    assertThat(parsedMat.getId()).isEqualTo(MATERIAL_ID_2);
     assertThat(parsedMat.getTier()).isEqualTo(3);
     assertThat(parsedMat.getSortOrder()).isEqualTo(4);
     assertThat(parsedMat.isCraftable()).isFalse();

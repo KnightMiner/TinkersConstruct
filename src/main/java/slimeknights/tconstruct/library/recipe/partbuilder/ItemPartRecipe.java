@@ -32,7 +32,7 @@ import java.util.List;
 public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRecipe {
   public static final RecordLoadable<ItemPartRecipe> LOADER = RecordLoadable.create(
     MaterialVariantId.LOADABLE.defaultField("material", MaterialId.UNKNOWN, r -> r.material.getVariant()),
-    Pattern.PARSER.requiredField("pattern", ItemPartRecipe::getPattern),
+    Pattern.LOADABLE.requiredField("pattern", ItemPartRecipe::getPattern),
     Loadables.ITEM_INGREDIENT_NONEMPTY.defaultField("pattern_item", DEFAULT_PATTERNS, r -> r.patternItem),
     IntLoadable.FROM_ZERO.defaultField("cost", 0, ItemPartRecipe::getCost),
     ItemOutput.REQUIRED_STACK_LOADABLE.requiredField("result", r -> r.result),

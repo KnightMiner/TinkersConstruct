@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
  */
 public interface IModifierRepairRecipe {
   /* Fields */
-  LoadableField<ModifierId,IModifierRepairRecipe> MODIFIER_FIELD = ModifierId.PARSER.requiredField("modifier", IModifierRepairRecipe::getModifier);
+  LoadableField<ModifierId,IModifierRepairRecipe> MODIFIER_FIELD = ModifierId.LOADABLE.requiredField("modifier", IModifierRepairRecipe::getModifier);
   LoadableField<Ingredient,IModifierRepairRecipe> INGREDIENT_FIELD = IngredientLoadable.DISALLOW_EMPTY.requiredField("ingredient", IModifierRepairRecipe::getIngredient);
   LoadableField<Integer,IModifierRepairRecipe> REPAIR_AMOUNT_FIELD = IntLoadable.FROM_ONE.requiredField("repair_amount", IModifierRepairRecipe::getRepairAmount);
 

@@ -52,7 +52,7 @@ public record RepairStats(MaterialStatType<?> getType, int durability) implement
 
   /** Makes a stat type for the given name */
   private static MaterialStatType<RepairStats> makeType(String name) {
-    return makeType(new MaterialStatsId(TConstruct.MOD_ID, name));
+    return makeType(MaterialStatsId.create(TConstruct.MOD_ID, name));
   }
 
 

@@ -88,7 +88,7 @@ public class ClientGeneratePartTexturesCommand {
 
       // Predicate to check if a material ID is valid
       // TODO: variant filter?
-      Predicate<MaterialVariantId> validMaterialId = loc -> (modId.isEmpty() || modId.equals(loc.getId().getNamespace())) && (materialPath.isEmpty() || materialPath.equals(loc.getId().getPath()));
+      Predicate<MaterialVariantId> validMaterialId = loc -> (modId.isEmpty() || modId.equals(loc.material().getNamespace())) && (materialPath.isEmpty() || materialPath.equals(loc.material().getPath()));
 
       // get all materials, filtered by the given parameters
       List<MaterialSpriteInfo> materialSprites = loadMaterialRenderInfoGenerators(manager, validMaterialId);
@@ -229,7 +229,7 @@ public class ClientGeneratePartTexturesCommand {
             if (object.has("overrides")) {
               for (Entry<String,JsonElement> entry : GsonHelper.getAsJsonObject(object, "overrides").entrySet()) {
                 String key = entry.getKey();
-                MaterialStatsId statId = MaterialStatsId.PARSER.tryParse(key);
+                MaterialStatsId statId = MaterialStatsId.LOADABLE.tryParse(key);
                 if (statId == null) {
                   TConstruct.LOG.error("Invalid stat ID " + key);
                 } else {

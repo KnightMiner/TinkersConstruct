@@ -54,7 +54,7 @@ public class MaterialTooltipCache {
         return Component.translatable(variantKey);
       }
     }
-    return Component.translatable(getKey(id.getId()));
+    return Component.translatable(getKey(id.material()));
   };
 
   /** Gets the key name for a given material variant, prevents need to create a lot of extra strings */
@@ -71,7 +71,7 @@ public class MaterialTooltipCache {
         return color;
       }
     }
-    return ResourceColorManager.getTextColor(getKey(id.getId()));
+    return ResourceColorManager.getTextColor(getKey(id.material()));
   };
 
   /** Gets the color for a given material ID */

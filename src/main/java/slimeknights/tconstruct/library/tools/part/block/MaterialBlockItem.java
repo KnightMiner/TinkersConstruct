@@ -35,12 +35,12 @@ public class MaterialBlockItem extends BlockItem implements IMaterialItem {
 
   @Override
   public Rarity getRarity(ItemStack stack) {
-    return MaterialRegistry.getMaterial(getMaterial(stack).getId()).getRarity();
+    return MaterialRegistry.getMaterial(getMaterial(stack).material()).getRarity();
   }
 
   @Override
   public boolean isFoil(ItemStack stack) {
-    return MaterialRegistry.getInstance().isInTag(getMaterial(stack).getId(), TinkerTags.Materials.SHINY);
+    return MaterialRegistry.getInstance().isInTag(getMaterial(stack).material(), TinkerTags.Materials.SHINY);
   }
 
   @Override

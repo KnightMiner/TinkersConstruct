@@ -11,7 +11,7 @@ import java.util.List;
 public class MaterialItemCache {
   /** Cache of lists of all material variants for a given tool part */
   private static final SimpleCache<IMaterialItem, List<ItemStack>> ALL_MATERIALS_CACHE = new SimpleCache<>(item ->
-    MaterialRegistry.getMaterials().stream().filter(item::canUseMaterial).map(material -> item.withMaterialForDisplay(material.getIdentifier())).toList());
+    MaterialRegistry.getMaterials().stream().filter(item::canUseMaterial).map(material -> item.withMaterialForDisplay(material.getId())).toList());
 
   static {
     RecipeCacheInvalidator.addReloadListener(client -> ALL_MATERIALS_CACHE.clear());

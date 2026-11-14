@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -18,9 +19,8 @@ import java.text.DecimalFormat;
  * @param <T>
  */
 public interface IToolStat<T> {
-
   /** Gets the name of this stat for serializing to NBT */
-  ToolStatId getName();
+  ResourceId<IToolStat<?>> getId();
 
   /** Gets the default value for this stat */
   T getDefaultValue();
@@ -93,7 +93,7 @@ public interface IToolStat<T> {
 
   /** Gets the prefix translation key for displaying stats */
   default String getTranslationKey() {
-    return Util.makeTranslationKey("tool_stat", getName());
+    return Util.makeTranslationKey("tool_stat", getId().id());
   }
 
   /** Gets the prefix for this tool stat */

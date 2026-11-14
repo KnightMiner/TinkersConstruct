@@ -2,18 +2,19 @@ package slimeknights.tconstruct.library.tools.stat;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.Util;
 
 /** Extension of {@link FloatToolStat} that formats the displayed value */
 public class CapacityStat extends FloatToolStat {
   private final String formatKey;
-  public CapacityStat(ToolStatId name, int color, float defaultValue, float maxValue, String formatKey) {
-    super(name, color, defaultValue, 0, maxValue);
+  public CapacityStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float maxValue, String formatKey) {
+    super(id, color, defaultValue, 0, maxValue);
     this.formatKey = formatKey;
   }
 
-  public CapacityStat(ToolStatId name, int color, String formatKey) {
-    this(name, color, 0, Integer.MAX_VALUE, formatKey);
+  public CapacityStat(ResourceId<IToolStat<?>> id, int color, String formatKey) {
+    this(id, color, 0, Integer.MAX_VALUE, formatKey);
   }
 
   @Override

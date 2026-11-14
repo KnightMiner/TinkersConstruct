@@ -49,7 +49,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   private static final String ALREADY_PRESENT = TConstruct.makeTranslationKey("recipe", "swappable.already_present");
   public static final RecordLoadable<SwappableModifierRecipe> LOADER = RecordLoadable.create(
     INPUTS_FIELD, TOOLS_FIELD, MAX_TOOL_SIZE_FIELD,
-    new MergingField<>(ModifierId.PARSER.requiredField("name", r -> r.result.id()), "result", MissingMode.DISALLOWED),
+    new MergingField<>(ModifierId.LOADABLE.requiredField("name", r -> r.result.id()), "result", MissingMode.DISALLOWED),
     new MergingField<>(StringLoadable.DEFAULT.requiredField("value", r -> r.value), "result", MissingMode.DISALLOWED),
     VariantFormatter.LOADER.defaultField("variant_formatter", VariantFormatter.DEFAULT, r -> r.variantFormatter),
     SLOTS_FIELD, ALLOW_CRYSTAL_FIELD,

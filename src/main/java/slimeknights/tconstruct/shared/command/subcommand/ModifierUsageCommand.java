@@ -71,7 +71,7 @@ public class ModifierUsageCommand {
     IMaterialRegistry matReg = MaterialRegistry.getInstance();
     Set<Modifier> materialTraits = matReg.getAllMaterials().stream()
                                          .flatMap(mat -> {
-                                           MaterialId matId = mat.getIdentifier();
+                                           MaterialId matId = mat.getId();
                                            return Stream.concat(matReg.getDefaultTraits(matId).stream(),
                                                                 matReg.getAllStats(matId).stream()
                                                                       .filter(stat -> matReg.hasUniqueTraits(matId, stat.getIdentifier()))

@@ -26,7 +26,7 @@ public class ItemPartRecipeBuilder extends AbstractRecipeBuilder<ItemPartRecipeB
 
   /** Creates a builder for the given pattern ID */
   public static ItemPartRecipeBuilder item(ResourceLocation pattern, ItemOutput result) {
-    return item(new Pattern(pattern), result);
+    return item(Pattern.create(pattern), result);
   }
 
   /** Sets the material Id and cost */

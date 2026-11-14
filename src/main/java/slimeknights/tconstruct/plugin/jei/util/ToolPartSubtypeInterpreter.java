@@ -22,6 +22,6 @@ public enum ToolPartSubtypeInterpreter implements IIngredientSubtypeInterpreter<
     if (context == UidContext.Ingredient) {
       return materialId.toString();
     }
-    return materialId.getId().toString();
+    return materialId.material().toString();
   }
 }

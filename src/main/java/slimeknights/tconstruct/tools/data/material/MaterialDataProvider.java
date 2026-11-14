@@ -172,6 +172,6 @@ public class MaterialDataProvider extends AbstractMaterialDataProvider {
 
   /** Makes a material under our mod ID */
   private MaterialBuilder material(String name) {
-    return material(new MaterialId(TConstruct.MOD_ID, name));
+    return material(MaterialId.create(TConstruct.MOD_ID, name));
   }
 }

@@ -22,7 +22,7 @@ import java.util.List;
 /** Common logic for {@link TippingCastingRecipe} and {@link TipClearingCastingRecipe} */
 public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
   protected static final LoadableField<Ingredient, ModifierPotionCastingRecipe> TOOL_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tools", r -> r.bottle);
-  protected static final LoadableField<ModifierId, ModifierPotionCastingRecipe> MODIFIER_FIELD = ModifierId.PARSER.requiredField("modifier", r -> r.modifier);
+  protected static final LoadableField<ModifierId, ModifierPotionCastingRecipe> MODIFIER_FIELD = ModifierId.LOADABLE.requiredField("modifier", r -> r.modifier);
 
   protected final ModifierId modifier;
   public ModifierPotionCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient bottle, SizedFluidIngredient fluid, Item result, int coolingTime, ModifierId modifier) {

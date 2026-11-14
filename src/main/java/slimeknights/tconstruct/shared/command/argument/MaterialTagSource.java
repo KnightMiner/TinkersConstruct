@@ -12,7 +12,6 @@ import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /** {@link TagSource} for {@link MaterialManager} */
@@ -58,7 +57,7 @@ public record MaterialTagSource(MaterialManager manager) implements TagSource<IM
     if (entries == null) {
       return null;
     }
-    return entries.stream().map(IMaterial::getIdentifier).collect(Collectors.toList());
+    return entries.stream().map(material -> material.getId().id()).toList();
   }
 
 
@@ -67,16 +66,16 @@ public record MaterialTagSource(MaterialManager manager) implements TagSource<IM
   @Nullable
   @Override
   public IMaterial getValue(ResourceLocation key) {
-    return manager.getMaterial(new MaterialId(key)).orElse(null);
+    return manager.getMaterial(MaterialId.create(key)).orElse(null);
   }
 
   @Override
   public Stream<TagKey<IMaterial>> tagsFor(IMaterial material) {
-    return manager.getTagKeys(material.getIdentifier());
+    return manager.getTagKeys(material.getId());
   }
 
   @Override
   public Stream<ResourceLocation> valueKeys() {
-    return manager.getAllMaterials().stream().map(IMaterial::getIdentifier);
+    return manager.getAllMaterials().stream().map(material -> material.getId().id());
   }
 }

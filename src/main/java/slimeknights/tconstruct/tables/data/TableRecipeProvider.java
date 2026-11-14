@@ -326,7 +326,7 @@ public class TableRecipeProvider extends BaseRecipeProvider {
 
     // default tools, though skip anything that contains metal
     // wood
-    Pattern rod = new Pattern(TConstruct.MOD_ID, "rod");
+    Pattern rod = Pattern.create(TConstruct.MOD_ID, "rod");
     PartBuilderRecycleBuilder.tool(Items.WOODEN_PICKAXE, Items.WOODEN_AXE)
       .result(rod, Items.STICK, 8)
       .save(consumer, location(folder + "wooden_axe"));
@@ -336,12 +336,12 @@ public class TableRecipeProvider extends BaseRecipeProvider {
     PartBuilderRecycleBuilder.tool(Items.WOODEN_SHOVEL)
       .result(rod, Items.STICK, 4)
       .save(consumer, location(folder + "wooden_shovel"));
-    Pattern string = new Pattern(TConstruct.MOD_ID, "bowstring");
+    Pattern string = Pattern.create(TConstruct.MOD_ID, "bowstring");
     PartBuilderRecycleBuilder.tool(Items.BOW)
       .result(rod, Items.STICK, 3)
       .result(string, Items.STRING, 3)
       .save(consumer, location(folder + "bow"));
-    Pattern ingot = new Pattern(TConstruct.MOD_ID, "ingot");
+    Pattern ingot = Pattern.create(TConstruct.MOD_ID, "ingot");
     PartBuilderRecycleBuilder.tool(Items.CROSSBOW)
       .result(rod, Items.STICK, 3)
       .result(string, Items.STRING, 2)
@@ -352,7 +352,7 @@ public class TableRecipeProvider extends BaseRecipeProvider {
       .result(string, Items.STRING, 2)
       .save(consumer, location(folder + "fishing_rod"));
     // stone
-    Pattern block = new Pattern(TConstruct.MOD_ID, "block");
+    Pattern block = Pattern.create(TConstruct.MOD_ID, "block");
     PartBuilderRecycleBuilder.tool(Items.STONE_PICKAXE, Items.STONE_AXE)
       .result(block, Items.COBBLESTONE, 3)
       .save(consumer, location(folder + "stone_axe"));
@@ -364,12 +364,12 @@ public class TableRecipeProvider extends BaseRecipeProvider {
       .save(consumer, location(folder + "stone_shovel"));
     // while you can melt it, flint and steel is literally just two items with nothing connecting them, so let the part builder recycle them
     PartBuilderRecycleBuilder.tool(Items.FLINT_AND_STEEL)
-      .result(new Pattern(TConstruct.MOD_ID, "shard"), Items.FLINT, 1)
+      .result(Pattern.create(TConstruct.MOD_ID, "shard"), Items.FLINT, 1)
       .result(ingot, Items.IRON_INGOT, 1)
       .save(consumer, location(folder + "flint_and_steel"));
 
     // leather armor
-    Pattern leather = new Pattern(TConstruct.MOD_ID, "maille");
+    Pattern leather = Pattern.create(TConstruct.MOD_ID, "maille");
     PartBuilderRecycleBuilder.tool(Items.LEATHER_HELMET)
       .result(leather, Items.LEATHER, 5)
       .save(consumer, location(folder + "leather_helmet"));
@@ -384,7 +384,7 @@ public class TableRecipeProvider extends BaseRecipeProvider {
       .save(consumer, location(folder + "leather_boots"));
 
     // turtle shell
-    Pattern scale = new Pattern(TConstruct.MOD_ID, "scale");
+    Pattern scale = Pattern.create(TConstruct.MOD_ID, "scale");
     PartBuilderRecycleBuilder.tool(Items.TURTLE_HELMET)
       .result(scale, Items.SCUTE, 5)
       .save(consumer, location(folder + "turtle_helmet"));

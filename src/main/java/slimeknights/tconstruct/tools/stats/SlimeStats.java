@@ -19,7 +19,7 @@ import java.util.List;
  * @param overslime
  */
 public record SlimeStats(int durability, int overslime) implements IRepairableMaterialStats.ScaledTooltip {
-  public static final MaterialStatsId ID = new MaterialStatsId(TConstruct.getResource("slime"));
+  public static final MaterialStatsId ID = MaterialStatsId.create(TConstruct.MOD_ID, "slime");
   public static final MaterialStatType<SlimeStats> TYPE = new MaterialStatType<>(ID, new SlimeStats(1, 0), RecordLoadable.create(
     IRepairableMaterialStats.DURABILITY_FIELD,
     IntLoadable.FROM_ZERO.requiredField("overslime_capacity", SlimeStats::overslime),

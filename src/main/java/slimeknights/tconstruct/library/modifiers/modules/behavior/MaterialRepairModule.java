@@ -32,9 +32,9 @@ import static slimeknights.tconstruct.library.tools.definition.module.material.M
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public sealed class MaterialRepairModule implements ModifierModule, MaterialRepairModifierHook, ConditionalModule<IToolStackView>, IAmLoadable.Record permits MaterialRepairModule.StatType {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MaterialRepairModule>defaultHooks(ModifierHooks.MATERIAL_REPAIR);
-  private static final LoadableField<MaterialId, MaterialRepairModule> MATERIAL_FIELD = MaterialId.PARSER.requiredField("material", m -> m.material);
+  private static final LoadableField<MaterialId, MaterialRepairModule> MATERIAL_FIELD = MaterialId.LOADABLE.requiredField("material", m -> m.material);
   private static final RecordLoadable<MaterialRepairModule> CONSTANT = RecordLoadable.create(MATERIAL_FIELD, IntLoadable.FROM_ONE.requiredField("durability", m -> m.repairAmount), ModifierCondition.TOOL_FIELD, MaterialRepairModule::new);
-  private static final RecordLoadable<StatType> STAT_TYPE = RecordLoadable.create(MATERIAL_FIELD, MaterialStatsId.PARSER.requiredField("stat_type", m -> m.statType), ModifierCondition.TOOL_FIELD, StatType::new);
+  private static final RecordLoadable<StatType> STAT_TYPE = RecordLoadable.create(MATERIAL_FIELD, MaterialStatsId.LOADABLE.requiredField("stat_type", m -> m.statType), ModifierCondition.TOOL_FIELD, StatType::new);
   public static final RecordLoadable<MaterialRepairModule> LOADER = EitherLoadable.<MaterialRepairModule>record().key("durability", CONSTANT).key("stat_type", STAT_TYPE).build(CONSTANT);
 
   /** Material used for repairing */

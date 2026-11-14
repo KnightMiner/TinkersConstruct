@@ -27,7 +27,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<NoItemInput> {
   public static final RecordLoadable<ModifierSalvage> LOADER = RecordLoadable.create(
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("tools", r -> r.toolIngredient),
     IntLoadable.FROM_ONE.defaultField("max_tool_size", ITinkerStationRecipe.DEFAULT_TOOL_STACK_SIZE, r -> r.maxToolSize), // TODO 1.20: max tool size is unused, remove it
-    ModifierId.PARSER.requiredField("modifier", r -> r.modifier),
+    ModifierId.LOADABLE.requiredField("modifier", r -> r.modifier),
     ModifierEntry.VALID_LEVEL.defaultField("level", r -> r.level),
     SlotCount.LOADABLE.requiredField("slots", r -> r.slots),
     // TODO: should this have check_trait_level?

@@ -111,7 +111,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     boolean didChange = !toolMaterial.sameVariant(material);
     float repairDurability = 0;
     if (partValue > 0) {
-      repairDurability = partValue * MaterialRepairModule.getDurability(null, material.getId(), statTypes.get(index));
+      repairDurability = partValue * MaterialRepairModule.getDurability(null, material.material(), statTypes.get(index));
       mayRepair |= repairDurability > 0;
     }
     if (!didChange && (original.getDamage() == 0 || !mayRepair)) {
@@ -363,7 +363,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     protected List<ItemStack> getOutputFocusWithModifier(IMaterialUser materialUser, ItemStack focus) {
       // if the focus is the output, duplicate just the materials so it's the simplest version of the recipe
       MaterialIdNBT materials = MaterialIdNBT.from(focus);
-      if (materialUser.canUseMaterial(materials.getMaterial(index).getId())) {
+      if (materialUser.canUseMaterial(materials.getMaterial(index).material())) {
         return List.of(copyMaterials(materials, focus.getItem()));
       } else {
         // on the chance the result stack isn't usable, duplicate the rest of the materials as an animation over parts
@@ -410,7 +410,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
         MaterialVariantId material = MaterialIdNBT.from(focus).getMaterial(index);
         // if focusing on the output, display just the part that makes that output, assuming its usable
         if (focusOutput) {
-          if (part.canUseMaterial(material.getId())) {
+          if (part.canUseMaterial(material.material())) {
             return List.of(part.withMaterialForDisplay(material));
           }
         } else  {

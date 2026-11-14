@@ -31,7 +31,7 @@ public record RemappingMaterialsModule(List<RandomMaterial> materials, List<Map<
   /** Loader instance */
   public static final RecordLoadable<RemappingMaterialsModule> LOADER = RecordLoadable.create(
     RandomMaterial.LOADER.list(1).requiredField("missing", m -> m.materials),
-    MaterialId.PARSER.mapWithValues(MaterialVariantId.LOADABLE, 0).list(1).requiredField("remap", m -> m.remap),
+    MaterialId.LOADABLE.mapWithValues(MaterialVariantId.LOADABLE, 0).list(1).requiredField("remap", m -> m.remap),
     RemappingMaterialsModule::new);
 
   @Override

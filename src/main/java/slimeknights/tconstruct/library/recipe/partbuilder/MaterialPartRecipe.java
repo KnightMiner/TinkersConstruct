@@ -45,7 +45,7 @@ import java.util.List;
 public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<IDisplayPartBuilderRecipe> {
   public static final RecordLoadable<MaterialPartRecipe> LOADER = RecordLoadable.create(
     LoadableRecipeSerializer.RECIPE_GROUP,
-    Pattern.PARSER.requiredField("pattern", MaterialPartRecipe::getPattern),
+    Pattern.LOADABLE.requiredField("pattern", MaterialPartRecipe::getPattern),
     Loadables.ITEM_INGREDIENT_NONEMPTY.defaultField("pattern_item", DEFAULT_PATTERNS, r -> r.patternItem),
     IntLoadable.FROM_ONE.requiredField("cost", MaterialPartRecipe::getCost),
     BooleanLoadable.INSTANCE.defaultField("allow_uncraftable", false, false, r -> r.allowUncraftable),
@@ -170,7 +170,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
       for (IMaterial material : MaterialRegistry.getMaterials()) {
         // require the material to be craftable and valid for this part
         if ((allowUncraftable || material.isCraftable()) && output.canUseMaterial(material)) {
-          List<MaterialVariantId> variants = MaterialRecipeCache.getVariants(material.getIdentifier())
+          List<MaterialVariantId> variants = MaterialRecipeCache.getVariants(material.getId())
             .stream().filter(variant -> !MaterialRecipeCache.getRecipes(variant).isEmpty()).toList();
           if (variants.isEmpty()) continue;
 
@@ -186,7 +186,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
             MaterialRecipeCache.addItems(displayId, cost, newItems);
           } else {
             // if we have multiple variants, use the base as display variant
-            displayId = material.getIdentifier();
+            displayId = material.getId();
             displayVariant = MaterialVariant.of(material);
 
             // process items
@@ -228,7 +228,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     if (id.hasVariant()) {
       MaterialRecipeCache.addItems(id, cost, stacks);
     } else {
-      for (MaterialVariantId variant : MaterialRecipeCache.getVariants(id.getId())) {
+      for (MaterialVariantId variant : MaterialRecipeCache.getVariants(id.material())) {
         MaterialRecipeCache.addItems(variant, cost, stacks);
       }
     }

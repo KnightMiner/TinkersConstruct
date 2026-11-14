@@ -27,7 +27,7 @@ public enum ToolSubtypeInterpreter implements IIngredientSubtypeInterpreter<Item
       List<MaterialVariantId> materialList = MaterialIdNBT.from(itemStack).getMaterials();
       if (!materialList.isEmpty()) {
         // if in first mode and looking at a recipe, only use the first material
-        MaterialId first = materialList.get(0).getId();
+        MaterialId first = materialList.get(0).material();
         if (!isIngredient && this == FIRST) {
           return first.toString();
         }
@@ -36,7 +36,7 @@ public enum ToolSubtypeInterpreter implements IIngredientSubtypeInterpreter<Item
         builder.append(first);
         for (int i = 1; i < materialList.size(); i++) {
           builder.append(',');
-          builder.append(materialList.get(i).getId());
+          builder.append(materialList.get(i).material());
         }
         return builder.toString();
       }

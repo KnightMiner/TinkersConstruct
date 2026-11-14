@@ -105,7 +105,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
 
         // ensure this material is valid for the tool
         // may not be if the part you choose is not the tool part for this tool
-        if (MaterialRegistry.getInstance().getMaterialStats(partVariant.getId(), materials.get(index)).isEmpty()) {
+        if (MaterialRegistry.getInstance().getMaterialStats(partVariant.material(), materials.get(index)).isEmpty()) {
           return INVALID_MATERIAL;
         }
 
