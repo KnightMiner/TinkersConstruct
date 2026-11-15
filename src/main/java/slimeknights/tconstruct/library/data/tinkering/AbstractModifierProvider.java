@@ -5,14 +5,14 @@ import com.google.gson.JsonObject;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.util.JsonHelper;
 import slimeknights.tconstruct.library.json.JsonRedirect;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.impl.ComposableModifier;
-import slimeknights.tconstruct.library.modifiers.util.DynamicModifier;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
   private final Map<ModifierId,Composable> composableModifiers = new HashMap<>();
 
   public AbstractModifierProvider(PackOutput packOutput) {
-    super(packOutput, Target.DATA_PACK, ModifierManager.FOLDER, ModifierManager.GSON);
+    super(packOutput, Target.DATA_PACK, ModifierManager.FOLDER);
   }
 
   /**
@@ -56,12 +56,12 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
   }
 
   /** Sets up a builder for a composable modifier */
-  protected ComposableModifier.Builder buildModifier(DynamicModifier modifier, @Nullable ICondition condition, JsonRedirect... redirects) {
+  protected ComposableModifier.Builder buildModifier(ModifierHolder modifier, @Nullable ICondition condition, JsonRedirect... redirects) {
     return buildModifier(modifier.id(), condition, redirects);
   }
 
   /** Sets up a builder for a composable modifier */
-  protected ComposableModifier.Builder buildModifier(DynamicModifier modifier, JsonRedirect... redirects) {
+  protected ComposableModifier.Builder buildModifier(ModifierHolder modifier, JsonRedirect... redirects) {
     return buildModifier(modifier, null, redirects);
   }
 
@@ -80,7 +80,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
 
   /** Makes a conditional redirect to the given ID */
   protected JsonRedirect conditionalRedirect(ModifierId id, @Nullable ICondition condition) {
-    return new JsonRedirect(id, condition);
+    return new JsonRedirect(id.id(), condition);
   }
 
   /** Makes an unconditional redirect to the given ID */
@@ -93,7 +93,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
     addModifiers();
     return allOf(composableModifiers.entrySet().stream().map(entry -> {
       try {
-        return saveJson(cache, entry.getKey(), entry.getValue().serialize());
+        return saveJson(cache, entry.getKey().id(), entry.getValue().serialize());
       } catch (RuntimeException e) {
         throw new RuntimeException("Failed to serialize modifier " + entry.getKey(), e);
       }
@@ -118,7 +118,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
         json.add("redirects", array);
       }
       if (condition != null) {
-        json.add("condition", CraftingHelper.serialize(condition));
+        json.add("condition", JsonHelper.serialize(ICondition.CODEC, condition));
       }
       return json;
     }

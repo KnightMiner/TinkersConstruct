@@ -4,8 +4,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe.VariantFormatter;
 
 /**
@@ -30,7 +30,7 @@ public class SwappableModifierRecipeBuilder extends ModifierRecipeBuilder {
   }
 
   /** Creates a new builder */
-  public static SwappableModifierRecipeBuilder modifier(LazyModifier modifier, String value) {
+  public static SwappableModifierRecipeBuilder modifier(ModifierHolder modifier, String value) {
     return modifier(modifier.id(), value);
   }
 

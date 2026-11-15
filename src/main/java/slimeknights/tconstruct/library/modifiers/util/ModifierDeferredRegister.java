@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.modifiers.util;
 import lombok.RequiredArgsConstructor;
 import net.neoforged.bus.api.IEventBus;
 import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager.ModifierRegistrationEvent;
 
@@ -35,12 +36,11 @@ public class ModifierDeferredRegister {
    * Registers a new static modifier with the modifier manager. Its generally preferred to use dynamic modifiers as that gives datapacks more control
    * @param name      Modifier name
    * @param supplier  Supplier to modifier instance
-   * @param <T>       Type of modifier
-   * @return StaticModifier instance that will resolve to the modifier once static modifiers are registered
+   * @return {@link ModifierHolder} instance that will resolve to the modifier once modifiers are available.
    * @deprecated Use {@link slimeknights.tconstruct.tools.data.ModifierProvider} with {@link slimeknights.tconstruct.library.modifiers.modules.ModifierModule} for any custom modifier logic.
    */
   @Deprecated
-  public <T extends Modifier> StaticModifier<T> register(String name, Supplier<? extends T> supplier) {
+  public ModifierHolder register(String name, Supplier<? extends Modifier> supplier) {
     if (seenRegisterEvent) {
       throw new IllegalStateException("Cannot register new entries to DeferredRegister after ModifierRegistrationEvent has been fired.");
     }
@@ -52,15 +52,15 @@ public class ModifierDeferredRegister {
     if (original != null) {
       throw new IllegalArgumentException("Duplicate static registration " + id);
     }
-    return new StaticModifier<>(id);
+    return ModifierHolder.create(id);
   }
 
   /**
    * Registers a modifier as an expected dynamic modifier
    * @param name         Modifier name, if this modifier is missing from datapacks a warning will be logged
-   * @return  Dynamic modifier instance
+   * @return  {@link ModifierHolder} instance
    */
-  public DynamicModifier registerDynamic(String name) {
+  public ModifierHolder registerDynamic(String name) {
     if (seenRegisterEvent) {
       throw new IllegalStateException("Cannot register new entries to DeferredRegister after ModifierRegistrationEvent has been fired.");
     }
@@ -69,7 +69,7 @@ public class ModifierDeferredRegister {
       throw new IllegalArgumentException("Already registered as a static modifier " + id);
     }
     expected.add(id);
-    return new DynamicModifier(id);
+    return ModifierHolder.create(id);
   }
 
   /** Called on modifier registration to register all entries */

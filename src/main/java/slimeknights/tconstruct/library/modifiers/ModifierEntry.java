@@ -104,13 +104,6 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
     this(ModifierHolder.from(modifier), level);
   }
 
-  /** @deprecated use {@link #ModifierEntry(ModifierHolder,int)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public ModifierEntry(slimeknights.tconstruct.library.modifiers.util.LazyModifier modifier, int level) {
-    this(ModifierHolder.create(modifier.id()), level);
-  }
-
 
   /* Incremental - in this class as we need it for the codecs */
 
@@ -159,13 +152,6 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
    */
   public static ModifierEntry of(Modifier modifier, int level, int amount, int needed) {
     return of(ModifierHolder.from(modifier), level, amount, needed);
-  }
-
-  /** @deprecated use {@link #of(ModifierHolder, int, int, int)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  public static ModifierEntry of(slimeknights.tconstruct.library.modifiers.util.LazyModifier modifier, int level, int amount, int needed) {
-    return of(modifier.id(), level, amount, needed);
   }
 
 

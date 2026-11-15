@@ -15,9 +15,9 @@ import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
@@ -65,7 +65,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   @Getter
   protected final int maxToolSize;
   /** Modifier this recipe is adding */
-  protected final LazyModifier result;
+  protected final ModifierHolder result;
   /** Range of result levels that is valid on the tool */
   @Getter
   private final IntRange level;
@@ -83,7 +83,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
                                    ModifierId result, IntRange level, @Nullable SlotCount slots, boolean allowCrystal, boolean checkTraitLevel) {
     this.toolRequirement = toolRequirement;
     this.maxToolSize = maxToolSize;
-    this.result = new LazyModifier(result);
+    this.result = ModifierHolder.create(result);
     this.level = level;
     this.slots = slots;
     this.allowCrystal = allowCrystal;

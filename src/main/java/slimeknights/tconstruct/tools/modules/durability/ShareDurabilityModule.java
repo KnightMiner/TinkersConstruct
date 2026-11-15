@@ -11,11 +11,11 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolDamageModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
@@ -28,16 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Module which converts some tool to temporary shield on another tool */
-public record ShareDurabilityModule(LazyModifier shield, LevelingInt grant, LevelingInt consume) implements ModifierModule, ToolDamageModifierHook {
+public record ShareDurabilityModule(ModifierHolder shield, LevelingInt grant, LevelingInt consume) implements ModifierModule, ToolDamageModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ShareDurabilityModule>defaultHooks(ModifierHooks.TOOL_DAMAGE);
   public static final RecordLoadable<ShareDurabilityModule> LOADER = RecordLoadable.create(
-    ModifierId.LOADABLE.requiredField("shield", m -> m.shield.id()),
+    ModifierHolder.LOADABLE.requiredField("shield", ShareDurabilityModule::shield),
     LevelingInt.LOADABLE.requiredField("grant", ShareDurabilityModule::grant),
     LevelingInt.LOADABLE.requiredField("consume", ShareDurabilityModule::consume),
     ShareDurabilityModule::new);
 
   public ShareDurabilityModule(ModifierId modifier, LevelingInt grant, LevelingInt consumed) {
-    this(new LazyModifier(modifier), grant, consumed);
+    this(ModifierHolder.create(modifier), grant, consumed);
   }
 
   @Override

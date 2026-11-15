@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.tools.definition.module.build;
 import com.google.common.collect.ImmutableList;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
@@ -51,8 +51,9 @@ public record ToolTraitsModule(List<ModifierEntry> traits) implements ToolTraitH
     }
 
     /** Adds a base trait to the tool */
-    public Builder trait(LazyModifier modifier, int level) {
-      return trait(modifier.id(), level);
+    public Builder trait(ModifierHolder modifier, int level) {
+      traits.add(new ModifierEntry(modifier, level));
+      return this;
     }
 
     /** Adds a base trait to the tool */
@@ -61,7 +62,7 @@ public record ToolTraitsModule(List<ModifierEntry> traits) implements ToolTraitH
     }
 
     /** Adds a base trait to the tool */
-    public Builder trait(LazyModifier modifier) {
+    public Builder trait(ModifierHolder modifier) {
       return trait(modifier, 1);
     }
 

@@ -5,8 +5,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 
 /**
  * Builds a recipe to repair a tool using a modifier
@@ -18,13 +18,13 @@ public class ModifierRepairRecipeBuilder extends AbstractRecipeBuilder<ModifierR
   private final Ingredient ingredient;
   private final int repairAmount;
 
-  public static ModifierRepairRecipeBuilder repair(LazyModifier modifier, Ingredient ingredient, int repairAmount) {
+  public static ModifierRepairRecipeBuilder repair(ModifierHolder modifier, Ingredient ingredient, int repairAmount) {
     return repair(modifier.id(), ingredient, repairAmount);
   }
 
   @Override
   public void save(RecipeOutput output) {
-    save(output, modifier);
+    save(output, modifier.id());
   }
 
   /** Builds the recipe for the crafting table using a repair kit */

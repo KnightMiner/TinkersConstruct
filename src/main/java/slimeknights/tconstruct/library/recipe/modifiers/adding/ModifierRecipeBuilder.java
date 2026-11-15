@@ -4,8 +4,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.SizedIngredientRecipeBuilder;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class ModifierRecipeBuilder extends AbstractModifierRecipeBuilder<Modifie
    * @param modifier  Modifier
    * @return  Recipe for 1 level of the modifier
    */
-  public static ModifierRecipeBuilder modifier(LazyModifier modifier) {
+  public static ModifierRecipeBuilder modifier(ModifierHolder modifier) {
     return modifier(modifier.id());
   }
 

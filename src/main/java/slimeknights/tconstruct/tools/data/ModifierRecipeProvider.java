@@ -40,8 +40,8 @@ import slimeknights.tconstruct.gadgets.entity.FrameType;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.SlotTypeModifierPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.recipe.casting.item.ItemCastingRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.casting.potion.PotionCastingRecipeBuilder;
@@ -2029,12 +2029,12 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
   }
 
   /** Prefixes the modifier ID with the given prefix */
-  public ResourceLocation prefix(LazyModifier modifier, String prefix) {
+  public ResourceLocation prefix(ModifierHolder modifier, String prefix) {
     return prefix(modifier.id(), prefix);
   }
 
   /** Prefixes the modifier ID with the given prefix and suffix */
-  public ResourceLocation wrap(LazyModifier modifier, String prefix, String suffix) {
+  public ResourceLocation wrap(ModifierHolder modifier, String prefix, String suffix) {
     return wrap(modifier.id(), prefix, suffix);
   }
 

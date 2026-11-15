@@ -11,9 +11,9 @@ import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayTinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.SlotType;
@@ -134,7 +134,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
       checkLevel += 1;
       checkSlots = true;
     }
-    Component error = checkLevel(getDisplayResult().getLazyModifier(), getLevel(), checkLevel, checkTraitLevel());
+    Component error = checkLevel(getDisplayResult().getHolder(), getLevel(), checkLevel, checkTraitLevel());
     if (error != null) {
       return error;
     }
@@ -258,7 +258,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
    * @return Error if levels are invalid, or {@code null} otherwise.
    */
   @Nullable
-  static Component checkLevel(LazyModifier modifier, IntRange levelRange, int resultLevel, boolean checkTraitLevel) {
+  static Component checkLevel(ModifierHolder modifier, IntRange levelRange, int resultLevel, boolean checkTraitLevel) {
     if (resultLevel < levelRange.min()) {
       return Component.translatable(checkTraitLevel ? KEY_MIN_LEVEL_TRAITS : KEY_MIN_LEVEL, modifier.get().getDisplayName(levelRange.min() - 1));
     }

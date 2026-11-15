@@ -57,6 +57,7 @@ import slimeknights.tconstruct.library.json.variable.tool.TankCapacityVariable;
 import slimeknights.tconstruct.library.json.variable.tool.ToolStatVariable;
 import slimeknights.tconstruct.library.json.variable.tool.ToolVariable;
 import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffect;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectManager;
@@ -156,10 +157,8 @@ import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.Edib
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleRepresentativeItemModule;
 import slimeknights.tconstruct.library.modifiers.modules.mining.ConditionalMiningSpeedModule;
 import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelModule;
-import slimeknights.tconstruct.library.modifiers.util.DynamicModifier;
 import slimeknights.tconstruct.library.modifiers.util.ModifierDeferredRegister;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
-import slimeknights.tconstruct.library.modifiers.util.StaticModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
@@ -294,7 +293,6 @@ public final class TinkerModifiers extends TinkerModule {
 
   public TinkerModifiers(IEventBus modEventBus) {
     ModifierManager.INSTANCE.init(modEventBus);
-    DynamicModifier.init();
     FluidEffectManager.INSTANCE.init();
     MODIFIERS.register(modEventBus);
     TinkerDataKeys.init();
@@ -325,70 +323,70 @@ public final class TinkerModifiers extends TinkerModule {
    */
 
   // upgrades
-  public static final StaticModifier<SinistralModifier> sinistral = MODIFIERS.register("sinistral", SinistralModifier::new);
+  public static final ModifierHolder sinistral = MODIFIERS.register("sinistral", SinistralModifier::new);
 
   // abilities
-  public static final StaticModifier<ExchangingModifier> exchanging = MODIFIERS.register("exchanging", ExchangingModifier::new);
-  public static final StaticModifier<BurstingModifier> bursting = MODIFIERS.register("bursting", BurstingModifier::new);
-  public static final StaticModifier<WettingModifier> wetting = MODIFIERS.register("wetting", WettingModifier::new);
+  public static final ModifierHolder exchanging = MODIFIERS.register("exchanging", ExchangingModifier::new);
+  public static final ModifierHolder bursting = MODIFIERS.register("bursting", BurstingModifier::new);
+  public static final ModifierHolder wetting = MODIFIERS.register("wetting", WettingModifier::new);
   // dual wielding
-  public static final StaticModifier<OffhandAttackModifier> offhandAttack = MODIFIERS.register("offhand_attack", OffhandAttackModifier::new);
-  public static final StaticModifier<DualWieldingModifier> dualWielding = MODIFIERS.register("dual_wielding", DualWieldingModifier::new);
-  public static final StaticModifier<AmbidextrousModifier> ambidextrous = MODIFIERS.register("ambidextrous", AmbidextrousModifier::new);
-  public static final StaticModifier<ParryingModifier> parrying = MODIFIERS.register("parrying", ParryingModifier::new);
+  public static final ModifierHolder offhandAttack = MODIFIERS.register("offhand_attack", OffhandAttackModifier::new);
+  public static final ModifierHolder dualWielding = MODIFIERS.register("dual_wielding", DualWieldingModifier::new);
+  public static final ModifierHolder ambidextrous = MODIFIERS.register("ambidextrous", AmbidextrousModifier::new);
+  public static final ModifierHolder parrying = MODIFIERS.register("parrying", ParryingModifier::new);
 
   // traits - tier 1
-  public static final StaticModifier<DwarvenModifier> dwarven = MODIFIERS.register("dwarven", DwarvenModifier::new);
+  public static final ModifierHolder dwarven = MODIFIERS.register("dwarven", DwarvenModifier::new);
   // traits - tier 2
-  public static final DynamicModifier golden = MODIFIERS.registerDynamic("golden");
+  public static final ModifierHolder golden = MODIFIERS.registerDynamic("golden");
   // traits - tier 3
-  public static final StaticModifier<LaceratingModifier> lacerating = MODIFIERS.register("lacerating", LaceratingModifier::new);
-  public static final StaticModifier<Modifier> overworked = MODIFIERS.register("overworked", Modifier::new);
+  public static final ModifierHolder lacerating = MODIFIERS.register("lacerating", LaceratingModifier::new);
+  public static final ModifierHolder overworked = MODIFIERS.register("overworked", Modifier::new);
   // traits - tier 4
-  public static final StaticModifier<MomentumModifier> momentum = MODIFIERS.register("momentum", MomentumModifier::new);
-  public static final StaticModifier<InsatiableModifier> insatiable = MODIFIERS.register("insatiable", InsatiableModifier::new);
-  public static final StaticModifier<ConductingModifier> conducting = MODIFIERS.register("conducting", ConductingModifier::new);
-  public static final StaticModifier<EnderportingModifier> enderporting = MODIFIERS.register("enderporting", EnderportingModifier::new);
+  public static final ModifierHolder momentum = MODIFIERS.register("momentum", MomentumModifier::new);
+  public static final ModifierHolder insatiable = MODIFIERS.register("insatiable", InsatiableModifier::new);
+  public static final ModifierHolder conducting = MODIFIERS.register("conducting", ConductingModifier::new);
+  public static final ModifierHolder enderporting = MODIFIERS.register("enderporting", EnderportingModifier::new);
   // traits - slimeskull
-  public static final StaticModifier<SelfDestructiveModifier> selfDestructive = MODIFIERS.register("self_destructive", SelfDestructiveModifier::new);
-  public static final StaticModifier<StrongBonesModifier> strongBones = MODIFIERS.register("strong_bones", StrongBonesModifier::new);
-  public static final StaticModifier<PlagueModifier> plague = MODIFIERS.register("plague", PlagueModifier::new);
+  public static final ModifierHolder selfDestructive = MODIFIERS.register("self_destructive", SelfDestructiveModifier::new);
+  public static final ModifierHolder strongBones = MODIFIERS.register("strong_bones", StrongBonesModifier::new);
+  public static final ModifierHolder plague = MODIFIERS.register("plague", PlagueModifier::new);
 
   // slotless - cosmetic - used as defaults for rendering modules and recipes
-  public static final StaticModifier<?> embellishment = MODIFIERS.registerDynamic("embellishment");
-  public static final StaticModifier<?> dyed = MODIFIERS.registerDynamic("dyed");
-  public static final StaticModifier<?> trim = MODIFIERS.registerDynamic("trim");
-  public static final StaticModifier<?> banner = MODIFIERS.registerDynamic("banner");
+  public static final ModifierHolder embellishment = MODIFIERS.registerDynamic("embellishment");
+  public static final ModifierHolder dyed = MODIFIERS.registerDynamic("dyed");
+  public static final ModifierHolder trim = MODIFIERS.registerDynamic("trim");
+  public static final ModifierHolder banner = MODIFIERS.registerDynamic("banner");
 
   // used in client renderer
-  public static final DynamicModifier itemFrame = MODIFIERS.registerDynamic("item_frame");
-  public static final DynamicModifier sleeves = MODIFIERS.registerDynamic("sleeves");
-  public static final DynamicModifier shieldStrap = MODIFIERS.registerDynamic("shield_strap");
+  public static final ModifierHolder itemFrame = MODIFIERS.registerDynamic("item_frame");
+  public static final ModifierHolder sleeves = MODIFIERS.registerDynamic("sleeves");
+  public static final ModifierHolder shieldStrap = MODIFIERS.registerDynamic("shield_strap");
 
   // TODO 1.21: relocate to ModifierIds, no longer directly referenced in JEI thanks to the tags
-  public static final StaticModifier<?> severing = MODIFIERS.registerDynamic("severing");
-  public static final DynamicModifier melting = MODIFIERS.registerDynamic("melting");
+  public static final ModifierHolder severing = MODIFIERS.registerDynamic("severing");
+  public static final ModifierHolder melting = MODIFIERS.registerDynamic("melting");
 
   // logic handlers - used as modifier traits
   /** Handles the fluid tank logic for any fluid using modifiers. */
-  public static final StaticModifier<Modifier> tankHandler = MODIFIERS.register("tank_handler", () -> ModuleHookMap.builder().addModule(new TankModule(ToolTankHelper.TANK_HELPER)).modifier().levelDisplay(ModifierLevelDisplay.NO_LEVELS).priority(300).build());
+  public static final ModifierHolder tankHandler = MODIFIERS.register("tank_handler", () -> ModuleHookMap.builder().addModule(new TankModule(ToolTankHelper.TANK_HELPER)).modifier().levelDisplay(ModifierLevelDisplay.NO_LEVELS).priority(300).build());
   /** Handles the energy bar for Forge Energy using modifiers. */
-  public static final StaticModifier<Modifier> energyHandler = MODIFIERS.register("energy_handler", EnergyHandlerModifier::new);
+  public static final ModifierHolder energyHandler = MODIFIERS.register("energy_handler", EnergyHandlerModifier::new);
   /** Handles the logic for eating tools. */
-  public static final DynamicModifier edible = MODIFIERS.registerDynamic("edible");
+  public static final ModifierHolder edible = MODIFIERS.registerDynamic("edible");
 
   // creative
   /** Handles adding extra modifier slots to a tool in creative */
-  public static final StaticModifier<CreativeSlotModifier> creativeSlot = MODIFIERS.register("creative_slot", CreativeSlotModifier::new);
+  public static final ModifierHolder creativeSlot = MODIFIERS.register("creative_slot", CreativeSlotModifier::new);
   /** Handles overriding stats on a tool. */
-  public static final StaticModifier<StatOverrideModifier> statOverride = MODIFIERS.register("stat_override", StatOverrideModifier::new);
+  public static final ModifierHolder statOverride = MODIFIERS.register("stat_override", StatOverrideModifier::new);
 
 
   /* deprecated fields */
 
   // modifiers with deprecated API
   /** Use API from {@link slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule} */
-  public static final StaticModifier<OverslimeModifier> overslime = MODIFIERS.register("overslime", OverslimeModifier::new);
+  public static final ModifierHolder overslime = MODIFIERS.register("overslime", OverslimeModifier::new);
 
   @SubscribeEvent
   void registerSerializers(RegisterEvent event) {

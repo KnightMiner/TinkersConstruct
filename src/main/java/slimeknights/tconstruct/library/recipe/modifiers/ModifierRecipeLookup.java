@@ -7,8 +7,8 @@ import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
@@ -24,9 +24,9 @@ public class ModifierRecipeLookup {
   private static final Multimap<ModifierId,ModifierSalvage> SALVAGE = HashMultimap.create();
 
   /** Map of slot type to modifiers added via that slot, better for fetching lists */
-  private static final Multimap<SlotType,LazyModifier> RECIPE_MODIFIERS = HashMultimap.create();
-  /** Map of slot type to modifier IDs added via that slot, better for lookup */
-  private static final Multimap<SlotType,ModifierId> RECIPE_MODIFIER_IDS = HashMultimap.create();
+  private static final Multimap<SlotType,ModifierHolder> RECIPE_MODIFIERS = HashMultimap.create();
+  /** Map of slot type to modifier IDs added via that slot, better for lookup. TODO: flip this map? */
+  private static final Multimap<ModifierId,SlotType> MODIFIER_SLOTS = HashMultimap.create();
   /** List of modifiers to show in JEI */
   private static List<ModifierEntry> RECIPE_MODIFIER_LIST = null;
 
@@ -34,7 +34,7 @@ public class ModifierRecipeLookup {
   private static final DuelSidedListener LISTENER = RecipeCacheInvalidator.addDuelSidedListener(() -> {
     SALVAGE.clear();
     RECIPE_MODIFIERS.clear();
-    RECIPE_MODIFIER_IDS.clear();
+    MODIFIER_SLOTS.clear();
     RECIPE_MODIFIER_LIST = null;
   });
 
@@ -75,15 +75,15 @@ public class ModifierRecipeLookup {
    * @param slotType  Slot type for the modifier, use null for slotless
    * @param modifier  Modifier in that slot
    */
-  public static void addRecipeModifier(@Nullable SlotType slotType, LazyModifier modifier) {
+  public static void addRecipeModifier(@Nullable SlotType slotType, ModifierHolder modifier) {
     LISTENER.checkClear();
     RECIPE_MODIFIERS.put(slotType, modifier);
-    RECIPE_MODIFIER_IDS.put(slotType, modifier.id());
+    MODIFIER_SLOTS.put(modifier.id(), slotType);
   }
 
   /** Gets a stream of all modifiers obtainable via recipes */
   public static Stream<Modifier> getAllRecipeModifiers() {
-    return RECIPE_MODIFIERS.values().stream().map(LazyModifier::get).distinct();
+    return RECIPE_MODIFIERS.values().stream().map(ModifierHolder::get).distinct();
   }
 
   /** Gets a list of modifier entries for display in JEI, basically the same as creating your own, but the result is cached */
@@ -93,23 +93,23 @@ public class ModifierRecipeLookup {
       return Collections.emptyList();
     }
     if (RECIPE_MODIFIER_LIST == null) {
-      RECIPE_MODIFIER_LIST = RECIPE_MODIFIERS.values().stream().distinct().sorted(Comparator.comparing(LazyModifier::id)).map(mod -> new ModifierEntry(mod, 1)).toList();
+      RECIPE_MODIFIER_LIST = RECIPE_MODIFIERS.values().stream().distinct().sorted(Comparator.comparing(ModifierHolder::id)).map(mod -> new ModifierEntry(mod, 1)).toList();
     }
     return RECIPE_MODIFIER_LIST;
   }
 
   /** Gets a stream of all modifiers obtainable via the given slot type */
   public static Stream<Modifier> getRecipeModifiers(@Nullable SlotType slotType) {
-    return RECIPE_MODIFIERS.get(slotType).stream().map(LazyModifier::get);
+    return RECIPE_MODIFIERS.get(slotType).stream().map(ModifierHolder::get);
   }
 
   /** Checks if the given modifier ID is a recipe modifier */
   public static boolean isRecipeModifier(ModifierId modifier) {
-    return RECIPE_MODIFIER_IDS.containsValue(modifier);
+    return MODIFIER_SLOTS.containsKey(modifier);
   }
 
   /** Checks if the given modifier ID is a recipe modifier */
   public static boolean isRecipeModifier(@Nullable SlotType slotType, ModifierId modifier) {
-    return RECIPE_MODIFIER_IDS.containsEntry(slotType, modifier);
+    return MODIFIER_SLOTS.containsEntry(modifier, slotType);
   }
 }

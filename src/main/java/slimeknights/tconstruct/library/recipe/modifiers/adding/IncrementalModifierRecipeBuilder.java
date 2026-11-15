@@ -7,8 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 
 /**
  * Recipe that supports not just adding multiple of an item, but also adding a partial amount
@@ -43,7 +43,7 @@ public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuil
    * @param modifier  Modifier
    * @return  Recipe for 1 level of the modifier
    */
-  public static IncrementalModifierRecipeBuilder modifier(LazyModifier modifier) {
+  public static IncrementalModifierRecipeBuilder modifier(ModifierHolder modifier) {
     return modifier(modifier.id());
   }
 
@@ -59,6 +59,9 @@ public class IncrementalModifierRecipeBuilder extends AbstractModifierRecipeBuil
    */
   @Override
   public IncrementalModifierRecipeBuilder input(Ingredient input, int amountPerItem, int neededPerLevel) {
+    if (this.input != null) {
+      throw new IllegalStateException("Input already set");
+    }
     IncrementalModifierRecipesBuilder.validate(amountPerItem, neededPerLevel);
     this.input = input;
     this.amountPerItem = amountPerItem;

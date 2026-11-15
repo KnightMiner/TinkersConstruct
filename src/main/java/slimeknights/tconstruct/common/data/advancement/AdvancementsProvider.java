@@ -66,8 +66,8 @@ import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -286,7 +286,7 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     });
     builder(TinkerModifiers.silkyCloth, resource("smeltery/abilities"), anvil, AdvancementType.CHALLENGE, builder -> {
       Consumer<ModifierId> with = modifier -> builder.addCriterion(modifier.getPath(), hasTool(HasModifierPredicate.hasUpgrade(modifier, 1)));
-      Consumer<LazyModifier> withL = modifier -> with.accept(modifier.id());
+      Consumer<ModifierHolder> withH = modifier -> with.accept(modifier.id());
 
       // sorted like the modifier tag provider tags
       // general
@@ -294,17 +294,17 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
       with.accept(ModifierIds.gilded);
       with.accept(ModifierIds.luck);
       with.accept(ModifierIds.unbreakable);
-      withL.accept(TinkerModifiers.melting);
+      withH.accept(TinkerModifiers.melting);
 
       // melee
       with.accept(ModifierIds.blocking);
-      withL.accept(TinkerModifiers.parrying);
-      withL.accept(TinkerModifiers.dualWielding);
+      withH.accept(TinkerModifiers.parrying);
+      withH.accept(TinkerModifiers.dualWielding);
       with.accept(ModifierIds.spilling);
 
       // harvest
       with.accept(ModifierIds.autosmelt);
-      withL.accept(TinkerModifiers.exchanging);
+      withH.accept(TinkerModifiers.exchanging);
       with.accept(ModifierIds.silky);
 
       // ranged
@@ -343,12 +343,12 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
 
       // armor
       with.accept(ModifierIds.protection);
-      withL.accept(TinkerModifiers.bursting);
-      withL.accept(TinkerModifiers.wetting);
+      withH.accept(TinkerModifiers.bursting);
+      withH.accept(TinkerModifiers.wetting);
       // helmet
       with.accept(ModifierIds.aquaAffinity);
       // chestplate
-      withL.accept(TinkerModifiers.ambidextrous);
+      withH.accept(TinkerModifiers.ambidextrous);
       with.accept(ModifierIds.reach);
       with.accept(ModifierIds.strength);
       with.accept(ModifierIds.wings);

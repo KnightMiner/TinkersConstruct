@@ -13,8 +13,8 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
@@ -53,7 +53,7 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements MultiNam
   }
 
   /** Gets the error for the level being out of range for this recipe. */
-  public static RecipeResult<LazyToolStack> missingLevelError(List<LevelEntry> levels, int newLevel, LazyModifier result, boolean checkTraitLevel) {
+  public static RecipeResult<LazyToolStack> missingLevelError(List<LevelEntry> levels, int newLevel, ModifierHolder result, boolean checkTraitLevel) {
     // if the level is below the minimum, then display a different error
     int min = levels.get(0).level.min();
     if (newLevel < min) {

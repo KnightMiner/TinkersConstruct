@@ -6,15 +6,15 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.data.GsonDataProvider;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.json.MaterialTraitsJson;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.materials.traits.MaterialTraits;
 import slimeknights.tconstruct.library.materials.traits.MaterialTraitsManager;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 /** Base data generator for use in addons */
 @SuppressWarnings({"unused", "SameParameterValue"})  // API
-public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvider {
+public abstract class AbstractMaterialTraitDataProvider extends GsonDataProvider {
   /** Map of material ID to builder, there is at most one builder for each ID */
   private final Map<MaterialId,MaterialTraitsBuilder> allMaterialTraits = new HashMap<>();
   /* Materials data provider for validation */
@@ -54,7 +54,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
     }
 
     // generate
-    return allOf(allMaterialTraits.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), entry.getValue().build())));
+    return allOf(allMaterialTraits.entrySet().stream().map(entry -> saveGson(cache, entry.getKey().id(), entry.getValue().build())));
   }
 
 
@@ -100,7 +100,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
    * @param location  Material ID
    * @param traits    Traits to add
    */
-  protected void addDefaultTraits(MaterialId location, LazyModifier... traits) {
+  protected void addDefaultTraits(MaterialId location, ModifierHolder... traits) {
     material(location).addDefaultTraits(traits);
   }
 
@@ -130,7 +130,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
    * @param statsId   Stats to add the trait for
    * @param traits    Traits to add
    */
-  protected void addTraits(MaterialId location, MaterialStatsId statsId, LazyModifier... traits) {
+  protected void addTraits(MaterialId location, MaterialStatsId statsId, ModifierHolder... traits) {
     material(location).addTraits(statsId, traits);
   }
 
@@ -141,8 +141,8 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
     private final Map<ResourceLocation,List<ModifierEntry>> perStats = new HashMap<>();
 
     /** Adds the given traits to the list */
-    private static void addAll(List<ModifierEntry> list, LazyModifier[] traits) {
-      for (LazyModifier trait : traits) {
+    private static void addAll(List<ModifierEntry> list, ModifierHolder[] traits) {
+      for (ModifierHolder trait : traits) {
         list.add(new ModifierEntry(trait, 1));
       }
     }
@@ -164,7 +164,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
     }
 
     /** Adds the list of traits to the builder */
-    public MaterialTraitsBuilder addDefaultTraits(LazyModifier... traits) {
+    public MaterialTraitsBuilder addDefaultTraits(ModifierHolder... traits) {
       addAll(defaultTraits, traits);
       return this;
     }
@@ -180,7 +180,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
 
     /** Gets the list for the given stat type */
     private List<ModifierEntry> getList(MaterialStatsId statsId, int size) {
-      return perStats.computeIfAbsent(statsId, k -> new ArrayList<>(size));
+      return perStats.computeIfAbsent(statsId.id(), k -> new ArrayList<>(size));
     }
 
     /** Adds the passed traits to the builder. */
@@ -190,7 +190,7 @@ public abstract class AbstractMaterialTraitDataProvider extends GenericDataProvi
     }
 
     /** Adds the passed traits to the builder. */
-    public MaterialTraitsBuilder addTraits(MaterialStatsId statsId, LazyModifier... traits) {
+    public MaterialTraitsBuilder addTraits(MaterialStatsId statsId, ModifierHolder... traits) {
       addAll(getList(statsId, traits.length), traits);
       return this;
     }

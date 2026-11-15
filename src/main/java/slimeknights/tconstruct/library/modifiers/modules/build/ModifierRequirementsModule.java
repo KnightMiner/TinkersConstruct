@@ -15,12 +15,12 @@ import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.RequirementsModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
@@ -113,14 +113,13 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
 
     /** Sets the translation key from a modifier ID */
     public Builder modifierKey(ModifierId id) {
-      this.translationKey = Util.makeTranslationKey("modifier", id) + ".requirements";
+      this.translationKey = Util.makeTranslationKey("modifier", id.id()) + ".requirements";
       return this;
     }
 
     /** Sets the translation key from a modifier ID */
-    public Builder modifierKey(LazyModifier id) {
-      this.translationKey = Util.makeTranslationKey("modifier", id.id()) + ".requirements";
-      return this;
+    public Builder modifierKey(ModifierHolder id) {
+      return modifierKey(id.id());
     }
 
     /** Adds a display modifier to the tool */
