@@ -2,14 +2,13 @@ package slimeknights.tconstruct.library.modifiers;
 
 import com.google.common.math.IntMath;
 import lombok.Getter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
 
 import javax.annotation.Nullable;
 
 /**
- * Handles all the logic for partial levels on tools
+ * Handles all the logic for partial levels on tools.
+ * To construct, see {@link ModifierEntry#of(ModifierHolder, int, int, int)}.
  */
 public class IncrementalModifierEntry extends ModifierEntry {
   private final int amount;
@@ -18,7 +17,7 @@ public class IncrementalModifierEntry extends ModifierEntry {
   @Getter
   private final float effectiveLevel;
 
-  protected IncrementalModifierEntry(LazyModifier modifier, int level, int amount, int needed) {
+  protected IncrementalModifierEntry(ModifierHolder modifier, int level, int amount, int needed) {
     super(modifier, level);
     this.amount = Math.max(0, amount);
     this.needed = Math.max(0, needed);
@@ -27,50 +26,6 @@ public class IncrementalModifierEntry extends ModifierEntry {
     } else {
       effectiveLevel = scaleLevel(level, amount, needed);
     }
-  }
-
-  /**
-   * Creates a new incremental modifier entry
-   * @param modifier  Modifier instance
-   * @param level     Modifier level, will be effectively as low as 1 less based on amount
-   * @param amount    Amount of progress towards the level
-   * @param needed    Amount of progress needed for a full level
-   * @return  Either an incremental or a regular modifier entry based on parameters
-   */
-  public static ModifierEntry of(LazyModifier modifier, int level, int amount, int needed) {
-    // If we have a full level, no need to be incremental
-    if (needed == 0 || amount >= needed) {
-      return new ModifierEntry(modifier, level);
-    }
-    // no sense saving the needed if amount is 0, thats just the lower level
-    if (amount <= 0) {
-      return new ModifierEntry(modifier, level - 1);
-    }
-    return new IncrementalModifierEntry(modifier, level, amount, needed);
-  }
-
-  /**
-   * Creates a new incremental modifier entry
-   * @param modifier  Modifier instance
-   * @param level     Modifier level, will be effectively as low as 1 less based on amount
-   * @param amount    Amount of progress towards the level
-   * @param needed    Amount of progress needed for a full level
-   * @return  Either an incremental or a regular modifier entry based on parameters
-   */
-  public static ModifierEntry of(ModifierId modifier, int level, int amount, int needed) {
-    return of(new LazyModifier(modifier), level, amount, needed);
-  }
-
-  /**
-   * Creates a new incremental modifier entry
-   * @param modifier  Modifier instance
-   * @param level     Modifier level, will be effectively as low as 1 less based on amount
-   * @param amount    Amount of progress towards the level
-   * @param needed    Amount of progress needed for a full level, if 0 will be treated as full progress
-   * @return  Either an incremental or a regular modifier entry based on parameters
-   */
-  public static ModifierEntry of(Modifier modifier, int level, int amount, int needed) {
-    return of(new LazyModifier(modifier), level, amount, needed);
   }
 
 
@@ -106,7 +61,7 @@ public class IncrementalModifierEntry extends ModifierEntry {
     }
     // if passed in a fulfilled need, then we just completed our level, drop the incremental
     if (amount >= needed) {
-      return new ModifierEntry(modifier, level);
+      return new ModifierEntry(holder, level);
     }
     // no full level passed, need to validate the scales
     if (needed == this.needed) {
@@ -120,13 +75,13 @@ public class IncrementalModifierEntry extends ModifierEntry {
       needed *= newMultiplier;
     }
     // static constructor will now figure out if that lets us ditch incremental
-    return IncrementalModifierEntry.of(modifier, level, amount, needed);
+    return IncrementalModifierEntry.of(holder, level, amount, needed);
   }
 
   @Override
   public ModifierEntry withLevel(int level) {
     // we made it to an incremental entry with this amount and needed, so no way we won't via the static consrtuctor
-    return new IncrementalModifierEntry(modifier, level, amount, needed);
+    return new IncrementalModifierEntry(holder, level, amount, needed);
   }
 
   @Override
@@ -139,17 +94,6 @@ public class IncrementalModifierEntry extends ModifierEntry {
     return withLevel(level + other.intEffectiveLevel()).addAmount(other.getAmount(0), other.getNeeded());
   }
 
-
-  /* Serialization */
-
-  @Override
-  public CompoundTag serializeToNBT() {
-    CompoundTag tag = super.serializeToNBT();
-    tag.putInt(TAG_AMOUNT, amount);
-    tag.putInt(TAG_NEEDED, needed);
-    tag.putFloat(TAG_EFFECTIVE, effectiveLevel);
-    return tag;
-  }
 
   /** Object */
 
@@ -168,7 +112,7 @@ public class IncrementalModifierEntry extends ModifierEntry {
 
   @Override
   public String toString() {
-    return "IncrementalModifierEntry{" + modifier.id() + ",level=" + level + ",amount=" + amount + '/' + needed + '}';
+    return "IncrementalModifierEntry{" + holder.id() + ",level=" + level + ",amount=" + amount + '/' + needed + '}';
   }
 
 

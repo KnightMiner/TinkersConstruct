@@ -1,25 +1,30 @@
 package slimeknights.tconstruct.library.modifiers;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
-import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
+import net.minecraft.util.ExtraCodecs;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
-import slimeknights.tconstruct.library.modifiers.util.LazyModifier;
-import slimeknights.tconstruct.library.modifiers.util.OptionalModifier;
 import slimeknights.tconstruct.library.module.ModuleHook;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /**
  * Data class holding a modifier with a level
  */
+@Getter
 @RequiredArgsConstructor
 public class ModifierEntry implements Comparable<ModifierEntry> {
   /** Key for modifier IDs in NBT and JSON */
@@ -30,70 +35,160 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
   public static final String TAG_AMOUNT = "amount";
   /** Key for incremental need */
   public static final String TAG_NEEDED = "needed";
-  /** Cache of effective level in NBT, for quick level lookups. Not used on deserialization */
-  public static final String TAG_EFFECTIVE = "effective";
 
   /** Empty modifier instance, default for many methods */
   public static final ModifierEntry EMPTY = new ModifierEntry(ModifierId.EMPTY, 0);
 
-  /** Loadable instance for parsing. Does not handle incremental, we currently disallow incremental as traits */
-  public static final RecordLoadable<ModifierEntry> LOADABLE = RecordLoadable.create(
-    ModifierId.LOADABLE.requiredField(TAG_MODIFIER, ModifierEntry::id),
-    IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
-    ModifierEntry::new);
-  /** Loadable instance for parsing with optional modifiers. If the boolean is set, modifier does not error when missing. */
-  public static final RecordLoadable<ModifierEntry> OPTIONAL_LOADABLE = RecordLoadable.create(
-    ModifierId.LOADABLE.requiredField(TAG_MODIFIER, ModifierEntry::id),
-    IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, ModifierEntry::getLevel),
-    BooleanLoadable.INSTANCE.defaultField("optional", false, false, e -> e.getLazyModifier() instanceof OptionalModifier),
-    (id, level, optional) -> {
-      if (optional) {
-        return new ModifierEntry(new OptionalModifier(id), level);
-      }
-      return new ModifierEntry(id, level);
-    });
   /** Range of levels for a modifier including 0 (not on the tool) */
   public static final IntRange ANY_LEVEL = new IntRange(0, Short.MAX_VALUE);
   /** Range of levels for a modifier on a tool */
   public static final IntRange VALID_LEVEL = new IntRange(1, Short.MAX_VALUE);
 
+  /** Loadable instance for recipe parsing. Does not handle incremental, we currently disallow incremental as traits */
+  public static final RecordLoadable<ModifierEntry> LOADABLE;
+  /** Codec instance for NBT parsing. Handles incremental using the amount and needed fields */
+  public static final Codec<ModifierEntry> CODEC;
+  /** Codec instance for NBT parsing. Handles incremental using the amount and needed fields */
+  public static final StreamCodec<FriendlyByteBuf,ModifierEntry> STREAM_CODEC = new StreamCodec<>() {
+    @Override
+    public ModifierEntry decode(FriendlyByteBuf buffer) {
+      ModifierHolder holder = ModifierHolder.STREAM_CODEC.decode(buffer);
+      int level = buffer.readVarInt();
+      int needed = buffer.readVarInt();
+      // if needed is 0, no amount is coming
+      if (needed == 0) {
+        return new ModifierEntry(holder, level);
+      }
+      return IncrementalModifierEntry.of(holder, level, buffer.readVarInt(), needed);
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buffer, ModifierEntry value) {
+      ModifierHolder.STREAM_CODEC.encode(buffer, value.getHolder());
+      buffer.writeVarInt(value.getLevel());
+      int needed = value.getNeeded();
+      buffer.writeVarInt(needed);
+      // if needed is 0, no need to sync over amount, its just going to be ignored
+      if (needed > 0) {
+        buffer.writeVarInt(value.getAmount(0));
+      }
+    }
+  };
+  static {
+    // using the holder means writing to NBT will write the resolved redirect
+    Function<ModifierEntry,ModifierHolder> modifier = ModifierEntry::getHolder;
+    Function<ModifierEntry,Integer> level = ModifierEntry::getLevel;
+    LOADABLE = RecordLoadable.create(
+      ModifierHolder.LOADABLE.requiredField(TAG_MODIFIER, modifier),
+      IntLoadable.FROM_ONE.defaultField(TAG_LEVEL, 1, true, level),
+      ModifierEntry::new);
+    CODEC = RecordCodecBuilder.create(instance -> instance.group(
+      ModifierHolder.CODEC.fieldOf(TAG_MODIFIER).forGetter(modifier),
+      ExtraCodecs.POSITIVE_INT.fieldOf(TAG_LEVEL).orElse(1).forGetter(level),
+      ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf(TAG_AMOUNT, 0).forGetter(entry -> entry.getAmount(0)),
+      ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf(TAG_NEEDED, 0).forGetter(ModifierEntry::getNeeded)
+    ).apply(instance, instance.stable(ModifierEntry::of)));
+  }
+
   /** Modifier instance */
-  protected final LazyModifier modifier;
+  protected final ModifierHolder holder;
   /** Current level */
-  @Getter @With
+  @With
   protected final int level;
 
   public ModifierEntry(ModifierId id, int level) {
-    this(new LazyModifier(id), level);
+    this(ModifierHolder.create(id), level);
   }
 
   public ModifierEntry(Modifier modifier, int level) {
-    this(new LazyModifier(modifier), level);
+    this(ModifierHolder.from(modifier), level);
   }
+
+  /** @deprecated use {@link #ModifierEntry(ModifierHolder,int)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  public ModifierEntry(slimeknights.tconstruct.library.modifiers.util.LazyModifier modifier, int level) {
+    this(ModifierHolder.create(modifier.id()), level);
+  }
+
+
+  /* Incremental - in this class as we need it for the codecs */
+
+  /**
+   * Creates a new incremental modifier entry
+   * @param modifier  Modifier instance
+   * @param level     Modifier level, will be effectively as low as 1 less based on amount
+   * @param amount    Amount of progress towards the level
+   * @param needed    Amount of progress needed for a full level
+   * @return  Either an incremental or a regular modifier entry based on parameters
+   * @see #ModifierEntry(ModifierHolder,int)
+   */
+  public static ModifierEntry of(ModifierHolder modifier, int level, int amount, int needed) {
+    // If we have a full level, no need to be incremental
+    if (needed == 0 || amount >= needed) {
+      return new ModifierEntry(modifier, level);
+    }
+    // no sense saving the needed if amount is 0, that's just the lower level
+    if (amount <= 0) {
+      return new ModifierEntry(modifier, level - 1);
+    }
+    return new IncrementalModifierEntry(modifier, level, amount, needed);
+  }
+
+  /**
+   * Creates a new incremental modifier entry
+   * @param modifier  Modifier instance
+   * @param level     Modifier level, will be effectively as low as 1 less based on amount
+   * @param amount    Amount of progress towards the level
+   * @param needed    Amount of progress needed for a full level
+   * @return  Either an incremental or a regular modifier entry based on parameters
+   * @see #ModifierEntry(ModifierId,int)
+   */
+  public static ModifierEntry of(ModifierId modifier, int level, int amount, int needed) {
+    return of(ModifierHolder.create(modifier), level, amount, needed);
+  }
+
+  /**
+   * Creates a new incremental modifier entry
+   * @param modifier  Modifier instance
+   * @param level     Modifier level, will be effectively as low as 1 less based on amount
+   * @param amount    Amount of progress towards the level
+   * @param needed    Amount of progress needed for a full level, if 0 will be treated as full progress
+   * @return  Either an incremental or a regular modifier entry based on parameters
+   * @see #ModifierEntry(Modifier,int)
+   */
+  public static ModifierEntry of(Modifier modifier, int level, int amount, int needed) {
+    return of(ModifierHolder.from(modifier), level, amount, needed);
+  }
+
+  /** @deprecated use {@link #of(ModifierHolder, int, int, int)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  public static ModifierEntry of(slimeknights.tconstruct.library.modifiers.util.LazyModifier modifier, int level, int amount, int needed) {
+    return of(modifier.id(), level, amount, needed);
+  }
+
+
+  /* Methods */
 
   /** Checks if the given modifier is bound */
   public boolean isBound() {
-    return modifier.isBound();
+    return holder.isBound();
   }
 
   /** Gets the contained modifier ID, prevents resolving the lazy modifier if not needed */
   public ModifierId id() {
-    return modifier.id();
+    return holder.id();
   }
 
   /** Gets the contained modifier */
   public Modifier getModifier() {
-    return modifier.get();
-  }
-
-  /** Helper for efficiency, returns the lazy modifier instance directly, which can then be copied along */
-  public LazyModifier getLazyModifier() {
-    return modifier;
+    return holder.get();
   }
 
   /** Gets the given hook from the modifier, returning default instance if not present */
   public final <T> T getHook(ModuleHook<T> hook) {
-    return modifier.get().getHook(hook);
+    return holder.get().getHook(hook);
   }
 
 
@@ -132,7 +227,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Gets the display name for this entry */
   public Component getDisplayName() {
-    return modifier.get().getDisplayName(level);
+    return holder.get().getDisplayName(level);
   }
 
 
@@ -150,7 +245,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
       return this;
     }
     // static constructor automatically handles cases of needed being 0/amount being full (inon-incremental level raise) and amount being 0 (ignore level raise)
-    return IncrementalModifierEntry.of(modifier, level + 1, amount, needed);
+    return IncrementalModifierEntry.of(holder, level + 1, amount, needed);
   }
 
   /**
@@ -172,7 +267,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Checks if this entry matches the given modifier */
   public boolean matches(ModifierId id) {
-    return modifier.id().equals(id);
+    return holder.id().equals(id);
   }
 
   /** Checks if this entry matches the given modifier */
@@ -182,7 +277,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Checks if the modifier is in the given tag */
   public boolean matches(TagKey<Modifier> tag) {
-    return modifier.is(tag);
+    return holder.is(tag);
   }
 
   @Override
@@ -202,24 +297,15 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
   /* Serializing */
 
   /** Reads a modifier entry from NBT */
-  public static ModifierEntry readFromNBT(CompoundTag tag) {
-    if (tag.contains(TAG_MODIFIER, Tag.TAG_STRING)) {
-      ModifierId id = ModifierId.tryParse(tag.getString(TAG_MODIFIER));
-      int level = tag.getInt(TAG_LEVEL);
-      if (id != null && level > 0) {
-        // incremental just has more tags, if they are missing they will just 0 and of will give us the base class
-        return IncrementalModifierEntry.of(id, level, tag.getInt(TAG_AMOUNT), tag.getInt(TAG_NEEDED));
-      }
-    }
-    return EMPTY;
+  public static ModifierEntry readFromNBT(Tag tag) {
+    return CODEC.parse(NbtOps.INSTANCE, tag)
+      .resultOrPartial(error -> TConstruct.LOG.error("Tried to load invalid modifier entry: '{}'", error))
+      .orElse(EMPTY);
   }
 
   /** Writes this tag to NBT */
-  public CompoundTag serializeToNBT() {
-    CompoundTag tag = new CompoundTag();
-    tag.putString(TAG_MODIFIER, modifier.id().toString());
-    tag.putInt(TAG_LEVEL, level);
-    return tag;
+  public Tag serializeToNBT() {
+    return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
   }
 
 
@@ -235,11 +321,11 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   @Override
   public int hashCode() {
-    return 31 * modifier.hashCode() + level;
+    return 31 * holder.hashCode() + level;
   }
 
   @Override
   public String toString() {
-    return "ModifierEntry{" + modifier.id() + ",level=" + level + '}';
+    return "ModifierEntry{" + holder.id() + ",level=" + level + '}';
   }
 }

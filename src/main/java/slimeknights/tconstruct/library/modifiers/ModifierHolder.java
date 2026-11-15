@@ -46,6 +46,11 @@ public class ModifierHolder {
     return ModifierManager.INSTANCE.getHolder(id);
   }
 
+  /** Gets a modifier holder for the given ID */
+  public static ModifierHolder from(Modifier modifier) {
+    return create(modifier.id());
+  }
+
   /** Gets the ID to use for serializing, using the modifier ID if fetched. */
   protected ModifierId serializedId() {
     return modifier != null && modifier != ModifierManager.INSTANCE.getDefaultValue() ? modifier.id() : id;
