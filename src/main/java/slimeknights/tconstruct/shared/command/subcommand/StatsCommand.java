@@ -19,6 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
@@ -30,7 +31,7 @@ import slimeknights.tconstruct.tools.modifiers.creative.StatOverrideModifier;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /** Command to modify a tool's stats */
 public class StatsCommand {
@@ -80,21 +81,21 @@ public class StatsCommand {
   }
 
   /** Updates entities using the given operation */
-  private static List<LivingEntity> updateEntities(CommandContext<CommandSourceStack> context, BiPredicate<IToolStackView,StatOverrideModifier> updateAction) throws CommandSyntaxException {
+  private static List<LivingEntity> updateEntities(CommandContext<CommandSourceStack> context, Predicate<IToolStackView> updateAction) throws CommandSyntaxException {
     return HeldModifiableItemIterator.apply(context, (living, stack) -> {
       ToolStack tool = ToolStack.copyFrom(stack);
 
       // apply the proper operation
-      StatOverrideModifier stats = TinkerModifiers.statOverride.get();
-      boolean needsModifier = updateAction.test(tool, stats);
+      ModifierId stats = TinkerModifiers.statOverride.id();
+      boolean needsModifier = updateAction.test(tool);
 
       // ensure the modifier is present if needed/not present if not needed
-      int level = tool.getUpgrades().getLevel(stats.id());
+      int level = tool.getUpgrades().getLevel(stats);
       boolean hasModifier = level > 0;
       if (needsModifier && !hasModifier) {
-        tool.addModifier(stats.id(), 1);
+        tool.addModifier(stats, 1);
       } else if (hasModifier && !needsModifier) {
-        tool.removeModifier(stats.id(), level);
+        tool.removeModifier(stats, level);
       } else {
         tool.rebuildStats();
       }
@@ -117,7 +118,7 @@ public class StatsCommand {
     if (value == null) {
       throw FAILED_TO_PARSE.create(stat.getPrefix(), tag);
     }
-    return updateEntities(context, (tool, stats) -> stats.set(tool, stat, value));
+    return updateEntities(context, tool -> StatOverrideModifier.set(tool, stat, value));
   }
 
   /** Modifies a tool stat with the given operation */
@@ -142,11 +143,11 @@ public class StatsCommand {
       }
       INumericToolStat<?> numeric = (INumericToolStat<?>)stat;
       if (type == Type.BONUS) {
-        successes = updateEntities(context, (tool, stats) -> stats.addBonus(tool, numeric, value));
+        successes = updateEntities(context, tool -> StatOverrideModifier.addBonus(tool, numeric, value));
       } else if (op == Operation.SET) {
-        successes = updateEntities(context, (tool, stats) -> stats.setMultiplier(tool, numeric, value));
+        successes = updateEntities(context, tool -> StatOverrideModifier.setMultiplier(tool, numeric, value));
       } else {
-        successes = updateEntities(context, (tool, stats) -> stats.multiply(tool, numeric, value));
+        successes = updateEntities(context, tool -> StatOverrideModifier.multiply(tool, numeric, value));
       }
       display = value;
     }
@@ -166,11 +167,11 @@ public class StatsCommand {
   /** Resets all stats to default */
   private static int resetStat(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     IToolStat<?> stat = ToolStatArgument.getStat(context, "stat_type");
-    List<LivingEntity> successes = updateEntities(context, (tool, stats) -> {
+    List<LivingEntity> successes = updateEntities(context, tool -> {
       if (stat instanceof INumericToolStat<?> numeric) {
-        stats.setMultiplier(tool, numeric, 1);
+        StatOverrideModifier.setMultiplier(tool, numeric, 1);
       }
-      return stats.remove(tool, stat);
+      return StatOverrideModifier.remove(tool, stat);
     });
 
     // success message

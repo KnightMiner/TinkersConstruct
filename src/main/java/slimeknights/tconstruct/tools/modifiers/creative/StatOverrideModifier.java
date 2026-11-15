@@ -240,7 +240,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to set
    * @param value  New value
    */
-  public <T> boolean set(IToolStackView tool, IToolStat<T> stat, T value) {
+  public static <T> boolean set(IToolStackView tool, IToolStat<T> stat, T value) {
     // first, find the proper tag, create if missing
     ModDataNBT data = tool.getPersistentData();
     boolean storeValue;
@@ -278,7 +278,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to update
    * @param bonus  Value to add to current bonus
    */
-  public boolean addBonus(IToolStackView tool, INumericToolStat<?> stat, float bonus) {
+  public static boolean addBonus(IToolStackView tool, INumericToolStat<?> stat, float bonus) {
     if (bonus != 0) {
       return setStat(tool, KEY_BONUS, stat, getStat(tool, KEY_BONUS, stat, 0) + bonus, 0);
     }
@@ -291,7 +291,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat        Stat to set
    * @param multiplier  New multiplier
    */
-  public boolean setMultiplier(IToolStackView tool, INumericToolStat<?> stat, float multiplier) {
+  public static boolean setMultiplier(IToolStackView tool, INumericToolStat<?> stat, float multiplier) {
     return setStat(tool, KEY_MULTIPLY, stat, multiplier, 1);
   }
 
@@ -301,7 +301,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to set
    * @param value  New multiplier
    */
-  public boolean multiply(IToolStackView tool, INumericToolStat<?> stat, float value) {
+  public static boolean multiply(IToolStackView tool, INumericToolStat<?> stat, float value) {
     if (value != 1) {
       return setMultiplier(tool, stat, getStat(tool, KEY_MULTIPLY, stat, 1) * value);
     }
@@ -309,7 +309,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   /** Removes the given stat from the bonuses */
-  public <T> boolean remove(IToolStackView tool, IToolStat<T> stat) {
+  public static <T> boolean remove(IToolStackView tool, IToolStat<T> stat) {
     CompoundTag nbt = getTag(tool, KEY_BONUS, false);
     if (nbt == null) {
       return false;

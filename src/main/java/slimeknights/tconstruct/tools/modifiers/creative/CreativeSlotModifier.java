@@ -18,6 +18,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class CreativeSlotModifier extends NoLevelsModifier implements VolatileDa
     hookBuilder.addHook(this, ModifierHooks.VOLATILE_DATA, ModifierHooks.REMOVE);
   }
 
+  @Nullable
   @Override
   public Component onRemoved(IToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(KEY_SLOTS);
