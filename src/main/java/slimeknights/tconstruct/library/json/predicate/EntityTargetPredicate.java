@@ -1,22 +1,42 @@
 package slimeknights.tconstruct.library.json.predicate;
 
 import com.mojang.datafixers.util.Either;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.entity.PartEntity;
+import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.mapping.EitherRecordLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.EntityPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
+import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /** Predicate matching either an entity or a living entity. If entity, it matches the direct target, while living entity will possibly use the parent. */
 public sealed interface EntityTargetPredicate {
+  /** Instance matching any entity */
+  EntityTargetPredicate ANY = new DirectTarget(EntityPredicate.ANY);
   /** Loader instance, designed for use in direct fields. */
   RecordLoadable<EntityTargetPredicate> LOADABLE = new EitherRecordLoadable<>("direct_target", EntityPredicate.LOADER, "living_target", LivingEntityPredicate.LOADER)
-    .flatXmap(either -> either.map(DirectTarget::new, LivingTarget::new), EntityTargetPredicate::predicate);
+    .map(either -> either.map(DirectTarget::new, LivingTarget::new), EntityTargetPredicate::predicate);
+  /** Attacker loader instance, used in defensive modules. */
+  RecordLoadable<EntityTargetPredicate> ATTACKER_LOADABLE = new EitherRecordLoadable<>("direct_attacker", EntityPredicate.LOADER, "living_attacker", LivingEntityPredicate.LOADER)
+    .map(either -> either.map(DirectTarget::new, LivingTarget::new), EntityTargetPredicate::predicate);
+
+  /** Creates a default field using {@link #ANY} as the default. */
+  static <P> RecordField<EntityTargetPredicate,P> defaultField(Function<P,EntityTargetPredicate> getter) {
+    return LOADABLE.directField(getter);
+  }
+
+  /** Creates a default attacker field using {@link #ANY} as the default. */
+  static <P> RecordField<EntityTargetPredicate,P> attackerField(Function<P,EntityTargetPredicate> getter) {
+    return ATTACKER_LOADABLE.directField(getter);
+  }
 
   /**
    * Gets a {@link LivingEntity} to target from the given entity, resolving the {@link PartEntity} parent if needed.
@@ -34,12 +54,12 @@ public sealed interface EntityTargetPredicate {
 
   /** Creates a direct predicate */
   static EntityTargetPredicate direct(IJsonPredicate<Entity> target) {
-    return new DirectTarget(target);
+    return target == EntityPredicate.ANY ? ANY : new DirectTarget(target);
   }
 
   /** Creates a living predicate */
   static EntityTargetPredicate living(IJsonPredicate<LivingEntity> target) {
-    return new LivingTarget(target);
+    return target == LivingEntityPredicate.ANY ? ANY : new LivingTarget(target);
   }
 
 
@@ -59,6 +79,16 @@ public sealed interface EntityTargetPredicate {
   /** Tests the given entity, fetching their parent for the living check. */
   default boolean matches(Entity entity) {
     return matches(entity, resolveParent(entity));
+  }
+
+  /** Tests the given {@link ToolAttackContext}. */
+  default boolean matches(ToolAttackContext context) {
+    return matches(context.getTarget(), context.getLivingTarget());
+  }
+
+  /** Checks if this predicate matches the given nullable entity. Null is only considered a match for an any predicate. */
+  static boolean matchesNullable(EntityTargetPredicate predicate, @Nullable Entity entity) {
+    return predicate == ANY || entity != null && predicate.matches(entity);
   }
 
   /** Predicate matching the direct target. */
@@ -84,6 +114,48 @@ public sealed interface EntityTargetPredicate {
     @Override
     public boolean matches(Entity entity, @Nullable LivingEntity living) {
       return living != null && target.matches(living);
+    }
+  }
+
+  /** Builder helper for modules with a target */
+  interface Builder<B> {
+    /** Sets the target in the builder */
+    B target(EntityTargetPredicate target);
+
+    /** Sets the direct target entity. */
+    default B directTarget(IJsonPredicate<Entity> target) {
+      return target(direct(target));
+    }
+
+    /** Sets the target tag. */
+    default B target(TagKey<EntityType<?>> attacker) {
+      return directTarget(EntityPredicate.tag(attacker));
+    }
+
+    /** Sets the living target entity. */
+    default B livingTarget(IJsonPredicate<LivingEntity> target) {
+      return target(living(target));
+    }
+  }
+
+  /** Builder helper for modules with an attacker */
+  interface AttackerBuilder<B> {
+    /** Sets the attacker in the builder */
+    B attacker(EntityTargetPredicate attacker);
+
+    /** Sets the direct attacker entity. */
+    default B directAttacker(IJsonPredicate<Entity> attacker) {
+      return attacker(direct(attacker));
+    }
+
+    /** Sets the attacker tag. */
+    default B attacker(TagKey<EntityType<?>> attacker) {
+      return directAttacker(EntityPredicate.tag(attacker));
+    }
+
+    /** Sets the living attacker entity. */
+    default B livingAttacker(IJsonPredicate<LivingEntity> attacker) {
+      return attacker(living(attacker));
     }
   }
 }

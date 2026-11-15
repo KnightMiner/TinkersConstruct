@@ -9,6 +9,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.math.ModifierFormula;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.json.variable.melee.MeleeFormula;
 import slimeknights.tconstruct.library.json.variable.melee.MeleeVariable;
@@ -36,10 +37,10 @@ import java.util.List;
  * @param formula    Damage formula
  * @param condition  Standard modifier conditions
  */
-public record ConditionalMeleeDamageModule(IJsonPredicate<LivingEntity> target, IJsonPredicate<LivingEntity> attacker, MeleeFormula formula, ModifierCondition<IToolStackView> condition) implements MeleeDamageModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<IToolStackView> {
+public record ConditionalMeleeDamageModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, MeleeFormula formula, ModifierCondition<IToolStackView> condition) implements MeleeDamageModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ConditionalMeleeDamageModule>defaultHooks(ModifierHooks.MELEE_DAMAGE, ModifierHooks.MONSTER_MELEE_DAMAGE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ConditionalMeleeDamageModule> LOADER = RecordLoadable.create(
-    LivingEntityPredicate.LOADER.defaultField("target", ConditionalMeleeDamageModule::target),
+    EntityTargetPredicate.defaultField(ConditionalMeleeDamageModule::target),
     LivingEntityPredicate.LOADER.defaultField("attacker", ConditionalMeleeDamageModule::attacker),
     MeleeFormula.LOADER.directField(ConditionalMeleeDamageModule::formula),
     ModifierCondition.TOOL_FIELD,
@@ -64,8 +65,7 @@ public record ConditionalMeleeDamageModule(IJsonPredicate<LivingEntity> target, 
   @Override
   public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
     if (condition.matches(tool, modifier) && attacker.matches(context.getAttacker())) {
-      LivingEntity target = context.getLivingTarget();
-      if (target != null && this.target.matches(target)) {
+      if (this.target.matches(context)) {
         damage = formula.apply(tool, modifier, context, context.getAttacker(), baseDamage, damage);
       }
     }
@@ -107,9 +107,9 @@ public record ConditionalMeleeDamageModule(IJsonPredicate<LivingEntity> target, 
 
   /** Builder class */
   @Accessors(fluent = true)
-  public static class Builder extends VariableFormula.Builder<Builder,ConditionalMeleeDamageModule,MeleeVariable> {
+  public static class Builder extends VariableFormula.Builder<Builder,ConditionalMeleeDamageModule,MeleeVariable> implements EntityTargetPredicate.Builder<Builder> {
     @Setter
-    private IJsonPredicate<LivingEntity> target = LivingEntityPredicate.ANY;
+    private EntityTargetPredicate target = EntityTargetPredicate.ANY;
     @Setter
     private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
 

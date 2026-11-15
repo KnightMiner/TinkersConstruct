@@ -5,6 +5,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +31,7 @@ public class LootingContext {
   public LootingContext(LivingEntity holder, Entity target, @Nullable DamageSource damageSource, @Nullable EquipmentSlot lootingSlot) {
     this.holder = holder;
     this.target = target;
-    this.livingTarget = target instanceof LivingEntity living ? living : null;
+    this.livingTarget = EntityTargetPredicate.resolveParent(target);
     this.damageSource = damageSource;
     this.lootingSlot = lootingSlot;
   }

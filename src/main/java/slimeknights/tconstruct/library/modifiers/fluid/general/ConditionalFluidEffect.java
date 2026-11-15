@@ -59,7 +59,7 @@ public interface ConditionalFluidEffect<C extends FluidEffectContext> extends Fl
   /** Common logic between both entity implementations. */
   record EntityContext(EntityTargetPredicate target, FluidEffect<? super FluidEffectContext.Entity> effect) implements ConditionalFluidEffect<FluidEffectContext.Entity> {
     public static final RecordLoadable<EntityContext> LOADER = RecordLoadable.create(
-      EntityTargetPredicate.LOADABLE.directField(EntityContext::target),
+      EntityTargetPredicate.defaultField(EntityContext::target),
       FluidEffect.ENTITY_EFFECTS.requiredField("effect", EntityContext::effect),
       EntityContext::new);
 

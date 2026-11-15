@@ -17,6 +17,7 @@ import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.math.ModifierFormula;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
@@ -50,18 +51,18 @@ import java.util.List;
  * @param formula       Power formula
  * @param modifierLevel Modifier level condition
  */
-public record ConditionalPowerModule(IJsonPredicate<LivingEntity> target, IJsonPredicate<LivingEntity> holder, PowerFormula formula, IntRange modifierLevel) implements ModifierModule, ProjectileShootModifierHook, ProjectileHitModifierHook, SlingForceModifierHook, ConditionalStatTooltip {
+public record ConditionalPowerModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> holder, PowerFormula formula, IntRange modifierLevel) implements ModifierModule, ProjectileShootModifierHook, ProjectileHitModifierHook, SlingForceModifierHook, ConditionalStatTooltip {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ConditionalPowerModule>defaultHooks(ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_HIT, ModifierHooks.SLING_FORCE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ConditionalPowerModule> LOADER = RecordLoadable.create(
-    LivingEntityPredicate.LOADER.defaultField("target", ConditionalPowerModule::target),
+    EntityTargetPredicate.defaultField(ConditionalPowerModule::target),
     LivingEntityPredicate.LOADER.defaultField("holder", ConditionalPowerModule::holder),
     PowerFormula.LOADER.directField(ConditionalPowerModule::formula),
     ModifierEntry.VALID_LEVEL.defaultField("modifier_level", ConditionalPowerModule::modifierLevel),
     ConditionalPowerModule::new);
   /** Projectile persistent data key for the stat multiplier */
-  private static final ResourceLocation AMMO_MULTIPLIER = ToolStats.PROJECTILE_DAMAGE.getId().withSuffix("_ammo_multiplier");
+  private static final ResourceLocation AMMO_MULTIPLIER = ToolStats.PROJECTILE_DAMAGE.getId().id().withSuffix("_ammo_multiplier");
   /** Projectile persistent data key for the stat multiplier */
-  private static final ResourceLocation BOW_MULTIPLIER = ToolStats.PROJECTILE_DAMAGE.getId().withSuffix("_bow_multiplier");
+  private static final ResourceLocation BOW_MULTIPLIER = ToolStats.PROJECTILE_DAMAGE.getId().id().withSuffix("_bow_multiplier");
 
   /** @apiNote Internal constructor, use {@link #builder()} */
   @Internal
@@ -98,14 +99,14 @@ public record ConditionalPowerModule(IJsonPredicate<LivingEntity> target, IJsonP
 
   @Override
   public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
-    ResourceLocation key = modifier.id();
+    ResourceLocation key = modifier.id().id();
     // if we already boosted power from an entity, don't boost again
     // minimizes issues with projectile bounces and piercing
     if (modifierLevel.test(modifier.getLevel()) && !persistentData.getBoolean(key)) {
       // as soon as we attempt to boost, mark this modifier as having run
       // means the second entity will not get to apply its boost if the first did not apply it
       persistentData.putBoolean(key, true);
-      if (TinkerPredicate.matches(this.target, target) && TinkerPredicate.matches(this.holder, attacker)) {
+      if (this.target.matches(hit.getEntity(), target) && TinkerPredicate.matches(this.holder, attacker)) {
         float multiplier = 1;
         if (persistentData.contains(AMMO_MULTIPLIER, Tag.TAG_ANY_NUMERIC)) {
           multiplier *= persistentData.getFloat(AMMO_MULTIPLIER);
@@ -162,8 +163,8 @@ public record ConditionalPowerModule(IJsonPredicate<LivingEntity> target, IJsonP
   /** Builder class */
   @Setter
   @Accessors(fluent = true)
-  public static class Builder extends VariableFormula.Builder<ConditionalPowerModule.Builder,ConditionalPowerModule, PowerVariable> {
-    private IJsonPredicate<LivingEntity> target = LivingEntityPredicate.ANY;
+  public static class Builder extends VariableFormula.Builder<ConditionalPowerModule.Builder,ConditionalPowerModule, PowerVariable> implements EntityTargetPredicate.Builder<Builder> {
+    private EntityTargetPredicate target = EntityTargetPredicate.ANY;
     private IJsonPredicate<LivingEntity> holder = LivingEntityPredicate.ANY;
 
     private Builder() {

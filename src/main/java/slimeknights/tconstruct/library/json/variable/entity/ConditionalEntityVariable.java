@@ -7,7 +7,8 @@ import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.variable.ConditionalVariable;
 
 /**
- * Gets one of two entity properties based on the condition
+ * Gets one of two entity properties based on the condition.
+ * TODO: make a conditional target variable using {@link slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate}?
  */
 public record ConditionalEntityVariable(IJsonPredicate<LivingEntity> condition, EntityVariable ifTrue, EntityVariable ifFalse)
     implements EntityVariable, ConditionalVariable<IJsonPredicate<LivingEntity>,EntityVariable> {

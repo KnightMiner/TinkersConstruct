@@ -15,6 +15,7 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.math.ModifierFormula;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.json.variable.protection.ProtectionFormula;
@@ -44,12 +45,12 @@ import java.util.List;
  * @param formula   Protection formula
  * @param condition Modifier module conditions
  */
-public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, IJsonPredicate<LivingEntity> attacker, ProtectionFormula formula, ModifierCondition<IToolStackView> condition) implements ProtectionModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, EntityTargetPredicate attacker, ProtectionFormula formula, ModifierCondition<IToolStackView> condition) implements ProtectionModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ProtectionModule>defaultHooks(ModifierHooks.PROTECTION, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ProtectionModule> LOADER = RecordLoadable.create(
     DamageSourcePredicate.LOADER.defaultField("damage_source", ProtectionModule::source),
     LivingEntityPredicate.LOADER.defaultField("wearing_entity", ProtectionModule::entity),
-    LivingEntityPredicate.LOADER.defaultField("attacker", ProtectionModule::attacker), // TODO 1.21: remove as this is redundant to damage source predicate
+    EntityTargetPredicate.attackerField(ProtectionModule::attacker), // TODO 1.21: remove as this is redundant to damage source predicate
     ProtectionFormula.LOADER.directField(ProtectionModule::formula),
     ModifierCondition.TOOL_FIELD,
     ProtectionModule::new);
@@ -66,7 +67,7 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
   @Override
   public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
     // apply the main protection bonus
-    if (condition.matches(tool, modifier) && this.source.matches(source) && this.entity.matches(context.getEntity()) && TinkerPredicate.matches(attacker, source.getEntity())) {
+    if (condition.matches(tool, modifier) && this.source.matches(source) && this.entity.matches(context.getEntity()) && EntityTargetPredicate.matchesNullable(attacker, source.getEntity())) {
       modifierValue = formula.apply(tool, modifier, context, context.getEntity(), slotType, source, modifierValue);
     }
     return modifierValue;
@@ -110,10 +111,10 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
 
   @Setter
   @Accessors(fluent = true)
-  public static class Builder extends VariableFormula.Builder<Builder,ProtectionModule,ProtectionVariable> {
+  public static class Builder extends VariableFormula.Builder<Builder,ProtectionModule,ProtectionVariable> implements EntityTargetPredicate.AttackerBuilder<Builder> {
     private IJsonPredicate<DamageSource> source = DamageSourcePredicate.CAN_PROTECT;
     private IJsonPredicate<LivingEntity> entity = LivingEntityPredicate.ANY;
-    private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
+    private EntityTargetPredicate attacker = EntityTargetPredicate.ANY;
 
     private Builder() {
       super(ProtectionFormula.VARIABLES);

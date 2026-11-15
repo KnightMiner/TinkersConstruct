@@ -8,12 +8,14 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -40,19 +42,19 @@ import java.util.Set;
 public interface LootingModule extends ModifierModule, LevelingIntModule, ConditionalModule<IToolStackView> {
   /* Common fields */
   LoadableField<IJsonPredicate<LivingEntity>,LootingModule> HOLDER = LivingEntityPredicate.LOADER.defaultField("holder", LootingModule::holder);
-  LoadableField<IJsonPredicate<LivingEntity>,LootingModule> TARGET = LivingEntityPredicate.LOADER.defaultField("target", LootingModule::target);
+  RecordField<EntityTargetPredicate,LootingModule> TARGET = EntityTargetPredicate.defaultField(LootingModule::target);
   LoadableField<IJsonPredicate<DamageSource>,LootingModule> DAMAGE_SOURCE = DamageSourcePredicate.LOADER.defaultField("damage_source", LootingModule::damageSource);
 
   /** Condition on the entity attacking */
   IJsonPredicate<LivingEntity> holder();
   /** Condition on the target */
-  IJsonPredicate<LivingEntity> target();
+  EntityTargetPredicate target();
   /** Condition on the damage source used */
   IJsonPredicate<DamageSource> damageSource();
 
   /** Checks if the conditions match the given context */
   default boolean matchesConditions(IToolStackView tool, ModifierEntry modifier, LootingContext context) {
-    return condition().matches(tool, modifier) && holder().matches(context.getHolder()) && TinkerPredicate.matches(target(), context.getLivingTarget()) && TinkerPredicate.matches(damageSource(), context.getDamageSource());
+    return condition().matches(tool, modifier) && holder().matches(context.getHolder()) && target().matches(context.getTarget(), context.getLivingTarget()) && TinkerPredicate.matches(damageSource(), context.getDamageSource());
   }
 
   /** Creates a new builder instance */
@@ -64,10 +66,10 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   @SuppressWarnings("unused") // API
   @Setter
   @Accessors(fluent = true)
-  class Builder extends ModuleBuilder.Stack<Builder> {
+  class Builder extends ModuleBuilder.Stack<Builder> implements EntityTargetPredicate.Builder<Builder> {
     private LevelingInt level = LevelingInt.LEVEL;
     private IJsonPredicate<LivingEntity> holder = LivingEntityPredicate.ANY;
-    private IJsonPredicate<LivingEntity> target = LivingEntityPredicate.ANY;
+    private EntityTargetPredicate target = EntityTargetPredicate.ANY;
     private IJsonPredicate<DamageSource> damageSource = DamageSourcePredicate.ANY;
 
     private Builder() {}
@@ -103,7 +105,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   }
 
   /** Implementation for weapon looting */
-  record Weapon(LevelingInt level, IJsonPredicate<LivingEntity> holder, IJsonPredicate<LivingEntity> target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition) implements LootingModule, LootingModifierHook {
+  record Weapon(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition) implements LootingModule, LootingModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Weapon>defaultHooks(ModifierHooks.WEAPON_LOOTING);
     public static final RecordLoadable<Weapon> LOADER = RecordLoadable.create(LevelingIntModule.FIELD, HOLDER, TARGET, DAMAGE_SOURCE, ModifierCondition.TOOL_FIELD, Weapon::new);
 
@@ -131,7 +133,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   }
 
   /** Implementation for armor looting */
-  record Armor(LevelingInt level, IJsonPredicate<LivingEntity> holder, IJsonPredicate<LivingEntity> target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition, Set<EquipmentSlot> slots) implements LootingModule, ArmorLootingModifierHook {
+  record Armor(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition, Set<EquipmentSlot> slots) implements LootingModule, ArmorLootingModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Armor>defaultHooks(ModifierHooks.ARMOR_LOOTING);
     public static final RecordLoadable<Armor> LOADER = RecordLoadable.create(LevelingIntModule.FIELD, HOLDER, TARGET, DAMAGE_SOURCE, ModifierCondition.TOOL_FIELD, TinkerLoadables.EQUIPMENT_SLOT_SET.requiredField("slots", Armor::slots), Armor::new);
 

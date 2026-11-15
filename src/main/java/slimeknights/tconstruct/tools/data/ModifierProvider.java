@@ -11,9 +11,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
@@ -506,7 +506,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(TinkerModifiers.severing.id()).addModule(SeveringModule.INSTANCE);
     buildModifier(ModifierIds.experienced)
       .addModule(new VolatileFloatModule(ModifierEvents.EXPERIENCE, LevelingValue.eachLevel(0.5f)), ModifierHooks.VOLATILE_DATA, ModifierHooks.PROJECTILE_LAUNCH)
-      .addModule(AttributeModule.builder(MantleAttributes.EXPERIENCE_MULTIPLIER, Operation.ADD_MULTIPLIED_BASE).toolItem(ItemPredicate.tag(ARMOR)).eachLevel(0.25f));
+      .addModule(AttributeModule.builder(MantleAttributes.EXPERIENCE_MULTIPLIER, Operation.ADD_MULTIPLIED_BASE).toolTag(ARMOR).eachLevel(0.25f));
     // lucky
     EnchantmentModule CONSTANT_FORTUNE = EnchantmentModule.builder(Enchantments.BLOCK_FORTUNE).toolItem(harvest).constant();
     StatBoostModule SEA_LUCK = StatBoostModule.add(ToolStats.SEA_LUCK).eachLevel(1);
@@ -567,15 +567,15 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     // we instead do +0.75, +1.5, +2.25, +3, +3.75
     buildModifier(ModifierIds.sharpness).addModule(StatBoostModule.add(ToolStats.ATTACK_DAMAGE).eachLevel(0.75f)).levelDisplay(new UniqueForLevels(5, true));
     buildModifier(ModifierIds.swiftstrike).addModule(StatBoostModule.multiplyBase(ToolStats.ATTACK_SPEED).eachLevel(0.05f)).levelDisplay(new UniqueForLevels(5));
-    buildModifier(ModifierIds.smite).addModule(ConditionalMeleeDamageModule.builder().target(LivingEntityPredicate.tag(EntityTypeTags.SENSITIVE_TO_SMITE)).eachLevel(2.0f));
-    buildModifier(ModifierIds.antiaquatic).addModule(ConditionalMeleeDamageModule.builder().target(LivingEntityPredicate.tag(EntityTypeTags.SENSITIVE_TO_IMPALING)).eachLevel(2.0f));
-    buildModifier(ModifierIds.cooling).addModule(ConditionalMeleeDamageModule.builder().target(LivingEntityPredicate.fallback(EntityPredicate.FIRE_IMMUNE)).eachLevel(1.6f));
+    buildModifier(ModifierIds.smite).addModule(ConditionalMeleeDamageModule.builder().target(EntityTypeTags.SENSITIVE_TO_SMITE).eachLevel(2.0f));
+    buildModifier(ModifierIds.antiaquatic).addModule(ConditionalMeleeDamageModule.builder().target(EntityTypeTags.SENSITIVE_TO_IMPALING).eachLevel(2.0f));
+    buildModifier(ModifierIds.cooling).addModule(ConditionalMeleeDamageModule.builder().directTarget(EntityPredicate.FIRE_IMMUNE).eachLevel(1.6f));
     // TODO: tag for simply bane of SSSSS?
-    IJsonPredicate<LivingEntity> baneSssssPredicate = LivingEntityPredicate.or(LivingEntityPredicate.tag(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS), LivingEntityPredicate.tag(TinkerTags.EntityTypes.CREEPERS));
+    IJsonPredicate<Entity> baneSssssPredicate = EntityPredicate.or(EntityPredicate.tag(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS), EntityPredicate.tag(TinkerTags.EntityTypes.CREEPERS));
     buildModifier(ModifierIds.baneOfSssss)
-      .addModule(ConditionalMeleeDamageModule.builder().target(baneSssssPredicate).eachLevel(2.0f))
-      .addModule(MobEffectModule.builder(MobEffects.MOVEMENT_SLOWDOWN).level(RandomLevelingValue.flat(4)).time(RandomLevelingValue.random(20, 10)).target(baneSssssPredicate).buildWeapon(), ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT);
-    buildModifier(ModifierIds.killager).addModule(ConditionalMeleeDamageModule.builder().target(LivingEntityPredicate.tag(TinkerTags.EntityTypes.KILLAGERS)).eachLevel(2.0f));
+      .addModule(ConditionalMeleeDamageModule.builder().directTarget(baneSssssPredicate).eachLevel(2.0f))
+      .addModule(MobEffectModule.builder(MobEffects.MOVEMENT_SLOWDOWN).level(RandomLevelingValue.flat(4)).time(RandomLevelingValue.random(20, 10)).target(LivingEntityPredicate.fallback(baneSssssPredicate)).buildWeapon(), ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT);
+    buildModifier(ModifierIds.killager).addModule(ConditionalMeleeDamageModule.builder().target(TinkerTags.EntityTypes.KILLAGERS).eachLevel(2.0f));
     MobEffectModule.Builder pierceBuilder = MobEffectModule.builder(TinkerEffects.pierce).applyBeforeMelee(true)
       // apply effect for 4 seconds, canceling 1 armor per level
       .level(RandomLevelingValue.perLevel(0, 1)).time(RandomLevelingValue.flat(4 * 20))
@@ -831,7 +831,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
           HasModifierPredicate.hasModifier(TinkerModifiers.parrying.id(), 1)))
         .modifierKey(ModifierIds.blockade).build());
     buildModifier(ModifierIds.boundless)
-      .addModule(AttributeModule.builder(TinkerAttributes.PROTECTION_CAP, Operation.ADD_VALUE).tooltipStyle(TooltipStyle.PERCENT).toolItem(ItemPredicate.tag(ARMOR)).amount(0.05f, 0.05f));
+      .addModule(AttributeModule.builder(TinkerAttributes.PROTECTION_CAP, Operation.ADD_VALUE).tooltipStyle(TooltipStyle.PERCENT).toolTag(ARMOR).amount(0.05f, 0.05f));
     buildModifier(ModifierIds.reflecting).addModule(new VolatileIntModule(ModifierEvents.REFLECTING, LevelingInt.eachLevel(40)));
 
     // interaction
@@ -863,7 +863,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.fins)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(StatBoostModule.add(ToolStats.WATER_INERTIA).flat(0.5f))
-      .addModule(ConditionalPowerModule.builder().target(LivingEntityPredicate.fallback(EntityPredicate.UNDERWATER)).eachLevel(1))
+      .addModule(ConditionalPowerModule.builder().directTarget(EntityPredicate.UNDERWATER).eachLevel(1))
       // make explosive use EFLN style, it works underwater!
       .addModule(new VolatileFlagModule(ProjectileExplosionModule.EFLN), ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT);
     // fins on prismarine arrow heads should only apply to arrows
@@ -1056,13 +1056,13 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.deciduous).priority(250).addModule(new ShareDurabilityModule(ModifierIds.barkskin, new LevelingInt(1, 1), LevelingInt.flat(1)));
     buildModifier(ModifierIds.overgrowth).addModule(new OvergrowthModule(LevelingValue.eachLevel(0.05f)));
     buildModifier(ModifierIds.searing).addModule(ConditionalMiningSpeedModule.builder().blocks(TinkerPredicate.CAN_MELT_BLOCK).eachLevel(6f));
-    buildModifier(ModifierIds.scorching).addModule(ConditionalMeleeDamageModule.builder().target(LivingEntityPredicate.fallback(EntityPredicate.ON_FIRE)).eachLevel(2f));
+    buildModifier(ModifierIds.scorching).addModule(ConditionalMeleeDamageModule.builder().directTarget(EntityPredicate.ON_FIRE).eachLevel(2f));
     buildModifier(ModifierIds.airborne).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       // 400% boost means 5x mining speed
       .addModule(ConditionalMiningSpeedModule.builder().holder(LivingEntityPredicate.fallback(EntityPredicate.ON_GROUND).inverted()).percent().allowIneffective().flat(4), ModifierHooks.BREAK_SPEED)
       // velocity gets a 0.1 boost under the stricter version of in air (no boost just for being on a ladder)
       .addModule(ConditionalStatModule.stat(ToolStats.VELOCITY).holder(TinkerPredicate.AIRBORNE).flat(0.1f));
-    buildModifier(ModifierIds.airborn).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(ProtectionModule.builder().attacker(TinkerPredicate.AIRBORNE).flat(2.5f));
+    buildModifier(ModifierIds.airborn).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(ProtectionModule.builder().livingAttacker(TinkerPredicate.AIRBORNE).flat(2.5f));
     buildModifier(ModifierIds.skyfall)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       // goes from -15% to -25%
@@ -1223,9 +1223,9 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
             .constant(1.5f).variable(LEVEL).power()
           .divide()
         .subtract().build());
-    buildModifier(ModifierIds.consecrated).addModule(ProtectionModule.builder().attacker(LivingEntityPredicate.tag(EntityTypeTags.UNDEAD)).eachLevel(1.25f));
+    buildModifier(ModifierIds.consecrated).addModule(ProtectionModule.builder().attacker(EntityTypeTags.UNDEAD).eachLevel(1.25f));
     buildModifier(ModifierIds.preserved).addModules(StatBoostModule.multiplyBase(ToolStats.DURABILITY).eachLevel(0.15f), RepairFactorModule.builder().eachLevel(0.15f));
-    buildModifier(ModifierIds.holy).addModule(ConditionalPowerModule.builder().target(LivingEntityPredicate.tag(EntityTypeTags.SENSITIVE_TO_SMITE)).eachLevel(0.75f));
+    buildModifier(ModifierIds.holy).addModule(ConditionalPowerModule.builder().target(EntityTypeTags.SENSITIVE_TO_SMITE).eachLevel(0.75f));
 
     // traits - tier 3
     buildModifier(ModifierIds.overcast)
@@ -1449,9 +1449,9 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .variable(VALUE).add()
         .build())
       // double the chance if in water
-      .addModule(ThornsModule.type(TinkerDamageTypes.SHOCK).chanceLeveling(0.2f).constantFlat(2).randomFlat(3).toolTag(ARMOR).attacker(LivingEntityPredicate.fallback(EntityPredicate.or(EntityPredicate.EYES_IN_WATER, EntityPredicate.FEET_IN_WATER))).build())
+      .addModule(ThornsModule.type(TinkerDamageTypes.SHOCK).chanceLeveling(0.2f).constantFlat(2).randomFlat(3).toolTag(ARMOR).directAttacker(EntityPredicate.or(EntityPredicate.EYES_IN_WATER, EntityPredicate.FEET_IN_WATER)).build())
       // single chance in rain, if in both the chance grows more!
-      .addModule(ThornsModule.type(TinkerDamageTypes.SHOCK).chanceLeveling(0.1f).constantFlat(2).randomFlat(3).toolTag(ARMOR).attacker(LivingEntityPredicate.fallback(EntityPredicate.RAINING)).build());
+      .addModule(ThornsModule.type(TinkerDamageTypes.SHOCK).chanceLeveling(0.1f).constantFlat(2).randomFlat(3).toolTag(ARMOR).directAttacker(EntityPredicate.RAINING).build());
     // apply 6 seconds of wither, for comparison wither skeletons apply 10. Higher levels make it deal more damage, not just faster
     MobEffectModule.Builder decayBuilder = MobEffectModule.builder(MobEffects.WITHER).level(RandomLevelingValue.perLevel(0, 1)).time(RandomLevelingValue.flat(120));
     buildModifier(ModifierIds.decay)
@@ -1511,10 +1511,10 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .variable(LEVEL).multiply()
         .variable(VALUE).add()
         .build());
-    buildModifier(ModifierIds.temperedProtection).addModule(ProtectionModule.builder().attacker(LivingEntityPredicate.fallback(EntityPredicate.ON_FIRE)).eachLevel(1.25f));
+    buildModifier(ModifierIds.temperedProtection).addModule(ProtectionModule.builder().directAttacker(EntityPredicate.ON_FIRE).eachLevel(1.25f));
     buildModifier(ModifierIds.ambush)
       .addModule(ConditionalStatModule.stat(ToolStats.PROJECTILE_DAMAGE).holder(TinkerPredicate.FULL_HEALTH).eachLevel(0.5f))
-      .addModule(ConditionalPowerModule.builder().target(TinkerPredicate.FULL_HEALTH).eachLevel(0.25f))
+      .addModule(ConditionalPowerModule.builder().livingTarget(TinkerPredicate.FULL_HEALTH).eachLevel(0.25f))
       .addModule(ConditionalMeleeDamageModule.builder()
         .formula()
         // +1 damage if you are at full health

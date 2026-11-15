@@ -21,7 +21,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -45,13 +45,13 @@ import java.util.List;
 /**
  * Plays an instrument on successful melee hits.
  */
-public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instrument> tag, IJsonPredicate<LivingEntity> attacker, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements ModifierModule, ConditionalModule<IToolStackView>, MonsterMeleeHitModifierHook.RedirectBefore, DamageDealtModifierHook {
+public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instrument> tag, IJsonPredicate<LivingEntity> attacker, EntityTargetPredicate target, ModifierCondition<IToolStackView> condition) implements ModifierModule, ConditionalModule<IToolStackView>, MonsterMeleeHitModifierHook.RedirectBefore, DamageDealtModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeInstrumentModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.DAMAGE_DEALT);
   public static final RecordLoadable<MeleeInstrumentModule> LOADER = RecordLoadable.create(
     MaterialId.LOADABLE.nullableField("instrument_material", MeleeInstrumentModule::material),
     TinkerLoadables.INSTRUMENT_TAGS.requiredField("instrument_tag", MeleeInstrumentModule::tag),
     LivingEntityPredicate.LOADER.defaultField("attacker", MeleeInstrumentModule::attacker),
-    LivingEntityPredicate.LOADER.defaultField("target", MeleeInstrumentModule::target),
+    EntityTargetPredicate.defaultField(MeleeInstrumentModule::target),
     ModifierCondition.TOOL_FIELD,
     MeleeInstrumentModule::new);
 
@@ -106,7 +106,7 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
 
   @Override
   public void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
-    if (TinkerPredicate.matches(this.target, context.getLivingTarget())) {
+    if (this.target.matches(context)) {
       playSound(tool, context.getAttacker(), context.getPlayerAttacker(), context.getTarget());
     }
   }
@@ -129,12 +129,12 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   @Accessors(fluent = true)
   @Setter
-  public static class Builder extends Stack<Builder> {
+  public static class Builder extends Stack<Builder> implements EntityTargetPredicate.Builder<Builder> {
     private final TagKey<Instrument> tag;
     @Nullable
     private MaterialId material = null;
     private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
-    private IJsonPredicate<LivingEntity> target = LivingEntityPredicate.ANY;
+    private EntityTargetPredicate target = EntityTargetPredicate.ANY;
 
     /** Builds the final module */
     public MeleeInstrumentModule build() {

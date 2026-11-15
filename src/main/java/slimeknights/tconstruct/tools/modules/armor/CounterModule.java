@@ -11,13 +11,14 @@ import net.minecraft.world.entity.EquipmentSlot.Type;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.ItemAbilities;
 import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.LevelingValue;
-import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.armor.OnAttackedModifierHook;
@@ -62,8 +63,8 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   }
 
   /** Condition on the attacking entity */
-  default IJsonPredicate<LivingEntity> attacker() {
-    return LivingEntityPredicate.ANY;
+  default EntityTargetPredicate attacker() {
+    return EntityTargetPredicate.ANY;
   }
 
   /** Evaluates the random chance */
@@ -99,7 +100,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
     // must be direct damage, and must be armor (held or
     Entity attacker = source.getEntity();
     LivingEntity defender = context.getEntity();
-    if (isDirectDamage && attacker != null && canApply(attacker) && TinkerPredicate.matches(attacker(), attacker) && defender().matches(defender) && condition().matches(tool, modifier)) {
+    if (isDirectDamage && attacker != null && canApply(attacker) && attacker().matches(attacker) && defender().matches(defender) && condition().matches(tool, modifier)) {
       // level is doubled for shields that are actively blocking
       float level = getLevel(tool, modifier, slotType, defender);
       if (checkChance(level)) {
@@ -146,10 +147,10 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   LoadableField<LevelingValue,CounterModule> CHANCE_FIELD = LevelingValue.LOADABLE.requiredField("chance", CounterModule::chance);
   LoadableField<Integer,CounterModule> DURABILITY_FIELD = IntLoadable.FROM_ZERO.requiredField("durability_usage", CounterModule::durabilityUsage);
   LoadableField<IJsonPredicate<LivingEntity>,CounterModule> DEFENDER_FIELD = LivingEntityPredicate.LOADER.defaultField("defender", CounterModule::defender);
-  LoadableField<IJsonPredicate<LivingEntity>,CounterModule> ATTACKER_FIELD = LivingEntityPredicate.LOADER.defaultField("attacker", CounterModule::attacker);
+  RecordField<EntityTargetPredicate,CounterModule> ATTACKER_FIELD = EntityTargetPredicate.attackerField(CounterModule::attacker);
 
   /** Creates a loader with the standard parameter set */
-  static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,IJsonPredicate<LivingEntity>,ModifierCondition<IToolStackView>,T> constructor) {
+  static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<IToolStackView>,T> constructor) {
     return RecordLoadable.create(
       CHANCE_FIELD,
       LevelingValue.LOADABLE.defaultField("constant_" + value, LevelingValue.ZERO, CounterModule::constant),
@@ -166,14 +167,14 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   @RequiredArgsConstructor
   @Setter
   @Accessors(fluent = true)
-  class Builder<T> extends ModuleBuilder.Stack<Builder<T>> {
-    private final Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,IJsonPredicate<LivingEntity>,ModifierCondition<IToolStackView>,T> constructor;
+  class Builder<T> extends ModuleBuilder.Stack<Builder<T>> implements EntityTargetPredicate.AttackerBuilder<Builder<T>> {
+    private final Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<IToolStackView>,T> constructor;
     private LevelingValue chance = LevelingValue.eachLevel(0.15f);
     private LevelingValue constant = LevelingValue.ZERO;
     private LevelingValue random = LevelingValue.ZERO;
     private int durabilityUsage = 1;
     private IJsonPredicate<LivingEntity> defender = LivingEntityPredicate.ANY;
-    private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
+    private EntityTargetPredicate attacker = EntityTargetPredicate.ANY;
 
     /** Common case of leveling chance */
     public Builder<T> chanceLeveling(float value) {

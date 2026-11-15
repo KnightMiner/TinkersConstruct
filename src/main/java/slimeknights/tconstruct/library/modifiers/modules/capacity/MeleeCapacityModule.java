@@ -11,7 +11,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.LevelingInt;
-import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
+import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -28,10 +28,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module that adds capacity whenever the tool deals melee damage. */
-public record MeleeCapacityModule(IJsonPredicate<LivingEntity> target, IJsonPredicate<LivingEntity> attacker, LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
+public record MeleeCapacityModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeCapacityModule>defaultHooks(ModifierHooks.MELEE_HIT);
   public static final RecordLoadable<MeleeCapacityModule> LOADER = RecordLoadable.create(
-    LivingEntityPredicate.LOADER.defaultField("target", MeleeCapacityModule::target),
+    EntityTargetPredicate.defaultField(MeleeCapacityModule::target),
     LivingEntityPredicate.LOADER.defaultField("attacker", MeleeCapacityModule::attacker),
     LevelingInt.LOADABLE.defaultField("grant", LevelingInt.ZERO, false, MeleeCapacityModule::grant),
     BooleanLoadable.INSTANCE.defaultField("run_before", false, true, MeleeCapacityModule::before),
@@ -54,7 +54,7 @@ public record MeleeCapacityModule(IJsonPredicate<LivingEntity> target, IJsonPred
 
   /** Applies the capacity boost to the modifier. */
   private void apply(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context) {
-    if (condition.matches(tool, modifier) && this.attacker.matches(context.getAttacker()) && TinkerPredicate.matches(this.target, context.getLivingTarget())) {
+    if (condition.matches(tool, modifier) && this.attacker.matches(context.getAttacker()) && target.matches(context)) {
       CapacitySourceModule.apply(tool, barModifier(tool, modifier), 1, grant.compute(modifier.getEffectiveLevel()));
     }
   }
@@ -85,8 +85,8 @@ public record MeleeCapacityModule(IJsonPredicate<LivingEntity> target, IJsonPred
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class Builder extends CapacitySourceModule.Builder<Builder> implements LevelingInt.Builder<MeleeCapacityModule>  {
-    private IJsonPredicate<LivingEntity> target = LivingEntityPredicate.ANY;
+  public static class Builder extends CapacitySourceModule.Builder<Builder> implements LevelingInt.Builder<MeleeCapacityModule>, EntityTargetPredicate.Builder<Builder> {
+    private EntityTargetPredicate target = EntityTargetPredicate.ANY;
     private IJsonPredicate<LivingEntity> attacker = LivingEntityPredicate.ANY;
     /** If true, runs in the before hook instead of the after */
     private boolean before = false;
