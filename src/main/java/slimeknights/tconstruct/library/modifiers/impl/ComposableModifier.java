@@ -10,6 +10,7 @@ import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
@@ -136,6 +137,11 @@ public class ComposableModifier extends BasicModifier {
     /** Overrides the description key prefix using the given modifier. */
     public Builder translationKey(ResourceLocation modifier) {
       return translationKey("modifier." + modifier.toLanguageKey());
+    }
+
+    /** Overrides the description key prefix using the given modifier. */
+    public Builder translationKey(IdAwareObject modifier) {
+      return translationKey(modifier.id());
     }
 
 

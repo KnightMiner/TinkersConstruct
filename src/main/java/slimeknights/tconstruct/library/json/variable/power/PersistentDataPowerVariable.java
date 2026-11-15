@@ -7,6 +7,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -19,6 +20,10 @@ public record PersistentDataPowerVariable(ResourceLocation key, float fallback) 
     Loadables.RESOURCE_LOCATION.requiredField("key", PersistentDataPowerVariable::key),
     FloatLoadable.ANY.requiredField("fallback", PersistentDataPowerVariable::fallback),
     PersistentDataPowerVariable::new);
+
+  public PersistentDataPowerVariable(IdAwareObject key, float fallback) {
+    this(key.id(), fallback);
+  }
 
   @Override
   public float getValue(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {

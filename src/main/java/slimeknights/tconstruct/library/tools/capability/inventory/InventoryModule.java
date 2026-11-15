@@ -19,6 +19,7 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
+import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.LevelingInt;
@@ -368,6 +369,17 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
       this.validationLevel = inventory.validationLevel;
       this.condition = inventory.condition;
       return this;
+    }
+
+    /** Sets the key */
+    public Builder key(ResourceLocation key) {
+      this.key = key;
+      return this;
+    }
+
+    /** Sets the key */
+    public Builder key(IdAwareObject key) {
+      return key(key.id());
     }
 
     /** Sets the base slot limit */
