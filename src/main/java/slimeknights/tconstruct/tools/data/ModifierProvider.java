@@ -474,6 +474,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       ConditionalMiningSpeedModule.builder()
         .customVariable("bonus", new EntityConditionalStatVariable(new ConditionalEntityVariable(
           LivingEntityPredicate.fallback(EntityPredicate.EYES_IN_WATER),
+          // TODO: use submerged mining speed attribute instead
           new ConditionalEntityVariable(new HasEnchantmentEntityPredicate(Enchantments.AQUA_AFFINITY), 8, 40),
           new ConditionalEntityVariable(LivingEntityPredicate.fallback(EntityPredicate.RAINING), 4, 0)
         ), 8)).formula()
@@ -722,10 +723,10 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(MaxArmorAttributeModule.builder(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE).heldTag(TinkerTags.Items.HELD).eachLevel(0.05f))
       .addModule(ProtectionModule.builder().sources(DamageSourcePredicate.CAN_PROTECT, DamageSourcePredicate.tag(TinkerTags.DamageTypes.PROJECTILE_PROTECTION)).eachLevel(2f));
     buildModifier(ModifierIds.fireProtection)
-      .addModule(EnchantmentModule.builder(Enchantments.FIRE_PROTECTION).protection())
+      .addModule(AttributeModule.builder(Attributes.BURNING_TIME, Operation.ADD_MULTIPLIED_BASE).eachLevel(-0.15f))
       .addModule(ProtectionModule.builder().sources(DamageSourcePredicate.CAN_PROTECT, DamageSourcePredicate.tag(TinkerTags.DamageTypes.FIRE_PROTECTION)).eachLevel(3f));
     buildModifier(ModifierIds.blastProtection)
-      .addModule(EnchantmentModule.builder(Enchantments.BLAST_PROTECTION).protection())
+      .addModule(AttributeModule.builder(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE, Operation.ADD_VALUE).eachLevel(0.15f))
       .addModule(ProtectionModule.builder().sources(DamageSourcePredicate.CAN_PROTECT, DamageSourcePredicate.tag(TinkerTags.DamageTypes.BLAST_PROTECTION)).eachLevel(3f));
     buildModifier(ModifierIds.magicProtection)
       .addModule(MaxArmorAttributeModule.builder(TinkerAttributes.BAD_EFFECT_DURATION, Operation.ADD_MULTIPLIED_BASE).heldTag(TinkerTags.Items.HELD).eachLevel(-0.05f))
@@ -755,8 +756,8 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(MaxArmorAttributeModule.builder(TinkerAttributes.CRITICAL_DAMAGE, Operation.ADD_VALUE).heldTag(TinkerTags.Items.HELD).tooltipStyle(TooltipStyle.PERCENT).eachLevel(0.05f))
       .addModule(ProtectionModule.builder().entity(TinkerPredicate.AIRBORNE).eachLevel(2f));
     // helmet
-    buildModifier(ModifierIds.respiration).addModule(EnchantmentModule.builder(Enchantments.RESPIRATION).constant());
-    buildModifier(ModifierIds.aquaAffinity).addModule(EnchantmentModule.builder(Enchantments.AQUA_AFFINITY).constant()).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.respiration).addModule(AttributeModule.builder(Attributes.OXYGEN_BONUS, Operation.ADD_VALUE).eachLevel(1));
+    buildModifier(ModifierIds.aquaAffinity).addModule(AttributeModule.builder(Attributes.SUBMERGED_MINING_SPEED, Operation.ADD_MULTIPLIED_TOTAL).eachLevel(4)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(TinkerModifiers.itemFrame).addModule(InventoryModule.builder().pattern(pattern("item_frame")).flatLimit(1).slotsPerLevel(3));
     buildModifier(ModifierIds.minimap).addModule(InventoryModule.builder().pattern(pattern("map")).filter(TinkerPredicate.MAP).flatLimit(1).slotsPerLevel(3)).addModule(MinimapModule.INSTANCE);
     // chestplate
@@ -787,7 +788,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.leaping)
       .addModule(AttributeModule.builder(TinkerAttributes.JUMP_BOOST, Operation.ADD_VALUE).eachLevel(1))
       .addModule(AttributeModule.builder(Attributes.SAFE_FALL_DISTANCE, Operation.ADD_VALUE).eachLevel(1));
-    buildModifier(ModifierIds.swiftSneak).addModule(EnchantmentModule.builder(Enchantments.SWIFT_SNEAK).constant());
+    buildModifier(ModifierIds.swiftSneak).addModule(AttributeModule.builder(Attributes.SNEAKING_SPEED, Operation.ADD_VALUE).eachLevel(0.15f));
     // TODO: consider higher levels keeping more of the inventory
     buildModifier(ModifierIds.soulBelt).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ArmorLevelModule(TinkerDataKeys.SOUL_BELT, true, null)).addModule(ModifierRequirementsModule.builder().modifierKey(ModifierIds.soulBelt).requireModifier(ModifierIds.soulbound, 1).build());
     buildModifier(ModifierIds.workbench)
@@ -801,7 +802,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(InventorySlotMenuModule.INSTANCE)
       .addModule(new VolatileFlagModule(ToolInventoryCapability.CRAFTING_TABLE));
     // boots
-    buildModifier(ModifierIds.depthStrider).addModule(EnchantmentModule.builder(Enchantments.DEPTH_STRIDER).constant());
+    buildModifier(ModifierIds.depthStrider).addModule(AttributeModule.builder(Attributes.WATER_MOVEMENT_EFFICIENCY, Operation.ADD_VALUE).eachLevel(1/3f));
     buildModifier(ModifierIds.soulspeed).addModule(new SoulSpeedModule(LevelingInt.flat(1), ModifierCondition.ANY_TOOL));
     buildModifier(ModifierIds.featherFalling)
       .addModule(ProtectionModule.builder().source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.FALL_PROTECTION))
@@ -1180,7 +1181,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .variable(VALUE).add().build());
 
     buildModifier(ModifierIds.scorchProtection)
-      .addModule(EnchantmentModule.builder(Enchantments.FIRE_PROTECTION).protection())
+      .addModule(AttributeModule.builder(Attributes.BURNING_TIME, Operation.ADD_MULTIPLIED_BASE).eachLevel(-0.15f))
       .addModule(ProtectionModule.builder().sources(DamageSourcePredicate.CAN_PROTECT, SourceAttackerPredicate.causing(LivingEntityPredicate.fallback(EntityPredicate.FIRE_IMMUNE))).eachLevel(1.25f));
     buildModifier(ModifierIds.necrotic).addModule(LifestealModule.builder().eachLevel(0.05f));
     buildModifier(ModifierIds.restore).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
@@ -1573,8 +1574,8 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new EffectImmunityModule(MobEffects.WITHER, LevelingInt.LEVEL))
       .addModule(MobEffectModule.builder(MobEffects.WITHER).damageSource(DamageSourcePredicate.tag(TinkerTags.DamageTypes.MELEE_PROTECTION)).time(RandomLevelingValue.flat(120)).buildArmorAttack());
     buildModifier(ModifierIds.fireborn).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
-      // make immune to fire by forcing fire time to 0 (that is, -105% fire tick time)
-      .addModule(EnchantmentModule.builder(Enchantments.FIRE_PROTECTION).level(LevelingInt.flat(7)).protection())
+      // make immune to fire by forcing fire time to 0 (that is, -100% fire tick time)
+      .addModule(AttributeModule.builder(Attributes.BURNING_TIME, Operation.ADD_MULTIPLIED_TOTAL).flat(-1))
       // also immune to conductive, this one is purely defensive
       .addModule(new EffectImmunityModule(TinkerEffects.conductive, LevelingInt.LEVEL));
     // bundles - adds 2 levels of ###, plus 1 when trimmed
@@ -1592,7 +1593,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.shellStorage).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ModifierTraitModule(ModifierIds.pocket, 3, true));
     buildModifier(ModifierIds.turtlesGrace).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(AttributeModule.builder(NeoForgeMod.SWIM_SPEED, Operation.ADD_MULTIPLIED_TOTAL).eachLevel(0.1f))
-      .addModule(EnchantmentModule.builder(Enchantments.RESPIRATION).constant());
+      .addModule(AttributeModule.builder(Attributes.OXYGEN_BONUS, Operation.ADD_VALUE).eachLevel(1));
     buildModifier(ModifierIds.shellGut).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(new EffectImmunityModule(MobEffects.POISON, LevelingInt.LEVEL))
       .addModule(new EffectImmunityModule(MobEffects.HUNGER, new LevelingInt(1, 1)))
