@@ -34,7 +34,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import net.neoforged.neoforge.common.extensions.IHolderExtension;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -58,7 +57,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -118,7 +116,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   /** If true, dynamic modifiers have been loaded from datapacks, so its safe to fetch dynamic modifiers */
   @Getter
   boolean dynamicModifiersLoaded = false;
-  private IContext conditionContext = IContext.EMPTY;
 
   private ModifierManager() {
     super(GSON, FOLDER);
@@ -131,7 +128,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   @Internal
   public void init(IEventBus bus) {
     bus.addListener(FMLCommonSetupEvent.class, e -> e.enqueueWork(this::fireRegistryEvent));
-    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::addDataPackListeners);
+    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, e -> e.addListener(this));
     NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new UpdateModifiersPacket(this.dynamicModifiers, this.tags, this.enchantmentMap, this.enchantmentTags)));
   }
 
@@ -139,12 +136,6 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   private void fireRegistryEvent() {
     ModLoader.runEventGenerator(ModifierRegistrationEvent::new);
     modifiersRegistered = true;
-  }
-
-  /** Adds the managers as datapack listeners */
-  private void addDataPackListeners(final AddReloadListenerEvent event) {
-    event.addListener(this);
-    conditionContext = event.getConditionContext();
   }
 
   /** Clears the cache for all holders. */
@@ -156,14 +147,48 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   protected void apply(Map<ResourceLocation,JsonElement> splashList, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
     long time = System.nanoTime();
 
-    // load modifiers from JSON
-    Map<ModifierId,ModifierId> redirects = new HashMap<>();
-    this.dynamicModifiers = splashList.entrySet().stream()
-      .map(entry -> loadModifier(entry.getKey(), entry.getValue().getAsJsonObject(), redirects))
-      .filter(Objects::nonNull)
-      .collect(Collectors.toMap(Modifier::id, mod -> mod));
+    // prepare contexts
+    HolderLookup.Provider registries = getRegistryLookup();
+    ICondition.IContext conditionContext = getContext();
 
-    // process redirects
+    // load modifiers and redirects from JSON
+    Map<ModifierId,Modifier> dynamicModifiers = new HashMap<>();
+    Map<ModifierId,ModifierId> redirects = new HashMap<>();
+    modifierFiles:
+    for (Entry<ResourceLocation,JsonElement> entry : splashList.entrySet()) {
+      ResourceLocation key = entry.getKey();
+      try {
+        JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), key.toString());
+
+        // processed first so a modifier can both conditionally redirect and fallback to a conditional modifier
+        if (json.has("redirects")) {
+          for (JsonRedirect redirect : JsonHelper.parseList(json, "redirects", JsonRedirect::fromJson)) {
+            ICondition redirectCondition = redirect.getCondition();
+            if (redirectCondition == null || redirectCondition.test(conditionContext)) {
+              ModifierId redirectTarget = ModifierId.create(redirect.getId());
+              log.debug("Redirecting modifier {} to {}", key, redirectTarget);
+              redirects.put(ModifierId.create(key), redirectTarget);
+              continue modifierFiles;
+            }
+          }
+        }
+
+        // check conditions
+        if (!JsonHelper.processConditions(json, conditionContext)) {
+          continue;
+        }
+
+        // fallback to actual modifier
+        ModifierId id = ModifierId.create(key);
+        Modifier modifier = ComposableModifier.LOADER.deserialize(json, contextBuilder(registries, id).put(ContextKey.CONDITION_CONTEXT, conditionContext).build());
+        modifier.setId(id);
+        dynamicModifiers.put(id, modifier);
+      } catch (JsonSyntaxException e) {
+        log.error("Failed to load modifier {}", key, e);
+      }
+    }
+
+    // add redirects into the modifier map
     Map<ModifierId,Modifier> resolvedRedirects = new HashMap<>(); // handled as a separate map to prevent redirects depending on order (no double redirects)
     for (Entry<ModifierId, ModifierId> redirect : redirects.entrySet()) {
       ModifierId from = redirect.getKey();
@@ -174,8 +199,10 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
         resolvedRedirects.put(from, get(to));
       }
     }
-    int modifierSize = this.dynamicModifiers.size();
-    this.dynamicModifiers.putAll(resolvedRedirects);
+    // build final dynamic modifier map
+    int modifierSize = dynamicModifiers.size();
+    dynamicModifiers.putAll(resolvedRedirects);
+    this.dynamicModifiers = Map.copyOf(dynamicModifiers);
 
     // validate required modifiers
     for (ModifierId id : expectedDynamicModifiers) {
@@ -216,6 +243,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
     // load modifier to enchantment mapping
     HolderLookup.RegistryLookup<Enchantment> enchantmentRegistry = getRegistryLookup().lookupOrThrow(Registries.ENCHANTMENT);
 
+    // TODO: this can probably be a datamap, will be easier to get other mods to support us then
     Map<Holder.Reference<Enchantment>,Modifier> enchantmentMap = new HashMap<>();
     List<EnchantmentTag> enchantmentTags = new ArrayList<>();
     Set<Modifier> enchantmentModifiers = new HashSet<>();
@@ -302,44 +330,8 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   }
 
   /** Creates context for modifier parsing */
-  public static TypedMapBuilder contextBuilder(ModifierId modifier) {
-    return TypedMapBuilder.builder().put(ContextKey.ID, modifier.id()).put(ModifierId.CONTEXT_KEY, modifier).put(ContextKey.DEBUG, "Modifier " + modifier);
-  }
-
-  /** Loads a modifier from JSON */
-  @Nullable
-  private Modifier loadModifier(ResourceLocation key, JsonElement element, Map<ModifierId, ModifierId> redirects) {
-    try {
-      JsonObject json = GsonHelper.convertToJsonObject(element, "modifier");
-
-      // processed first so a modifier can both conditionally redirect and fallback to a conditional modifier
-      if (json.has("redirects")) {
-        for (JsonRedirect redirect : JsonHelper.parseList(json, "redirects", JsonRedirect::fromJson)) {
-          ICondition redirectCondition = redirect.getCondition();
-          if (redirectCondition == null || redirectCondition.test(conditionContext)) {
-            ModifierId redirectTarget = ModifierId.create(redirect.getId());
-            log.debug("Redirecting modifier {} to {}", key, redirectTarget);
-            redirects.put(ModifierId.create(key), redirectTarget);
-            return null;
-          }
-        }
-      }
-
-      // conditions
-      // TODO: conditions array
-      if (json.has("condition") && !JsonHelper.parse(ICondition.CODEC, GsonHelper.getAsJsonObject(json, "condition")).test(conditionContext)) {
-        return null;
-      }
-
-      // fallback to actual modifier
-      ModifierId id = ModifierId.create(key);
-      Modifier modifier = ComposableModifier.LOADER.deserialize(json, contextBuilder(id).put(ContextKey.CONDITION_CONTEXT, conditionContext).build());
-      modifier.setId(id);
-      return modifier;
-    } catch (JsonSyntaxException e) {
-      log.error("Failed to load modifier {}", key, e);
-      return null;
-    }
+  public static TypedMapBuilder contextBuilder(HolderLookup.Provider registries, ModifierId modifier) {
+    return ContextKey.lookupContext(registries).put(ContextKey.ID, modifier.id()).put(ModifierId.CONTEXT_KEY, modifier).put(ContextKey.DEBUG, "Modifier " + modifier);
   }
 
   /** Updates the modifiers from the server */

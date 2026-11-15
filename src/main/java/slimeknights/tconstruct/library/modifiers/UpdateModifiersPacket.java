@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -103,10 +104,11 @@ public class UpdateModifiersPacket implements ISimplePacket {
       // read in modifiers
       int size = buffer.readVarInt();
       Map<ModifierId,Modifier> modifiers = new HashMap<>();
+      RegistryAccess registries = buffer.registryAccess();
       for (int i = 0; i < size; i++) {
         ModifierId id = ModifierId.create(buffer.readResourceLocation());
         try {
-          Modifier modifier = ComposableModifier.LOADER.decode(buffer, ModifierManager.contextBuilder(id).build());
+          Modifier modifier = ComposableModifier.LOADER.decode(buffer, ModifierManager.contextBuilder(registries, id).build());
           modifier.setId(id);
           modifiers.put(id, modifier);
         } catch (RuntimeException e) {
@@ -149,11 +151,12 @@ public class UpdateModifiersPacket implements ISimplePacket {
       packet.ensureCalculated();
       // write modifiers
       buffer.writeVarInt(packet.modifiers.size());
+      RegistryAccess registries = buffer.registryAccess();
       for (ComposableModifier modifier : packet.modifiers) {
         ModifierId id = modifier.id();
         buffer.writeResourceLocation(id.id());
         try {
-          ComposableModifier.LOADER.encode(buffer, modifier);
+          ComposableModifier.LOADER.encode(buffer, modifier, ModifierManager.contextBuilder(registries, id).build());
         } catch (RuntimeException e) {
           // improve error logging
           TConstruct.LOG.error("Failed to encode modifier with ID {}", id, e);

@@ -2,12 +2,13 @@ package slimeknights.tconstruct.library.data.tinkering;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.PackOutput.Target;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.data.GenericRegistryDataProvider;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.tconstruct.library.json.JsonRedirect;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -16,26 +17,27 @@ import slimeknights.tconstruct.library.modifiers.impl.ComposableModifier;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /** Datagen for dynamic modifiers */
 @SuppressWarnings("SameParameterValue")
-public abstract class AbstractModifierProvider extends GenericDataProvider {
+public abstract class AbstractModifierProvider extends GenericRegistryDataProvider {
   private final Map<ModifierId,Composable> composableModifiers = new HashMap<>();
 
-  public AbstractModifierProvider(PackOutput packOutput) {
-    super(packOutput, Target.DATA_PACK, ModifierManager.FOLDER);
+  public AbstractModifierProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
+    super(packOutput, ModifierManager.FOLDER, registries);
   }
 
   /**
    * Function to add all relevant modifiers
    */
-  protected abstract void addModifiers();
+  protected abstract void addModifiers(HolderLookup.Provider registries);
 
   /** Adds the given builder, handling duplicate modifiers */
-  private void addBuilder(ModifierId id, @Nullable ComposableModifier.Builder builder, @Nullable ICondition condition, JsonRedirect... redirects) {
-    Composable previous = composableModifiers.putIfAbsent(id, new Composable(builder, condition, redirects));
+  private void addBuilder(ModifierId id, @Nullable ComposableModifier.Builder builder, List<ICondition> conditions, JsonRedirect... redirects) {
+    Composable previous = composableModifiers.putIfAbsent(id, new Composable(builder, conditions, redirects));
     if (previous != null) {
       throw new IllegalArgumentException("Duplicate modifier " + id);
     }
@@ -44,38 +46,38 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
   /* Composable helpers */
 
   /** Sets up a builder for a composable modifier */
-  protected ComposableModifier.Builder buildModifier(ModifierId id, @Nullable ICondition condition, JsonRedirect... redirects) {
+  protected ComposableModifier.Builder buildModifier(ModifierId id, List<ICondition> conditions, JsonRedirect... redirects) {
     ComposableModifier.Builder builder = ComposableModifier.builder();
-    addBuilder(id, builder, condition, redirects);
+    addBuilder(id, builder, conditions, redirects);
     return builder;
   }
 
   /** Sets up a builder for a composable modifier */
-  protected ComposableModifier.Builder buildModifier(ModifierId id, JsonRedirect... redirects) {
-    return buildModifier(id, null, redirects);
+  protected ComposableModifier.Builder buildModifier(ModifierId id, ICondition... conditions) {
+    return buildModifier(id, List.of(conditions));
   }
 
   /** Sets up a builder for a composable modifier */
-  protected ComposableModifier.Builder buildModifier(ModifierHolder modifier, @Nullable ICondition condition, JsonRedirect... redirects) {
-    return buildModifier(modifier.id(), condition, redirects);
+  protected ComposableModifier.Builder buildModifier(ModifierHolder modifier, List<ICondition> conditions, JsonRedirect... redirects) {
+    return buildModifier(modifier.id(), conditions, redirects);
   }
 
   /** Sets up a builder for a composable modifier */
   protected ComposableModifier.Builder buildModifier(ModifierHolder modifier, JsonRedirect... redirects) {
-    return buildModifier(modifier, null, redirects);
+    return buildModifier(modifier, List.of(), redirects);
   }
 
 
   /* Redirect helpers */
 
   /** Adds a redirect with no modifier modules */
-  protected void addRedirect(ModifierId id, @Nullable ICondition condition, JsonRedirect... redirects) {
-    addBuilder(id, null, condition, redirects);
+  protected void addRedirect(ModifierId id, List<ICondition> conditions, JsonRedirect... redirects) {
+    addBuilder(id, null, conditions, redirects);
   }
 
   /** Adds a modifier redirect */
   protected void addRedirect(ModifierId id, JsonRedirect... redirects) {
-    addRedirect(id, null, redirects);
+    addRedirect(id, List.of(), redirects);
   }
 
   /** Makes a conditional redirect to the given ID */
@@ -89,11 +91,12 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
   }
 
   @Override
-  public CompletableFuture<?> run(CachedOutput cache) {
-    addModifiers();
+  public CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
+    addModifiers(registries);
     return allOf(composableModifiers.entrySet().stream().map(entry -> {
       try {
-        return saveJson(cache, entry.getKey().id(), entry.getValue().serialize());
+        ModifierId id = entry.getKey();
+        return saveJson(cache, id.id(), entry.getValue().serialize(registries, id));
       } catch (RuntimeException e) {
         throw new RuntimeException("Failed to serialize modifier " + entry.getKey(), e);
       }
@@ -101,12 +104,13 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
   }
 
   /** Result for composable too */
-  private record Composable(@Nullable ComposableModifier.Builder builder, @Nullable ICondition condition, JsonRedirect[] redirects) {
+  private record Composable(@Nullable ComposableModifier.Builder builder, List<ICondition> conditions, JsonRedirect[] redirects) {
     /** Writes this result to JSON */
-    public JsonObject serialize() {
+    public JsonObject serialize(HolderLookup.Provider registries, ModifierId id) {
+      TypedMap context = ModifierManager.contextBuilder(registries, id).build();
       JsonObject json;
       if (builder != null) {
-        json = ComposableModifier.LOADER.serialize(builder.build()).getAsJsonObject();
+        json = ComposableModifier.LOADER.serialize(builder.build(), context).getAsJsonObject();
       } else {
         json = new JsonObject();
       }
@@ -117,9 +121,7 @@ public abstract class AbstractModifierProvider extends GenericDataProvider {
         }
         json.add("redirects", array);
       }
-      if (condition != null) {
-        json.add("condition", JsonHelper.serialize(ICondition.CODEC, condition));
-      }
+      JsonHelper.serializeConditions(json, conditions);
       return json;
     }
   }
