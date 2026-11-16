@@ -7,11 +7,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.mantle.data.loadable.Streamable;
 import slimeknights.mantle.network.ISimplePacket;
-import slimeknights.mantle.network.codec.StreamableCodec;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -20,10 +17,9 @@ import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 @Internal
 public record SyncProjectileModifiersPacket(int entityId, ModifierNBT modifiers, CompoundTag persistentData) implements ISimplePacket {
   public static final Type<SyncProjectileModifiersPacket> TYPE = new Type<>(TConstruct.getResource("sync_projectile_modifiers"));
-  private static final Streamable<ModifierNBT> MODIFIER_LIST = ModifierEntry.LOADABLE.list(0).flatXmap(ModifierNBT::new, ModifierNBT::getModifiers);
   public static final StreamCodec<RegistryFriendlyByteBuf,SyncProjectileModifiersPacket> CODEC = StreamCodec.composite(
     ByteBufCodecs.VAR_INT, SyncProjectileModifiersPacket::entityId,
-    new StreamableCodec<>(MODIFIER_LIST), SyncProjectileModifiersPacket::modifiers,
+    ModifierNBT.STREAM_CODEC, SyncProjectileModifiersPacket::modifiers,
     ByteBufCodecs.COMPOUND_TAG, SyncProjectileModifiersPacket::persistentData,
     SyncProjectileModifiersPacket::new);
 

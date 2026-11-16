@@ -747,7 +747,7 @@ public class ToolStack implements IToolStackView {
       // set the final modifier list on the tool
       ModifierNBT allMods = modBuilder.build();
       setModifiers(allMods);
-      modifierList = allMods.getModifiers();
+      modifierList = allMods.modifiers();
       // context for further modifier hooks
       context = context.withModifiers(allMods);
     }

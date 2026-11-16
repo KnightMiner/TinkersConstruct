@@ -84,7 +84,7 @@ public class ModifierUsageCommand {
                                              .filter(item -> item instanceof IModifiable)
                                              .flatMap(item -> {
                                                ToolDefinition definition = ((IModifiable) item).getToolDefinition();
-                                               return ToolTraitHook.getTraits(definition, MaterialNBT.EMPTY).getModifiers().stream();
+                                               return ToolTraitHook.getTraits(definition, MaterialNBT.EMPTY).modifiers().stream();
                                              })
                                              .map(ModifierEntry::getModifier)
                                              .collect(Collectors.toSet());

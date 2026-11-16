@@ -552,7 +552,7 @@ public class ToolEvents {
                 notBlocked = false;
               }
             }
-            for (ModifierEntry entry : modifiers.getModifiers()) {
+            for (ModifierEntry entry : modifiers.modifiers()) {
               // TODO 1.21: pass in arrow with projectile to save some instance of checks
               if (entry.getHook(hook).onProjectileHitEntity(modifiers, nbt, entry, projectile, entityHit, attacker, target, notBlocked)) {
                 // on forge, this means the cancelled entity won't be hit again if its a piercing arrow
@@ -565,7 +565,7 @@ public class ToolEvents {
         }
         case BLOCK -> {
           BlockHitResult blockHit = (BlockHitResult)hit;
-          for (ModifierEntry entry : modifiers.getModifiers()) {
+          for (ModifierEntry entry : modifiers.modifiers()) {
             if (entry.getHook(hook).onProjectileHitBlock(modifiers, nbt, entry, projectile, blockHit, attacker)) {
               event.setCanceled(true);
               break;

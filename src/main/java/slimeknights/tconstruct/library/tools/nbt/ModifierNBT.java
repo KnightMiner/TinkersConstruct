@@ -1,12 +1,14 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
 import com.google.common.collect.ImmutableList;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.mojang.serialization.Codec;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.modifiers.IncrementalModifierEntry;
 import slimeknights.tconstruct.library.modifiers.Modifier;
@@ -24,22 +26,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
- * NBT object containing all current modifiers
+ * NBT object containing all current modifiers.
+ * @param modifiers  List of modifiers in order. Should be immutable.
  */
-@EqualsAndHashCode
-@RequiredArgsConstructor
-public class ModifierNBT implements Iterable<ModifierEntry> {
-
+public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<ModifierEntry> {
   /** Instance containing no modifiers */
   public static final ModifierNBT EMPTY = new ModifierNBT(Collections.emptyList());
 
-  /** Sorted list of modifiers */
-  @Getter
-  private final List<ModifierEntry> modifiers;
+  /** Codec for NBT serializing */
+  public static final Codec<ModifierNBT> CODEC;
+  /** Stream for NBT syncing */
+  public static final StreamCodec<FriendlyByteBuf,ModifierNBT> STREAM_CODEC;
+  static {
+    Function<ModifierNBT,List<ModifierEntry>> getter = ModifierNBT::modifiers;
+    Function<List<ModifierEntry>,ModifierNBT> constructor = ModifierNBT::create;
+    CODEC = ModifierEntry.CODEC.listOf().xmap(constructor, getter);
+    STREAM_CODEC = ModifierEntry.STREAM_CODEC.apply(ByteBufCodecs.list()).map(constructor, getter);
+  }
 
+  /** @apiNote use {@link #create(List)} */
+  @Internal
+  public ModifierNBT {}
+  
+  /** Creates a new modifier NBT */
+  public static ModifierNBT create(List<ModifierEntry> modifiers) {
+    return modifiers.isEmpty() ? EMPTY : new ModifierNBT(modifiers);
+  }
+  
   /**
    * Checks if the NBT has no modifiers
    * @return  True if there are no modifiers
@@ -152,6 +168,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
     if (!found) {
       builder.add(new ModifierEntry(modifier, level));
     }
+    // guaranteed to have at least 1 modifier so no need for #create's empty check
     return new ModifierNBT(builder.build());
   }
 
@@ -187,6 +204,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
     if (!found) {
       builder.add(IncrementalModifierEntry.of(modifier, 1, amount, needed));
     }
+    // guaranteed to have at least 1 modifier so no need for #create's empty check
     return new ModifierNBT(builder.build());
   }
 
@@ -216,7 +234,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
         builder.add(entry);
       }
     }
-    return new ModifierNBT(builder.build());
+    return create(builder.build());
   }
 
 
@@ -289,15 +307,10 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
     public ModifierNBT build() {
       // converts the map into a list of entries, priority sorted
       // note priority is negated so higher numbers go first
-      List<ModifierEntry> list = modifiers.values().stream()
-                                          // sort on priority, falls back to the order they were added
-                                          .sorted(Comparator.comparingInt(entry -> -entry.getModifier().getPriority()))
-                                          .collect(Collectors.toList());
-      // it's rare to see no modifiers, but no sense creating a new instance for that
-      if (list.isEmpty()) {
-        return EMPTY;
-      }
-      return new ModifierNBT(ImmutableList.copyOf(list));
+      return create(modifiers.values().stream()
+        // sort on priority, falls back to the order they were added
+        .sorted(Comparator.comparingInt(entry -> -entry.getModifier().getPriority()))
+        .toList());
     }
   }
 }

@@ -67,7 +67,7 @@ public interface IToolContext {
    * @return  List of all modifiers
    */
   default List<ModifierEntry> getModifierList() {
-    return getModifiers().getModifiers();
+    return getModifiers().modifiers();
   }
 
   /**

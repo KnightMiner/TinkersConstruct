@@ -57,7 +57,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
 
   @Override
   public Component getDescription(@Nullable TinkerableRecipeInput inv) {
-    if (inv != null && inv.getTinkerable().getModifiers().getModifiers().stream().noneMatch(FILTER)) {
+    if (inv != null && inv.getTinkerable().getModifiers().modifiers().stream().noneMatch(FILTER)) {
       return ModifierSetWorktableRecipe.NO_MATCHES;
     }
     return DESCRIPTION;
@@ -71,7 +71,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
       }
       return filteredModifiers;
     }
-    return inv.getTinkerable().getModifiers().getModifiers().stream().filter(FILTER).toList();
+    return inv.getTinkerable().getModifiers().modifiers().stream().filter(FILTER).toList();
   }
 
   @Override

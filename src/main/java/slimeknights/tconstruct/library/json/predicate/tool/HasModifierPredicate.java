@@ -40,7 +40,7 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
     }
     // if we care about a range, check all modifiers that match that range
     int level = 0;
-    for (ModifierEntry entry : modifiers.getModifiers()) {
+    for (ModifierEntry entry : modifiers.modifiers()) {
       if (modifier.matches(entry.id())) {
         level += entry.intEffectiveLevel();
       }

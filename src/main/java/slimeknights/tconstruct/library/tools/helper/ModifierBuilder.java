@@ -69,7 +69,7 @@ public interface ModifierBuilder {
    * @return  Builder instance
    */
   default ModifierBuilder add(ModifierNBT nbt) {
-    add(nbt.getModifiers());
+    add(nbt.modifiers());
     return this;
   }
 

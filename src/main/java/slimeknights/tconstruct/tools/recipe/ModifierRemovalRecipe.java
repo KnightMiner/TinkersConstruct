@@ -105,12 +105,12 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
       }
       return displayModifiers;
     }
-    return filter(inv.getTinkerable(), inv.getTinkerable().getUpgrades().getModifiers());
+    return filter(inv.getTinkerable(), inv.getTinkerable().getUpgrades().modifiers());
   }
 
   @Override
   public Component getDescription(@Nullable TinkerableRecipeInput inv) {
-    if (inv != null && inv.getTinkerable().getUpgrades().getModifiers().stream().noneMatch(entryPredicate)) {
+    if (inv != null && inv.getTinkerable().getUpgrades().modifiers().stream().noneMatch(entryPredicate)) {
       return NO_MODIFIERS;
     }
     return DESCRIPTION;

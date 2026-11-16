@@ -48,7 +48,7 @@ public interface ScheduledProjectileTaskModifierHook {
 
   /** Creates the schedule for the given tool */
   static Schedule createSchedule(IToolStackView tool, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData) {
-    List<ModifierEntry> modifiers = tool.getModifiers().getModifiers();
+    List<ModifierEntry> modifiers = tool.getModifiers().modifiers();
     ScheduleBuilder builder = new ScheduleBuilder();
     int size = modifiers.size();
     ListScheduler scheduler = builder.list(size);
@@ -68,7 +68,7 @@ public interface ScheduledProjectileTaskModifierHook {
         break;
       }
       ModDataNBT persistentData = ModDataNBT.get(projectile);
-      List<ModifierEntry> modifiers = tool.getModifiers().getModifiers();
+      List<ModifierEntry> modifiers = tool.getModifiers().modifiers();
       int size = modifiers.size();
       int index = Schedule.index(task, size);
       if (index < size) {

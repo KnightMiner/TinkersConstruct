@@ -21,7 +21,7 @@ class ModifierNBTest extends BaseMcTest {
   void modifierBuilder_empty() {
     ModifierNBT modifierNBT = ModifierNBT.builder().build();
 
-    assertThat(modifierNBT.getModifiers().size()).isEqualTo(0);
+    assertThat(modifierNBT.modifiers().size()).isEqualTo(0);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(0);
   }
 
@@ -31,7 +31,7 @@ class ModifierNBTest extends BaseMcTest {
     builder.add(ModifierFixture.TEST_MODIFIER_1, 2);
     ModifierNBT modifierNBT = builder.build();
 
-    assertThat(modifierNBT.getModifiers().size()).isEqualTo(1);
+    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
   }
 
@@ -42,7 +42,7 @@ class ModifierNBTest extends BaseMcTest {
     builder.add(ModifierFixture.TEST_MODIFIER_1, 1);
     ModifierNBT modifierNBT = builder.build();
 
-    assertThat(modifierNBT.getModifiers().size()).isEqualTo(1);
+    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(3);
   }
 
@@ -53,7 +53,7 @@ class ModifierNBTest extends BaseMcTest {
     builder.add(ModifierFixture.TEST_MODIFIER_2, 1);
     ModifierNBT modifierNBT = builder.build();
 
-    assertThat(modifierNBT.getModifiers().size()).isEqualTo(2);
+    assertThat(modifierNBT.modifiers().size()).isEqualTo(2);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_2)).isEqualTo(1);
   }
@@ -61,7 +61,7 @@ class ModifierNBTest extends BaseMcTest {
   @Test
   void withModifier() {
     ModifierNBT modifierNBT = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
-    assertThat(modifierNBT.getModifiers().size()).isEqualTo(1);
+    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
     assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(1);
   }
 

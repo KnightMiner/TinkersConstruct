@@ -88,9 +88,9 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   /** Gets the modifiers from the container */
   private List<ModifierEntry> getModifiers(TinkerableRecipeInput inv) {
     if (allowTraits) {
-      return inv.getTinkerable().getModifiers().getModifiers();
+      return inv.getTinkerable().getModifiers().modifiers();
     }
-    return inv.getTinkerable().getUpgrades().getModifiers();
+    return inv.getTinkerable().getUpgrades().modifiers();
   }
 
   @Override

@@ -284,7 +284,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
         }
 
         // let modifiers such as fiery and punch set properties
-        for (ModifierEntry entry : modifiers.getModifiers()) {
+        for (ModifierEntry entry : modifiers.modifiers()) {
           entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, living, ammo, arrow, arrow, arrowData, arrowIndex == primaryIndex);
         }
 

@@ -224,7 +224,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     ToolDataNBT volatileData = ToolDataNBT.readFromNBT(volatileNBT);
     persistentDataConsumer.accept(persistentData);
     ToolRebuildContext context = new ToolRebuildContext(stack.getItem(), ToolDefinition.EMPTY, MaterialNBT.EMPTY, modifiers, modifiers, persistentData);
-    for (ModifierEntry entry : modifiers.getModifiers()) {
+    for (ModifierEntry entry : modifiers.modifiers()) {
       entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
     }
     nbt.put(ToolStack.TAG_VOLATILE_MOD_DATA, volatileNBT);

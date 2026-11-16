@@ -274,7 +274,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
         ModDataNBT projectileData = ModDataNBT.get(projectile);
 
         // let modifiers set properties
-        for (ModifierEntry entry : modifiers.getModifiers()) {
+        for (ModifierEntry entry : modifiers.modifiers()) {
           entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileShoot(tool, entry, living, ammo, projectile, arrow, projectileData, arrowIndex == primaryIndex);
         }
 

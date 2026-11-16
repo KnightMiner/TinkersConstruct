@@ -160,7 +160,7 @@ public abstract class ToolTableScreen<T extends BlockEntity, C extends TabbedCon
     // control displays just traits, bit trickier to do
     if (hasControlDown()) {
       title = TRAITS_TEXT;
-      Map<Modifier,Integer> upgrades = tool.getUpgrades().getModifiers().stream()
+      Map<Modifier,Integer> upgrades = tool.getUpgrades().modifiers().stream()
                                            .collect(Collectors.toMap(ModifierEntry::getModifier, ModifierEntry::getLevel, Integer::sum));
       for (ModifierEntry entry : tool.getModifierList()) {
         Modifier mod = entry.getModifier();
@@ -177,7 +177,7 @@ public abstract class ToolTableScreen<T extends BlockEntity, C extends TabbedCon
       // shift is just upgrades/abilities, otherwise all
       List<ModifierEntry> modifiers;
       if (hasShiftDown()) {
-        modifiers = tool.getUpgrades().getModifiers();
+        modifiers = tool.getUpgrades().modifiers();
         title = UPGRADES_TEXT;
       } else {
         modifiers = tool.getModifierList();

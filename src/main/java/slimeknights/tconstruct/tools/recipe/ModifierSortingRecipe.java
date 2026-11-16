@@ -77,7 +77,7 @@ public class ModifierSortingRecipe implements IModifierWorktableRecipe {
   @Override
   public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null) {
-      if (inv.getTinkerable().getUpgrades().getModifiers().size() < 2) {
+      if (inv.getTinkerable().getUpgrades().modifiers().size() < 2) {
         return NOT_ENOUGH_MODIFIERS;
       }
       if (inv.getInput(0).isEmpty()) {
@@ -94,7 +94,7 @@ public class ModifierSortingRecipe implements IModifierWorktableRecipe {
     if (inv == null) {
       return ModifierRecipeLookup.getRecipeModifierList();
     }
-    List<ModifierEntry> modifiers = inv.getTinkerable().getUpgrades().getModifiers();
+    List<ModifierEntry> modifiers = inv.getTinkerable().getUpgrades().modifiers();
     if (modifiers.size() < 2) {
       return List.of();
     }
@@ -106,7 +106,7 @@ public class ModifierSortingRecipe implements IModifierWorktableRecipe {
     ToolStack tool = inv.getTinkerable();
 
     // find the modifier to remove
-    List<ModifierEntry> upgrades = tool.getUpgrades().getModifiers();
+    List<ModifierEntry> upgrades = tool.getUpgrades().modifiers();
     int toMove = IntStream.range(0, upgrades.size())
                           .filter(i -> upgrades.get(i).matches(modifier.id()))
                           .findFirst().orElse(-1);
@@ -126,6 +126,7 @@ public class ModifierSortingRecipe implements IModifierWorktableRecipe {
       target = toMove == upgrades.size() - 1 ? 0 : toMove + 1;
     }
     Collections.swap(newUpgrades, toMove, target);
+    // recipe does not run unless we have modifiers
     tool.setUpgrades(new ModifierNBT(newUpgrades));
 
     // no need to validate, its the same modifiers

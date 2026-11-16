@@ -109,7 +109,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       if (itemModel != null && itemModel.getOverrides() instanceof MaterialOverrideHandler overrides) {
         ToolStack tool = ToolStack.from(stack);
         // modifier model indexes start at the last part
-        List<ModifierEntry> modifiers = tool.getUpgrades().getModifiers();
+        List<ModifierEntry> modifiers = tool.getUpgrades().modifiers();
         for (int i = modifiers.size() - 1; i >= 0; i--) {
           ModifierEntry entry = modifiers.get(i);
           ModifierId id = entry.id();
@@ -232,7 +232,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       // keep a running tint index so models know where they should start, currently starts at 0 as the main model does not use tint indexes
       int modelIndex = 0;
       // reversed order to ensure the pixels is updated correctly
-      List<ModifierEntry> modifiers = tool.getUpgrades().getModifiers();
+      List<ModifierEntry> modifiers = tool.getUpgrades().modifiers();
       // keep track of the entry for each first modifier, as that may impact how it renders
       if (!modifiers.isEmpty()) {
         // last, add all regular modifiers

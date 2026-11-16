@@ -34,7 +34,7 @@ public class TestHelper {
   public static List<ModifierEntry> getTraits(ToolDefinitionData data) {
     ModifierNBT.Builder builder = ModifierNBT.builder();
     data.getHook(ToolHooks.TOOL_TRAITS).addTraits(ToolDefinition.EMPTY, MaterialNBT.EMPTY, builder);
-    return builder.build().getModifiers();
+    return builder.build().modifiers();
   }
 
   public record ToolDefinitionStats(StatsNBT base, MultiplierNBT multipliers) {}
