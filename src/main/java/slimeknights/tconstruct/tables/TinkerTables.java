@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.tables;
 
+import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
@@ -14,10 +15,15 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.block.entity.InventoryBlockEntity;
 import slimeknights.mantle.registration.holder.DeferredBlockEntity;
 import slimeknights.mantle.registration.holder.DeferredMenu;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -114,6 +120,16 @@ public final class TinkerTables extends TinkerModule {
   public static final DeferredMenu<ModifierWorktableContainerMenu> modifierWorktableContainer = MENUS.register("modifier_worktable", ModifierWorktableContainerMenu::new);
   public static final DeferredMenu<TinkerChestContainerMenu> tinkerChestContainer = MENUS.register("tinker_chest", TinkerChestContainerMenu::new);
 
+
+  @SubscribeEvent
+  void registerCapabilities(RegisterCapabilitiesEvent event) {
+    ICapabilityProvider<InventoryBlockEntity, Direction, IItemHandler> itemHandler = (be, side) -> be.getItemHandler();
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, craftingStationTile.get(), itemHandler);
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, tinkerStationTile.get(), itemHandler);
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, partBuilderTile.get(), itemHandler);
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, modifierWorktableTile.get(), itemHandler);
+    // TODO: chests
+  }
 
   @SubscribeEvent
   void commonSetup(final FMLCommonSetupEvent event) {
