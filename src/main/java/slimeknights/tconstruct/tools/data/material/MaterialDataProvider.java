@@ -6,7 +6,7 @@ import net.neoforged.neoforge.common.crafting.conditions.OrCondition;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.data.material.AbstractMaterialDataProvider;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 
 import static slimeknights.mantle.Mantle.commonResource;
 

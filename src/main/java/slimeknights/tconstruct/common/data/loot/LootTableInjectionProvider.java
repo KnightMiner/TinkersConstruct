@@ -29,7 +29,7 @@ import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate
 import slimeknights.tconstruct.library.loot.tool.AddToolDataFunction;
 import slimeknights.tconstruct.library.loot.tool.ToolPartLootEntry;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tools.TinkerTools;

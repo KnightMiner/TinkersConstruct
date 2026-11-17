@@ -23,8 +23,8 @@ import slimeknights.tconstruct.library.client.armor.texture.ArmorTextureSupplier
 import slimeknights.tconstruct.library.client.armor.texture.TintedArmorTexture;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.tools.entity.CombatFishingHook;
 

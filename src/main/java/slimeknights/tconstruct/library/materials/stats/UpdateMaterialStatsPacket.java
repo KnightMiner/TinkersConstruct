@@ -3,7 +3,6 @@ package slimeknights.tconstruct.library.materials.stats;
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.Streamable;
@@ -11,7 +10,7 @@ import slimeknights.mantle.network.ISimplePacket;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +46,7 @@ public record UpdateMaterialStatsPacket(Map<MaterialId, Collection<IMaterialStat
         int statCount = buffer.readInt();
         List<IMaterialStats> statList = new ArrayList<>();
         for (int j = 0; j < statCount; j++) {
-          ResourceLocation statId = null;
+          MaterialStatsId statId = null;
           try {
             MaterialStatType<?> statType = statTypeLoader.decode(buffer);
             statId = statType.getId();
@@ -65,13 +64,15 @@ public record UpdateMaterialStatsPacket(Map<MaterialId, Collection<IMaterialStat
     @Override
     public void encode(RegistryFriendlyByteBuf buffer, UpdateMaterialStatsPacket packet) {
       buffer.writeInt(packet.materialToStats.size());
-      packet.materialToStats.forEach((materialId, stats) -> {
-        buffer.writeResourceLocation(materialId);
+      for (Map.Entry<MaterialId, Collection<IMaterialStats>> entry : packet.materialToStats.entrySet()) {
+        MaterialId materialId = entry.getKey();
+        buffer.writeResourceLocation(materialId.id());
+        Collection<IMaterialStats> stats = entry.getValue();
         buffer.writeInt(stats.size());
         for (IMaterialStats stat : stats) {
           encodeStat(buffer, stat, stat.getType(), materialId);
         }
-      });
+      }
     }
 
     /**

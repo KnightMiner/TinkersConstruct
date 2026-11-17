@@ -15,7 +15,7 @@ import slimeknights.tconstruct.library.client.data.material.AbstractMaterialSpri
 import slimeknights.tconstruct.library.client.materials.MaterialGeneratorInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

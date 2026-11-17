@@ -12,7 +12,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.listener.MergingJsonDataLoader;
 import slimeknights.tconstruct.library.exception.TinkerAPIMaterialException;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.json.MaterialTraitsJson;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;

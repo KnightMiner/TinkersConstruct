@@ -69,7 +69,7 @@ import slimeknights.tconstruct.fluids.util.EmptyBottleIntoWater;
 import slimeknights.tconstruct.fluids.util.FillBottle;
 import slimeknights.tconstruct.fluids.util.FluidDataSerializer;
 import slimeknights.tconstruct.library.TinkerEffects;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.shared.TinkerFood;
 import slimeknights.tconstruct.shared.block.SlimeType;

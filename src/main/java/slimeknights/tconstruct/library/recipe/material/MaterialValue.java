@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.recipe.material;
 
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 /**
  * Constant material value used for tool parts

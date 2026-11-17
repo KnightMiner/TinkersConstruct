@@ -16,7 +16,7 @@ import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 
 import java.util.List;

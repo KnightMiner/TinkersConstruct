@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 import slimeknights.tconstruct.library.tools.part.block.MaterialBlockItem;
 

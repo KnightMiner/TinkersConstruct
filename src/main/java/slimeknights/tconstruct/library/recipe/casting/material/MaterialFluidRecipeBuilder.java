@@ -11,7 +11,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.library.json.FluidStackSet;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import javax.annotation.Nullable;
 

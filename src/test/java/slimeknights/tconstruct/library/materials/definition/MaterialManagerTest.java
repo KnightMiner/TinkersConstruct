@@ -13,6 +13,7 @@ import net.neoforged.neoforge.common.crafting.conditions.TrueCondition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.test.BaseMcTest;
 import slimeknights.tconstruct.test.JsonFileLoader;
 

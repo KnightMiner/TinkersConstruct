@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.json.predicate.material;
 
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import java.util.Set;
 

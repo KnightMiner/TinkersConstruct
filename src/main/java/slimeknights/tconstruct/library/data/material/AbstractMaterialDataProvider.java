@@ -19,7 +19,7 @@ import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.tconstruct.common.config.ConfigEnabledCondition;
 import slimeknights.tconstruct.library.json.JsonRedirect;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.materials.json.MaterialJson;
 import slimeknights.tconstruct.library.utils.Util;

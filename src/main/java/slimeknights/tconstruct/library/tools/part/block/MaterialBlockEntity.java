@@ -10,8 +10,8 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
 import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.library.client.model.ModelProperties;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
 import javax.annotation.Nonnull;

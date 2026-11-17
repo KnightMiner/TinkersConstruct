@@ -7,6 +7,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.tconstruct.library.materials.MaterialId;
 
 /** Base {@link IMaterial} implementation. */
 @Getter

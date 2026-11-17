@@ -13,7 +13,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;

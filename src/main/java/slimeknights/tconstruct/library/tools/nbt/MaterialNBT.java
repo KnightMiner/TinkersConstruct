@@ -10,8 +10,8 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

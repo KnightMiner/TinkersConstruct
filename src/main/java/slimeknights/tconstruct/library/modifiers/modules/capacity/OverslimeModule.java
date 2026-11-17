@@ -35,7 +35,7 @@ public class OverslimeModule extends CapacityBarHook.PersistentDataCapacityBar {
   };
 
   private OverslimeModule() {
-    super(TinkerModifiers.overslime.id());
+    super(TinkerModifiers.overslime.id().id());
   }
 
   @Override

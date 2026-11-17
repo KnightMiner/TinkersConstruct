@@ -8,7 +8,7 @@ import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;

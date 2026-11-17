@@ -23,7 +23,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
 import slimeknights.tconstruct.library.client.particle.SlimeParticle;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.shared.block.SlimeType;
 import slimeknights.tconstruct.tools.client.SlimeskullArmorModel;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;

@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.command.ModIdArgument;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.shared.command.argument.MaterialArgument;
 import slimeknights.tconstruct.shared.network.GeneratePartTexturesPacket;
 import slimeknights.tconstruct.shared.network.GeneratePartTexturesPacket.Operation;

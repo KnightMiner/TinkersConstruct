@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.tools.part;
 
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 
 /**

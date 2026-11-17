@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;

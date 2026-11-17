@@ -16,7 +16,7 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;

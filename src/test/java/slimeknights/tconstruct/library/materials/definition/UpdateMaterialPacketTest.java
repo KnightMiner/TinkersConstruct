@@ -6,6 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Rarity;
 import org.junit.jupiter.api.Test;
 import slimeknights.tconstruct.fixture.MaterialFixture;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.test.BaseMcTest;
 
 import java.util.Collections;

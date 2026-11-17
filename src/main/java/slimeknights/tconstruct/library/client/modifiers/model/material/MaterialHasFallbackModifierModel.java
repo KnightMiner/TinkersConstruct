@@ -14,7 +14,7 @@ import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 

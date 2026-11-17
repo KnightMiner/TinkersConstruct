@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.library.materials.IMaterialUser;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
 import slimeknights.tconstruct.library.utils.SimpleCache;

@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.materials.definition;
+package slimeknights.tconstruct.library.materials;
 
 import net.minecraft.resources.ResourceLocation;
 

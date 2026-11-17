@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.util.typed.TypedMap;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import java.util.function.Function;
 

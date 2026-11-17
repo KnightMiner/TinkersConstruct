@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.building;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import java.util.List;
 

@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.client.data.material.TrimMaterialPaletteG
 import slimeknights.tconstruct.library.client.data.spritetransformer.GreyToColorMapping;
 import slimeknights.tconstruct.library.client.data.spritetransformer.ISpriteTransformer;
 import slimeknights.tconstruct.library.client.data.spritetransformer.RecolorSpriteTransformer;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 
 public class TinkerTrimMaterialPaletteGenerator extends TrimMaterialPaletteGenerator {

@@ -9,7 +9,7 @@ import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import javax.annotation.Nullable;
 import java.util.Objects;

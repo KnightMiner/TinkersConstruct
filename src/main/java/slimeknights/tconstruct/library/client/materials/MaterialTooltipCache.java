@@ -6,7 +6,7 @@ import net.minecraft.network.chat.TextColor;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.HashMap;

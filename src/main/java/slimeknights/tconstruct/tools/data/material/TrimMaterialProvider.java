@@ -10,7 +10,7 @@ import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.registration.object.MetalItemObject;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.world.TinkerWorld;
 

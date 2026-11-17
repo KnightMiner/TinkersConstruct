@@ -11,7 +11,6 @@ import slimeknights.mantle.network.PacketHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.events.MaterialsLoadedEvent;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.library.materials.definition.MaterialManager;
 import slimeknights.tconstruct.library.materials.definition.UpdateMaterialsPacket;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;

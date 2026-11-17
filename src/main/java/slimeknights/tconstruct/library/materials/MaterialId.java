@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.materials.definition;
+package slimeknights.tconstruct.library.materials;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;

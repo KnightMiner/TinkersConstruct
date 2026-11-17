@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialsCraftingTableRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapelessMaterialsRecipe;

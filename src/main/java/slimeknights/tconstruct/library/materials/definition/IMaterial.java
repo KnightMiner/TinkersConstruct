@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.library.materials.definition;
 
 import net.minecraft.world.item.Rarity;
+import slimeknights.tconstruct.library.materials.MaterialId;
 
 /**
  * Base interface for all materials.
@@ -14,7 +15,7 @@ public interface IMaterial extends Comparable<IMaterial> {
    * <p>
    * The fallback material needs to have all part types associated with it.
    */
-  IMaterial UNKNOWN = new Material(MaterialId.UNKNOWN, 0, -1, false, true, Rarity.COMMON);
+  IMaterial UNKNOWN = new Material(MaterialId.UNKNOWN, 0, -1, Rarity.COMMON, false, true);
 
   /**
    * Used to identify the material in NBT and other constructs.

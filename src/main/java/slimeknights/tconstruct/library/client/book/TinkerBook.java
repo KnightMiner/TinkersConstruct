@@ -27,7 +27,7 @@ import slimeknights.tconstruct.library.client.book.sectiontransformer.ToolSectio
 import slimeknights.tconstruct.library.client.book.sectiontransformer.ToolTagInjectorTransformer;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.shared.item.TinkerBookItem.BookType;
 import slimeknights.tconstruct.tools.stats.GripMaterialStats;
 import slimeknights.tconstruct.tools.stats.HandleMaterialStats;

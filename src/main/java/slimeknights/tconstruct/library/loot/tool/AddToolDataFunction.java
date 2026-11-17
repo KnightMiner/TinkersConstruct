@@ -14,7 +14,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.loot.TinkerLoot;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;

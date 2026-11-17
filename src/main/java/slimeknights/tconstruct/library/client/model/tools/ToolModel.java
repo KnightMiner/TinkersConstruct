@@ -60,8 +60,8 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMap;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;

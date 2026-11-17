@@ -31,7 +31,7 @@ import slimeknights.tconstruct.common.registration.BlockDeferredRegisterExtensio
 import slimeknights.tconstruct.common.registration.ItemDeferredRegisterExtension;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 
 import java.util.Optional;
 import java.util.function.Function;

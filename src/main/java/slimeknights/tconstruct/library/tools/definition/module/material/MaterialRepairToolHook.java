@@ -1,6 +1,6 @@
 package slimeknights.tconstruct.library.tools.definition.module.material;
 
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;

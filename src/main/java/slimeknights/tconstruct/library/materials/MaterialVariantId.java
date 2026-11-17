@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.materials.definition;
+package slimeknights.tconstruct.library.materials;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
@@ -14,7 +14,6 @@ import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
-import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
