@@ -14,9 +14,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -284,9 +284,7 @@ public class ModifierEntry implements Comparable<ModifierEntry> {
 
   /** Reads a modifier entry from NBT */
   public static ModifierEntry readFromNBT(Tag tag) {
-    return CODEC.parse(NbtOps.INSTANCE, tag)
-      .resultOrPartial(error -> TConstruct.LOG.error("Tried to load invalid modifier entry: '{}'", error))
-      .orElse(EMPTY);
+    return TagUtil.decode(CODEC, "modifier entry", tag).orElse(EMPTY);
   }
 
   /** Writes this tag to NBT */

@@ -1,22 +1,19 @@
 package slimeknights.tconstruct.library.tools.stat;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import lombok.experimental.Accessors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.tconstruct.library.resource.ResourceId;
-import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
 
@@ -39,6 +36,8 @@ public class FloatToolStat implements INumericToolStat<Float> {
   @Getter
   private final float maxValue;
   private final IJsonPredicate<Item> items;
+  @Getter @Accessors(fluent = true)
+  private final Codec<Float> codec;
 
   public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {
     this.id = id;
@@ -47,6 +46,7 @@ public class FloatToolStat implements INumericToolStat<Float> {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.items = items;
+    this.codec = Codec.floatRange(minValue, maxValue);
   }
 
   public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, @Nullable TagKey<Item> tag) {
@@ -55,6 +55,11 @@ public class FloatToolStat implements INumericToolStat<Float> {
 
   public FloatToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue) {
     this(id, color, defaultValue, minValue, maxValue, ItemPredicate.ANY);
+  }
+
+  @Override
+  public StreamCodec<ByteBuf, Float> streamCodec() {
+    return ByteBufCodecs.FLOAT;
   }
 
   @Override
@@ -110,40 +115,6 @@ public class FloatToolStat implements INumericToolStat<Float> {
   public Float build(ModifierStatsBuilder parent, Object builderObj) {
     FloatBuilder builder = (FloatBuilder)builderObj;
     return (builder.base + builder.add) * (1 + builder.percent) * builder.multiply;
-  }
-
-  @Nullable
-  @Override
-  public Float read(Tag tag) {
-    if (TagUtil.isNumeric(tag)) {
-      return ((NumericTag) tag).getAsFloat();
-    }
-    return null;
-  }
-
-  @Override
-  public Tag write(Float value) {
-    return FloatTag.valueOf(value);
-  }
-
-  @Override
-  public Float deserialize(JsonElement json) {
-    return GsonHelper.convertToFloat(json, getId().toString());
-  }
-
-  @Override
-  public JsonElement serialize(Float value) {
-    return new JsonPrimitive(value);
-  }
-
-  @Override
-  public Float fromNetwork(FriendlyByteBuf buffer) {
-    return buffer.readFloat();
-  }
-
-  @Override
-  public void toNetwork(FriendlyByteBuf buffer, Float value) {
-    buffer.writeFloat(value);
   }
 
   /** Generic friendly way to format the value */

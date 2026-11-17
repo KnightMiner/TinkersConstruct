@@ -1,12 +1,17 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
@@ -16,17 +21,30 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Generic container for tool stats, allows addons to select which stats they wish to use
  */
-@SuppressWarnings("ClassCanBeRecord")
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode
 @ToString
 public class MultiplierNBT {
-  /** Loadable instance to parse this from buffers and alike */
-  public static final Loadable<MultiplierNBT> LOADABLE = ToolStats.NUMERIC_LOADER.mapWithValues(FloatLoadable.ANY, 0).flatXmap(MultiplierNBT::new, m -> m.stats);
+  /** Codec instance for NBT */
+  public static final Codec<MultiplierNBT> CODEC;
+  /** Stream codec instance for network syncing */
+  public static final StreamCodec<ByteBuf,MultiplierNBT> STREAM_CODEC;
+  /** Loadable instance for recipes */
+  public static final Loadable<MultiplierNBT> LOADABLE;
+  static {
+    Function<MultiplierNBT,Map<INumericToolStat<?>,Float>> getter = m -> m.stats;
+    Function<Map<INumericToolStat<?>,Float>,MultiplierNBT> constructor = MultiplierNBT::new;
+    CODEC = Codec.unboundedMap(ToolStats.NUMERIC_CODEC, Codec.FLOAT).xmap(constructor, getter);
+    StreamCodec<ByteBuf,Map<INumericToolStat<?>,Float>> mapStream = ByteBufCodecs.map(Object2FloatOpenHashMap::new, ToolStats.NUMERIC_STREAM_CODEC, ByteBufCodecs.FLOAT);
+    STREAM_CODEC = mapStream.map(constructor, getter);
+    LOADABLE  = ToolStats.NUMERIC_LOADER.mapWithValues(FloatLoadable.ANY, 0).map(constructor, getter);
+  }
+
   /** Empty stats */
   public static final MultiplierNBT EMPTY = new MultiplierNBT(ImmutableMap.of());
 

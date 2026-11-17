@@ -13,6 +13,8 @@ import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
+import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 
 /** Handles registration of data components and data attachments added by Tinkers. */
 public class TinkerData {
@@ -41,4 +43,8 @@ public class TinkerData {
   public static final DeferredDataComponent<ModifierNBT> CRAFTED_MODIFIERS = DATA_COMPONENTS.registerPersistent("crafted_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);
   /** Holds the combined list of modifiers, including {@link #CRAFTED_MODIFIERS} and traits, sorted by priority. */
   public static final DeferredDataComponent<ModifierNBT> ALL_MODIFIERS = DATA_COMPONENTS.registerPersistent("all_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);
+  /** Holds a cache of the current stats for the tool */
+  public static final DeferredDataComponent<StatsNBT> TOOL_STATS = DATA_COMPONENTS.registerPersistent("tool_stats", StatsNBT.CODEC, StatsNBT.STREAM_CODEC);
+  /** Holds a cache of stat multipliers on the tool */
+  public static final DeferredDataComponent<MultiplierNBT> STAT_MULTIPLIERS = DATA_COMPONENTS.registerPersistent("stats_multipliers", MultiplierNBT.CODEC, MultiplierNBT.STREAM_CODEC);
 }

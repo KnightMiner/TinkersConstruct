@@ -33,6 +33,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** Modifier to directly modify a tool's stats */
@@ -66,7 +68,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   /** Processes the stats from Tag into the consumer */
-  private static void processStats(IModDataView persistentData, ResourceLocation key, StatConsumer consumer) {
+  private static void processStats(IModDataView persistentData, ResourceLocation key, BiConsumer<IToolStat<?>,Tag> consumer) {
     if (persistentData.contains(key, Tag.TAG_COMPOUND)) {
       CompoundTag nbt = persistentData.getCompound(key);
       for (String name : nbt.getAllKeys()) {
@@ -74,7 +76,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
         if (id != null) {
           IToolStat<?> stat = ToolStats.getToolStat(id);
           if (stat != null) {
-            consumer.handle(stat, Objects.requireNonNull(nbt.get(name)));
+            consumer.accept(stat, Objects.requireNonNull(nbt.get(name)));
           }
         }
       }
@@ -83,9 +85,9 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
 
   /** Generic friendly update method for stats */
   private static <T> void update(ModifierStatsBuilder builder, IToolStat<T> stat, Tag tag) {
-    T value = stat.read(tag);
-    if (value != null) {
-      stat.update(builder, value);
+    Optional<T> value = TagUtil.decode(stat.codec(), stat.getId().toString(), tag);
+    if (value.isPresent()) {
+      stat.update(builder, value.get());
     }
   }
 
@@ -102,8 +104,8 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
 
   @Nullable
   private static <T> Component format(IToolStat<T> stat, Tag tag) {
-    T value = stat.read(tag);
-    return value == null ? null : stat.formatValue(value);
+    Optional<T> value = TagUtil.decode(stat.codec(), stat.getId().toString(), tag);
+    return value.isEmpty() ? null : stat.formatValue(value.get());
   }
 
   /** Helper to get descriptions for one of the groups */
@@ -257,11 +259,8 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
     // if we have something to store, do so
     String name = stat.getId().toString();
     if (storeValue) {
-      Tag tag = stat.write(value);
-      if (tag != null) {
-        nbt.put(name, tag);
-        return true;
-      }
+      nbt.put(name, TagUtil.encode(stat.codec(), value));
+      return true;
     }
     // remove the value if nothing to store
     nbt.remove(name);
@@ -321,10 +320,5 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
       return false;
     }
     return true;
-  }
-
-  @FunctionalInterface
-  private interface StatConsumer {
-    void handle(IToolStat<?> stat, Tag value);
   }
 }

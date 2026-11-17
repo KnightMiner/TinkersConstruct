@@ -1,21 +1,17 @@
 package slimeknights.tconstruct.library.tools.stat;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.library.resource.ResourceId;
-import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -35,6 +31,16 @@ public class MaxToolStat implements IToolStat<Integer> {
 
   public MaxToolStat(ResourceId<IToolStat<?>> id, int defaultValue, IntFunction<Component> displayName) {
     this(id, defaultValue, displayName, null);
+  }
+
+  @Override
+  public Codec<Integer> codec() {
+    return Codec.INT;
+  }
+
+  @Override
+  public StreamCodec<ByteBuf, Integer> streamCodec() {
+    return ByteBufCodecs.VAR_INT;
   }
 
   @Override
@@ -70,41 +76,6 @@ public class MaxToolStat implements IToolStat<Integer> {
   @Override
   public Integer build(ModifierStatsBuilder parent, Object builder) {
     return ((TierBuilder)builder).tier;
-  }
-
-  @Nullable
-  @Override
-  public Integer read(Tag tag) {
-    if (TagUtil.isNumeric(tag)) {
-      return ((NumericTag)tag).getAsInt();
-    }
-    return null;
-  }
-
-  @Nullable
-  @Override
-  public Tag write(Integer value) {
-    return IntTag.valueOf(value);
-  }
-
-  @Override
-  public Integer deserialize(JsonElement json) {
-    return GsonHelper.convertToInt(json, getId().toString());
-  }
-
-  @Override
-  public JsonElement serialize(Integer value) {
-    return new JsonPrimitive(value);
-  }
-
-  @Override
-  public Integer fromNetwork(FriendlyByteBuf buffer) {
-    return buffer.readVarInt();
-  }
-
-  @Override
-  public void toNetwork(FriendlyByteBuf buffer, Integer value) {
-    buffer.writeVarInt(value);
   }
 
   @Override

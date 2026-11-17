@@ -1,17 +1,16 @@
 package slimeknights.tconstruct.library.tools.stat;
 
-import com.google.gson.JsonElement;
-import net.minecraft.nbt.Tag;
+import com.mojang.serialization.Codec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.utils.Util;
 
-import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 
 /**
@@ -66,27 +65,13 @@ public interface IToolStat<T> {
   void update(ModifierStatsBuilder builder, T value);
 
 
-  /* Storing and parsing */
+  /* Codecs */
 
-  /** Parses this stat from NBT, return null if the type is invalid */
-  @Nullable
-  T read(Tag tag);
+  /** Gets the codec for serializing this to NBT and JSON */
+  Codec<T> codec();
 
-  /** Writes this stat to NBT */
-  @Nullable
-  Tag write(T value);
-
-  /** Parses this stat from JSON */
-  T deserialize(JsonElement json);
-
-  /** Serializes this stat to JSON */
-  JsonElement serialize(T value);
-
-  /** Parses this stat from from the network */
-  T fromNetwork(FriendlyByteBuf buffer);
-
-  /** Writes this stat to the network */
-  void toNetwork(FriendlyByteBuf buffer, T value);
+  /** Gets the stream codec for serializing this the packet buffer */
+  StreamCodec<? super FriendlyByteBuf, T> streamCodec();
 
 
   /* Display */

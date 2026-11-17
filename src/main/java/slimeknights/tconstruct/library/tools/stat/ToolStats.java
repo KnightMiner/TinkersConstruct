@@ -1,11 +1,17 @@
 package slimeknights.tconstruct.library.tools.stat;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
+import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
+import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.stat.impl.IntegerToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.PercentToolStat;
 
@@ -45,7 +51,6 @@ public class ToolStats {
     throw error.create("Invalid tool stat " + stat.getId() + ", must be a numeric stat");
   }, (stat, error) -> stat);
 
-
   /** Map of ID to stat */
   private static final Map<ResourceId<IToolStat<?>>,IToolStat<?>> ALL_STATS = new HashMap<>();
   /** Set of stats supporting {@link slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook} */
@@ -71,6 +76,32 @@ public class ToolStats {
     }
     return stat;
   });
+
+  /** Codec instance for {@link StatsNBT} */
+  public static final Codec<IToolStat<?>> CODEC = ResourceId.<IToolStat<?>>codec().comapFlatMap(id -> {
+    IToolStat<?> stat = getToolStat(id);
+    return stat != null ? DataResult.success(stat) : DataResult.error(() -> "Unknown stat type " + id);
+  }, IToolStat::getId);
+  /** Numeric codec instance for {@link MultiplierNBT} */
+  public static final Codec<INumericToolStat<?>> NUMERIC_CODEC = CODEC.comapFlatMap(stat -> stat instanceof INumericToolStat<?> numeric
+    ? DataResult.success(numeric)
+    : DataResult.error(() -> "Invalid tool stat " + stat.getId() + ", must be a numeric stat"),
+    stat -> stat);
+  /** Stream codec instance for {@link StatsNBT} */
+  public static final StreamCodec<ByteBuf,IToolStat<?>> STREAM_CODEC = ResourceId.<IToolStat<?>>streamCodec().map(id -> {
+    IToolStat<?> stat = getToolStat(id);
+    if (stat != null) {
+      return stat;
+    }
+    throw new IllegalStateException("Unknown stat type " + id);
+  }, IToolStat::getId);
+  /** Numeric stream codec instance for {@link MultiplierNBT} */
+  public static final StreamCodec<ByteBuf,INumericToolStat<?>> NUMERIC_STREAM_CODEC = STREAM_CODEC.map(stat -> {
+    if (stat instanceof INumericToolStat<?> numeric) {
+      return numeric;
+    }
+    throw new IllegalStateException("Invalid tool stat " + stat.getId() + ", must be a numeric stat");
+  }, stat -> stat);
 
   /** Tools durability, determines how long it lasts */
   public static final FloatToolStat DURABILITY = register(new IntegerToolStat(resourceId("durability"), 0xFF47CC47, 1, 1, Integer.MAX_VALUE, TinkerTags.Items.DURABILITY));

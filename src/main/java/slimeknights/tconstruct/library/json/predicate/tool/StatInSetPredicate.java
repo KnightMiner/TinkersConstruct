@@ -1,9 +1,9 @@
 package slimeknights.tconstruct.library.json.predicate.tool;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -44,42 +44,38 @@ public record StatInSetPredicate<T>(IToolStat<T> stat, Set<T> values) implements
 
     /** Handles generics for the set parsing */
     private static <T> StatInSetPredicate<T> deserialize(JsonObject json, IToolStat<T> stat) {
-      Set<T> values = ImmutableSet.copyOf(JsonHelper.parseList(json, "values", (element, key) -> stat.deserialize(element)));
+      Set<T> values = ImmutableSet.copyOf(JsonHelper.parseList(json, "values", (element, key) -> JsonHelper.parse(stat.codec(), element)));
       return new StatInSetPredicate<>(stat, values);
     }
 
     @Override
-    public void serialize(StatInSetPredicate<?> object, JsonObject json) {
+    public void serializeInto(StatInSetPredicate<?> object, JsonObject json, TypedMap context) {
       json.add("stat", ToolStats.LOADER.serialize(object.stat));
       serializeSet(object, json);
     }
 
     /** Handles generics for the set serializing */
     private static <T> void serializeSet(StatInSetPredicate<T> object, JsonObject json) {
-      JsonArray array = new JsonArray();
-      for (T value : object.values) {
-        array.add(object.stat.serialize(value));
-      }
-      json.add("values", array);
+      json.add("values", JsonHelper.serializeList(object.stat.codec(), object.values));
     }
 
     @Override
-    public StatInSetPredicate<?> decode(FriendlyByteBuf buffer, TypedMap context) {
+    public StatInSetPredicate<?> decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       return fromNetwork(buffer, ToolStats.LOADER.decode(buffer, context));
     }
 
     /** Handles generics for the set reading */
-    private static <T> StatInSetPredicate<T> fromNetwork(FriendlyByteBuf buffer, IToolStat<T> stat) {
+    private static <T> StatInSetPredicate<T> fromNetwork(RegistryFriendlyByteBuf buffer, IToolStat<T> stat) {
       ImmutableSet.Builder<T> builder = ImmutableSet.builder();
       int max = buffer.readVarInt();
       for (int i = 0; i < max; i++) {
-        builder.add(stat.fromNetwork(buffer));
+        builder.add(stat.streamCodec().decode(buffer));
       }
       return new StatInSetPredicate<>(stat, builder.build());
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, StatInSetPredicate<?> object) {
+    public void encode(RegistryFriendlyByteBuf buffer, StatInSetPredicate<?> object, TypedMap context) {
       ToolStats.LOADER.encode(buffer, object.stat);
       setToNetwork(object, buffer);
     }
@@ -88,7 +84,7 @@ public record StatInSetPredicate<T>(IToolStat<T> stat, Set<T> values) implements
     private static <T> void setToNetwork(StatInSetPredicate<T> object, FriendlyByteBuf buffer) {
       buffer.writeVarInt(object.values.size());
       for (T value : object.values) {
-        object.stat.toNetwork(buffer, value);
+        object.stat.streamCodec().encode(buffer, value);
       }
     }
   };

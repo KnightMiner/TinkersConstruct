@@ -18,12 +18,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
+import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.shared.command.HeldModifiableItemIterator;
 import slimeknights.tconstruct.shared.command.argument.ToolStatArgument;
 import slimeknights.tconstruct.tools.TinkerModifiers;
@@ -31,6 +33,7 @@ import slimeknights.tconstruct.tools.modifiers.creative.StatOverrideModifier;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /** Command to modify a tool's stats */
@@ -114,11 +117,11 @@ public class StatsCommand {
 
   /** Sets the given stat using NBT */
   private static <T> List<LivingEntity> setStat(CommandContext<CommandSourceStack> context, IToolStat<T> stat, Tag tag) throws CommandSyntaxException {
-    T value = stat.read(tag);
-    if (value == null) {
+    Optional<T> value = TagUtil.decode(stat.codec(), stat.getId().toString(), tag);
+    if (value.isEmpty()) {
       throw FAILED_TO_PARSE.create(stat.getPrefix(), tag);
     }
-    return updateEntities(context, tool -> StatOverrideModifier.set(tool, stat, value));
+    return updateEntities(context, tool -> StatOverrideModifier.set(tool, stat, value.get()));
   }
 
   /** Modifies a tool stat with the given operation */
@@ -190,7 +193,7 @@ public class StatsCommand {
     List<LivingEntity> successes = HeldModifiableItemIterator.apply(context, (living, stack) -> {
       // remove modifier
       ToolStack tool = ToolStack.from(stack);
-      StatOverrideModifier stats = TinkerModifiers.statOverride.get();
+      Modifier stats = TinkerModifiers.statOverride.get();
       int level = tool.getModifierLevel(stats);
       if (level > 0) {
         tool = tool.copy();

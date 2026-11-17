@@ -1,30 +1,31 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.util.typed.TypedMap;
+import net.minecraft.network.codec.StreamCodec;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.common.CodecLoadable;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.codec.DispatchedMapStreamCodec;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
+import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Generic container for tool stats, allows addons to select which stats they wish to use
@@ -36,7 +37,20 @@ public class StatsNBT {
   /** Set of all tool stat IDs that failed to parse, to reduce log spam as they get parsed many times in UIs when dumb mods don't call proper methods */
   static final Set<String> ERRORED_IDS = new HashSet<>();
   /** Empty stats */
-  public static final StatsNBT EMPTY = new StatsNBT(ImmutableMap.of());
+  public static final StatsNBT EMPTY = new StatsNBT(Map.of());
+
+  /** Codec instance for NBT and JSON */
+  public static final Codec<StatsNBT> CODEC;
+  /** Stream codec instance for syncing the component */
+  public static final StreamCodec<FriendlyByteBuf,StatsNBT> STREAM_CODEC;
+  static {
+    Function<StatsNBT,Map<IToolStat<?>,Object>> getter = s -> s.stats;
+    Function<Map<IToolStat<?>,Object>,StatsNBT> constructor = StatsNBT::new;
+    CODEC = Codec.<IToolStat<?>,Object>dispatchedMap(ToolStats.CODEC, IToolStat::codec).xmap(constructor, getter);
+    STREAM_CODEC = new DispatchedMapStreamCodec<FriendlyByteBuf,IToolStat<?>,Object>(ToolStats.STREAM_CODEC, IToolStat::streamCodec).map(constructor, getter);
+  }
+  /** Loadable instance for tool modules */
+  public static final Loadable<StatsNBT> LOADABLE = new CodecLoadable.Direct<>(CODEC, STREAM_CODEC);
 
   /** All currently contained stats */
   private final Map<IToolStat<?>, Object> stats;
@@ -102,79 +116,31 @@ public class StatsNBT {
     return null;
   }
 
-  /** Reads the stat from NBT */
-  public static StatsNBT readFromNBT(@Nullable Tag inbt) {
-    if (inbt == null || inbt.getId() != Tag.TAG_COMPOUND) {
-      return EMPTY;
-    }
-
-    ImmutableMap.Builder<IToolStat<?>, Object> builder = ImmutableMap.builder();
-
-    // simply try each key as a tool stat
-    CompoundTag nbt = (CompoundTag)inbt;
-    for (String key : nbt.getAllKeys()) {
-      Tag tag = nbt.get(key);
-      if (tag != null) {
-        IToolStat<?> stat = readStatIdFromNBT(key);
-        if (stat != null) {
-          Object value = stat.read(tag);
-          if (value != null) {
-            builder.put(stat, value);
-          }
-        }
-      }
-    }
-    return new StatsNBT(builder.build());
+  /** use {@link #CODEC} */
+  @Deprecated
+  public static StatsNBT readFromNBT(@Nullable Tag tag) {
+    return tag == null ? EMPTY : TagUtil.decode(CODEC, "tool stats", tag).orElse(EMPTY);
   }
 
-  /** Serializes a stat to NBT, method done to help with generics */
-  @SuppressWarnings("unchecked")
-  @Nullable
-  private static <T> Tag serialize(IToolStat<T> stat, Object value) {
-    return stat.write((T) value);
-  }
-
-  /** Writes these stats to NBT */
-  public CompoundTag serializeToNBT() {
-    CompoundTag nbt = new CompoundTag();
-    for (Entry<IToolStat<?>,Object> entry : stats.entrySet()) {
-      IToolStat<?> stat = entry.getKey();
-      Tag serialized = serialize(stat, entry.getValue());
-      if (serialized != null) {
-        nbt.put(stat.getId().toString(), serialized);
-      }
-    }
-    return nbt;
+  /** use {@link #CODEC} */
+  @Deprecated
+  public Tag serializeToNBT() {
+    return TagUtil.encode(CODEC, this);
   }
 
 
   /* Network */
 
-  /** Generic helper to write to network */
-  @SuppressWarnings("unchecked")
-  private static <T> void toNetwork(FriendlyByteBuf buffer, IToolStat<T> stat, Object value) {
-    stat.toNetwork(buffer, (T) value);
-  }
-
-  /** Writes this to a packet buffer */
+  /** use {@link #STREAM_CODEC} */
+  @Deprecated
   public void toNetwork(FriendlyByteBuf buffer) {
-    buffer.writeVarInt(stats.size());
-    for (Entry<IToolStat<?>,Object> entry : stats.entrySet()) {
-      IToolStat<?> stat = entry.getKey();
-      buffer.writeUtf(stat.getId().toString());
-      toNetwork(buffer, stat, entry.getValue());
-    }
+    STREAM_CODEC.encode(buffer, this);
   }
 
-  /** Reads a tool definition stat object from a packet buffer */
+  /** use {@link #STREAM_CODEC} */
+  @Deprecated
   public static StatsNBT fromNetwork(RegistryFriendlyByteBuf buffer) {
-    ImmutableMap.Builder<IToolStat<?>, Object> builder = ImmutableMap.builder();
-    int max = buffer.readVarInt();
-    for (int i = 0; i < max; i++) {
-      IToolStat<?> stat = ToolStats.LOADER.decode(buffer);
-      builder.put(stat, stat.fromNetwork(buffer));
-    }
-    return new StatsNBT(builder.build());
+    return STREAM_CODEC.decode(buffer);
   }
 
   /** Create a builder for stats, really just safety checks on the generics for the set method */
@@ -203,39 +169,4 @@ public class StatsNBT {
     }
   }
 
-  public static final RecordLoadable<StatsNBT> LOADABLE = new RecordLoadable<>() {
-    @Override
-    public StatsNBT deserialize(JsonObject json, TypedMap context) {
-      ImmutableMap.Builder<IToolStat<?>,Object> builder = ImmutableMap.builder();
-      for (Entry<String,JsonElement> entry : json.entrySet()) {
-        IToolStat<?> stat = ToolStats.LOADER.parseString(entry.getKey(), "[map key]");
-        builder.put(stat, stat.deserialize(entry.getValue()));
-      }
-      return new StatsNBT(builder.build());
-    }
-
-    /** Serializes a stat to NBT */
-    @SuppressWarnings("unchecked")
-    private static <T> JsonElement serialize(IToolStat<T> stat, Object value) {
-      return stat.serialize((T) value);
-    }
-
-    @Override
-    public void serializeInto(StatsNBT stats, JsonObject json, TypedMap context) {
-      for (Entry<IToolStat<?>,Object> entry : stats.stats.entrySet()) {
-        IToolStat<?> stat = entry.getKey();
-        json.add(stat.getId().toString(), serialize(stat, entry.getValue()));
-      }
-    }
-
-    @Override
-    public StatsNBT decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
-      return StatsNBT.fromNetwork(buffer);
-    }
-
-    @Override
-    public void encode(RegistryFriendlyByteBuf buffer, StatsNBT stats, TypedMap context) {
-      stats.toNetwork(buffer);
-    }
-  };
 }
