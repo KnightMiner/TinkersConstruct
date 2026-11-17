@@ -21,7 +21,7 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
@@ -101,7 +101,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     List<MaterialStatsId> requirements = ToolMaterialHook.stats(result.getToolDefinition());
     // last material is the part, may be index 0 or 1
     MaterialFluidRecipe recipe = getFluidRecipe(inv);
-    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().getId());
+    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().material());
   }
 
   @Override
@@ -198,7 +198,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
         // tool is valid, create setup to call part swapping methods
         int fluidIndex = getIndex(requirements);
         ToolRequirement tool = new ToolRequirement(ToolStack.from(result.asItem(), result.getToolDefinition(), new CompoundTag()), fluidIndex, requirements.get(fluidIndex));
-        MaterialSwappingRecipe.setMaterials(tool.tool(), fluidIndex, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0)));
+        MaterialSwappingRecipe.setMaterials(tool.tool(), fluidIndex, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0)));
         List<NamedRecipe<IDisplayableCastingRecipe>> displayRecipes = new ArrayList<>(fluidSwapping ? 3 : 1);
         List<ResourceLocation> parent = List.of(id);
 

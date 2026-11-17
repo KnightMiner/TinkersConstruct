@@ -4,8 +4,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifierHook;
@@ -39,8 +39,8 @@ public record MaterialVariantColorModule(MaterialId material) implements Modifie
   public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     // use the color of the first match found
     for (MaterialVariant material : tool.getMaterials()) {
-      if (this.material.equals(material.getId())) {
-        return name.copy().withStyle(style -> style.withColor(MaterialTooltipCache.getColor(material.getVariant())));
+      if (this.material.equals(material.material())) {
+        return name.copy().withStyle(style -> style.withColor(MaterialTooltipCache.getColor(material.id())));
       }
     }
     return name;

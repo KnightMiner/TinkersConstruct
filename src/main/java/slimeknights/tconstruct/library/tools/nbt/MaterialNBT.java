@@ -8,9 +8,9 @@ import lombok.ToString;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 
 import javax.annotation.Nonnull;
@@ -46,7 +46,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
   /** Creates a new material NBT */
   @VisibleForTesting
   public static MaterialNBT of(IMaterial... materials) {
-    return new MaterialNBT(Arrays.stream(materials).map(MaterialVariant::of).toList());
+    return new MaterialNBT(Arrays.stream(materials).map(MaterialVariant::create).toList());
   }
 
   /** Creates a new material NBT */
@@ -107,7 +107,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     // handles the case where a tool has broken material NBT without crashing
     if (index >= size) {
       for (int i = size; i < index; i++) {
-        list.add(MaterialVariant.of(IMaterial.UNKNOWN, ""));
+        list.add(MaterialVariant.UNKNOWN);
       }
       list.add(replacement);
     }
@@ -123,7 +123,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
    * @throws IndexOutOfBoundsException  If the index is invalid
    */
   public MaterialNBT replaceMaterial(int index, MaterialVariantId replacement) {
-    return replaceMaterial(index, MaterialVariant.of(replacement));
+    return replaceMaterial(index, MaterialVariant.create(replacement));
   }
 
   /**
@@ -143,7 +143,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     List<MaterialVariant> materials = listNBT.stream()
       // if any material ID fails to parse (invalid string), replace with unknown
       .map(tag -> requireNonNullElse(MaterialVariantId.tryParse(tag.getAsString()), MaterialId.UNKNOWN))
-      .map(MaterialVariant::of)
+      .map(MaterialVariant::create)
       .toList();
     return new MaterialNBT(materials);
   }
@@ -154,7 +154,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
    */
   public ListTag serializeToNBT() {
     return list.stream()
-               .map(lazy -> StringTag.valueOf(lazy.getVariant().toString()))
+               .map(lazy -> StringTag.valueOf(lazy.id().toString()))
                .collect(Collectors.toCollection(ListTag::new));
   }
 
@@ -190,12 +190,12 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
 
     /** Adds a material to the builder */
     public Builder add(MaterialVariantId variantId) {
-      return add(MaterialVariant.of(variantId));
+      return add(MaterialVariant.create(variantId));
     }
 
     /** Adds a material to the builder */
     public Builder add(IMaterial material) {
-      return add(MaterialVariant.of(material));
+      return add(MaterialVariant.create(material));
     }
 
     /** Adds all materials from the given list */

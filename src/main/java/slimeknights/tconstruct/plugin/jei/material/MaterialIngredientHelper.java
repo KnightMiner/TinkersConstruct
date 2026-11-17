@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
@@ -37,7 +37,7 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
 
   @Override
   public String getDisplayName(MaterialVariant material) {
-    return MaterialTooltipCache.getDisplayName(material.getVariant()).getString();
+    return MaterialTooltipCache.getDisplayName(material.id()).getString();
   }
 
   @Override
@@ -47,12 +47,12 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
 
   @Override
   public Iterable<Integer> getColors(MaterialVariant material) {
-    return List.of(0xFF000000 | MaterialTooltipCache.getColor(material.getVariant()).getValue());
+    return List.of(0xFF000000 | MaterialTooltipCache.getColor(material.id()).getValue());
   }
 
   @Override
   public ItemStack getCheatItemStack(MaterialVariant material) {
-    MaterialVariantId variant = material.getVariant();
+    MaterialVariantId variant = material.id();
     MaterialRecipe recipe = MaterialRecipeCache.getRecipes(variant).stream().min(COMPARATOR).orElse(null);
     if (recipe != null) {
       ItemStack[] items = recipe.getIngredient().getItems();
@@ -62,7 +62,7 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
     }
     // nothing? try repair kit
     IMaterialItem repairKit = TinkerToolParts.repairKit.get();
-    if (repairKit.canUseMaterial(material.getId())) {
+    if (repairKit.canUseMaterial(material.material())) {
       return repairKit.withMaterialForDisplay(variant);
     }
     // no repair kit? give up
@@ -72,35 +72,37 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
 
   /* IDs */
 
+  @SuppressWarnings("removal")
   @Override
   public String getUniqueId(MaterialVariant material, UidContext context) {
     if (context == UidContext.Recipe) {
-      return material.getId().toString();
+      return material.material().toString();
     }
-    return material.getVariant().toString();
+    return material.id().toString();
   }
 
   @Override
   public Object getUid(MaterialVariant material, UidContext context) {
     if (context == UidContext.Recipe) {
-      return material.getId();
+      return material.material();
     }
-    return material.getVariant();
+    return material.id();
   }
 
+  @SuppressWarnings("removal")
   @Override
   public String getWildcardId(MaterialVariant material) {
-    return material.getId().toString();
+    return material.material().toString();
   }
 
   @Override
   public ResourceLocation getResourceLocation(MaterialVariant material) {
-    return material.getId();
+    return material.material().id();
   }
 
   @Override
   public String getErrorInfo(@Nullable MaterialVariant material) {
-    return material == null ? "null" : material.getVariant().toString();
+    return material == null ? "null" : material.id().toString();
   }
 
 
@@ -108,12 +110,12 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
 
   @Override
   public Stream<ResourceLocation> getTagStream(MaterialVariant material) {
-    return MaterialRegistry.getInstance().getTags(material.getId()).map(TagKey::location);
+    return MaterialRegistry.getInstance().getTags(material.material()).map(TagKey::location);
   }
 
   @Override
   public boolean isHiddenFromRecipeViewersByTags(MaterialVariant material) {
-    return MaterialRegistry.getInstance().isInTag(material.getId(), TinkerTags.Materials.HIDDEN_FROM_RECIPE_VIEWERS);
+    return MaterialRegistry.getInstance().isInTag(material.material(), TinkerTags.Materials.HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
   @Override

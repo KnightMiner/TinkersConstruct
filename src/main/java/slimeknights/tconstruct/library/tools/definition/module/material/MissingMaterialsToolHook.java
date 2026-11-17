@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.tools.definition.module.material;
 
 import net.minecraft.util.RandomSource;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 

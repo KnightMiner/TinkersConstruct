@@ -16,7 +16,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingLookup;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<IDisplayableMeltingRecipe> {
   public static final RecordLoadable<MaterialMeltingRecipe> LOADER = RecordLoadable.create(
-    MaterialVariantId.LOADABLE.requiredField("input", r -> r.input.getVariant()),
+    MaterialVariantId.LOADABLE.requiredField("input", r -> r.input.id()),
     IntLoadable.FROM_ONE.requiredField("temperature", r -> r.temperature),
     FluidOutput.REQUIRED_LOADABLE.requiredField("result", r -> r.result),
     FluidOutput.REQUIRED_LOADABLE.list(0).defaultField("byproducts", List.of(), false, r -> r.byproducts),
@@ -42,7 +42,7 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<I
   private final List<FluidOutput> byproducts;
 
   public MaterialMeltingRecipe(MaterialVariantId input, int temperature, FluidOutput result, List<FluidOutput> byproducts) {
-    this.input = MaterialVariant.of(input);
+    this.input = MaterialVariant.create(input);
     this.temperature = temperature;
     this.result = result;
     this.byproducts = byproducts;
@@ -50,7 +50,7 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<I
 
   @Override
   public boolean matches(MeltingRecipeInput inv, Level worldIn) {
-    if (input.isUnknown()) {
+    if (!input.isBound()) {
       return false;
     }
     ItemStack stack = inv.getItem();
@@ -103,7 +103,7 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<I
         multiRecipes = List.of();
       } else {
         // grab and sort all parts that work
-        MaterialVariantId inputId = input.getVariant();
+        MaterialVariantId inputId = input.id();
         List<Entry<IMaterialItem>> entries = MaterialCastingLookup
           .getAllItemCosts().stream()
           .filter(entry -> entry.getKey().canUseMaterial(inputId.material()))

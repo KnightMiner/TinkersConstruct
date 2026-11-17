@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public record MaterialTitleIngredientRenderer(int width, int height) implements 
 
   @Override
   public void render(GuiGraphics graphics, MaterialVariant material, int posX, int posY) {
-    Component name = MaterialTooltipCache.getColoredDisplayName(material.getVariant());
+    Component name = MaterialTooltipCache.getColoredDisplayName(material.id());
     Font font = getFontRenderer(Minecraft.getInstance(), material);
     graphics.drawString(font, name, posX, posY + 1, -1, true);
   }
@@ -40,9 +40,9 @@ public record MaterialTitleIngredientRenderer(int width, int height) implements 
   @SuppressWarnings("removal")
   @Override
   public List<Component> getTooltip(MaterialVariant material, TooltipFlag flag) {
-    Component name = MaterialTooltipCache.getDisplayName(material.getVariant());
+    Component name = MaterialTooltipCache.getDisplayName(material.id());
     if (flag.isAdvanced()) {
-      return List.of(name ,Component.literal(material.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+      return List.of(name ,Component.literal(material.material().toString()).withStyle(ChatFormatting.DARK_GRAY));
     }
     return List.of(name);
   }
@@ -50,9 +50,9 @@ public record MaterialTitleIngredientRenderer(int width, int height) implements 
   @SuppressWarnings("removal")
   @Override
   public void getTooltip(ITooltipBuilder tooltip, MaterialVariant material, TooltipFlag flag) {
-    tooltip.add(MaterialTooltipCache.getDisplayName(material.getVariant()));
+    tooltip.add(MaterialTooltipCache.getDisplayName(material.id()));
     if (flag.isAdvanced()) {
-      tooltip.add(Component.literal(material.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+      tooltip.add(Component.literal(material.material().toString()).withStyle(ChatFormatting.DARK_GRAY));
     }
   }
 }

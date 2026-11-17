@@ -65,7 +65,7 @@ public final class MaterialHasFallbackModifierModel implements ModifierModel, Fu
 
   /** Checks the cache for the given material having the fallback */
   private boolean hasFallback(IToolStackView tool) {
-    return cache.computeIfAbsent(tool.getMaterials().get(index).getVariant(), this);
+    return cache.computeIfAbsent(tool.getMaterials().get(index).id(), this);
   }
 
   @Nullable

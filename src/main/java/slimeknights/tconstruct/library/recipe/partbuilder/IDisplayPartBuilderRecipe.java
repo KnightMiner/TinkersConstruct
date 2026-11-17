@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -67,7 +67,7 @@ public interface IDisplayPartBuilderRecipe {
 
   /**
    * Gets the materials to display subject to the given focuses
-   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#isEmpty()} if not focused.
+   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#UNKNOWN} if not focused (see {@link MaterialVariant#isPresent()}).
    * @param focusStack     Currently focused item stack. Will be {@link ItemStack#isEmpty()} if not focused.
    * @param focusOutput    If true, focus is an output. If false, focus is an input.
    * @return  List of materials subject to the current focus.
@@ -79,7 +79,7 @@ public interface IDisplayPartBuilderRecipe {
 
   /**
    * Gets the material items to display subject to the given focuses.
-   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#isEmpty()} if not focused.
+   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#UNKNOWN} if not focused (see {@link MaterialVariant#isPresent()}).
    * @param focusStack     Currently focused item stack. Will be {@link ItemStack#isEmpty()} if not focused.
    * @param focusOutput    If true, focus is an output. If false, focus is an input.
    * @return  List of material items subject to the current focus.
@@ -91,7 +91,7 @@ public interface IDisplayPartBuilderRecipe {
 
   /**
    * Gets the result items to display subject to the given focuses
-   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#isEmpty()} if not focused.
+   * @param focusMaterial  Currently focused material. Will only ever be input. Will be {@link MaterialVariant#UNKNOWN} if not focused (see {@link MaterialVariant#isPresent()}).
    * @param focusStack     Currently focused item stack. Will be {@link ItemStack#isEmpty()} if not focused.
    * @param focusOutput    If true, focus is an output. If false, focus is an input.
    * @return  List of results subject to the current focus.

@@ -16,8 +16,8 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.Icons;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -256,7 +256,7 @@ public class PartBuilderScreen extends BaseTabbedScreen<PartBuilderBlockEntity,P
       return;
     }
     MaterialVariant materialVariant = materialRecipe.getMaterial();
-    this.infoPanelScreen.setCaption(MaterialTooltipCache.getColoredDisplayName(materialVariant.getVariant()));
+    this.infoPanelScreen.setCaption(MaterialTooltipCache.getColoredDisplayName(materialVariant.id()));
 
     // determine how much material we have
     // get exact number of material, rather than rounded
@@ -282,7 +282,7 @@ public class PartBuilderScreen extends BaseTabbedScreen<PartBuilderBlockEntity,P
       tips.add(Component.empty());
     }
 
-    MaterialId id = materialVariant.getId();
+    MaterialId id = materialVariant.material();
     List<IMaterialStats> materialStats = new ArrayList<>(MaterialRegistry.getInstance().getAllStats(id));
     materialStats.sort(STATS_COMPARATOR);
     for (IMaterialStats stat : materialStats) {
@@ -376,17 +376,17 @@ public class PartBuilderScreen extends BaseTabbedScreen<PartBuilderBlockEntity,P
   }
 
   @Override
-  public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
     //if (this.infoPanelScreen.handleMouseScrolled(mouseX, mouseY, delta)) {
     //  return false;
     //}
-    if (super.mouseScrolled(mouseX, mouseY, delta)) {
+    if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
       return true;
     }
 
     if (this.canScroll()) {
       int hidden = this.getHiddenRows();
-      this.sliderProgress = Mth.clamp((float) (this.sliderProgress - delta / hidden), 0, 1);
+      this.sliderProgress = Mth.clamp((float) (this.sliderProgress - scrollY / hidden), 0, 1);
       this.recipeIndexOffset = Math.round(this.sliderProgress * hidden) * 4;
       return true;
     }

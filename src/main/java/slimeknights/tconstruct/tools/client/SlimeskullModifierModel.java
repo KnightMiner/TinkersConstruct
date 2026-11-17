@@ -40,17 +40,17 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
 
   @Override
   public MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry) {
-    return tool.getMaterial(skullIndex).getVariant();
+    return tool.getMaterial(skullIndex).id();
   }
 
   @Override
   public int getColor(IToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
     IModDataView data = tool.getPersistentData();
-    ResourceLocation dyed = TinkerModifiers.dyed.id();
+    ResourceLocation dyed = TinkerModifiers.dyed.id().id();
     if (data.contains(dyed, Tag.TAG_INT)) {
       return 0xFF000000 | data.getInt(dyed);
     } else {
-      return SlimeskullArmorModel.MATERIAL_COLOR_CACHE.apply(tool.getMaterial(slimeIndex).getVariant());
+      return SlimeskullArmorModel.MATERIAL_COLOR_CACHE.apply(tool.getMaterial(slimeIndex).id());
     }
   }
 
@@ -59,7 +59,7 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
   public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
     IModDataView data = tool.getPersistentData();
     // only need to cache colors from dyed, if its from the slime we will get it from the material in cache
-    ResourceLocation dyed = TinkerModifiers.dyed.id();
+    ResourceLocation dyed = TinkerModifiers.dyed.id().id();
     if (data.contains(dyed, Tag.TAG_INT)) {
       return data.getInt(dyed);
     }

@@ -13,8 +13,8 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.ItemOutput;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
@@ -31,14 +31,14 @@ import java.util.List;
  */
 public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRecipe {
   public static final RecordLoadable<ItemPartRecipe> LOADER = RecordLoadable.create(
-    MaterialVariantId.LOADABLE.defaultField("material", MaterialId.UNKNOWN, r -> r.material.getVariant()),
+    MaterialVariantId.LOADABLE.defaultField("material", MaterialId.UNKNOWN, r -> r.material.id()),
     Pattern.LOADABLE.requiredField("pattern", ItemPartRecipe::getPattern),
     Loadables.ITEM_INGREDIENT_NONEMPTY.defaultField("pattern_item", DEFAULT_PATTERNS, r -> r.patternItem),
     IntLoadable.FROM_ZERO.defaultField("cost", 0, ItemPartRecipe::getCost),
     ItemOutput.REQUIRED_STACK_LOADABLE.requiredField("result", r -> r.result),
     ResourceLocationLoadable.DEFAULT.nullableField("title_key", r -> r.titleKey),
     ItemPartRecipe::new).validate((recipe, error) -> {
-      if (recipe.cost == 0 && !recipe.material.isEmpty()) {
+      if (recipe.cost == 0 && recipe.material.isPresent()) {
         throw error.create("Cost must be greater than zero if material is defined");
       }
       return recipe;
@@ -59,7 +59,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   private final List<Component> information;
 
   protected ItemPartRecipe(MaterialVariantId material, Pattern pattern, Ingredient patternItem, int cost, ItemOutput result, @Nullable ResourceLocation titleKey) {
-    this.material = MaterialVariant.of(material);
+    this.material = MaterialVariant.create(material);
     this.pattern = pattern;
     this.patternItem = patternItem;
     this.cost = cost;
@@ -90,7 +90,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
     // if there is a material item, it must have a valid material and be craftable
     if (!inv.getItem().isEmpty()) {
       // no material means we expect no stack in the material slot
-      if (material.isEmpty()) {
+      if (!material.isPresent()) {
         return false;
       }
       IMaterialValue materialRecipe = inv.getMaterial();
@@ -102,7 +102,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
 
   @Override
   public boolean matches(PartBuilderInput inv, Level level) {
-    if (material.isEmpty()) {
+    if (!material.isPresent()) {
       return inv.getItem().isEmpty();
     }
     IMaterialValue materialRecipe = inv.getMaterial();
@@ -112,7 +112,7 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
 
   @Override
   public int getItemsUsed(PartBuilderInput inv) {
-    if (material.isEmpty()) {
+    if (!material.isPresent()) {
       return 0;
     }
     return IPartBuilderRecipe.super.getItemsUsed(inv);
@@ -179,10 +179,10 @@ public class ItemPartRecipe implements IPartBuilderRecipe, IDisplayPartBuilderRe
   public List<ItemStack> getMaterialItems() {
     if (materialItems == null) {
       // if unknown, nothing to display. Used for no material input
-      if (material.isEmpty()) {
+      if (!material.isPresent()) {
         materialItems = List.of();
       } else {
-        materialItems = List.copyOf(MaterialPartRecipe.getItems(material.getVariant(), cost));
+        materialItems = List.copyOf(MaterialPartRecipe.getItems(material.id(), cost));
       }
     }
     return materialItems;

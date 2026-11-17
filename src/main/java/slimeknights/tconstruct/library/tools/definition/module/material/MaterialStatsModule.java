@@ -17,8 +17,8 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.field.OptionallyNestedLoadable;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -88,7 +88,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
     for (int i = 0; i < statTypes.size(); i++) {
       MaterialVariant material = materials.get(i);
       // if the material is shiny, the tool becomes shiny
-      if (MaterialRegistry.getInstance().isInTag(material.getId(), TinkerTags.Materials.SHINY)) {
+      if (MaterialRegistry.getInstance().isInTag(material.material(), TinkerTags.Materials.SHINY)) {
         shiny = true;
       }
       // keep just the rarest rarity
@@ -137,7 +137,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
     MaterialNBT toolMaterials = tool.getMaterials();
     for (int part : getRepairIndices()) {
-      if (toolMaterials.get(part).matches(material)) {
+      if (toolMaterials.get(part).is(material)) {
         return true;
       }
     }
@@ -149,8 +149,8 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
     MaterialNBT toolMaterials = tool.getMaterials();
     for (int part : getRepairIndices()) {
       MaterialVariant material = toolMaterials.get(part);
-      if (!material.isUnknown() && !material.matches(ToolBuildHandler.RENDER_MATERIAL)) {
-        materials.add(material.getId());
+      if (material.isBound() && !material.is(ToolBuildHandler.RENDER_MATERIAL)) {
+        materials.add(material.material());
       }
     }
   }
@@ -160,12 +160,12 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
     // first, find all stat types we might try for this material
     Set<MaterialStatsId> matchingStats = new HashSet<>();
     for (int i : getRepairIndices()) {
-      if (tool.getMaterial(i).matches(material)) {
+      if (tool.getMaterial(i).is(material)) {
         matchingStats.add(statTypes.get(i));
       }
     }
     // next, figure out which of the matches repairs the most
-    ResourceLocation toolId = tool.getDefinition().getId();
+    ResourceLocation toolId = tool.getDefinition().id();
     int max = 0;
     for (MaterialStatsId stat : matchingStats) {
       // its possible a later stat type will repair more with this material
@@ -185,7 +185,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
       for (int i = 0; i < statTypes.size(); i++) {
         MaterialStatsId statType = statTypes.get(i);
         // apply the stats for the material, assuming the stat ID is valid
-        IMaterialStats stats = registry.getStatsOrDefault(materials.get(i).getId(), statType);
+        IMaterialStats stats = registry.getStatsOrDefault(materials.get(i).material(), statType);
         if (stats != null) {
           stats.apply(builder, scales[i]);
         }
@@ -199,7 +199,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
     if (max > 0) {
       IMaterialRegistry materialRegistry = MaterialRegistry.getInstance();
       for (int i = 0; i < max; i++) {
-        builder.add(materialRegistry.getTraits(materials.get(i).getId(), statTypes.get(i)));
+        builder.add(materialRegistry.getTraits(materials.get(i).material(), statTypes.get(i)));
       }
     }
   }

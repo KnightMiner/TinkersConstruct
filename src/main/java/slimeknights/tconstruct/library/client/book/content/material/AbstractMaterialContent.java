@@ -7,12 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
@@ -34,9 +34,9 @@ import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -126,7 +126,7 @@ public abstract class AbstractMaterialContent extends PageContent {
   /** Gets the text to display, empty if no text */
   protected String getTextKey(MaterialId material) {
     // allow both the encyclopedia and flavor keys to use a separate variant if defined
-    String rootKey = "material." + material.toLanguageKey() + (detailed ? ".encyclopedia" : ".flavor");
+    String rootKey = "material." + material.id().toLanguageKey() + (detailed ? ".encyclopedia" : ".flavor");
     String suffix = translationSuffix();
     // allow the suffix to override the translation key
     if (!suffix.isEmpty()) {
@@ -240,6 +240,7 @@ public abstract class AbstractMaterialContent extends PageContent {
   }
 
   /** Adds the stats for a stat type */
+  @SuppressWarnings("SameParameterValue")
   protected int addMaterialStat(int x, int y, int w, List<BookElement> list, @Nullable MaterialStatsId statsId, boolean includeStats) {
     if (statsId == null) {
       return y;
@@ -373,8 +374,8 @@ public abstract class AbstractMaterialContent extends PageContent {
       List<MaterialFluidRecipe> composites = MaterialCastingLookup.getCompositeFluids(materialId);
       for (MaterialFluidRecipe composite : composites) {
         MaterialVariant input = composite.getInput();
-        if (!composite.isHideInBook() && input != null && !materialVariant.matchesVariant(input.getVariant())) {
-          MaterialVariantId inputId = input.getVariant();
+        if (!composite.isHideInBook() && input != null && !materialVariant.matchesVariant(input.id())) {
+          MaterialVariantId inputId = input.id();
           // TODO: filter out tool parts that cannot be casted due to a composite cast conflict
           List<ItemStack> compositeParts = MaterialCastingLookup.getAllItemCosts().stream()
             .map(Entry::getKey)
@@ -396,7 +397,6 @@ public abstract class AbstractMaterialContent extends PageContent {
   }
 
   /** Adds display items to the tool sidebars */
-  @SuppressWarnings("deprecation")  // its the best tag lookup
   protected void addDisplayItems(ArrayList<BookElement> list, int x, MaterialVariantId materialVariant) {
     List<ItemElement> displayTools = Lists.newArrayList();
 
@@ -463,7 +463,7 @@ public abstract class AbstractMaterialContent extends PageContent {
     String textKey = getTextKey(materialVariant.material());
     if (I18n.exists(textKey)) {
       // using forge instead of I18n.format as that prevents % from being interpreted as a format key
-      String translated = ForgeI18n.getPattern(textKey);
+      String translated = Language.getInstance().getOrDefault(textKey);
       if (!detailed ) {
         translated = '"' + translated + '"';
       }
@@ -478,7 +478,6 @@ public abstract class AbstractMaterialContent extends PageContent {
   private static List<IToolPart> ALL_PARTS = null;
 
   /** Gets a list of all tool parts */
-  @SuppressWarnings("deprecation")
   private static List<IToolPart> getToolParts() {
     if (ALL_PARTS == null) {
       ALL_PARTS = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.TOOL_PARTS)
@@ -513,7 +512,7 @@ public abstract class AbstractMaterialContent extends PageContent {
       .add(makeTitleHTML().classes("format-custom").color(rgb))
       .add(makeStatsHtml(book));
     HtmlElement description = HtmlElement.p().classes("trait");
-    String text = ForgeI18n.getPattern(getTextKey(getMaterialVariant().material()));
+    String text = Language.getInstance().getOrDefault(getTextKey(getMaterialVariant().material()));
     page.add(description);
     if (!detailed) {
       description.style("font-style", "italic");

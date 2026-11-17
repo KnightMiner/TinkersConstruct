@@ -45,7 +45,7 @@ public interface MaterialToolName extends ToolNameHook {
     int size = Math.min(components.size(), materials.size());
     Set<MaterialVariantId> displayMaterials = new LinkedHashSet<>(size);
     for (int i = 0; i < size; i++) {
-      MaterialVariantId material = materials.get(i).getVariant();
+      MaterialVariantId material = materials.get(i).id();
       if (!MaterialId.UNKNOWN.equals(material) && shouldDisplayMaterial(i, components.get(i), material)) {
         displayMaterials.add(material);
       }

@@ -13,7 +13,7 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
@@ -145,7 +145,7 @@ public class MaterialCastingLookup {
       COMPOSITE_FLUIDS.add(recipe);
       SORTED_COMPOSITE = null;
     }
-    MaterialRecipeCache.addKnownVariant(recipe.getOutput().getVariant());
+    MaterialRecipeCache.addKnownVariant(recipe.getOutput().id());
   }
 
   /**
@@ -191,7 +191,7 @@ public class MaterialCastingLookup {
    */
   public static MaterialFluidRecipe getCastingFluid(Fluid fluid, IJsonPredicate<MaterialVariantId> filter) {
     MaterialFluidRecipe recipe = getCastingFluid(fluid);
-    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().getVariant())) {
+    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().id())) {
       return recipe;
     }
     return MaterialFluidRecipe.EMPTY;
@@ -216,7 +216,7 @@ public class MaterialCastingLookup {
    */
   public static MaterialFluidRecipe getCompositeFluid(Fluid fluid, MaterialVariantId material, IJsonPredicate<MaterialVariantId> filter) {
     MaterialFluidRecipe recipe = getCompositeFluid(fluid, material);
-    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().getVariant())) {
+    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().id())) {
       return recipe;
     }
     return MaterialFluidRecipe.EMPTY;

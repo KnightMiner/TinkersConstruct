@@ -13,9 +13,9 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -160,11 +160,11 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
             // one part per material
             filtered.stream().map(mat -> part.withMaterialForDisplay(mat.getId())).toList(),
             // single tool with the material to swap left blank
-            List.of(withMaterial(copy, i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0))).copy()),
+            List.of(withMaterial(copy, i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0))).copy()),
             // one output per material
-            filtered.stream().map(mat -> withMaterial(copy, i, MaterialVariant.of(mat)).copy()).toList(),
+            filtered.stream().map(mat -> withMaterial(copy, i, MaterialVariant.create(mat)).copy()).toList(),
             // part info
-            filtered.stream().map(MaterialVariant::of).toList(), part
+            filtered.stream().map(MaterialVariant::create).toList(), part
           ));
         });
       }).toList();

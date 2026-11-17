@@ -7,8 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.definition.LazyMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.recipe.alloying.AlloyRecipe;
@@ -65,20 +65,20 @@ public class TConstructJEIConstants {
       return slots.type();
     }
   };
-  public static final IIngredientTypeWithSubtypes<LazyMaterial, MaterialVariant> MATERIAL_TYPE = new IIngredientTypeWithSubtypes<>() {
+  public static final IIngredientTypeWithSubtypes<MaterialHolder, MaterialVariant> MATERIAL_TYPE = new IIngredientTypeWithSubtypes<>() {
     @Override
     public Class<? extends MaterialVariant> getIngredientClass() {
       return MaterialVariant.class;
     }
 
     @Override
-    public Class<? extends LazyMaterial> getIngredientBaseClass() {
-      return LazyMaterial.class;
+    public Class<? extends MaterialHolder> getIngredientBaseClass() {
+      return MaterialHolder.class;
     }
 
     @Override
-    public LazyMaterial getBase(MaterialVariant variant) {
-      return variant.getBase();
+    public MaterialHolder getBase(MaterialVariant variant) {
+      return variant.holder();
     }
   };
 

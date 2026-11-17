@@ -14,6 +14,7 @@ import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.resource.ResourceLocationUtils;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
@@ -81,7 +82,7 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
 
   /** Checks if two material variants match. If this has no variant, matches any variant of the same material */
   default boolean matchesVariant(MaterialVariant other) {
-    return matchesVariant(other.getVariant());
+    return matchesVariant(other.id());
   }
 
   /** Checks if two material variants match. If this has no variant, matches any variant of the same material */

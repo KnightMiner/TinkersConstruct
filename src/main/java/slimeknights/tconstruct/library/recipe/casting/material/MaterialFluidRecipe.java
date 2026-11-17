@@ -11,8 +11,8 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.tconstruct.library.json.FluidStackSet;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
@@ -29,8 +29,8 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<CastingRecipeInp
   public static final RecordLoadable<MaterialFluidRecipe> LOADER = RecordLoadable.create(
     FluidStackSet.LOADABLE.requiredField("fluid", r -> r.fluid),
     IntLoadable.FROM_ZERO.requiredField("temperature", r -> r.temperature),
-    MaterialVariantId.LOADABLE.nullableField("input", r -> r.input != null ? r.input.getVariant() : null),
-    MaterialVariantId.LOADABLE.nullableField("output", r -> r.output.getVariant()),
+    MaterialVariantId.LOADABLE.nullableField("input", r -> r.input != null ? r.input.id() : null),
+    MaterialVariantId.LOADABLE.nullableField("output", r -> r.output.id()),
     BooleanLoadable.INSTANCE.defaultField("hide_in_book", false, false, r -> r.hideInBook),
     MaterialFluidRecipe::new);
   /** Empty recipe instance, used as a fallback */
@@ -51,15 +51,15 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<CastingRecipeInp
   protected MaterialFluidRecipe(FluidStackSet fluid, int temperature, @Nullable MaterialVariantId inputId, MaterialVariantId outputId, boolean hideInBook) {
     this.fluid = fluid;
     this.temperature = temperature;
-    this.input = inputId == null ? null : MaterialVariant.of(inputId);
-    this.output = MaterialVariant.of(outputId);
+    this.input = inputId == null ? null : MaterialVariant.create(inputId);
+    this.output = MaterialVariant.create(outputId);
     this.hideInBook = hideInBook;
     MaterialCastingLookup.registerFluid(this);
   }
 
   /** Checks if this recipe is valid for the given fluid and material */
   public boolean matches(Fluid fluid) {
-    return !output.isUnknown() && this.fluid.contains(fluid);
+    return output.isBound() && this.fluid.contains(fluid);
   }
 
   /** Checks if this recipe is valid for the given fluid and material */
@@ -98,8 +98,8 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<CastingRecipeInp
 
   @Override
   public boolean isVisible() {
-    return !output.isUnknown() && !output.get().isHidden()
-      && (input == null || !input.isUnknown() && !input.get().isHidden());
+    return output.isBound() && !output.get().isHidden()
+      && (input == null || input.isBound() && !input.get().isHidden());
   }
 
 

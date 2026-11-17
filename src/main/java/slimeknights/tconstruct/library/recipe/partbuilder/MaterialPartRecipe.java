@@ -21,9 +21,9 @@ import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.field.MergingField;
 import slimeknights.tconstruct.library.json.field.MergingField.MissingMode;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
@@ -93,7 +93,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
         return false;
       }
       MaterialVariant material = materialRecipe.getMaterial();
-      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.getId());
+      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.material());
     }
     // no material item? return match in case we get one later
     return true;
@@ -112,7 +112,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     if (materialRecipe != null) {
       // material must be craftable, usable in the item, and have a cost we can afford
       MaterialVariant material = materialRecipe.getMaterial();
-      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.getId())
+      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.material())
              && inv.getItem().getCount() >= materialRecipe.getItemsUsed(cost);
     }
     return false;
@@ -150,7 +150,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
         count = outputCount * value / cost;
       }
     }
-    return this.getRecipeOutput(material.getVariant(), count);
+    return this.getRecipeOutput(material.id(), count);
   }
 
   /** Cache of recipes for display in JEI */
@@ -180,14 +180,14 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
           List<ItemStack> newItems = new ArrayList<>();
           if (variants.size() == 1) {
             displayId = variants.get(0);
-            displayVariant = MaterialVariant.of(displayId);
+            displayVariant = MaterialVariant.create(displayId);
 
             // process items
             MaterialRecipeCache.addItems(displayId, cost, newItems);
           } else {
             // if we have multiple variants, use the base as display variant
             displayId = material.getId();
-            displayVariant = MaterialVariant.of(material);
+            displayVariant = MaterialVariant.create(material);
 
             // process items
             for (MaterialVariantId variant : variants) {
@@ -258,7 +258,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     @Override
     public List<MaterialVariant> getMaterials(MaterialVariant focusMaterial, ItemStack focusStack, boolean focusOutput) {
       // if focusing on a material, just display that
-      if (!focusMaterial.isEmpty()) {
+      if (focusMaterial.isPresent()) {
         // if it's a base ID, animate its variant recipes
         return List.of(focusMaterial);
       }
@@ -269,7 +269,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
           MaterialVariantId variant = output.getMaterial(focusStack);
           if (!MaterialId.UNKNOWN.equals(variant)) {
             // if it's a base ID, animate its variant recipes
-            return List.of(MaterialVariant.of(variant));
+            return List.of(MaterialVariant.create(variant));
           }
         } else {
           // if the item has a material, return that directly, no need to animate
@@ -284,8 +284,8 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
 
     @Override
     public List<ItemStack> getMaterialItems(MaterialVariant focusMaterial, ItemStack focusStack, boolean focusOutput) {
-      if (!focusMaterial.isEmpty()) {
-        return MaterialPartRecipe.getItems(focusMaterial.getId(), cost);
+      if (focusMaterial.isPresent()) {
+        return MaterialPartRecipe.getItems(focusMaterial.material(), cost);
       }
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
@@ -307,8 +307,8 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
 
     @Override
     public List<ItemStack> getResultItems(MaterialVariant focusMaterial, ItemStack focusStack, boolean focusOutput) {
-      if (!focusMaterial.isEmpty()) {
-        return List.of(output.withMaterial(focusMaterial.getVariant()));
+      if (focusMaterial.isPresent()) {
+        return List.of(output.withMaterial(focusMaterial.id()));
       }
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
@@ -319,7 +319,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
         } else {
           MaterialRecipe recipe = MaterialRecipeCache.findRecipe(focusStack);
           if (recipe != MaterialRecipe.EMPTY) {
-            return List.of(output.withMaterial(recipe.getMaterial().getVariant()));
+            return List.of(output.withMaterial(recipe.getMaterial().id()));
           }
         }
       }

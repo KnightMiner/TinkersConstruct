@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.world.item.ArmorItem;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
@@ -43,14 +43,14 @@ public record StatlessPartRepairModule(int partIndex, int repairAmount) implemen
 
   @Override
   public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
-    return material.equals(tool.getMaterial(partIndex).getId());
+    return material.equals(tool.getMaterial(partIndex).material());
   }
 
   @Override
   public void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {
     MaterialVariant material = tool.getMaterial(partIndex);
-    if (!material.isUnknown() && !material.matches(ToolBuildHandler.RENDER_MATERIAL)) {
-      materials.add(material.getId());
+    if (material.isBound() && !material.is(ToolBuildHandler.RENDER_MATERIAL)) {
+      materials.add(material.material());
     }
   }
 

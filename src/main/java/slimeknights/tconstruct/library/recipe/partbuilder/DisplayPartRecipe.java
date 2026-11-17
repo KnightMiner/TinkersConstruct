@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.recipe.NamedRecipe;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 
 import javax.annotation.Nullable;
@@ -83,7 +83,7 @@ public class DisplayPartRecipe implements IDisplayPartBuilderRecipe {
 
     /** Sets the material. */
     public Builder material(MaterialVariantId material) {
-      return material(MaterialVariant.of(material));
+      return material(MaterialVariant.create(material));
     }
 
     /** Sets the pattern to a single pattern */

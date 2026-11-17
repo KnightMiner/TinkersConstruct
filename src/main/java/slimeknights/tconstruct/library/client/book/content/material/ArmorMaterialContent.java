@@ -23,8 +23,8 @@ import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.json.variable.ToFloatFunction;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
@@ -107,7 +107,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
       }
     }
     // gotta have something, so just fallback to shield
-    ItemStack tool = ToolBuildHandler.createSingleMaterial(TinkerTools.plateShield.get(), MaterialVariant.of(variant));
+    ItemStack tool = ToolBuildHandler.createSingleMaterial(TinkerTools.plateShield.get(), MaterialVariant.create(variant));
     if (!tool.isEmpty()) {
       stacks.add(tool);
     } else {

@@ -19,7 +19,7 @@ import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.util.LogicHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -181,12 +181,12 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       int max = Math.min(parts, materialCount);
       // first n slots contain parts
       for (int i = 0; i < max; i++) {
-        materials.add(MaterialVariant.of(IMaterialItem.getMaterialFromStack(inv.getInput(i))));
+        materials.add(MaterialVariant.create(IMaterialItem.getMaterialFromStack(inv.getInput(i))));
       }
       // add any material overrides after the parts, if we still have space
       max = Math.min(materialCount - parts, this.materials.size());
       for (int i = 0; i < max; i++) {
-        materials.add(MaterialVariant.of(this.materials.get(i)));
+        materials.add(MaterialVariant.create(this.materials.get(i)));
       }
     }
     // create tool
@@ -299,7 +299,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
           }
           // if we have only real materials, make a proper tool
           if (offset == 0) {
-            result = ToolBuildHandler.buildItemFromMaterials(output, new MaterialNBT(list.stream().map(MaterialVariant::of).toList()));
+            result = ToolBuildHandler.buildItemFromMaterials(output, new MaterialNBT(list.stream().map(MaterialVariant::create).toList()));
             result.setCount(outputCount);
           } else {
             // not a full list? mark it for display with just the materials on the end

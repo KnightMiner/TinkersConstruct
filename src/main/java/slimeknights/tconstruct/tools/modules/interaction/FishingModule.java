@@ -95,7 +95,7 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
           CombatFishingHook hook = new CombatFishingHook(player, level, (int) luck, (int) lure, velocity, inaccuracy);
           hook.setPower(ConditionalStatModifierHook.getModifiedStat(tool, player, ToolStats.PROJECTILE_DAMAGE));
           // apply material for the renderer
-          hook.setMaterial(tool.getMaterial(tool.getVolatileData().getInt(HOOK_MATERIAL)).getVariant());
+          hook.setMaterial(tool.getMaterial(tool.getVolatileData().getInt(HOOK_MATERIAL)).id());
 
           // copy tool data to the bobber for modifier hooks
           ModifierNBT modifiers = tool.getModifiers();

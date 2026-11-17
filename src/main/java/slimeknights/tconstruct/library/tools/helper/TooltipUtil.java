@@ -361,7 +361,7 @@ public class TooltipUtil {
     List<IToolPart> parts = ToolPartsHook.parts(item.getToolDefinition());
     int partCount = parts.size();
     for (int i = 0; i <= max; i++) {
-      MaterialVariantId material = materials.get(i).getVariant();
+      MaterialVariantId material = materials.get(i).id();
       // display tool parts as the tool part name, nicer to work with
       Component componentName;
       if (i < partCount) {
@@ -377,7 +377,7 @@ public class TooltipUtil {
       }
       // material stats
       float scale = hook.scaleStats(definition, i);
-      MaterialRegistry.getInstance().getMaterialStats(material.getId(), components.get(i)).ifPresent(stat -> tooltips.addAll(stat.getLocalizedInfo(scale)));
+      MaterialRegistry.getInstance().getMaterialStats(material.material(), components.get(i)).ifPresent(stat -> tooltips.addAll(stat.getLocalizedInfo(scale)));
       if (i != max) {
         tooltips.add(Component.empty());
       }

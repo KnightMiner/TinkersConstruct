@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
@@ -35,7 +35,7 @@ public enum MaterialIconIngredientRenderer implements IIngredientRenderer<Materi
   @Override
   public void render(GuiGraphics graphics, MaterialVariant material, int posX, int posY) {
     RenderSystem.enableDepthTest();
-    graphics.renderFakeItem(stackCache.computeIfAbsent(material.getVariant(), stackGetter), posX, posY);
+    graphics.renderFakeItem(stackCache.computeIfAbsent(material.id(), stackGetter), posX, posY);
     RenderSystem.disableBlend();
   }
 
@@ -44,9 +44,9 @@ public enum MaterialIconIngredientRenderer implements IIngredientRenderer<Materi
   public List<Component> getTooltip(MaterialVariant material, TooltipFlag flag) {
     List<Component> list = new ArrayList<>();
     // not using the main method as that applies color
-    list.add(Component.translatable(WRAPPER_KEY, MaterialTooltipCache.getDisplayName(material.getVariant())));
+    list.add(Component.translatable(WRAPPER_KEY, MaterialTooltipCache.getDisplayName(material.id())));
     if (flag.isAdvanced()) {
-      list.add((Component.literal(material.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+      list.add((Component.literal(material.material().toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
     return list;
   }
@@ -54,9 +54,9 @@ public enum MaterialIconIngredientRenderer implements IIngredientRenderer<Materi
   @SuppressWarnings("removal")
   @Override
   public void getTooltip(ITooltipBuilder tooltip, MaterialVariant material, TooltipFlag flag) {
-    tooltip.add(Component.translatable(WRAPPER_KEY, MaterialTooltipCache.getDisplayName(material.getVariant())));
+    tooltip.add(Component.translatable(WRAPPER_KEY, MaterialTooltipCache.getDisplayName(material.id())));
     if (flag.isAdvanced()) {
-      tooltip.add((Component.literal(material.getId().toString())).withStyle(ChatFormatting.DARK_GRAY));
+      tooltip.add((Component.literal(material.material().toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
   }
 }

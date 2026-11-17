@@ -82,7 +82,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
 
     @Override
     default MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry) {
-      return tool.getMaterial(index()).getVariant();
+      return tool.getMaterial(index()).id();
     }
   }
 

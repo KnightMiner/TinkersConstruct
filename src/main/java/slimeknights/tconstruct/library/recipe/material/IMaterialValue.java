@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.recipe.material;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
-import slimeknights.mantle.recipe.container.ISingleStackContainer;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.mantle.recipe.input.SingleItemInput;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 
 /**
  * Represents a material with an amount and a cost
@@ -60,8 +60,8 @@ public interface IMaterialValue {
    * @param inv  Inventory reference
    * @return  Number of material present as a float
    */
-  default float getMaterialValue(ISingleStackContainer inv) {
-    return inv.getStack().getCount() * this.getValue() / (float)this.getNeeded();
+  default float getMaterialValue(SingleItemInput inv) {
+    return inv.getItem().getCount() * this.getValue() / (float)this.getNeeded();
   }
 
   /**

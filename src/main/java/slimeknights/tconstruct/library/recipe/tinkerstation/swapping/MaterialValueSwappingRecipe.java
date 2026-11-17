@@ -14,7 +14,7 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -56,12 +56,12 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
   @Override
   protected boolean isMaterial(ItemStack stack) {
     MaterialRecipe recipe = MaterialRecipeCache.findRecipe(stack);
-    return recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().getVariant()) && stack.getCount() >= recipe.getItemsUsed(cost);
+    return recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().id()) && stack.getCount() >= recipe.getItemsUsed(cost);
   }
 
   @Override
   protected MaterialVariantId getMaterial(ItemStack stack) {
-    return MaterialRecipeCache.findRecipe(stack).getMaterial().getVariant();
+    return MaterialRecipeCache.findRecipe(stack).getMaterial().id();
   }
 
   @Override
@@ -78,7 +78,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
   protected boolean shrinkPart(TinkerStationRecipeInput.Mutable inv, int index, ItemStack stack) {
     MaterialRecipe recipe = MaterialRecipeCache.findRecipe(stack);
     // need to ensure the recipe is a valid material, for the sake of extra requirements
-    if (recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().getVariant())) {
+    if (recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().id())) {
       int used = recipe.getItemsUsed(cost);
       inv.shrinkInput(index, used);
       ItemStack leftover = recipe.getLeftover(cost);
@@ -105,7 +105,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
           List<ItemStack> newStacks = MaterialRecipeCache.getRecipes(material).stream()
             .flatMap(recipe -> Arrays.stream(recipe.getIngredient().getItems())
               .map(stack -> stack.copyWithCount(recipe.getItemsUsed(cost)))).toList();
-          materialStacks.add(new MaterialStacks(MaterialVariant.of(material), newStacks));
+          materialStacks.add(new MaterialStacks(MaterialVariant.create(material), newStacks));
         }
       }
       // final recipes: 1 per tool and 1 per part in the tool
@@ -117,11 +117,11 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
         return Arrays.stream(indices).filter(VALID_SLOT).filter(i -> i < statTypes.size()).mapToObj(i -> {
           MaterialStatsId statType = statTypes.get(i);
           // filter the materials for this tool
-          List<MaterialStacks> filtered = materialStacks.stream().filter(count -> statType.canUseMaterial(count.variant.getId())).toList();
+          List<MaterialStacks> filtered = materialStacks.stream().filter(count -> statType.canUseMaterial(count.variant.material())).toList();
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/material_" + i), parent, new DisplayRecipe(
             i,
             filtered.stream().flatMap(count -> count.stacks.stream()).toList(),
-            List.of(withMaterial(tool.copy(), i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(i)))),
+            List.of(withMaterial(tool.copy(), i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i)))),
             materialStacks.stream().flatMap(count -> {
               ItemStack withMaterial = withMaterial(tool.copy(), i, count.variant);
               return IntStream.range(0, count.stacks.size()).mapToObj(j -> withMaterial);
@@ -182,7 +182,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
           // find all matching materials to display. This may include material variants hence mapping instead of a single item
           MaterialIdNBT materials = MaterialIdNBT.from(focus);
           MaterialVariantId material = materials.getMaterial(index);
-          Function<MaterialVariant,ItemStack> applyMaterial = newMaterial -> replaceMaterial(materials, newMaterial.getVariant(), focus);
+          Function<MaterialVariant,ItemStack> applyMaterial = newMaterial -> replaceMaterial(materials, newMaterial.id(), focus);
           List<ItemStack> results = this.materials.stream().filter(material::matchesVariant).map(applyMaterial).toList();
           if (!results.isEmpty()) {
             return results;

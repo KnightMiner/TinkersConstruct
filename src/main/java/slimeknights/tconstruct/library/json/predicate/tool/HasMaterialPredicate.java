@@ -5,7 +5,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicateField;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 
@@ -32,11 +32,11 @@ public record HasMaterialPredicate(IJsonPredicate<MaterialVariantId> material, i
   public boolean matches(IToolContext input) {
     // if given an index, use exact location match
     if (index >= 0) {
-      return material.matches(input.getMaterial(index).getVariant());
+      return material.matches(input.getMaterial(index).id());
     }
     // otherwise, search each material
     for (MaterialVariant variant : input.getMaterials().getList()) {
-      if (material.matches(variant.getVariant())) {
+      if (material.matches(variant.id())) {
         return true;
       }
     }

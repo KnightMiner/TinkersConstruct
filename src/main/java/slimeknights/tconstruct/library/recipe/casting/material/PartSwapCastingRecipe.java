@@ -17,7 +17,7 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -94,7 +94,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     // the casting recipe needs to match our stat type to be valid
     MaterialFluidRecipe casting = MaterialCastingLookup.getCastingFluid(fluid.getFluid(), materials);
     // need to validate the stat type, since the super call will not check stat type
-    if (casting != MaterialFluidRecipe.EMPTY && !casting.getOutput().sameVariant(currentMaterial) && requirements.get(index).canUseMaterial(casting.getOutput().getId())) {
+    if (casting != MaterialFluidRecipe.EMPTY && !casting.getOutput().sameVariant(currentMaterial) && requirements.get(index).canUseMaterial(casting.getOutput().material())) {
       cachedPartSwapping = casting;
       return casting;
     }
@@ -123,7 +123,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     // must have a valid material
     MaterialFluidRecipe recipe = getFluidRecipe(inv, modifiable);
     MaterialVariant output = recipe.getOutput();
-    if (recipe == MaterialFluidRecipe.EMPTY || !requirements.get(index).canUseMaterial(output.getId())) {
+    if (recipe == MaterialFluidRecipe.EMPTY || !requirements.get(index).canUseMaterial(output.material())) {
       return false;
     }
     // ensure the tool is still valid after replacing
@@ -157,7 +157,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     if (fluidRecipe.getInput() == null) {
       // if its a new material, repair with the head stat
       // with the tools we have this will always be a full repair, but addon usage of this recipe may vary
-      float repairDurability = MaterialRepairModule.getDurability(null, material.getId(), stats.get(index));
+      float repairDurability = MaterialRepairModule.getDurability(null, material.material(), stats.get(index));
       if (repairDurability > 0 && tool.getDamage() > 0) {
         repairDurability *= itemCost / MaterialRecipe.INGOTS_PER_REPAIR;
         for (ModifierEntry entry : tool.getModifierList()) {
@@ -192,7 +192,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
   /** Gets tool requirement objects from the casts ingredient */
   protected List<ToolRequirement> getTools(ItemStack... casts) {
     // always use 0 as it has good contract
-    MaterialVariant renderMaterial = MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0));
+    MaterialVariant renderMaterial = MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0));
     List<ToolRequirement> tools = new ArrayList<>(casts.length);
     for (ItemStack cast : casts) {
       ToolStack tool = ToolStack.from(cast);
@@ -230,7 +230,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     for (MaterialFluidRecipe recipe : fluidRecipes) {
       MaterialVariant output = recipe.getOutput();
       // ensure the recipe can use the materials
-      if (!materials.matches(output.getVariant())) continue;
+      if (!materials.matches(output.id())) continue;
       MaterialVariant input = recipe.getInput();
       if (composite) {
         // composite recipes require an input, really just a safety here
@@ -240,7 +240,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
         input = output;
       }
       // if given a stat type, check against that type
-      if (statType != null && (!statType.canUseMaterial(output.getId()) || (composite && !statType.canUseMaterial(input.getId())))) continue;
+      if (statType != null && (!statType.canUseMaterial(output.material()) || (composite && !statType.canUseMaterial(input.material())))) continue;
       // scale the fluids to the recipe size
       List<FluidStack> fluids = resizeFluids(recipe.getFluids());
       for (FluidStack fluid : fluids) {
@@ -262,7 +262,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
       for (ToolRequirement tool : tools) {
         // filter down materials to just those applicable to the tool
         List<FluidRecipe> filtered = fluidRecipes.stream()
-          .filter(recipe -> tool.requirement.canUseMaterial(recipe.output.getId()) && (!composite || tool.requirement.canUseMaterial(recipe.input.getId())))
+          .filter(recipe -> tool.requirement.canUseMaterial(recipe.output.material()) && (!composite || tool.requirement.canUseMaterial(recipe.input.material())))
           .toList();
         if (!filtered.isEmpty()) {
           displayRecipes.add(NamedRecipe.of(
@@ -294,7 +294,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
       ToolStack copy = tool.tool.copy();
       // add inputs if requested
       if (composite) {
-        inputMaterials.add(recipe.input.getVariant());
+        inputMaterials.add(recipe.input.id());
         copy.replaceMaterial(tool.index, recipe.input);
         // copy to unlink from the tool instance
         ItemStack input = copy.createStack().copy();
@@ -303,7 +303,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
         }
       }
       // add result tool regardless
-      resultMaterials.add(recipe.output.getVariant());
+      resultMaterials.add(recipe.output.id());
       copy.replaceMaterial(tool.index, recipe.output);
       ItemStack result = copy.createStack();
       for (int i = 0; i < newFluids.size(); i++) {

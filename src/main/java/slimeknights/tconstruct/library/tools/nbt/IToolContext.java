@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.tools.nbt;
 
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -30,7 +30,7 @@ public interface IToolContext {
   /** Checks if the tool has the given tag */
   @SuppressWarnings("deprecation")
   default boolean hasTag(TagKey<Item> tag) {
-    return getItem().builtInRegistryHolder().containsTag(tag);
+    return getItem().builtInRegistryHolder().is(tag);
   }
 
   /** Gets the given hook from the tool */

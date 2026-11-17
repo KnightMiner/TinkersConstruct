@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.recipe.material;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -15,11 +15,11 @@ public interface IDisplayMaterialRecipe {
   /** Checks that all materials in this recipe are known */
   default boolean isVisible() {
     MaterialVariant input = getInput();
-    if (input != null && (input.isUnknown() || input.get().isHidden())) {
+    if (input != null && (!input.isBound() || input.get().isHidden())) {
       return false;
     }
     MaterialVariant material = getMaterial();
-    return !material.isUnknown() && !material.get().isHidden();
+    return material.isBound() && !material.get().isHidden();
   }
 
 

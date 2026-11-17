@@ -89,7 +89,7 @@ public class MaterialRecipeCache {
       RECIPES.add(recipe);
       SORTED_RECIPES = null;
       // mark the variant as known
-      MaterialVariantId variant = recipe.getMaterial().getVariant();
+      MaterialVariantId variant = recipe.getMaterial().id();
       addKnownVariant(variant);
       // add lookup for the variant
       RECIPES_BY_MATERIAL.put(variant, recipe);
@@ -124,7 +124,7 @@ public class MaterialRecipeCache {
     if (stack.getItem() instanceof IMaterialItem materialItem) {
       return materialItem.getMaterial(stack);
     }
-    return findRecipe(stack).getMaterial().getVariant();
+    return findRecipe(stack).getMaterial().id();
   }
 
   /** Gets a list of all material recipes, including hidden */

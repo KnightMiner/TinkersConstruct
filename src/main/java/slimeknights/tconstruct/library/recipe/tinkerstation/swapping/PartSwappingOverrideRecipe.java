@@ -13,8 +13,8 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -84,7 +84,7 @@ public class PartSwappingOverrideRecipe extends MaterialIndexSwappingRecipe impl
         if (ToolMaterialHook.stats(tool.getDefinition()).size() > MAX_SLOTS) {
           return Stream.empty();
         }
-        List<MaterialVariant> variants = materials.stream().map(MaterialVariant::of).toList();
+        List<MaterialVariant> variants = materials.stream().map(MaterialVariant::create).toList();
         ResourceLocation toolId = id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName());
         return Arrays.stream(indices).filter(VALID_SLOT).mapToObj(i -> {
           ToolStack copy = tool.copy();
@@ -92,9 +92,9 @@ public class PartSwappingOverrideRecipe extends MaterialIndexSwappingRecipe impl
             // one part per material
             materials.stream().map(mat -> part.withMaterialForDisplay(mat.getId())).toList(),
             // single tool with the material to swap left blank
-            List.of(withMaterial(copy, i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(0))).copy()),
+            List.of(withMaterial(copy, i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0))).copy()),
             // one output per material
-            materials.stream().map(mat -> withMaterial(copy, i, MaterialVariant.of(mat)).copy()).toList(),
+            materials.stream().map(mat -> withMaterial(copy, i, MaterialVariant.create(mat)).copy()).toList(),
             // part info
             variants, part
           ));

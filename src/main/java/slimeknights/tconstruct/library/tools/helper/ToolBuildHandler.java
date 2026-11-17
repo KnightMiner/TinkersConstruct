@@ -6,10 +6,10 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
@@ -130,7 +130,7 @@ public final class ToolBuildHandler {
         if (materialId != null) {
           IMaterial material = MaterialRegistry.getMaterial(materialId);
           if (material != IMaterial.UNKNOWN) {
-            ItemStack tool = createSingleMaterial(item, MaterialVariant.of(material));
+            ItemStack tool = createSingleMaterial(item, MaterialVariant.create(material));
             if (!tool.isEmpty()) {
               tab.accept(tool);
               added = true;
@@ -142,7 +142,7 @@ public final class ToolBuildHandler {
       if (!added) {
         for (IMaterial material : MaterialRegistry.getInstance().getVisibleMaterials()) {
           // if we added it and we want a single material, we are done
-          ItemStack tool = createSingleMaterial(item, MaterialVariant.of(material));
+          ItemStack tool = createSingleMaterial(item, MaterialVariant.create(material));
           if (!tool.isEmpty()) {
             tab.accept(tool);
             // if filter is set we wanted just the 1 item
@@ -167,7 +167,7 @@ public final class ToolBuildHandler {
     boolean useMaterial = false;
     for (MaterialStatsId requirement : required) {
       // try to use requested material
-      if (requirement.canUseMaterial(material.getId())) {
+      if (requirement.canUseMaterial(material.material())) {
         materials.add(material);
         useMaterial = true;
       } else {

@@ -48,7 +48,7 @@ public record UniqueMaterialToolName(int index) implements ToolNameHook, ToolMod
 
   @Override
   public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name) {
-    MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).getVariant();
+    MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).id();
     if (!MaterialId.UNKNOWN.equals(material)) {
       String key = stack.getItem().getDescriptionId();
       String materialKey = key + '.' + MaterialTooltipCache.getKey(material);

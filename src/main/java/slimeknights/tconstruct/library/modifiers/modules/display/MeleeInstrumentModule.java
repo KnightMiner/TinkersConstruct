@@ -22,8 +22,8 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.combat.DamageDealtModifierHook;
@@ -72,9 +72,9 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
       Instrument instrument = null;
       if (this.material != null) {
         for (MaterialVariant material : tool.getMaterials()) {
-          if (this.material.equals(material.getId())) {
+          if (this.material.equals(material.material())) {
             // need to convert the variant into an instrument, start by replacing the first . with a :
-            String variant = material.getVariant().variant();
+            String variant = material.id().variant();
             int index = variant.indexOf('.');
             if (index != -1) {
               StringBuilder builder = new StringBuilder(variant);

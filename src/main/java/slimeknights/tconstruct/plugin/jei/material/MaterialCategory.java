@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.material.IDisplayMaterialRecipe;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
@@ -168,7 +168,7 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
     }
 
     // display tools and parts
-    builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116,  0).addItemStacks(toolParts.apply(material.getVariant()));
+    builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116,  0).addItemStacks(toolParts.apply(material.id()));
     builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116, 20).addItemStacks(tools.apply(material));
   }
 

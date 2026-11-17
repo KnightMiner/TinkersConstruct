@@ -18,7 +18,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -151,14 +151,14 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
   public List<NamedRecipe<IDisplayToolTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (multiRecipes == null) {
       ItemStack[] tools = this.tools.getItems();
-      MaterialVariant material = MaterialVariant.of(this.material);
+      MaterialVariant material = MaterialVariant.create(this.material);
       List<ItemStack> inputs = Arrays.asList(ingredient.getItems());
       Component variantText = MaterialTooltipCache.getDisplayName(this.material);
       // need 1 recipe per index we can swap into
       List<ResourceLocation> parent = List.of(id);
       multiRecipes = Arrays.stream(indices).filter(VALID_SLOT).mapToObj(i -> {
         // for each index, use first as the material on input, desired material on output
-        List<ItemStack> withoutMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, MaterialVariant.of(ToolBuildHandler.getRenderMaterial(i)))).toList();
+        List<ItemStack> withoutMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i)))).toList();
         List<ItemStack> withMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, material)).toList();
         return NamedRecipe.<IDisplayToolTinkering>of(id.withSuffix("/material_" + i), parent, new DisplayRecipe(variantText, i, inputs, withoutMaterial, withMaterial));
       }).toList();
@@ -214,7 +214,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
           // add the material to the input focus if its lacking
           ToolStack tool = ToolStack.from(focus);
           if (!tool.getMaterial(index).sameVariant(material)) {
-            return List.of(replaceMaterial(tool.copy(), MaterialVariant.of(material), focus));
+            return List.of(replaceMaterial(tool.copy(), MaterialVariant.create(material), focus));
           } else {
             // if it already has the material, strip unique properties
             return List.of(copyMaterials(tool, tool.getMaterials()));

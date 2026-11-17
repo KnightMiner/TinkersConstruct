@@ -5,7 +5,7 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.module.HookProvider;
@@ -63,7 +63,7 @@ public final class MaterialTraitsModule implements ToolTraitHook, ToolModule {
       if (materialIndex < statTypes.size()) {
         statType = statTypes.get(materialIndex);
       } else {
-        TConstruct.LOG.error("Invalid material index {} for {} traits module, total materials {}", materialIndex, definition.getId(), statTypes.size());
+        TConstruct.LOG.error("Invalid material index {} for {} traits module, total materials {}", materialIndex, definition.id(), statTypes.size());
         statType = MISSING;
       }
     }
@@ -73,10 +73,10 @@ public final class MaterialTraitsModule implements ToolTraitHook, ToolModule {
   @Override
   public void addTraits(ToolDefinition definition, MaterialNBT materials, ModifierBuilder builder) {
     MaterialVariant material = materials.get(materialIndex);
-    if (!material.isUnknown()) {
+    if (material.isBound()) {
       MaterialStatsId statsId = getStatType(definition);
       if (!MISSING.equals(statsId)) {
-        builder.add(MaterialRegistry.getInstance().getTraits(material.getId(), getStatType(definition)));
+        builder.add(MaterialRegistry.getInstance().getTraits(material.material(), getStatType(definition)));
       }
     }
   }

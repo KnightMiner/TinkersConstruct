@@ -14,7 +14,7 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.IMaterialUser;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -367,14 +367,14 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
         return List.of(copyMaterials(materials, focus.getItem()));
       } else {
         // on the chance the result stack isn't usable, duplicate the rest of the materials as an animation over parts
-        return this.materials.stream().map(newMaterial -> replaceMaterial(materials, newMaterial.getVariant(), focus)).toList();
+        return this.materials.stream().map(newMaterial -> replaceMaterial(materials, newMaterial.id(), focus)).toList();
       }
     }
 
     /** Common code for handling an input focus tool with the given modifier. */
     protected List<ItemStack> getInputFocusWithModifier(ItemStack focus) {
       ToolStack tool = ToolStack.copyFrom(focus);
-      return getInputFocusWithModifier(tool, tool.getMaterial(index).getVariant(), focus);
+      return getInputFocusWithModifier(tool, tool.getMaterial(index).id(), focus);
     }
 
     /** Common code for handling an input focus tool with the given modifier, replacing the material but copying over stack data. */

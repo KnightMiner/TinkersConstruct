@@ -13,8 +13,8 @@ import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.input.SingleItemInput;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.tables.TinkerTables;
@@ -34,7 +34,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
     Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("ingredient", MaterialRecipe::getIngredient),
     IMaterialValue.VALUE_FIELD,
     IMaterialValue.NEEDED_FIELD,
-    MaterialVariantId.LOADABLE.requiredField("material", r -> r.getMaterial().getVariant()),
+    MaterialVariantId.LOADABLE.requiredField("material", r -> r.getMaterial().id()),
     ItemOutput.OPTIONAL_STACK_LOADABLE.defaultField("leftover", ItemOutput.EMPTY, false, r -> r.leftover),
     MaterialRecipe::new);
 
@@ -66,7 +66,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
     this.ingredient = ingredient;
     this.value = value;
     this.needed = needed;
-    this.material = MaterialVariant.of(materialId);
+    this.material = MaterialVariant.create(materialId);
     // ignore leftover if the value is 1, its useless to us
     this.leftover = value > 1 ? leftover : ItemOutput.EMPTY;
 
@@ -107,7 +107,7 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
 
   @Override
   public boolean matches(SingleItemInput inv, Level worldIn) {
-    return !material.isUnknown() && this.ingredient.test(inv.getItem());
+    return material.isBound() && this.ingredient.test(inv.getItem());
   }
 
   @Override
@@ -144,6 +144,6 @@ public class MaterialRecipe implements ICustomOutputRecipe<SingleItemInput>, IMa
   /** Checks that all materials in this recipe are known */
   @Override
   public boolean isVisible() {
-    return !material.isUnknown() && !material.get().isHidden();
+    return material.isBound() && !material.get().isHidden();
   }
 }

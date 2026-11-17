@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 /**
  * Contains a reference to a modifier, which is lazily fetched and automatically reset when datapacks reload.
+ * @see slimeknights.tconstruct.library.materials.MaterialHolder
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -98,12 +99,12 @@ public class ModifierHolder {
     return ModifierManager.INSTANCE.getHolder(resolved);
   }
 
-  /** Checks if the modifier is in the given tag */
+  /** Checks if the modifier is in the given ID */
   public boolean is(ModifierId id) {
     return this.id.equals(id);
   }
 
-  /** Checks if the modifier is in the given tag */
+  /** Checks if the modifier is in the given modifier */
   public boolean is(Modifier modifier) {
     return this.id.equals(modifier.id());
   }

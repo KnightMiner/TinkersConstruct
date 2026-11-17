@@ -24,8 +24,8 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRecipe;
@@ -138,7 +138,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
     int matchIndex = -1;
     for (int i = 0; i < materialSize; i++) {
       IMaterialItem part = parts.get(i);
-      if (pattern.matches(part) && part.canUseMaterial(materials.get(i).getId())) {
+      if (pattern.matches(part) && part.canUseMaterial(materials.get(i).material())) {
         matchIndex = i;
         match = part;
         break;
@@ -149,7 +149,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       return ItemStack.EMPTY;
     }
     // special handling for oddball cases with ancient tool recycling
-    MaterialVariantId variant = tool.getMaterial(matchIndex).getVariant();
+    MaterialVariantId variant = tool.getMaterial(matchIndex).id();
     if (!match.canUseMaterial(variant.material())) {
       return ItemStack.EMPTY;
     }
@@ -182,7 +182,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       IMaterialItem part = requirements.get(i);
       if (found || !pattern.matches(part)) {
         // ensure the part is actually craftable with the material. Works around issues with using repair kits for some partless types
-        if (part.canUseMaterial(tool.getMaterial(i).getId())) {
+        if (part.canUseMaterial(tool.getMaterial(i).material())) {
           parts.add(part);
           indices.add(i);
         }
@@ -194,7 +194,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       return ItemStack.EMPTY;
     }
     int index = TConstruct.RANDOM.nextInt(parts.size());
-    return parts.get(index).withMaterial(tool.getMaterial(indices.getInt(index)).getVariant());
+    return parts.get(index).withMaterial(tool.getMaterial(indices.getInt(index)).id());
   }
 
   /** @deprecated use {@link IPartBuilderRecipe#assemble(PartBuilderInput, HolderLookup.Provider, Pattern)} */

@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -19,8 +20,8 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -82,7 +83,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
     // material recipe fallback
     MaterialRecipe recipe = inv.getInputMaterial(slot);
     if (recipe != null) {
-      return recipe.getMaterial().getId();
+      return recipe.getMaterial().material();
     }
     return MaterialId.UNKNOWN;
   }
@@ -258,8 +259,8 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
   @Override
   public List<NamedRecipe<IDisplayCraftingTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      CompoundTag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
-      MaterialNBT displayMaterials = new MaterialNBT(IntStream.range(0, 5).mapToObj(i -> MaterialVariant.of(ToolBuildHandler.getRenderMaterial(i))).toList());
+      Tag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
+      MaterialNBT displayMaterials = new MaterialNBT(IntStream.range(0, 5).mapToObj(i -> MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i))).toList());
       IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
 
       // list of materials to try for repair

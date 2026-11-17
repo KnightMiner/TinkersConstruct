@@ -33,6 +33,7 @@ import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public final class MaterialRegistry {
@@ -49,6 +50,8 @@ public final class MaterialRegistry {
 
   /** Map of each stat type to its first material */
   private static final Map<MaterialStatsId,IMaterial> FIRST_MATERIALS = new HashMap<>();
+  /** Cache of holder instances for each material */
+  private static final Map<MaterialId,MaterialHolder> HOLDERS = new ConcurrentHashMap<>();
 
   private final MaterialManager materialManager;
   private final MaterialStatsManager materialStatsManager;
@@ -220,6 +223,18 @@ public final class MaterialRegistry {
     return FIRST_MATERIALS.computeIfAbsent(id, FIRST_LOADER);
   }
 
+  /** Gets a material holder for the given ID */
+  public static MaterialHolder getHolder(MaterialId id) {
+    // ensure the instance exists as that will be cached inside many material holders
+    if (INSTANCE == null) {
+      throw new IllegalStateException("Attempting to fetch a material holder before the material registry is created");
+    }
+    if (id.equals(MaterialId.UNKNOWN)) {
+      return MaterialHolder.UNKNOWN;
+    }
+    return HOLDERS.computeIfAbsent(id, MaterialHolder::new);
+  }
+
 
 
   /* Loading */
@@ -232,6 +247,7 @@ public final class MaterialRegistry {
       traitsLoaded = false;
       fullyLoaded = true;
       FIRST_MATERIALS.clear();
+      HOLDERS.values().forEach(MaterialHolder::clearCache);
       NeoForge.EVENT_BUS.post(new MaterialsLoadedEvent());
     } else {
       fullyLoaded = false;
@@ -250,7 +266,7 @@ public final class MaterialRegistry {
 
   /** Called when the player logs in to send packets */
   private void onDatapackSync(OnDatapackSyncEvent event) {
-    PacketHelper.syncPackets(event, materialManager.getUpdatePacket(), materialStatsManager.getUpdatePacket(), materialStatsManager.getUpdatePacket());
+    PacketHelper.syncPackets(event, materialManager.getUpdatePacket(), materialStatsManager.getUpdatePacket(), materialTraitsManager.getUpdatePacket());
     // on an integrated server, the material registries have a single instance on both the client and the server thread
     // this means syncing is unneeded, and has the side effect of recreating all the material instances (which can lead to unexpected behavior)
     // as a result, integrated servers just mark fullyLoaded as true without syncing anything, side effect is listeners may run twice on single player

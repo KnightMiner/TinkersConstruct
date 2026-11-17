@@ -45,7 +45,7 @@ public record CustomMaterialName(int index, String suffix) implements ToolNameHo
 
   @Override
   public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component itemName) {
-    MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).getVariant();
+    MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).id();
     if (MaterialId.UNKNOWN.equals(material)) {
       return itemName;
     }

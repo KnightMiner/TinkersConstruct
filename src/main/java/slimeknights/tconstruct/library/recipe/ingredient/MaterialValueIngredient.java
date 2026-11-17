@@ -47,7 +47,7 @@ public record MaterialValueIngredient(IJsonPredicate<MaterialVariantId> material
 
   /** Checks the given material recipe against our filters */
   public boolean test(MaterialRecipe material) {
-    return range.test(material.getValue() / (float) material.getNeeded()) && this.material.matches(material.getMaterial().getVariant());
+    return range.test(material.getValue() / (float) material.getNeeded()) && this.material.matches(material.getMaterial().id());
   }
 
   @Override
@@ -94,7 +94,7 @@ public record MaterialValueIngredient(IJsonPredicate<MaterialVariantId> material
   @Nullable
   public MaterialVariantId material(ItemStack stack) {
     MaterialRecipe recipe = MaterialRecipeCache.findRecipe(stack);
-    return recipe != MaterialRecipe.EMPTY && test(recipe) ? recipe.getMaterial().getVariant() : null;
+    return recipe != MaterialRecipe.EMPTY && test(recipe) ? recipe.getMaterial().id() : null;
   }
 
 

@@ -16,8 +16,8 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -109,7 +109,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
 
         // swap the material
         boolean mayRepair = MaterialRegistry.getInstance().canRepair(materials.get(index));
-        RecipeResult<LazyToolStack> result = swapMaterial(inv, sacrifice.getMaterial(index).getVariant(), index, 0, mayRepair);
+        RecipeResult<LazyToolStack> result = swapMaterial(inv, sacrifice.getMaterial(index).id(), index, 0, mayRepair);
         // if it's a repairable part, repair the tool based on the remaining durability of the sacrifice, plus a 5% bonus
         if (mayRepair && result.isSuccess()) {
           ToolStack tool = result.getResult().getTool();
@@ -156,7 +156,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         if (stats.size() > MAX_SLOTS) {
           continue;
         }
-        List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(i -> MaterialVariant.of(ToolBuildHandler.getRenderMaterial(i))).toList();
+        List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(i -> MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i))).toList();
         ToolStack displayTool = tool.copy();
         displayTool.setMaterials(new MaterialNBT(renderMaterials));
         ResourceLocation toolId = id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName());
@@ -174,18 +174,18 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
             // one part per material
             filtered.stream().map(mat -> {
               ToolStack displayCopy = displayTool.copy();
-              displayCopy.replaceMaterial(index, MaterialVariant.of(mat));
+              displayCopy.replaceMaterial(index, MaterialVariant.create(mat));
               return displayCopy.createStack();
             }).toList(),
             // single tool with the material to swap left blank
             withoutMaterial,
             // one output per material
             filtered.stream().map(mat -> {
-              copy.replaceMaterial(index, MaterialVariant.of(mat));
+              copy.replaceMaterial(index, MaterialVariant.create(mat));
               return copy.createStack().copy();
             }).toList(),
             // material list
-            filtered.stream().map(MaterialVariant::of).toList(), stat, displayTool
+            filtered.stream().map(MaterialVariant::create).toList(), stat, displayTool
           )));
           // recipe for sacrificing the focus to swap materials - just needs the tool on one list so it is detected by the cache
           newRecipes.add(NamedRecipe.of(statId.withSuffix("/sacrifice"), parent, new SacrificeDisplayRecipe(i, List.of(), withoutMaterial, List.of())));

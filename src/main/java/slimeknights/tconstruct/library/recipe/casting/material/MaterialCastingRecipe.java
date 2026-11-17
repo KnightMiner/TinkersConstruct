@@ -15,7 +15,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.materials.definition.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
@@ -53,7 +53,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
       return false;
     }
     MaterialFluidRecipe fluid = getFluidRecipe(inv);
-    return fluid != MaterialFluidRecipe.EMPTY && result.canUseMaterial(fluid.getOutput().getId());
+    return fluid != MaterialFluidRecipe.EMPTY && result.canUseMaterial(fluid.getOutput().material());
   }
 
   @Override
@@ -63,7 +63,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
 
   @Override
   public ItemStack assemble(CastingRecipeInput inv, HolderLookup.Provider registries) {
-    return result.withMaterial(getFluidRecipe(inv).getOutput().getVariant());
+    return result.withMaterial(getFluidRecipe(inv).getOutput().id());
   }
 
 
@@ -80,8 +80,8 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
       for (MaterialFluidRecipe recipe : recipes) {
         // must support this material
         MaterialVariant output = recipe.getOutput();
-        MaterialVariantId outputId = output.getVariant();
-        if (!result.canUseMaterial(output.getId()) || !this.materials.matches(outputId)) {
+        MaterialVariantId outputId = output.id();
+        if (!result.canUseMaterial(output.material()) || !this.materials.matches(outputId)) {
           continue;
         }
 
