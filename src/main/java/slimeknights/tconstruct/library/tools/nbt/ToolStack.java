@@ -835,7 +835,7 @@ public class ToolStack implements IToolStackView {
    */
   public static void verifyTag(Item item, CompoundTag tag, ToolDefinition definition) {
     // this function is sometimes called before datapack contents load, do nothing then
-    if (tag.getBoolean(TooltipUtil.KEY_DISPLAY)) {
+    if (TooltipUtil.isDisplay(???)) {
       return;
     }
 

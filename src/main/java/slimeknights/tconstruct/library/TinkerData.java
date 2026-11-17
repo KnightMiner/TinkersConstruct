@@ -1,6 +1,8 @@
 package slimeknights.tconstruct.library;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -38,6 +40,9 @@ public class TinkerData {
   /** Holds a single modifier on an item. Used for modifier crystals */
   public static final DeferredDataComponent<ModifierHolder> MODIFIER = DATA_COMPONENTS.registerPersistent("modifier", ModifierHolder.CODEC, ModifierHolder.STREAM_CODEC);
 
+  /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
+  public static final DeferredDataComponent<Boolean> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Codec.BOOL, ByteBufCodecs.BOOL);
+  
   /* Tool */
   /** Holds the list of modifiers from recipes, such as upgrades or abilities */
   public static final DeferredDataComponent<ModifierNBT> CRAFTED_MODIFIERS = DATA_COMPONENTS.registerPersistent("crafted_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);

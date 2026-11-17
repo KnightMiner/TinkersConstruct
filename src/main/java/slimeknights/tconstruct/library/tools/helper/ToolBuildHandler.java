@@ -5,12 +5,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
+import slimeknights.tconstruct.library.TinkerData;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
@@ -101,7 +102,7 @@ public final class ToolBuildHandler {
 		  // use all 5 render materials for display stacks, having too many materials is not a problem and its easier than making this reload sensitive
       stack = new MaterialIdNBT(RENDER_MATERIALS).updateStack(stack);
     }
-    stack.getOrCreateTag().putBoolean(TooltipUtil.KEY_DISPLAY, true);
+    stack.set(TinkerData.DISPLAY, true);
     return stack;
   }
 
@@ -191,7 +192,7 @@ public final class ToolBuildHandler {
   public static ItemStack getDisplayPart(IToolPart toolPart, int i) {
     // mark the part as display to suppress the invalid material tooltip
     ItemStack item = toolPart.withMaterialForDisplay(ToolBuildHandler.getRenderMaterial(i));
-    item.getOrCreateTag().putBoolean(TooltipUtil.KEY_DISPLAY, true);
+    item.set(TinkerData.DISPLAY, true);
     return item;
   }
 

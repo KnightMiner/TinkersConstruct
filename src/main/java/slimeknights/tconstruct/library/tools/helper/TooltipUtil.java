@@ -26,6 +26,7 @@ import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
@@ -61,8 +62,6 @@ public class TooltipUtil {
   /** Format for a name ID pair */
   public static final String KEY_ID_FORMAT = TConstruct.makeTranslationKey("item", "tool.id_format");
 
-  /** Tool tag to set that makes a tool a display tool */
-  public static final String KEY_DISPLAY = "tic_display";
   /** Tag to set name without name being italic */
   private static final String KEY_NAME = "tic_name";
 
@@ -97,8 +96,7 @@ public class TooltipUtil {
    * @return  True if marked display
    */
   public static boolean isDisplay(ItemStack stack) {
-    CompoundTag nbt = stack.getTag();
-    return nbt != null && nbt.getBoolean(KEY_DISPLAY);
+    return stack.getOrDefault(TinkerData.DISPLAY, false);
   }
 
   /** Sets the tool name in a way that will not be italic */
