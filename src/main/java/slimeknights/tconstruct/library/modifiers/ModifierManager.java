@@ -59,6 +59,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -101,7 +102,7 @@ public class ModifierManager extends SimpleJsonResourceReloadListener {
   /** Map from modifier to tags on the modifier */
   private Map<ModifierId,Set<TagKey<Modifier>>> reverseTags = Map.of();
   /** Map of holder cache, stored as data components */
-  private final Map<ModifierId,ModifierHolder> holders = new HashMap<>();
+  private final Map<ModifierId,ModifierHolder> holders = new ConcurrentHashMap<>();
 
   /** Entry for a tag holder set */
   record EnchantmentTag(HolderSet.Named<Enchantment> tag, Modifier modifier) {}
