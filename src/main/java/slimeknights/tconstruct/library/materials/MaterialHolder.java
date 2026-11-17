@@ -18,6 +18,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -50,9 +51,9 @@ public class MaterialHolder {
 
   // stats
   /** Cache of fetched stats for this material */
-  private final Map<MaterialStatsId, IMaterialStats> stats = new ConcurrentHashMap<>();
+  private final Map<MaterialStatsId, Optional<IMaterialStats>> stats = new ConcurrentHashMap<>();
   /** Logic to fill in the cache of a stat */
-  private final Function<MaterialStatsId, IMaterialStats> statsGetter = statType -> MaterialRegistry.getInstance().getStatsOrDefault(serializedId(), statType);
+  private final Function<MaterialStatsId, Optional<IMaterialStats>> statsGetter = statType -> MaterialRegistry.getInstance().getMaterialStats(serializedId(), statType);
 
   // traits
   /** Cache of fetched traits for this material */
@@ -97,13 +98,22 @@ public class MaterialHolder {
 
   /* Stats and traits */
 
+  /** Checks if the given stats ID is supported by this material */
+  public boolean hasStats(MaterialStatsId id) {
+    return isBound() && stats.computeIfAbsent(id, statsGetter).isPresent();
+  }
+
   /** Gets the traits for the given stats ID */
   @Nullable
   @SuppressWarnings("unchecked")
   public <T extends IMaterialStats> T getStats(MaterialStatsId id) {
     // if the material is not registered, ignore its stats
     if (isBound()) {
-      return (T) stats.computeIfAbsent(id, statsGetter);
+      // if the stats are not supported, return the default
+      Optional<IMaterialStats> stats = this.stats.computeIfAbsent(id, statsGetter);
+      if (stats.isPresent()) {
+        return (T) stats.get();
+      }
     }
     return MaterialRegistry.getInstance().getDefaultStats(id);
   }

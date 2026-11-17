@@ -99,6 +99,11 @@ public class MaterialVariant implements Comparable<MaterialVariant> {
     return id.variant();
   }
 
+  /** Checks if the given stats ID is supported by this material */
+  public boolean hasStats(MaterialStatsId stats) {
+    return holder.hasStats(stats);
+  }
+
   /** Gets the traits for the given stats ID */
   @Nullable
   public <T extends IMaterialStats> T getStats(MaterialStatsId stats) {
@@ -127,6 +132,11 @@ public class MaterialVariant implements Comparable<MaterialVariant> {
    */
   public boolean isBound() {
     return holder.isBound();
+  }
+
+  /** Checks if this material has a variant */
+  public boolean hasVariant() {
+    return id.hasVariant();
   }
 
 
