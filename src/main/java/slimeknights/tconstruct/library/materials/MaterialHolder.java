@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
@@ -27,7 +26,7 @@ import java.util.function.Function;
  * @see slimeknights.tconstruct.library.modifiers.ModifierHolder
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class MaterialHolder {
+public class MaterialHolder implements MaterialVariant {
   /** Loadable instance for JSON serializing */
   public static final Loadable<MaterialHolder> LOADABLE;
   /** Codec instance for general serializing */
@@ -71,12 +70,44 @@ public class MaterialHolder {
     return MaterialRegistry.getHolder(id);
   }
 
-  /** Gets the ID to use for serializing, using the resolved material ID if fetched. */
-  protected MaterialId serializedId() {
+
+  /* ID */
+
+  /** Alias for {@link #id()} */
+  @Override
+  public MaterialId material() {
+    return id;
+  }
+
+  @Override
+  public MaterialId serializedId() {
     return material != null && material != IMaterial.UNKNOWN ? material.getId() : id;
   }
 
-  /** Gets the material */
+  @Override
+  public String variant() {
+    return "";
+  }
+
+  @Override
+  public boolean hasVariant() {
+    return false;
+  }
+
+  @Override
+  public MaterialVariant normalizeVariant() {
+    return this;
+  }
+
+
+  /* Instance */
+
+  @Override
+  public MaterialHolder holder() {
+    return this;
+  }
+
+  @Override
   public IMaterial get() {
     if (material == null) {
       if (!MaterialRegistry.isFullyLoaded()) {
@@ -86,6 +117,11 @@ public class MaterialHolder {
       material = MaterialRegistry.getMaterial(id);
     }
     return material;
+  }
+
+  @Override
+  public boolean isBound() {
+    return MaterialRegistry.isFullyLoaded() && get() != IMaterial.UNKNOWN;
   }
 
   /** Clears the cached modifier instance */
@@ -98,12 +134,12 @@ public class MaterialHolder {
 
   /* Stats and traits */
 
-  /** Checks if the given stats ID is supported by this material */
+  @Override
   public boolean hasStats(MaterialStatsId id) {
     return isBound() && stats.computeIfAbsent(id, statsGetter).isPresent();
   }
 
-  /** Gets the traits for the given stats ID */
+  @Override
   @Nullable
   @SuppressWarnings("unchecked")
   public <T extends IMaterialStats> T getStats(MaterialStatsId id) {
@@ -118,45 +154,13 @@ public class MaterialHolder {
     return MaterialRegistry.getInstance().getDefaultStats(id);
   }
 
-  /** Gets the traits for the given stats ID */
+  @Override
   public List<ModifierEntry> getTraits(MaterialStatsId id) {
     // if the material is not registered, ignore its traits
     if (isBound()) {
       return traits.computeIfAbsent(id, traitsGetter);
     }
     return List.of();
-  }
-
-
-  /* Presence */
-
-  /**
-   * Checks if this is not the unknown material
-   * @see #isBound()
-   */
-  public boolean isPresent() {
-    return !id.equals(MaterialId.UNKNOWN);
-  }
-
-  /**
-   * Returns true if this material exists either statically or in a datapack. A return of true here means a useful value is returned by {@link #get()}
-   * @see #isPresent()
-   */
-  public boolean isBound() {
-    return MaterialRegistry.isFullyLoaded() && get() != IMaterial.UNKNOWN;
-  }
-
-
-  /* Matching */
-
-  /** Checks if the material is in the given ID */
-  public boolean is(MaterialId id) {
-    return this.id.equals(id);
-  }
-
-  /** Checks if the modifier is in the given tag */
-  public boolean is(TagKey<IMaterial> tag) {
-    return MaterialRegistry.getInstance().isInTag(id, tag);
   }
 
 

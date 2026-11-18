@@ -2,10 +2,6 @@ package slimeknights.tconstruct.library.materials;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
@@ -17,103 +13,101 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
 
 /** Class for a material variant, lazily loads the material instance and stores the variant string */
-@Accessors(fluent = true)
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class MaterialVariant implements Comparable<MaterialVariant> {
+public interface MaterialVariant extends Comparable<MaterialVariant> {
   /** Loadable instance for JSON serializing */
-  public static final Loadable<MaterialVariant> LOADABLE;
+  Loadable<MaterialVariant> LOADABLE = MaterialVariantId.LOADABLE.map(MaterialVariant::create, MaterialVariant::serializedId);
   /** Codec instance for general serializing */
-  public static final Codec<MaterialVariant> CODEC;
+  Codec<MaterialVariant> CODEC = MaterialVariantId.CODEC.xmap(MaterialVariant::create, MaterialVariant::serializedId);
   /** Loadable instance for JSON serializing */
-  public static final StreamCodec<ByteBuf,MaterialVariant> STREAM_CODEC;
-  static {
-    Function<MaterialVariantId,MaterialVariant> factory = MaterialVariant::create;
-    Function<MaterialVariant,MaterialVariantId> id = MaterialVariant::serializedId;
-    LOADABLE =  MaterialVariantId.LOADABLE.map(factory, id);
-    CODEC =  MaterialVariantId.CODEC.xmap(factory, id);
-    STREAM_CODEC = MaterialVariantId.STREAM_CODEC.map(factory, id);
-  }
+  StreamCodec<ByteBuf,MaterialVariant> STREAM_CODEC = MaterialVariantId.STREAM_CODEC.map(MaterialVariant::create, MaterialVariant::serializedId);
 
-  /** Unknown material variant, as it comes up a lot */
-  public static final MaterialVariant UNKNOWN = new MaterialVariant(MaterialId.UNKNOWN, MaterialHolder.UNKNOWN);
 
-  private final MaterialVariantId id;
-  private final MaterialHolder holder;
+  /* Constructors */
 
   /** Creates an instance for the given material ID */
-  public static MaterialVariant create(MaterialVariantId id) {
+  static MaterialVariant create(MaterialId id) {
     if (id.equals(MaterialId.UNKNOWN)) {
-      return UNKNOWN;
+      return MaterialHolder.UNKNOWN;
     }
-    return new MaterialVariant(id, MaterialHolder.create(id.material()));
+    return MaterialHolder.create(id.material());
+  }
+
+  /** Creates an instance for the given material ID */
+  static MaterialVariant create(MaterialVariantId id) {
+    if (id.equals(MaterialId.UNKNOWN)) {
+      return MaterialHolder.UNKNOWN;
+    }
+    MaterialHolder holder = MaterialHolder.create(id.material());
+    return id.hasVariant() ? new MaterialVariantImpl(id, holder) : holder;
   }
 
   /** Creates an instance for the given material holder and variant */
-  public static MaterialVariant create(MaterialHolder material, String variant) {
+  static MaterialVariant create(MaterialHolder material, String variant) {
     if (material == MaterialHolder.UNKNOWN) {
-      return UNKNOWN;
+      return MaterialHolder.UNKNOWN;
     }
-    return new MaterialVariant(MaterialVariantId.create(material.id(), variant), material);
-  }
-
-  /** Creates an instance for the given material holder and variant */
-  public static MaterialVariant create(MaterialHolder material) {
-    if (material == MaterialHolder.UNKNOWN) {
-      return UNKNOWN;
+    // no variant? just stick with the holder
+    if (variant.isEmpty()) {
+      return material;
     }
-    return new MaterialVariant(material.id(), material);
+    return new MaterialVariantImpl(MaterialVariantId.create(material.id(), variant), material);
   }
 
   /** Creates a new lazy material variant with the given ID and variant */
-  public static MaterialVariant create(IMaterial material) {
+  static MaterialVariant create(IMaterial material) {
     if (material == IMaterial.UNKNOWN) {
-      return UNKNOWN;
+      return MaterialHolder.UNKNOWN;
     }
     return create(material.getId());
   }
 
+
+  /* ID */
+
+  /** Gets the ID for this material */
+  MaterialVariantId id();
+
   /** Gets the ID to use for serializing, using the resolved material ID if fetched. */
-  protected MaterialVariantId serializedId() {
-    return MaterialVariantId.create(holder.serializedId(), id.variant());
-  }
-
-
-  /* Helpers */
-
-  /** Gets the material instance */
-  public IMaterial get() {
-    return holder.get();
-  }
+  MaterialVariantId serializedId();
 
   /** Gets the material ID */
-  public MaterialId material() {
-    return id.material();
-  }
+  MaterialId material();
+
+
+  /* Variant */
 
   /** Gets the variant string */
-  public String variant() {
-    return id.variant();
-  }
+  String variant();
+
+  /** Checks if this material has a variant */
+  boolean hasVariant();
+
+  /** Replaces the default variant with the ID by itself */
+  MaterialVariant normalizeVariant();
+
+
+  /* Material */
+
+  /** Gets the holder for this material */
+  MaterialHolder holder();
+
+  /** Gets the material instance */
+  IMaterial get();
+
+
+  /* Stats and traits */
 
   /** Checks if the given stats ID is supported by this material */
-  public boolean hasStats(MaterialStatsId stats) {
-    return holder.hasStats(stats);
-  }
+  boolean hasStats(MaterialStatsId stats);
 
   /** Gets the traits for the given stats ID */
   @Nullable
-  public <T extends IMaterialStats> T getStats(MaterialStatsId stats) {
-    return holder.getStats(stats);
-  }
+  <T extends IMaterialStats> T getStats(MaterialStatsId stats);
 
   /** Gets the traits for the given stats ID */
-  public List<ModifierEntry> getTraits(MaterialStatsId id) {
-    return holder.getTraits(id);
-  }
+  List<ModifierEntry> getTraits(MaterialStatsId id);
 
 
   /* Presence */
@@ -122,84 +116,68 @@ public class MaterialVariant implements Comparable<MaterialVariant> {
    * Checks if this is not the unknown material
    * @see #isBound()
    */
-  public boolean isPresent() {
-    return !id.equals(MaterialId.UNKNOWN);
+  default boolean isPresent() {
+    return !material().equals(MaterialId.UNKNOWN);
   }
 
   /**
    * Returns true if this material exists either statically or in a datapack. A return of true here means a useful value is returned by {@link #get()}
    * @see #isPresent()
    */
-  public boolean isBound() {
-    return holder.isBound();
-  }
-
-  /** Checks if this material has a variant */
-  public boolean hasVariant() {
-    return id.hasVariant();
-  }
+  boolean isBound();
 
 
   /* Matching */
 
   /** Checks if the material is in the given ID */
-  public boolean is(MaterialId id) {
+  default boolean is(MaterialId id) {
     return material().equals(id);
   }
 
   /** Checks if the modifier is in the given tag */
-  public boolean is(TagKey<IMaterial> tag) {
-    return MaterialRegistry.getInstance().isInTag(id.material(), tag);
+  default boolean is(TagKey<IMaterial> tag) {
+    return MaterialRegistry.getInstance().isInTag(material(), tag);
   }
 
   /** Checks if two material variants match. If this has no variant, matches any variant of the same material */
-  public boolean matchesVariant(MaterialVariantId variantId) {
-    return this.id.matchesVariant(variantId);
+  default boolean matchesVariant(MaterialVariantId variantId) {
+    return id().matchesVariant(variantId);
   }
 
   /** Checks if two material variants match. If this has no variant, matches any variant of the same material */
-  public boolean matchesVariant(MaterialVariant variant) {
-    return this.id.matchesVariant(variant);
+  default boolean matchesVariant(MaterialVariant variant) {
+    return id().matchesVariant(variant);
   }
 
   /** Checks if two material variants match. If this has no variant, matches any variant of the same material */
-  public boolean matchesVariant(ItemStack stack) {
-    return this.id.matchesVariant(stack);
+  default boolean matchesVariant(ItemStack stack) {
+    return id().matchesVariant(stack);
   }
 
   /** Checks if this matches the given variant ID */
-  public boolean sameVariant(MaterialVariantId variantId) {
-    return this.id.sameVariant(variantId);
+  default boolean sameVariant(MaterialVariantId variantId) {
+    return id().sameVariant(variantId);
+  }
+
+  /** Checks if this matches the given variant ID */
+  default boolean sameVariant(MaterialVariant variant) {
+    return id().sameVariant(variant.id());
   }
 
 
   /* Object */
 
   @Override
-  public String toString() {
-    return "MaterialVariant{" + id + '}';
-  }
-
-  @Override
-  public boolean equals(@Nullable Object other) {
-    if (this == other) {
-      return true;
-    }
-    return other instanceof MaterialVariant otherVariant && this.id.equals(otherVariant.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return id.hashCode();
-  }
-
-  @Override
-  public int compareTo(MaterialVariant other) {
+  default int compareTo(MaterialVariant other) {
+    // quick exit for a match
+    if (this == other) return 0;
     // if material IDs are different, compare materials by sort order
-    if (!this.id.equals(other.id)) {
+    MaterialVariantId thisId = this.id();
+    MaterialVariantId otherId = other.id();
+    if (!thisId.equals(otherId)) {
       return this.get().compareTo(other.get());
     }
     // otherwise, compare variants
-    return this.id.variant().compareTo(other.id.variant());
+    return thisId.variant().compareTo(otherId.variant());
   }
 }

@@ -21,6 +21,7 @@ import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
@@ -76,7 +77,7 @@ public class PartBuilderCategory extends NamedRecipeCategory<IDisplayPartBuilder
   public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayPartBuilderRecipe> holder, IFocusGroup focuses) {
     IDisplayPartBuilderRecipe recipe = holder.recipe();
     // focus
-    MaterialVariant focusMaterial = MaterialVariant.UNKNOWN;
+    MaterialVariant focusMaterial = MaterialHolder.UNKNOWN;
     ItemStack focusStack = ItemStack.EMPTY;
     boolean focusOutput = false;
     IFocus<ItemStack> itemFocus = focuses.getItemStackFocuses().findFirst().orElse(null);

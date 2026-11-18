@@ -20,6 +20,7 @@ import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.field.MergingField;
 import slimeknights.tconstruct.library.json.field.MergingField.MissingMode;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
@@ -139,7 +140,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
 
   @Override
   public ItemStack assemble(PartBuilderInput inv, HolderLookup.Provider registries) {
-    MaterialVariant material = MaterialVariant.UNKNOWN;
+    MaterialVariant material = MaterialHolder.UNKNOWN;
     int count = outputCount;
     IMaterialValue materialRecipe = inv.getMaterial();
     if (materialRecipe != null) {

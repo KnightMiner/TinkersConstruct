@@ -8,10 +8,11 @@ import lombok.ToString;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.definition.IMaterial;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +67,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
    */
   public MaterialVariant get(int index) {
     if (index >= list.size() || index < 0) {
-      return MaterialVariant.UNKNOWN;
+      return MaterialHolder.UNKNOWN;
     }
     return list.get(index);
   }
@@ -107,7 +108,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     // handles the case where a tool has broken material NBT without crashing
     if (index >= size) {
       for (int i = size; i < index; i++) {
-        list.add(MaterialVariant.UNKNOWN);
+        list.add(MaterialHolder.UNKNOWN);
       }
       list.add(replacement);
     }
@@ -207,8 +208,8 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     }
 
     /** Adds all materials from the given list */
-    public Builder addAll(List<MaterialVariant> existing) {
-      builder.addAll(existing);
+    public Builder addAll(List<MaterialVariant> materials) {
+      builder.addAll(materials);
       return this;
     }
 
