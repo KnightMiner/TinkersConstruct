@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -16,6 +15,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
+import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -241,33 +241,22 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
   /* NBT */
 
   /** Re-adds the modifier list from NBT */
-  public static ModifierNBT readFromNBT(@Nullable Tag inbt) {
-    if (inbt == null || inbt.getId() != Tag.TAG_LIST) {
+  @Deprecated
+  public static ModifierNBT readFromNBT(@Nullable Tag tag) {
+    if (tag == null || tag.getId() != Tag.TAG_LIST) {
       return EMPTY;
     }
-
-    ListTag listNBT = (ListTag)inbt;
+    ListTag listNBT = (ListTag)tag;
     if (listNBT.getElementType() != Tag.TAG_COMPOUND) {
       return EMPTY;
     }
-
-    ImmutableList.Builder<ModifierEntry> builder = ImmutableList.builder();
-    for (int i = 0; i < listNBT.size(); i++) {
-      ModifierEntry entry = ModifierEntry.readFromNBT(listNBT.getCompound(i));
-      if (entry != ModifierEntry.EMPTY) {
-        builder.add(entry);
-      }
-    }
-    return new ModifierNBT(builder.build());
+    return TagUtil.decode(CODEC, "modifier nbt", tag).orElse(EMPTY);
   }
 
   /** Writes these modifiers to NBT */
-  public ListTag serializeToNBT() {
-    ListTag list = new ListTag();
-    for (ModifierEntry entry : modifiers) {
-      list.add(entry.serializeToNBT());
-    }
-    return list;
+  @Deprecated
+  public Tag serializeToNBT() {
+    return TagUtil.encode(CODEC, this);
   }
 
 

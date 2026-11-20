@@ -2,12 +2,12 @@ package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import com.google.common.collect.Streams;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -213,9 +213,8 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     // go through the builder to ensure they are merged properly
     // TODO 1.21: this should maybe just take a modifier NBT argument?
     ModifierNBT modifiers = ModifierNBT.builder().add(modifierList).build();
-    ListTag list = modifiers.serializeToNBT();
-    nbt.put(ToolStack.TAG_UPGRADES, list);
-    nbt.put(ToolStack.TAG_MODIFIERS, list);
+    stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
+    stack.set(TinkerData.ALL_MODIFIERS, modifiers);
 
     // build persistent and volatile NBT
     CompoundTag persistentNBT = new CompoundTag();

@@ -7,7 +7,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +21,7 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
@@ -168,15 +168,15 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
 
       // set durability on each tool to 250, covers most instances
       CompoundTag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 250).build().serializeToNBT();
-      ListTag modifiers = ModifierNBT.builder().add(modifier, 1).build().serializeToNBT();
+      ModifierNBT modifiers = ModifierNBT.builder().add(modifier, 1).build();
       toolWithoutModifier = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DURABILITY)
         .map(item -> {
           if (item instanceof IModifiableDisplay modifiable) {
             ItemStack stack = modifiable.getRenderTool().copy();
             CompoundTag tag = stack.getOrCreateTag();
             tag.put(ToolStack.TAG_STATS, stats);
-            tag.put(ToolStack.TAG_UPGRADES, modifiers);
-            tag.put(ToolStack.TAG_MODIFIERS, modifiers);
+            stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
+            stack.set(TinkerData.ALL_MODIFIERS, modifiers);
             stack.set(DataComponents.DAMAGE, 200); // mostly broken
             return stack;
           }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import slimeknights.tconstruct.fixture.MaterialFixture;
 import slimeknights.tconstruct.fixture.ToolDefinitionFixture;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierFixture;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
@@ -327,7 +328,7 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void modifiers_deserialize() {
     ModifierNBT setModifiers = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
-    testItemStack.getOrCreateTag().put(ToolStack.TAG_UPGRADES, setModifiers.serializeToNBT());
+    testItemStack.set(TinkerData.CRAFTED_MODIFIERS, setModifiers);
 
     ToolStack tool = ToolStack.from(testItemStack);
     ModifierNBT readModifiers = tool.getUpgrades();
@@ -351,7 +352,7 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void allMods_deserialize() {
     ModifierNBT setModifiers = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
-    testItemStack.getOrCreateTag().put(ToolStack.TAG_MODIFIERS, setModifiers.serializeToNBT());
+    testItemStack.set(TinkerData.ALL_MODIFIERS, setModifiers);
 
     ToolStack tool = ToolStack.from(testItemStack);
     ModifierNBT readModifiers = tool.getModifiers();
