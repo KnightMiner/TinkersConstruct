@@ -13,8 +13,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
 
   @Override
   public boolean matches(CastingRecipeInput inv, Level level) {
-    return super.matches(inv, level) && ModifierUtil.getModifierLevel(inv.getItem(), modifier) > 0;
+    return super.matches(inv, level) && ModifierNBT.getLevel(inv.getItem(), modifier) > 0;
   }
 
 
@@ -57,7 +57,7 @@ public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
   public List<ItemStack> addPotion(ItemStack stack, List<String> potions) {
     return potions.stream().map(id -> {
       ToolStack tool = ToolStack.copyFrom(stack);
-      tool.getPersistentData().putString(modifier, id);
+      tool.getPersistentData().putString(modifier.id(), id);
       return tool.copyStack(stack);
     }).toList();
   }

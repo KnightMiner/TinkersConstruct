@@ -34,11 +34,11 @@ import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.MaterialItemCache;
@@ -214,7 +214,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
 
   @Override
   public List<Component> getText(PartBuilderInput inv) {
-    return ModifierUtil.hasUpgrades(inv.getItem()) ? NO_MODIFIERS : INSTRUCTIONS;
+    return ModifierNBT.hasCrafted(inv.getItem()) ? NO_MODIFIERS : INSTRUCTIONS;
   }
 
 

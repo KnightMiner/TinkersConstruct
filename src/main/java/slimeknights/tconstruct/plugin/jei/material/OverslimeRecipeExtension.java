@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModul
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeModifierRecipe;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -77,7 +77,7 @@ public class OverslimeRecipeExtension implements ICraftingCategoryExtension<Over
     IFocus<ItemStack> focus = focuses.getItemStackFocuses().findFirst().orElse(null);
     if (focus != null && focus.getRole() != RecipeIngredientRole.OUTPUT) {
       ItemStack focusStack = focus.getTypedValue().getIngredient();
-      if (focusStack.is(TinkerTags.Items.DURABILITY) && ModifierUtil.getModifierLevel(focusStack, TinkerModifiers.overslime.id()) > 0) {
+      if (focusStack.is(TinkerTags.Items.DURABILITY) && ModifierNBT.getLevel(focusStack, TinkerModifiers.overslime.id()) > 0) {
         inputStacks = List.of(List.of(focusStack.copyWithCount(1)), ingredient);
         ItemStack result = focusStack.copyWithCount(1);
         ToolStack tool = ToolStack.from(result);

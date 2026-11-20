@@ -31,6 +31,7 @@ import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.world.client.BlockModelSkullRenderer;
@@ -83,7 +84,7 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
         headTexture = texture;
         // if dyed, color is the dye
         ModifierId dyed = TinkerModifiers.dyed.id();
-        if (ModifierUtil.getModifierLevel(stack, dyed) > 0) {
+        if (ModifierNBT.getLevel(stack, dyed) > 0) {
           headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed.id(), -1);
         } else {
           // if not dyed, color is the material, fallback to no tint if missing

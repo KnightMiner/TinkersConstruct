@@ -14,7 +14,7 @@ import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import javax.annotation.Nullable;
 
@@ -66,7 +66,7 @@ public class FixedArmorTextureSupplier implements ArmorTextureSupplier {
   public ArmorTexture getArmorTexture(ItemStack stack, TextureType textureType, RegistryAccess access) {
     ArmorTexture texture = textures[textureType.ordinal()];
     // skip the modifier check if the texture is not set, saves some effort
-    if (texture != null && (modifier == null || ModifierUtil.getModifierLevel(stack, modifier) > 0)) {
+    if (texture != null && (modifier == null || ModifierNBT.getLevel(stack, modifier) > 0)) {
       return texture;
     }
     return ArmorTexture.EMPTY;

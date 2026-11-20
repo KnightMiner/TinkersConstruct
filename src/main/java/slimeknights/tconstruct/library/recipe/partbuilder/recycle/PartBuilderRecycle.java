@@ -22,7 +22,7 @@ import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRec
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.PartBuilderInput;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import java.util.Arrays;
 import java.util.List;
@@ -98,7 +98,7 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, MultiNamedRecipe<
   @Override
   public boolean matches(PartBuilderInput inv, Level level) {
     ItemStack stack = inv.getItem();
-    return partialMatch(inv) && getAmount(stack, resultCount) > 0 && stack.is(TinkerTags.Items.MODIFIABLE) ? !ModifierUtil.hasUpgrades(stack) : !stack.isEnchanted();
+    return partialMatch(inv) && getAmount(stack, resultCount) > 0 && stack.is(TinkerTags.Items.MODIFIABLE) ? !ModifierNBT.hasCrafted(stack) : !stack.isEnchanted();
   }
 
   @Override
@@ -167,7 +167,7 @@ public class PartBuilderRecycle implements IPartBuilderRecipe, MultiNamedRecipe<
       return NOT_ENOUGH_DURABILITY;
     }
     if (stack.is(TinkerTags.Items.MODIFIABLE)) {
-      if (ModifierUtil.hasUpgrades(stack)) {
+      if (ModifierNBT.hasCrafted(stack)) {
         return NO_MODIFIERS;
       }
     } else if (stack.isEnchanted()) {

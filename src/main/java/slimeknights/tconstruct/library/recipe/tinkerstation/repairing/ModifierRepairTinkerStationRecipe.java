@@ -32,7 +32,6 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTink
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
@@ -213,7 +212,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
 
     @Override
     public boolean isVisibleFromItem(ItemStack focus, boolean output) {
-      return !output && !isTool(focus) || ModifierUtil.getModifierLevel(focus, modifier) > 0;
+      return !output && !isTool(focus) || ModifierNBT.getLevel(focus, modifier) > 0;
     }
 
     @Override

@@ -3,7 +3,6 @@ package slimeknights.tconstruct.library.tools.helper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -103,41 +102,6 @@ public final class ModifierUtil {
    */
   public static boolean consumesResources(@Nullable Player player) {
     return player == null || !player.isCreative();
-  }
-
-  /**
-   * Direct method to get the level of a modifier from a stack. If you need to get multiple modifier levels, using {@link ToolStack} is faster
-   * @param stack     Stack to check
-   * @param modifier  Modifier to search for
-   * @return  Modifier level, or 0 if not present or the stack is not modifiable
-   */
-  public static int getModifierLevel(ItemStack stack, ModifierId modifier) {
-    if (!stack.isEmpty() && stack.is(TinkerTags.Items.MODIFIABLE)) {
-      CompoundTag nbt = stack.getTag();
-      if (nbt != null && nbt.contains(ToolStack.TAG_MODIFIERS, Tag.TAG_LIST)) {
-        ListTag list = nbt.getList(ToolStack.TAG_MODIFIERS, Tag.TAG_COMPOUND);
-        int size = list.size();
-        if (size > 0) {
-          String key = modifier.toString();
-          for (int i = 0; i < size; i++) {
-            CompoundTag entry = list.getCompound(i);
-            if (key.equals(entry.getString(ModifierEntry.TAG_MODIFIER))) {
-              return entry.getInt(ModifierEntry.TAG_LEVEL);
-            }
-          }
-        }
-      }
-    }
-    return 0;
-  }
-
-  /** Checks if the given stack has upgrades */
-  public static boolean hasUpgrades(ItemStack stack) {
-    if (!stack.isEmpty() && stack.is(TinkerTags.Items.MODIFIABLE)) {
-      CompoundTag nbt = stack.getTag();
-      return nbt != null && !nbt.getList(ToolStack.TAG_UPGRADES, Tag.TAG_COMPOUND).isEmpty();
-    }
-    return false;
   }
 
   /** Checks if the given slot may contain armor */

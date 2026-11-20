@@ -8,7 +8,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.IncrementalModifierEntry;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -257,6 +259,29 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
   @Deprecated
   public Tag serializeToNBT() {
     return TagUtil.encode(CODEC, this);
+  }
+
+
+  /* Helpers */
+
+  /** Gets the modifiers from a stack */
+  public static ModifierNBT get(ItemStack stack) {
+    return stack.getOrDefault(TinkerData.ALL_MODIFIERS, EMPTY);
+  }
+
+  /** Helper to quickly fetch a single modifier entry from a stack. Use {@link #get(ItemStack)} if you need to get multiple. */
+  public static ModifierEntry getEntry(ItemStack stack, ModifierId id) {
+    return get(stack).getEntry(id);
+  }
+
+  /** Helper to quickly fetch a single modifier level from a stack. Use {@link #get(ItemStack)} if you need to get multiple. */
+  public static int getLevel(ItemStack stack, ModifierId id) {
+    return get(stack).getLevel(id);
+  }
+
+  /** Checks if the given stack has upgrades */
+  public static boolean hasCrafted(ItemStack stack) {
+    return !stack.getOrDefault(TinkerData.CRAFTED_MODIFIERS, EMPTY).isEmpty();
   }
 
 
