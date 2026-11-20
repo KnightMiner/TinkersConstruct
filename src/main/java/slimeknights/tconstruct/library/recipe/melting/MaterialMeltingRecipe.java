@@ -103,21 +103,20 @@ public class MaterialMeltingRecipe implements IMeltingRecipe, MultiNamedRecipe<I
         multiRecipes = List.of();
       } else {
         // grab and sort all parts that work
-        MaterialVariantId inputId = input.id();
         List<Entry<IMaterialItem>> entries = MaterialCastingLookup
           .getAllItemCosts().stream()
-          .filter(entry -> entry.getKey().canUseMaterial(inputId.material()))
+          .filter(entry -> entry.getKey().canUseMaterial(input.holder()))
           .sorted(Comparator.<Entry<IMaterialItem>,Integer>comparing(Entry::getIntValue).thenComparing(entry -> Loadables.ITEM.getKey(entry.getKey().asItem())))
           .toList();
         // if we found nothing, do nothing. Should never happen so error
         if (entries.isEmpty()) {
-          TConstruct.LOG.warn("Failed to create display recipe for {}: found no tool parts that support {}", id, inputId);
+          TConstruct.LOG.warn("Failed to create display recipe for {}: found no tool parts that support {}", id, input.id());
           multiRecipes = List.of();
         } else {
           // start building the recipe
           DisplayMeltingRecipe.Builder recipe = DisplayMeltingRecipe.id(id).temperature(temperature).timeDynamic();
           // input items just use the material
-          recipe.inputs(entries.stream().map(entry -> entry.getKey().withMaterialForDisplay(inputId)).toList());
+          recipe.inputs(entries.stream().map(entry -> entry.getKey().withMaterialForDisplay(input)).toList());
           // fluids
           FluidStack output = this.result.get();
           recipe.outputs(entries.stream().map(entry -> output.copyWithAmount(output.getAmount() * entry.getIntValue())).toList());

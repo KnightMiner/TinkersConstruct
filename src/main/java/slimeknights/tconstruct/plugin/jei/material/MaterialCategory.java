@@ -31,7 +31,6 @@ import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.material.IDisplayMaterialRecipe;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
@@ -109,9 +108,9 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
       .filter(stack -> !stack.isEmpty())
       .toList());
   /** Cache of display parts for each material */
-  private final SimpleCache<MaterialVariantId,List<ItemStack>> toolParts = new SimpleCache<>(material ->
+  private final SimpleCache<MaterialVariant,List<ItemStack>> toolParts = new SimpleCache<>(material ->
     partItems.stream()
-      .filter(item -> item.canUseMaterial(material.material()))
+      .filter(item -> item.canUseMaterial(material.holder()))
       .map(item -> item.withMaterialForDisplay(material))
       .toList());
 
@@ -168,7 +167,7 @@ public class MaterialCategory extends AbstractRecipeCategory<IDisplayMaterialRec
     }
 
     // display tools and parts
-    builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116,  0).addItemStacks(toolParts.apply(material.id()));
+    builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116,  0).addItemStacks(toolParts.apply(material));
     builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 116, 20).addItemStacks(tools.apply(material));
   }
 

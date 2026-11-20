@@ -6,9 +6,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 import slimeknights.tconstruct.library.tools.part.block.MaterialBlockItem;
 
@@ -39,6 +40,11 @@ public class FakeStorageBlockItem extends MaterialBlockItem implements IRepairKi
   public boolean canUseMaterial(MaterialId material) {
     return MaterialRegistry.getInstance().isInTag(material, validMaterials)
       && missingItemCache.computeIfAbsent(material, missingItemGetter);
+  }
+
+  @Override
+  public boolean canUseMaterial(MaterialHolder material) {
+    return material.is(validMaterials) && missingItemCache.computeIfAbsent(material.id(), missingItemGetter);
   }
 
   @Override

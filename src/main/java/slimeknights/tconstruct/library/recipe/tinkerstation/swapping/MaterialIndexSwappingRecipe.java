@@ -9,9 +9,7 @@ import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.array.IntArrayLoadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
@@ -39,7 +37,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
   protected abstract boolean isMaterial(ItemStack stack);
 
   /** Gets the material from the given stack */
-  protected abstract MaterialVariantId getMaterial(ItemStack stack);
+  protected abstract MaterialVariant getMaterial(ItemStack stack);
 
   /** Gets the amount to repair from this part, assuming its a repairable stat type. */
   protected abstract int getRepairValue();
@@ -86,8 +84,8 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
       ItemStack stack = inv.getInput(i);
       if (!stack.isEmpty() && isMaterial(stack)) {
         // ensure the part is valid
-        MaterialVariantId partVariant = getMaterial(stack);
-        if (partVariant.equals(MaterialId.UNKNOWN)) {
+        MaterialVariant partVariant = getMaterial(stack);
+        if (!partVariant.isPresent()) {
           return RecipeResult.pass();
         }
 
@@ -105,7 +103,7 @@ public abstract class MaterialIndexSwappingRecipe extends MaterialSwappingRecipe
 
         // ensure this material is valid for the tool
         // may not be if the part you choose is not the tool part for this tool
-        if (MaterialRegistry.getInstance().getMaterialStats(partVariant.material(), materials.get(index)).isEmpty()) {
+        if (!partVariant.hasStats(materials.get(index))) {
           return INVALID_MATERIAL;
         }
 

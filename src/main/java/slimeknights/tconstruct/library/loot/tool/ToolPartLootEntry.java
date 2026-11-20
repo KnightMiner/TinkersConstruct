@@ -53,8 +53,8 @@ public class ToolPartLootEntry extends LootPoolSingletonContainer {
       RandomSource random = context.getRandom();
       IToolPart choice = options.get(random.nextInt(options.size()));
       MaterialVariant material = this.material.getMaterial(choice.getStatType(), random);
-      if (choice.canUseMaterial(material.material())) {
-        consumer.accept(choice.withMaterial(material.id()));
+      if (choice.canUseMaterial(material.holder())) {
+        consumer.accept(choice.withMaterial(material));
       }
     }
   }

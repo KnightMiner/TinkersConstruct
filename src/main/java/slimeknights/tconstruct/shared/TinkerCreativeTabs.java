@@ -9,7 +9,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.registration.CreativeTabDeferredRegister;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock;
@@ -46,11 +46,11 @@ public class TinkerCreativeTabs {
   public static final DeferredHolder<CreativeModeTab,CreativeModeTab> toolParts = CREATIVE_TABS.registerTab(
     "tool_parts", builder -> builder
       .icon(() -> {
-        MaterialVariantId material;
+        MaterialVariant material;
         if (MaterialRegistry.isFullyLoaded()) {
-          material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create()).id();
+          material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create());
         } else {
-          material = ToolBuildHandler.getRenderMaterial(0);
+          material = MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0));
         }
         return TinkerToolParts.pickHead.get().withMaterialForDisplay(material);
       })

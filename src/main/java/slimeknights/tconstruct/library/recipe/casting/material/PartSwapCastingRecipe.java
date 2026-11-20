@@ -94,7 +94,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     // the casting recipe needs to match our stat type to be valid
     MaterialFluidRecipe casting = MaterialCastingLookup.getCastingFluid(fluid.getFluid(), materials);
     // need to validate the stat type, since the super call will not check stat type
-    if (casting != MaterialFluidRecipe.EMPTY && !casting.getOutput().sameVariant(currentMaterial) && requirements.get(index).canUseMaterial(casting.getOutput().material())) {
+    if (casting != MaterialFluidRecipe.EMPTY && !casting.getOutput().sameVariant(currentMaterial) && requirements.get(index).canUseMaterial(casting.getOutput().holder())) {
       cachedPartSwapping = casting;
       return casting;
     }
@@ -123,7 +123,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     // must have a valid material
     MaterialFluidRecipe recipe = getFluidRecipe(inv, modifiable);
     MaterialVariant output = recipe.getOutput();
-    if (recipe == MaterialFluidRecipe.EMPTY || !requirements.get(index).canUseMaterial(output.material())) {
+    if (recipe == MaterialFluidRecipe.EMPTY || !requirements.get(index).canUseMaterial(output.holder())) {
       return false;
     }
     // ensure the tool is still valid after replacing
@@ -240,7 +240,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
         input = output;
       }
       // if given a stat type, check against that type
-      if (statType != null && (!statType.canUseMaterial(output.material()) || (composite && !statType.canUseMaterial(input.material())))) continue;
+      if (statType != null && (!statType.canUseMaterial(output.holder()) || (composite && !statType.canUseMaterial(input.holder())))) continue;
       // scale the fluids to the recipe size
       List<FluidStack> fluids = resizeFluids(recipe.getFluids());
       for (FluidStack fluid : fluids) {
@@ -262,7 +262,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
       for (ToolRequirement tool : tools) {
         // filter down materials to just those applicable to the tool
         List<FluidRecipe> filtered = fluidRecipes.stream()
-          .filter(recipe -> tool.requirement.canUseMaterial(recipe.output.material()) && (!composite || tool.requirement.canUseMaterial(recipe.input.material())))
+          .filter(recipe -> tool.requirement.canUseMaterial(recipe.output.holder()) && (!composite || tool.requirement.canUseMaterial(recipe.input.holder())))
           .toList();
         if (!filtered.isEmpty()) {
           displayRecipes.add(NamedRecipe.of(

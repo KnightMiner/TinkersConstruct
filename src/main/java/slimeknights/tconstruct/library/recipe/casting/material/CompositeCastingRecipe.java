@@ -51,12 +51,12 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
       // if we have casting recipe that matches our fluid and is valid for the result, return no match
       // used to prevent conflicts between tool casting and composite part casting
       MaterialFluidRecipe recipe = MaterialCastingLookup.getCastingFluid(fluid.getFluid()); // TODO: does this need a filter?
-      if (recipe != MaterialFluidRecipe.EMPTY && castingStatConflict.canUseMaterial(recipe.getOutput().material())) {
+      if (recipe != MaterialFluidRecipe.EMPTY && castingStatConflict.canUseMaterial(recipe.getOutput().holder())) {
         return MaterialFluidRecipe.EMPTY;
       }
     }
     // find a composite match, requires fetching the material ID but not a huge deal as we already validated the cast (won't be calling this for multiple fluids)
-    return MaterialCastingLookup.getCompositeFluid(fluid.getFluid(), IMaterialItem.getMaterialFromStack(inv.getItem()), materials);
+    return MaterialCastingLookup.getCompositeFluid(fluid.getFluid(), IMaterialItem.getMaterialFromStack(inv.getItem()).id(), materials);
   }
 
   /* JEI */
@@ -80,11 +80,11 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
       List<ItemStack> displayInputs = new ArrayList<>(recipes.size());
       List<ItemStack> displayResults = new ArrayList<>(recipes.size());
       int maxTime = 0;
-      for (MaterialFluidRecipe recipe : MaterialCastingLookup.getAllCompositeFluids()) {
+      for (MaterialFluidRecipe recipe : recipes) {
         MaterialVariant output = recipe.getOutput();
         MaterialVariantId outputId = output.id();
         MaterialVariant input = recipe.getInput();
-        if (input == null || !result.canUseMaterial(output.material()) || !result.canUseMaterial(input.material()) || !materials.matches(outputId)) {
+        if (input == null || !result.canUseMaterial(output.holder()) || !result.canUseMaterial(input.holder()) || !materials.matches(outputId)) {
           continue;
         }
         // filter fluids for the casting stat conflict
@@ -95,7 +95,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
             .filter(fluid -> {
               MaterialFluidRecipe fluidRecipe = MaterialCastingLookup.getCastingFluid(fluid.getFluid());
               // its fine if we have a recipe as long as the material is not usable by this part
-              return fluidRecipe == MaterialFluidRecipe.EMPTY || !castingStatConflict.canUseMaterial(fluidRecipe.getOutput().material());
+              return fluidRecipe == MaterialFluidRecipe.EMPTY || !castingStatConflict.canUseMaterial(fluidRecipe.getOutput().holder());
             })
             .map(this::resizeFluid)
             .toList();
@@ -109,9 +109,9 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
         List<ItemStack> inputs;
         if (inputId.variant().isEmpty()) {
           // skip outputs that are the same variant as the input; those are not valid recipes
-          inputs = MaterialRecipeCache.getVariants(input.material()).stream().filter(material -> !output.sameVariant(material)).map(material -> result.withMaterial(material.id())).toList();
+          inputs = MaterialRecipeCache.getVariants(input.material()).stream().filter(material -> !output.sameVariant(material)).map(result::withMaterial).toList();
         } else {
-          inputs = List.of(result.withMaterial(inputId.normalizeVariant()));
+          inputs = List.of(result.withMaterial(input.normalizeVariant()));
         }
         if (inputs.isEmpty()) continue;
 
@@ -135,7 +135,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
           }
         }
         // add items to the lists
-        ItemStack result = this.result.withMaterial(outputId);
+        ItemStack result = this.result.withMaterial(output);
         for (int i = 0; i < inputs.size(); i++) {
           displayResults.add(result);
         }

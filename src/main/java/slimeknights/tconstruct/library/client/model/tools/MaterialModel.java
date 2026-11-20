@@ -175,7 +175,7 @@ public class MaterialModel implements IUnbakedGeometry<MaterialModel> {
     @Override
     public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
       // fetch the material from the stack
-      MaterialVariantId material = IMaterialItem.getMaterialFromStack(stack);
+      MaterialVariantId material = IMaterialItem.getMaterialFromStack(stack).id();
       // cache all baked material models, they will not need to be recreated as materials will not change
       return cache.computeIfAbsent(material, this::bakeDynamic);
     }

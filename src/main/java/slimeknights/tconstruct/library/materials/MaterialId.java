@@ -41,7 +41,7 @@ public record MaterialId(ResourceLocation id) implements ResourceId<IMaterial>, 
 
   /** Checks if this ID matches the given stack */
   public boolean matches(ItemStack stack) {
-    return !stack.isEmpty() && this.equals(IMaterialItem.getMaterialFromStack(stack));
+    return !stack.isEmpty() && this.equals(IMaterialItem.getMaterialFromStack(stack).material());
   }
 
   @Override

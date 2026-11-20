@@ -12,6 +12,7 @@ import slimeknights.mantle.registration.holder.DeferredAttachment;
 import slimeknights.mantle.registration.holder.DeferredDataComponent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -39,6 +40,8 @@ public class TinkerData {
   /* Parts and modifiers */
   /** Holds a single modifier on an item. Used for modifier crystals */
   public static final DeferredDataComponent<ModifierHolder> MODIFIER = DATA_COMPONENTS.registerPersistent("modifier", ModifierHolder.CODEC, ModifierHolder.STREAM_CODEC);
+  /** Holds a single material on an item. Used for tool parts and other material items */
+  public static final DeferredDataComponent<MaterialVariant> MATERIAL = DATA_COMPONENTS.registerPersistent("material", MaterialVariant.CODEC, MaterialVariant.STREAM_CODEC);
 
   /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
   public static final DeferredDataComponent<Boolean> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Codec.BOOL, ByteBufCodecs.BOOL);

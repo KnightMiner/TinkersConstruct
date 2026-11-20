@@ -90,7 +90,7 @@ public record MaterialIngredient(HolderSet<Item> item, IJsonPredicate<MaterialVa
     // no material? apply all materials for variants
     return item.stream().flatMap(item -> MaterialRecipeCache.getAllVariants().stream()
       .filter(material -> this.material.matches(material.id()))
-      .map(mat -> IMaterialItem.withMaterial(item.value(), mat.id()))
+      .map(mat -> IMaterialItem.withMaterial(item.value(), mat))
       .filter(stack -> !stack.isEmpty()));
   }
 }

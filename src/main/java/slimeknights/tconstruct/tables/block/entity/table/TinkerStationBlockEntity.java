@@ -3,6 +3,7 @@ package slimeknights.tconstruct.tables.block.entity.table;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -25,8 +26,11 @@ import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.SoundUtils;
 import slimeknights.tconstruct.common.Sounds;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.model.ModelProperties;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -77,7 +81,7 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
 
   /** Material variant texture, alterantive to {@link #getTexture()} in the model. */
   @Getter
-  private MaterialVariantId material = MaterialId.UNKNOWN;
+  private MaterialVariant material = MaterialHolder.UNKNOWN;
 
   public TinkerStationBlockEntity(BlockPos pos, BlockState state) {
     // if the block is the right type, use it for slot count
@@ -311,21 +315,21 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
   @Override
   public ModelData getModelData() {
     // include material and texture, practically only one of the two should do anything
-    return RetexturedHelper.getModelDataBuilder(texture).with(ModelProperties.MATERIAL, material).build();
+    return RetexturedHelper.getModelDataBuilder(texture).with(ModelProperties.MATERIAL, material.id()).build();
   }
 
   @Override
   public void updateTexture(Block texture) {
     // reset material
     if (texture != Blocks.AIR) {
-      this.material = MaterialId.UNKNOWN;
+      this.material = MaterialHolder.UNKNOWN;
     }
     super.updateTexture(texture);
   }
 
   /** Called to update the material on the block. */
-  public void setMaterial(MaterialVariantId material) {
-    MaterialVariantId oldMaterial = this.material;
+  private void setMaterial(MaterialVariant material) {
+    MaterialVariant oldMaterial = this.material;
     // TODO: resolve redirects?
     this.material = material;
     // reset other texture
@@ -337,9 +341,26 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
   }
 
   @Override
+  protected void collectImplicitComponents(DataComponentMap.Builder components) {
+    super.collectImplicitComponents(components);
+    if (material.isPresent()) {
+      components.set(TinkerData.MATERIAL, material);
+    }
+  }
+
+  @Override
+  protected void applyImplicitComponents(DataComponentInput components) {
+    super.applyImplicitComponents(components);
+    // skip if the texture is already set
+    if (texture == Blocks.AIR) {
+      setMaterial(components.getOrDefault(TinkerData.MATERIAL, MaterialHolder.UNKNOWN));
+    }
+  }
+
+  @Override
   public void saveSynced(CompoundTag tags, HolderLookup.Provider registries) {
     super.saveSynced(tags, registries);
-    if (material != MaterialId.UNKNOWN) {
+    if (material.isPresent()) {
       tags.putString(MATERIAL_TAG, material.toString());
     }
   }
@@ -348,7 +369,7 @@ public class TinkerStationBlockEntity extends RetexturedTableBlockEntity impleme
   public void loadAdditional(CompoundTag tags, HolderLookup.Provider registries) {
     super.loadAdditional(tags, registries);
     if (tags.contains(MATERIAL_TAG, Tag.TAG_STRING)) {
-      material = Objects.requireNonNullElse(MaterialVariantId.tryParse(tags.getString(MATERIAL_TAG)), MaterialId.UNKNOWN);
+      material = MaterialVariant.create(Objects.requireNonNullElse(MaterialVariantId.tryParse(tags.getString(MATERIAL_TAG)), MaterialId.UNKNOWN));
       RetexturedHelper.onTextureUpdated(this);
     }
   }

@@ -10,10 +10,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import slimeknights.mantle.util.RetexturedHelper;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
+import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.ToolPartItem;
 import slimeknights.tconstruct.library.tools.part.block.MaterialBlockItem;
@@ -42,6 +43,11 @@ public class AnvilBlockItem extends MaterialBlockItem {
   }
 
   @Override
+  public boolean canUseMaterial(MaterialHolder material) {
+    return material.is(validMaterials) && matching.get().canUseMaterial(material);
+  }
+
+  @Override
   public Rarity getRarity(ItemStack stack) {
     // override rarity, since this is a block, not an item
     return Rarity.COMMON;
@@ -66,8 +72,8 @@ public class AnvilBlockItem extends MaterialBlockItem {
   public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     // ditch the super call advanced tooltip material ID, we will handle it ourselves later
     this.getBlock().appendHoverText(stack, context, tooltip, flag);
-    MaterialVariantId material = getMaterial(stack);
-    if (!MaterialId.UNKNOWN.equals(material)) {
+    MaterialVariant material = getMaterial(stack);
+    if (material.isPresent()) {
       // put tool material in tooltip. Its technically below texture but the two should never coexist.
       tooltip.add(this.matching.get().asItem().getName(stack).copy().withStyle(ChatFormatting.GRAY));
       // add ID if advanced

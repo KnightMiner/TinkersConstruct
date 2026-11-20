@@ -32,6 +32,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
@@ -164,8 +165,8 @@ public abstract class AbstractMaterialContent extends PageContent {
       if (repairStacks.isEmpty()) {
         // use the fallback stacks
         repairStacks = FALLBACKS.stream().map(Supplier::get)
-          .filter(part -> part.canUseMaterial(material.material()))
-          .map(part -> part.withMaterialForDisplay(material.id())).toList();
+          .filter(part -> part.canUseMaterial(material.holder()))
+          .map(part -> part.withMaterialForDisplay(material)).toList();
 
         // no matching fallback? just use a repair kit
         if (repairStacks.isEmpty()) {
@@ -366,8 +367,8 @@ public abstract class AbstractMaterialContent extends PageContent {
           // TODO: filter out tool parts that cannot be casted due to a composite cast conflict
           List<ItemStack> compositeParts = MaterialCastingLookup.getAllItemCosts().stream()
             .map(Entry::getKey)
-            .filter(part -> part.canUseMaterial(input.material()) && part.canUseMaterial(variant.material()) && (!(part instanceof IToolPart toolPart) || supportsStatType(toolPart.getStatType())))
-            .map(part -> part.withMaterial(input.id()))
+            .filter(part -> part.canUseMaterial(input.holder()) && part.canUseMaterial(variant.holder()) && (!(part instanceof IToolPart toolPart) || supportsStatType(toolPart.getStatType())))
+            .map(part -> part.withMaterial(input))
             .toList();
           if (!compositeParts.isEmpty()) {
             ItemElement elementItem = new TinkerItemElement(0, 0, 1, compositeParts);
@@ -395,7 +396,7 @@ public abstract class AbstractMaterialContent extends PageContent {
 
     // fill in leftover space
     if (displayTools.size() < 9) {
-      MaterialId material = materialVariant.material();
+      MaterialHolder holder = materialVariant.holder();
       for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.MULTIPART_TOOL)) {
         if (item.value() instanceof IModifiable tool && (showAllTools || !item.is(TinkerTags.Items.ANCIENT_TOOLS))) {
           List<MaterialStatsId> requirements = ToolMaterialHook.stats(tool.getToolDefinition());
@@ -407,7 +408,7 @@ public abstract class AbstractMaterialContent extends PageContent {
             // but by request we can keep those visible
             boolean supported = supportsStatType(part);
             // if the stat type is not supported by the material, substitute
-            if (part.canUseMaterial(material)) {
+            if (part.canUseMaterial(holder)) {
               materials.add(materialVariant);
               if (supported) {
                 usedMaterial = true;

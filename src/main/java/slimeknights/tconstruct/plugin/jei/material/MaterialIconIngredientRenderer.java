@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
 import java.util.ArrayList;
@@ -24,8 +23,8 @@ public enum MaterialIconIngredientRenderer implements IIngredientRenderer<Materi
   INSTANCE;
 
   private static final String WRAPPER_KEY = "jei.tconstruct.material_ingredient";
-  private final Map<MaterialVariantId, ItemStack> stackCache = new HashMap<>();
-  private final Function<MaterialVariantId, ItemStack> stackGetter = id -> TinkerToolParts.repairKit.get().withMaterialForDisplay(id);
+  private final Map<MaterialVariant, ItemStack> stackCache = new HashMap<>();
+  private final Function<MaterialVariant, ItemStack> stackGetter = material -> TinkerToolParts.repairKit.get().withMaterialForDisplay(material);
 
   @Override
   public void render(GuiGraphics guiGraphics, MaterialVariant material) {
@@ -35,7 +34,7 @@ public enum MaterialIconIngredientRenderer implements IIngredientRenderer<Materi
   @Override
   public void render(GuiGraphics graphics, MaterialVariant material, int posX, int posY) {
     RenderSystem.enableDepthTest();
-    graphics.renderFakeItem(stackCache.computeIfAbsent(material.id(), stackGetter), posX, posY);
+    graphics.renderFakeItem(stackCache.computeIfAbsent(material, stackGetter), posX, posY);
     RenderSystem.disableBlend();
   }
 

@@ -489,7 +489,7 @@ public class JEIPlugin implements IModPlugin {
         if (!name.isEmpty()) {
           return '#' + name;
         }
-        return ToolPartSubtypeInterpreter.INSTANCE.apply(stack, UidContext.Ingredient);
+        return ToolPartSubtypeInterpreter.INSTANCE.getLegacyStringSubtypeInfo(stack, UidContext.Ingredient);
       }
       return IIngredientSubtypeInterpreter.NONE;
     };

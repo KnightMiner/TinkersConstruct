@@ -92,7 +92,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
         return false;
       }
       MaterialVariant material = materialRecipe.getMaterial();
-      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.material());
+      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.holder());
     }
     // no material item? return match in case we get one later
     return true;
@@ -111,13 +111,13 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     if (materialRecipe != null) {
       // material must be craftable, usable in the item, and have a cost we can afford
       MaterialVariant material = materialRecipe.getMaterial();
-      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.material())
+      return (allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material.holder())
              && inv.getItem().getCount() >= materialRecipe.getItemsUsed(cost);
     }
     return false;
   }
 
-  /** @deprecated use {@link #getRecipeOutput(MaterialVariantId, int)} */
+  /** @deprecated use {@link #getRecipeOutput(MaterialVariant, int)} */
   @Deprecated
   @Override
   public ItemStack getResultItem(HolderLookup.Provider registries) {
@@ -130,7 +130,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
    * @return  Output of the recipe
    */
   @SuppressWarnings("WeakerAccess")
-  public ItemStack getRecipeOutput(MaterialVariantId material, int count) {
+  public ItemStack getRecipeOutput(MaterialVariant material, int count) {
     ItemStack stack = output.withMaterial(material);
     stack.setCount(count);
     return stack;
@@ -149,7 +149,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
         count = outputCount * value / cost;
       }
     }
-    return this.getRecipeOutput(material.id(), count);
+    return this.getRecipeOutput(material, count);
   }
 
   /** Cache of recipes for display in JEI */
@@ -201,7 +201,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
 
           // add the material info
           materials.add(displayVariant);
-          resultItems.add(output.withMaterialForDisplay(displayVariant.id()));
+          resultItems.add(output.withMaterialForDisplay(displayVariant));
         }
       }
 
@@ -262,10 +262,10 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
           // outputs are tool parts, so ask the material item
-          MaterialVariantId variant = output.getMaterial(focusStack);
-          if (!MaterialId.UNKNOWN.equals(variant)) {
+          MaterialVariant variant = output.getMaterial(focusStack);
+          if (variant.isPresent()) {
             // if it's a base ID, animate its variant recipes
-            return List.of(MaterialVariant.create(variant));
+            return List.of(variant);
           }
         } else {
           // if the item has a material, return that directly, no need to animate
@@ -286,9 +286,9 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
           // outputs are tool parts, so ask the material item
-          MaterialVariantId variant = output.getMaterial(focusStack);
-          if (!MaterialId.UNKNOWN.equals(variant)) {
-            return MaterialPartRecipe.getItems(variant, cost);
+          MaterialVariant variant = output.getMaterial(focusStack);
+          if (variant.isPresent()) {
+            return MaterialPartRecipe.getItems(variant.id(), cost);
           }
         } else {
           // if the item has a material, return it directly, no need to animate
@@ -304,18 +304,18 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     @Override
     public List<ItemStack> getResultItems(MaterialVariant focusMaterial, ItemStack focusStack, boolean focusOutput) {
       if (focusMaterial.isPresent()) {
-        return List.of(output.withMaterial(focusMaterial.id()));
+        return List.of(output.withMaterial(focusMaterial));
       }
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
-          MaterialVariantId variant = output.getMaterial(focusStack);
-          if (!MaterialId.UNKNOWN.equals(variant)) {
+          MaterialVariant variant = output.getMaterial(focusStack);
+          if (variant.isPresent()) {
             return List.of(output.withMaterial(variant));
           }
         } else {
           MaterialRecipe recipe = MaterialRecipeCache.findRecipe(focusStack);
           if (recipe != MaterialRecipe.EMPTY) {
-            return List.of(output.withMaterial(recipe.getMaterial().id()));
+            return List.of(output.withMaterial(recipe.getMaterial()));
           }
         }
       }

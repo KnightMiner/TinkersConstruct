@@ -87,12 +87,12 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   }
 
   /** Logic to actually swap the material */
-  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariantId material, int index, int partValue) {
+  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariant material, int index, int partValue) {
     return swapMaterial(inv, material, index, partValue, false);
   }
 
   /** Logic to actually swap the material, with an override to force swap on damaged tools (intended for manual repair logic) */
-  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariantId material, int index, int partValue, boolean mayRepair) {
+  protected RecipeResult<LazyToolStack> swapMaterial(TinkerableRecipeInput inv, MaterialVariant material, int index, int partValue, boolean mayRepair) {
     // ensure we have enough items to get a result
     ToolStack original = inv.getTinkerable();
     int shrink = maxStackSize(original);
@@ -321,8 +321,8 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   /** Display recipe linking the input to the output slot */
   protected class LinkedDisplayRecipe extends DisplayRecipe {
     private final int[] outputLinks;
-    protected final List<MaterialVariant> materials;
-    public LinkedDisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<MaterialVariant> materials) {
+    protected final List<? extends MaterialVariant> materials;
+    public LinkedDisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<? extends MaterialVariant> materials) {
       super(index, input, toolWithoutModifier, toolWithModifier);
       this.outputLinks = new int[] {index};
       this.materials = materials;
@@ -396,7 +396,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   /** Display recipe with a tool part. Used to implement dynamic focus */
   protected class PartDisplayRecipe extends LinkedDisplayRecipe {
     protected final IMaterialItem part;
-    public PartDisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<MaterialVariant> materials, IMaterialItem part) {
+    public PartDisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<? extends MaterialVariant> materials, IMaterialItem part) {
       super(index, input, toolWithoutModifier, toolWithModifier, materials);
       this.part = part;
     }

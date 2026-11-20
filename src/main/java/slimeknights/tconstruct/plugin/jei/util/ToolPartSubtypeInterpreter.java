@@ -1,27 +1,28 @@
 package slimeknights.tconstruct.plugin.jei.util;
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 /**
  * Subtype interpreter for material items, considers variants in ingredient context but ignores them in recipe context.
  */
-public enum ToolPartSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
+public enum ToolPartSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
   INSTANCE;
 
   @Override
-  public String apply(ItemStack stack, UidContext context) {
-    MaterialVariantId materialId = IMaterialItem.getMaterialFromStack(stack);
-    if (materialId.equals(MaterialId.UNKNOWN)) {
-      return IIngredientSubtypeInterpreter.NONE;
-    }
+  public MaterialVariant getSubtypeData(ItemStack stack, UidContext context) {
+    MaterialVariant material = IMaterialItem.getMaterialFromStack(stack);
     if (context == UidContext.Ingredient) {
-      return materialId.toString();
+      return material.holder();
     }
-    return materialId.material().toString();
+    return material;
+  }
+
+  @Override
+  public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+    return getSubtypeData(ingredient, context).toString();
   }
 }

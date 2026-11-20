@@ -95,8 +95,18 @@ public sealed interface MaterialVariantId permits MaterialId, MaterialVariantIdI
   }
 
   /** Checks if two material variants match */
+  default boolean sameId(MaterialVariant other) {
+    return this.material().equals(other.material());
+  }
+
+  /** Checks if two material variants match */
   default boolean sameVariant(MaterialVariantId other) {
     return this.sameId(other) && this.variant().equals(other.variant());
+  }
+
+  /** Checks if two material variants match */
+  default boolean sameVariant(MaterialVariant other) {
+    return sameVariant(other.id());
   }
 
 

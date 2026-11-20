@@ -25,9 +25,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.partbuilder.IDisplayPartBuilderRecipe;
 import slimeknights.tconstruct.library.recipe.partbuilder.IPartBuilderRecipe;
@@ -138,7 +136,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
     int matchIndex = -1;
     for (int i = 0; i < materialSize; i++) {
       IMaterialItem part = parts.get(i);
-      if (pattern.matches(part) && part.canUseMaterial(materials.get(i).material())) {
+      if (pattern.matches(part) && part.canUseMaterial(materials.get(i).holder())) {
         matchIndex = i;
         match = part;
         break;
@@ -149,8 +147,8 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       return ItemStack.EMPTY;
     }
     // special handling for oddball cases with ancient tool recycling
-    MaterialVariantId variant = tool.getMaterial(matchIndex).id();
-    if (!match.canUseMaterial(variant.material())) {
+    MaterialVariant variant = tool.getMaterial(matchIndex);
+    if (!match.canUseMaterial(variant.holder())) {
       return ItemStack.EMPTY;
     }
     return match.withMaterial(variant);
@@ -182,7 +180,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       IMaterialItem part = requirements.get(i);
       if (found || !pattern.matches(part)) {
         // ensure the part is actually craftable with the material. Works around issues with using repair kits for some partless types
-        if (part.canUseMaterial(tool.getMaterial(i).material())) {
+        if (part.canUseMaterial(tool.getMaterial(i).holder())) {
           parts.add(part);
           indices.add(i);
         }
@@ -194,7 +192,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       return ItemStack.EMPTY;
     }
     int index = TConstruct.RANDOM.nextInt(parts.size());
-    return parts.get(index).withMaterial(tool.getMaterial(indices.getInt(index)).id());
+    return parts.get(index).withMaterial(tool.getMaterial(indices.getInt(index)));
   }
 
   /** @deprecated use {@link IPartBuilderRecipe#assemble(PartBuilderInput, HolderLookup.Provider, Pattern)} */
@@ -243,7 +241,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       Object2IntMap<IMaterialItem> partsOverride = parts.isEmpty() ? Object2IntMaps.emptyMap() : getDisplayParts(parts);
       List<ItemStack> patternItems = List.of(this.pattern.getItems());
       displayRecipes = Arrays.stream(toolRequirement.getItems())
-        .<IDisplayPartBuilderRecipe>flatMap(stack -> {
+        .flatMap(stack -> {
           // if we have a parts override, use that instead of the tool parts
           Object2IntMap<IMaterialItem> parts = !partsOverride.isEmpty() ? partsOverride : getDisplayParts(ToolPartsHook.parts(IModifiable.getToolDefinition(stack.getItem())));
           // may have no parts if no override and the tool lacks parts
@@ -251,7 +249,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
             return Stream.empty();
           }
           Collection<IMaterialItem> partItems = parts.keySet();
-          return Stream.of(new DisplayRecipe(parts,
+          return Stream.of(NamedRecipe.<IDisplayPartBuilderRecipe>of(id, new DisplayRecipe(parts,
             partItems.stream().map(Pattern::fromItem).toList(),
             patternItems,
             List.of(IModifiableDisplay.getDisplayStack(stack)),
@@ -261,7 +259,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
               return part;
             }).toList(),
             partItems.stream().flatMap(part -> MaterialItemCache.getAllMaterials(part).stream()).toList()
-          ));
+          )));
         })
         .toList();
     }
@@ -304,11 +302,11 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
           // focusing on a specific tool material, show that on the input tool
           int index = parts.getOrDefault(focusStack.getItem(), -1);
           if (index != -1) {
-            MaterialVariantId material = IMaterialItem.getMaterialFromStack(focusStack);
-            if (!MaterialId.UNKNOWN.equals(material)) {
+            MaterialVariant material = IMaterialItem.getMaterialFromStack(focusStack);
+            if (material.isPresent()) {
               // create a copy of the tool with the material replaced
               MaterialIdNBT materials = MaterialIdNBT.from(displayTool);
-              return List.of(materials.replaceMaterial(index, material).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
+              return List.of(materials.replaceMaterial(index, material.id()).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
             }
           }
         } else if (focusStack.is(displayTool.getItem())) {
@@ -324,7 +322,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
       if (!focusStack.isEmpty()) {
         if (focusOutput) {
           // focusing on a specific tool material, make that our display provided its valid
-          if (parts.getOrDefault(focusStack.getItem(), -1) != -1 && !MaterialId.UNKNOWN.equals(IMaterialItem.getMaterialFromStack(focusStack))) {
+          if (parts.getOrDefault(focusStack.getItem(), -1) != -1 && IMaterialItem.getMaterialFromStack(focusStack).isPresent()) {
             // keep the other parts in the list so the focus link works, saves having to duplicate this logic for patterns
             return resultItems.stream().map(stack -> stack.is(focusStack.getItem()) ? focusStack.copyWithCount(1) : stack).toList();
           }

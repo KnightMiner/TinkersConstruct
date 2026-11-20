@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.building;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 
 import java.util.List;
@@ -18,5 +19,5 @@ public interface MaterialsCraftingTableRecipe {
   List<MaterialVariantId> getExtraMaterials();
 
   /** Sets the output material for a single output recipe. */
-  void setMaterial(ItemStack stack, MaterialVariantId material);
+  void setMaterial(ItemStack stack, MaterialVariant material);
 }

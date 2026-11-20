@@ -35,7 +35,6 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import org.jetbrains.annotations.NotNull;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.RetexturedModel.RetexturedContext;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
@@ -76,8 +75,6 @@ import java.util.function.Function;
  */
 @RequiredArgsConstructor
 public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> {
-  /** Location for dynamic baking */
-  private static final ResourceLocation BAKE_LOCATION = Mantle.getResource("material_block_dynamic");
   /** Loadable for the list of material textures */
   private static final Loadable<Set<String>> MATERIAL = StringLoadable.DEFAULT.set(ArrayLoadable.COMPACT);
   /** Loadable for the list of parts, each a list of material textures */
@@ -116,8 +113,8 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    BakedModel baked = model.bake(owner, baker, spriteGetter, transform, overrides, location);
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides) {
+    BakedModel baked = model.bake(owner, baker, spriteGetter, transform, overrides);
     List<Set<String>> parts = this.parts.stream().map(part -> RetexturedModel.getAllRetextured(owner, model, part)).toList();
 
     // part model - fetches material from NBT field
@@ -222,7 +219,7 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
         // for simplicity, assume the whole part is tinted if so. Build your model to separate distinct material faces if needed
         TintedSprite tint = null;
         for (BlockElementFace face : part.faces.values()) {
-          TintedSprite faceTint = tints.get(face.texture);
+          TintedSprite faceTint = tints.get(face.texture());
           if (faceTint != null) {
             tint = faceTint;
             break;
@@ -231,9 +228,9 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
         // apply color if we have it
         if (tint != null) {
           IQuadTransformer partTransformer = tint.color() == -1 ? quadTransformer : quadTransformer.andThen(ColoredBlockModel.applyColorQuadTransformer(tint.color()));
-          ColoredBlockModel.bakePart(builder, retextureContext, part, tint.emissivity(), spriteGetter, transformation, partTransformer, uvlock, BAKE_LOCATION);
+          ColoredBlockModel.bakePart(builder, retextureContext, part, tint.emissivity(), spriteGetter, transformation, partTransformer, uvlock);
         } else {
-          SimpleBlockModel.bakePart(builder, retextureContext, part, spriteGetter, transform, quadTransformer, BAKE_LOCATION);
+          SimpleBlockModel.bakePart(builder, retextureContext, part, spriteGetter, transform, quadTransformer);
         }
       }
       return builder.build(SimpleBlockModel.getRenderTypeGroup(owner));
@@ -279,7 +276,7 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
       if (resolved != originalModel) {
         return resolved;
       }
-      if (stack.isEmpty() || !stack.hasTag()) {
+      if (stack.isEmpty()) {
         return originalModel;
       }
       return baked.getCachedModel(MaterialIdNBT.from(stack));
@@ -388,10 +385,10 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
         if (resolved != originalModel) {
           return resolved;
         }
-        if (stack.isEmpty() || !stack.hasTag()) {
+        if (stack.isEmpty()) {
           return originalModel;
         }
-        return getCachedModel(IMaterialItem.getMaterialFromStack(stack));
+        return getCachedModel(IMaterialItem.getMaterialFromStack(stack).id());
       }
     }
   }
@@ -444,14 +441,14 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
       @Nullable
       @Override
       public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-        if (stack.isEmpty() || !stack.hasTag()) {
+        if (stack.isEmpty()) {
           return originalModel;
         }
         Block block = RetexturedHelper.getTexture(stack);
         if (block != Blocks.AIR) {
           return getCachedModel(block);
         }
-        return getCachedModel(IMaterialItem.getMaterialFromStack(stack));
+        return getCachedModel(IMaterialItem.getMaterialFromStack(stack).id());
       }
     }
   }

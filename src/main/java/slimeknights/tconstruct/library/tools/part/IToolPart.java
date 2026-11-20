@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.tools.part;
 
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 
@@ -16,5 +17,10 @@ public interface IToolPart extends IMaterialItem {
   @Override
   default boolean canUseMaterial(MaterialId material) {
     return getStatType().canUseMaterial(material);
+  }
+
+  @Override
+  default boolean canUseMaterial(MaterialHolder material) {
+    return material.hasStats(getStatType());
   }
 }

@@ -14,10 +14,9 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.IMaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
@@ -109,7 +108,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
 
         // swap the material
         boolean mayRepair = MaterialRegistry.getInstance().canRepair(materials.get(index));
-        RecipeResult<LazyToolStack> result = swapMaterial(inv, sacrifice.getMaterial(index).id(), index, 0, mayRepair);
+        RecipeResult<LazyToolStack> result = swapMaterial(inv, sacrifice.getMaterial(index), index, 0, mayRepair);
         // if it's a repairable part, repair the tool based on the remaining durability of the sacrifice, plus a 5% bonus
         if (mayRepair && result.isSuccess()) {
           ToolStack tool = result.getResult().getTool();
@@ -146,8 +145,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
   @Override
   public List<NamedRecipe<IDisplayToolTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (multiRecipes == null) {
-      IMaterialRegistry registry = MaterialRegistry.getInstance();
-      Collection<IMaterial> materials = registry.getVisibleMaterials();
+      Collection<MaterialHolder> materials = MaterialRegistry.getVisibleMaterials();
       List<NamedRecipe<IDisplayToolTinkering>> newRecipes = new ArrayList<>();
       List<ResourceLocation> parent = List.of(id);
       for (ItemStack stack : tools.getItems()) {
@@ -163,7 +161,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         // start making recipes
         for (int i = 0; i < stats.size(); i++) {
           MaterialStatsId stat = stats.get(i);
-          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getId(), stat).isPresent()).toList();
+          List<MaterialHolder> filtered = materials.stream().filter(material -> material.hasStats(stat)).toList();
           ToolStack copy = tool.copy();
           setMaterials(copy, i, renderMaterials.get(i));
           List<ItemStack> withoutMaterial = List.of(copy.createStack().copy());
@@ -174,18 +172,18 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
             // one part per material
             filtered.stream().map(mat -> {
               ToolStack displayCopy = displayTool.copy();
-              displayCopy.replaceMaterial(index, MaterialVariant.create(mat));
+              displayCopy.replaceMaterial(index, mat);
               return displayCopy.createStack();
             }).toList(),
             // single tool with the material to swap left blank
             withoutMaterial,
             // one output per material
             filtered.stream().map(mat -> {
-              copy.replaceMaterial(index, MaterialVariant.create(mat));
+              copy.replaceMaterial(index, mat);
               return copy.createStack().copy();
             }).toList(),
             // material list
-            filtered.stream().map(MaterialVariant::create).toList(), stat, displayTool
+            filtered, stat, displayTool
           )));
           // recipe for sacrificing the focus to swap materials - just needs the tool on one list so it is detected by the cache
           newRecipes.add(NamedRecipe.of(statId.withSuffix("/sacrifice"), parent, new SacrificeDisplayRecipe(i, List.of(), withoutMaterial, List.of())));
@@ -203,7 +201,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
 
     private final MaterialStatsId statType;
     private final ToolStack displayTool;
-    public DisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<MaterialVariant> materials, MaterialStatsId statType, ToolStack displayTool) {
+    public DisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<? extends MaterialVariant> materials, MaterialStatsId statType, ToolStack displayTool) {
       super(index, input, toolWithoutModifier, toolWithModifier, materials);
       this.statType = statType;
       this.displayTool = displayTool;

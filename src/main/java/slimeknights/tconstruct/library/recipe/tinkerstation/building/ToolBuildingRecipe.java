@@ -181,7 +181,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       int max = Math.min(parts, materialCount);
       // first n slots contain parts
       for (int i = 0; i < max; i++) {
-        materials.add(MaterialVariant.create(IMaterialItem.getMaterialFromStack(inv.getInput(i))));
+        materials.add(IMaterialItem.getMaterialFromStack(inv.getInput(i)));
       }
       // add any material overrides after the parts, if we still have space
       max = Math.min(materialCount - parts, this.materials.size());
@@ -249,7 +249,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       hiddenInputs = getToolParts().stream()
         .flatMap(part -> MaterialRecipeCache.getHiddenVariants().stream()
           .filter(mat -> part.canUseMaterial(mat.material()))
-          .map(mat -> part.withMaterial(mat.id())))
+          .map(part::withMaterial))
         .toList();
     }
     return hiddenInputs;

@@ -60,8 +60,8 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
   }
 
   @Override
-  protected MaterialVariantId getMaterial(ItemStack stack) {
-    return MaterialRecipeCache.findRecipe(stack).getMaterial().id();
+  protected MaterialVariant getMaterial(ItemStack stack) {
+    return MaterialRecipeCache.findRecipe(stack).getMaterial();
   }
 
   @Override
@@ -117,7 +117,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
         return Arrays.stream(indices).filter(VALID_SLOT).filter(i -> i < statTypes.size()).mapToObj(i -> {
           MaterialStatsId statType = statTypes.get(i);
           // filter the materials for this tool
-          List<MaterialStacks> filtered = materialStacks.stream().filter(count -> statType.canUseMaterial(count.variant.material())).toList();
+          List<MaterialStacks> filtered = materialStacks.stream().filter(count -> statType.canUseMaterial(count.variant.holder())).toList();
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/material_" + i), parent, new DisplayRecipe(
             i,
             filtered.stream().flatMap(count -> count.stacks.stream()).toList(),
@@ -139,7 +139,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
 
   /** Recipe combining linked with material. */
   private class DisplayRecipe extends LinkedDisplayRecipe {
-    public DisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<MaterialVariant> materials) {
+    public DisplayRecipe(int index, List<ItemStack> input, List<ItemStack> toolWithoutModifier, List<ItemStack> toolWithModifier, List<? extends MaterialVariant> materials) {
       super(index, input, toolWithoutModifier, toolWithModifier, materials);
     }
 

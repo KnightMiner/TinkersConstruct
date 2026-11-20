@@ -149,7 +149,7 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
       List<IToolPart> parts = recipe.getToolParts();
       List<MaterialVariantId> variants = new ArrayList<>(parts.size());
       for (int i = 0; i < parts.size(); i++) {
-        variants.add(parts.get(i).getMaterial(inputSlots.get(i).getDisplayedItemStack().orElse(ItemStack.EMPTY)));
+        variants.add(parts.get(i).getMaterial(inputSlots.get(i).getDisplayedItemStack().orElse(ItemStack.EMPTY)).id());
       }
       variants.addAll(recipe.getExtraMaterials());
       ItemStack stack = new MaterialIdNBT(variants).updateStack(new ItemStack(recipe.getOutput()));

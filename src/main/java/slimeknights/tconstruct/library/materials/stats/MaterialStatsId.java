@@ -3,8 +3,9 @@ package slimeknights.tconstruct.library.materials.stats;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.tconstruct.library.materials.IMaterialUser;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
 import slimeknights.tconstruct.library.utils.SimpleCache;
@@ -23,10 +24,15 @@ public record MaterialStatsId(ResourceLocation id) implements ResourceId<IMateri
   @Internal
   public MaterialStatsId {}
 
-  /** Checks if the given material can be used */
+  @Deprecated
   @Override
   public boolean canUseMaterial(MaterialId material) {
-    return MaterialRegistry.getInstance().getMaterialStats(material.material(), this).isPresent();
+    return MaterialRegistry.getInstance().getMaterialStats(material, this).isPresent();
+  }
+
+  @Override
+  public boolean canUseMaterial(MaterialHolder material) {
+    return material.hasStats(this);
   }
 
   @Override

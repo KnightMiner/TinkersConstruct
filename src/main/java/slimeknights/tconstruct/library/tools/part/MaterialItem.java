@@ -2,19 +2,17 @@ package slimeknights.tconstruct.library.tools.part;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.utils.Util;
@@ -31,25 +29,6 @@ public class MaterialItem extends Item implements IMaterialItem {
 
   public MaterialItem(Properties properties) {
     super(properties);
-  }
-
-  /** Gets the material ID for the given NBT compound */
-  public static MaterialVariantId getMaterialId(@Nullable CompoundTag nbt) {
-    if (nbt != null) {
-      String str = nbt.getString(MATERIAL_TAG);
-      if (!str.isEmpty()) {
-        MaterialVariantId id = MaterialVariantId.tryParse(str);
-        if (id != null) {
-          return id;
-        }
-      }
-    }
-    return MaterialId.UNKNOWN;
-  }
-
-  @Override
-  public MaterialVariantId getMaterial(ItemStack stack) {
-    return getMaterialId(stack.getTag());
   }
 
   @Nullable
@@ -76,14 +55,14 @@ public class MaterialItem extends Item implements IMaterialItem {
   /** Static helper to get part name, used also by {@link slimeknights.tconstruct.library.tools.part.block.MaterialBlockItem} */
   public static Component getName(IMaterialItem self, ItemStack stack) {
     // if no material, return part name directly
-    MaterialVariantId material = self.getMaterial(stack);
+    MaterialVariant material = self.getMaterial(stack);
     String key = self.asItem().getDescriptionId(stack);
-    if (material.equals(MaterialId.UNKNOWN)) {
+    if (!material.isPresent()) {
       return Component.translatable(key);
     }
     // try variant first
     if (material.hasVariant()) {
-      Component component = getName(key, material);
+      Component component = getName(key, material.id());
       if (component != null) {
         return component;
       }
@@ -104,7 +83,7 @@ public class MaterialItem extends Item implements IMaterialItem {
 
   @Override
   public Rarity getRarity(ItemStack stack) {
-    return MaterialRegistry.getMaterial(getMaterial(stack).material()).getRarity();
+    return getMaterial(stack).get().getRarity();
   }
 
   @Override
@@ -115,23 +94,22 @@ public class MaterialItem extends Item implements IMaterialItem {
   /** Helper to append the material ID to the tool part. */
   public static void appendHoverText(IMaterialItem self, ItemStack stack, List<Component> tooltip, TooltipFlag flag) {
     if (flag.isAdvanced() && !TooltipUtil.isDisplay(stack)) {
-      MaterialVariantId materialVariant = self.getMaterial(stack);
-      if (!materialVariant.equals(MaterialId.UNKNOWN)) {
+      MaterialVariant materialVariant = self.getMaterial(stack);
+      if (materialVariant.isPresent()) {
         tooltip.add((Component.translatable(ToolPartItem.MATERIAL_KEY, materialVariant.toString())).withStyle(ChatFormatting.DARK_GRAY));
       }
     }
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     appendHoverText(this, stack, tooltip, flag);
   }
 
   /** Gets the creator mod ID based on the material. */
-  @SuppressWarnings("deprecation")  // deprecation? more like not deprecation
   public static String getCreatorModId(IMaterialItem self, ItemStack stack) {
-    MaterialVariantId material = self.getMaterial(stack);
-    if (!MaterialId.UNKNOWN.equals(material)) {
+    MaterialVariant material = self.getMaterial(stack);
+    if (material.isPresent()) {
       String namespace = material.material().getNamespace();
       // skip if it's a tinkers material; we want addon tool parts to prefer showing their mod ID as end users mistake those for us
       if (!TConstruct.MOD_ID.equals(namespace)) {
@@ -145,23 +123,5 @@ public class MaterialItem extends Item implements IMaterialItem {
   @Override
   public String getCreatorModId(ItemStack stack) {
     return getCreatorModId(this, stack);
-  }
-
-
-  public static void verifyTag(CompoundTag nbt) {
-    // if the material exists and was changed, update it
-    MaterialVariantId id = getMaterialId(nbt);
-    if (!id.equals(MaterialId.UNKNOWN)) {
-      MaterialId original = id.material();
-      MaterialId resolved = MaterialRegistry.getInstance().resolve(original);
-      if (original != resolved) {
-        nbt.putString(MATERIAL_TAG, MaterialVariantId.create(resolved, id.variant()).toString());
-      }
-    }
-  }
-
-  @Override
-  public void verifyTagAfterLoad(CompoundTag nbt) {
-    verifyTag(nbt);
   }
 }

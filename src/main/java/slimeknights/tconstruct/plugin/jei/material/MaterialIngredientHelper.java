@@ -12,7 +12,6 @@ import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
@@ -52,8 +51,7 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
 
   @Override
   public ItemStack getCheatItemStack(MaterialVariant material) {
-    MaterialVariantId variant = material.id();
-    MaterialRecipe recipe = MaterialRecipeCache.getRecipes(variant).stream().min(COMPARATOR).orElse(null);
+    MaterialRecipe recipe = MaterialRecipeCache.getRecipes(material.id()).stream().min(COMPARATOR).orElse(null);
     if (recipe != null) {
       ItemStack[] items = recipe.getIngredient().getItems();
       if (items.length > 0) {
@@ -62,8 +60,8 @@ public class MaterialIngredientHelper implements IIngredientHelper<MaterialVaria
     }
     // nothing? try repair kit
     IMaterialItem repairKit = TinkerToolParts.repairKit.get();
-    if (repairKit.canUseMaterial(material.material())) {
-      return repairKit.withMaterialForDisplay(variant);
+    if (repairKit.canUseMaterial(material.holder())) {
+      return repairKit.withMaterialForDisplay(material);
     }
     // no repair kit? give up
     return ItemStack.EMPTY;

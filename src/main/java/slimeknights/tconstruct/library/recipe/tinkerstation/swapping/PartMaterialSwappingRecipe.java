@@ -11,12 +11,9 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
-import slimeknights.tconstruct.library.materials.IMaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingLookup;
@@ -97,8 +94,8 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
       ItemStack stack = inv.getInput(i);
       if (!stack.isEmpty() && stack.getItem() instanceof IToolPart part) {
         // ensure the part is valid
-        MaterialVariantId partVariant = part.getMaterial(stack);
-        if (partVariant.equals(MaterialId.UNKNOWN)) {
+        MaterialVariant partVariant = part.getMaterial(stack);
+        if (!partVariant.isPresent()) {
           return RecipeResult.pass();
         }
 
@@ -141,8 +138,7 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
   @Override
   public List<NamedRecipe<IDisplayToolTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (multiRecipes == null) {
-      IMaterialRegistry registry = MaterialRegistry.getInstance();
-      Collection<IMaterial> materials = registry.getVisibleMaterials();
+      Collection<MaterialHolder> materials = MaterialRegistry.getVisibleMaterials();
       List<ResourceLocation> parent = List.of(id);
       multiRecipes = Arrays.stream(tools.getItems()).flatMap(stack -> {
         ToolStack tool = ToolStack.from(stack);
@@ -155,16 +151,16 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         return IntStream.range(0, parts.size()).mapToObj(i -> {
           IToolPart part = parts.get(i);
           ToolStack copy = tool.copy();
-          List<IMaterial> filtered = materials.stream().filter(mat -> registry.getMaterialStats(mat.getId(), part.getStatType()).isPresent()).toList();
+          List<MaterialHolder> filtered = materials.stream().filter(part::canUseMaterial).toList();
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/part_" + i), parent, new PartDisplayRecipe(i,
             // one part per material
-            filtered.stream().map(mat -> part.withMaterialForDisplay(mat.getId())).toList(),
+            filtered.stream().map(part::withMaterialForDisplay).toList(),
             // single tool with the material to swap left blank
             List.of(withMaterial(copy, i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0))).copy()),
             // one output per material
-            filtered.stream().map(mat -> withMaterial(copy, i, MaterialVariant.create(mat)).copy()).toList(),
+            filtered.stream().map(material -> withMaterial(copy, i, material).copy()).toList(),
             // part info
-            filtered.stream().map(MaterialVariant::create).toList(), part
+            filtered, part
           ));
         });
       }).toList();

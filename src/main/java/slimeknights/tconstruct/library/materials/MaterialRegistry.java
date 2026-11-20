@@ -49,7 +49,7 @@ public final class MaterialRegistry {
   static MaterialRegistry INSTANCE;
 
   /** Map of each stat type to its first material */
-  private static final Map<MaterialStatsId,IMaterial> FIRST_MATERIALS = new HashMap<>();
+  private static final Map<MaterialStatsId,MaterialHolder> FIRST_MATERIALS = new HashMap<>();
   /** Cache of holder instances for each material */
   private static final Map<MaterialId,MaterialHolder> HOLDERS = new ConcurrentHashMap<>();
   /** Cache of material holder list for all visible materials */
@@ -238,18 +238,17 @@ public final class MaterialRegistry {
   /* Stats */
 
   /** Loads the first material of a stat type */
-  private static final Function<MaterialStatsId,IMaterial> FIRST_LOADER = statsId -> {
-    IMaterialRegistry instance = getInstance();
-    for (IMaterial material : instance.getVisibleMaterials()) {
-      if (!material.isHidden() && instance.getMaterialStats(material.getId(), statsId).isPresent()) {
-        return material;
+  private static final Function<MaterialStatsId,MaterialHolder> FIRST_LOADER = statsId -> {
+    for (MaterialHolder holder : getVisibleMaterials()) {
+      if (!holder.get().isHidden() && holder.hasStats(statsId)) {
+        return holder;
       }
     }
-    return IMaterial.UNKNOWN;
+    return MaterialHolder.UNKNOWN;
   };
 
   /** Gets the first material with the given stat type */
-  public static IMaterial firstWithStatType(MaterialStatsId id) {
+  public static MaterialHolder firstWithStatType(MaterialStatsId id) {
     return FIRST_MATERIALS.computeIfAbsent(id, FIRST_LOADER);
   }
 

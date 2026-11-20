@@ -53,7 +53,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
       return false;
     }
     MaterialFluidRecipe fluid = getFluidRecipe(inv);
-    return fluid != MaterialFluidRecipe.EMPTY && result.canUseMaterial(fluid.getOutput().material());
+    return fluid != MaterialFluidRecipe.EMPTY && result.canUseMaterial(fluid.getOutput().holder());
   }
 
   @Override
@@ -63,7 +63,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
 
   @Override
   public ItemStack assemble(CastingRecipeInput inv, HolderLookup.Provider registries) {
-    return result.withMaterial(getFluidRecipe(inv).getOutput().id());
+    return result.withMaterial(getFluidRecipe(inv).getOutput());
   }
 
 
@@ -80,15 +80,14 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
       for (MaterialFluidRecipe recipe : recipes) {
         // must support this material
         MaterialVariant output = recipe.getOutput();
-        MaterialVariantId outputId = output.id();
-        if (!result.canUseMaterial(output.material()) || !this.materials.matches(outputId)) {
+        if (!result.canUseMaterial(output.holder()) || !this.materials.matches(output.id())) {
           continue;
         }
 
         // add all fluids to our builders
         List<FluidStack> newFluids = resizeFluids(recipe.getFluids());
         fluids.addAll(newFluids);
-        ItemStack result = this.result.withMaterial(outputId);
+        ItemStack result = this.result.withMaterial(output);
         for (FluidStack fluid : newFluids) {
           // add one copy of result per fluid
           results.add(result);

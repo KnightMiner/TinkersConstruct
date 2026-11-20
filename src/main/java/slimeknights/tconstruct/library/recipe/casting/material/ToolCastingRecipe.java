@@ -101,7 +101,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     List<MaterialStatsId> requirements = ToolMaterialHook.stats(result.getToolDefinition());
     // last material is the part, may be index 0 or 1
     MaterialFluidRecipe recipe = getFluidRecipe(inv);
-    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().material());
+    return recipe != MaterialFluidRecipe.EMPTY && requirements.get(castPurpose.fluidIndex).canUseMaterial(recipe.getOutput().holder());
   }
 
   @Override

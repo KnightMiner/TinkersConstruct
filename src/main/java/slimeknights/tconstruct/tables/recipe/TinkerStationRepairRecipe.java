@@ -20,8 +20,8 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -293,7 +293,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
               float amount = MaterialRepairToolHook.repairAmount(tool, repairMaterial);
               if (amount > 0) {
                 // add the repair kit - we just assume it works if this material was chosen
-                inputs.add(repairKit.withMaterial(repairMaterial));
+                inputs.add(repairKit.withMaterial(MaterialVariant.create(repairMaterial)));
               }
             }
 

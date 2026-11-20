@@ -1,10 +1,10 @@
 package slimeknights.tconstruct.tables.block.entity.inventory;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.material.MaterialCastingLookup;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
@@ -58,16 +58,16 @@ public class PartBuilderInputWrapper implements PartBuilderInput {
       if (stack.isEmpty()) {
         this.material = null;
       } else if (stack.is(TinkerTags.Items.TOOL_PARTS)) {
-        MaterialVariantId material = IMaterialItem.getMaterialFromStack(stack);
+        MaterialVariant material = IMaterialItem.getMaterialFromStack(stack);
         int cost = MaterialCastingLookup.getItemCost(stack.getItem());
-        if (cost == 0 || MaterialId.UNKNOWN.matchesVariant(material)) {
+        if (cost == 0 || !material.isPresent()) {
           this.material = null;
         } else {
           this.material = new MaterialValue(material, cost);
         }
       } else {
         Level world = getWorld();
-        this.material = world.getRecipeManager().getRecipeFor(TinkerRecipes.materialType.get(), this, world).orElse(null);
+        this.material = world.getRecipeManager().getRecipeFor(TinkerRecipes.materialType.get(), this, world).map(RecipeHolder::value).orElse(null);
       }
     }
     return this.material;

@@ -22,6 +22,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.Level;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
@@ -91,17 +92,17 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
    * @return Array of all matched materials. Array will have no null entries, though the array may be null if no match was found.
    */
   @Nullable
-  static MaterialVariantId[] findMaterials(CraftingInput inventory, List<Ingredient> parts, int partCount, boolean checkRepeats) {
+  static MaterialVariant[] findMaterials(CraftingInput inventory, List<Ingredient> parts, int partCount, boolean checkRepeats) {
     // want one material for each
-    MaterialVariantId[] materials = new MaterialVariantId[partCount];
+    MaterialVariant[] materials = new MaterialVariant[partCount];
     for (int i = 0; i < inventory.size(); i++) {
       ItemStack stack = inventory.getItem(i);
       if (!stack.isEmpty()) {
         for (int p = 0; p < partCount; p++) {
-          MaterialVariantId current = materials[p];
+          MaterialVariant current = materials[p];
           // if we have not found the material yet, or repeats are considered the same material, test the ingredient
           if ((current == null || checkRepeats) && parts.get(p).test(stack)) {
-            MaterialVariantId matched = MaterialRecipeCache.getMaterial(stack);
+            MaterialVariant matched = MaterialRecipeCache.getMaterial(stack);
             // first occurrence? thats our material
             if (current == null) {
               materials[p] = matched;
@@ -109,7 +110,7 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
             } else if (!current.matchesVariant(matched)) {
               // if same material but different variants, just discard the variant
               if (current.material().equals(matched.material())) {
-                materials[p] = current.material();
+                materials[p] = current.holder();
                 break;
               } else {
                 // if different materials, no match
@@ -139,28 +140,26 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
   }
 
   /** Common logic to this and {@link ShapedMaterialsRecipe} */
-  public static void setMaterial(ItemStack stack, MaterialVariantId material, List<MaterialVariantId> extraMaterials) {
+  public static void setMaterial(ItemStack stack, MaterialVariant material, List<MaterialVariantId> extraMaterials) {
     if (extraMaterials.isEmpty() && stack.getItem() instanceof IMaterialItem materialItem) {
       materialItem.setMaterial(stack, material);
     } else {
       MaterialNBT.Builder builder = MaterialNBT.builder();
       builder.add(material);
-      for (MaterialVariantId extraMaterial : extraMaterials) {
-        builder.add(extraMaterial);
-      }
+      builder.add(extraMaterials);
       ToolStack.from(stack).setMaterials(builder.build());
     }
   }
 
   /** Sets the material for the given stack */
   @Override
-  public void setMaterial(ItemStack stack, MaterialVariantId material) {
+  public void setMaterial(ItemStack stack, MaterialVariant material) {
     setMaterial(stack, material, extraMaterials);
   }
 
   /** Assembles the item with material information */
   static ItemStack assemble(ItemStack stack, CraftingInput inventory, List<Ingredient> parts, int partCount, boolean checkRepeats, List<MaterialVariantId> extraMaterials) {
-    MaterialVariantId[] materials = findMaterials(inventory, parts, partCount, checkRepeats);
+    MaterialVariant[] materials = findMaterials(inventory, parts, partCount, checkRepeats);
     if (materials != null) {
       // if the result is a tool part, and we only have the one material, set its material
       if (materials.length == 1 && extraMaterials.isEmpty() && stack.getItem() instanceof IMaterialItem materialItem) {
@@ -168,7 +167,7 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
       }
       MaterialNBT.Builder builder = MaterialNBT.builder();
       // add each material
-      for (MaterialVariantId material : materials) {
+      for (MaterialVariant material : materials) {
         builder.add(material);
       }
       // add extra materials

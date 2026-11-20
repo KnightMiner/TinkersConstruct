@@ -2,17 +2,13 @@ package slimeknights.tconstruct.tables.block;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.mantle.util.RetexturedHelper;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.tables.block.entity.table.TinkerStationBlockEntity;
 
@@ -35,24 +31,6 @@ public class TinkerStationBlock extends RetexturedTableBlock {
 
 
   /* Material texture */
-
-  @Override
-  public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.setPlacedBy(level, pos, state, placer, stack);
-    if (level.getBlockEntity(pos) instanceof TinkerStationBlockEntity be) {
-      // try block first
-      Block block = RetexturedHelper.getTexture(stack);
-      if (block != Blocks.AIR) {
-        be.updateTexture(block);
-      } else {
-        // if no block, try material
-        MaterialVariantId material = IMaterialItem.getMaterialFromStack(stack);
-        if (material != MaterialId.UNKNOWN) {
-          be.setMaterial(material);
-        }
-      }
-    }
-  }
 
   @Override
   public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
