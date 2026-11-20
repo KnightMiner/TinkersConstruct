@@ -259,6 +259,19 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
   }
 
 
+  /* Equality */
+
+  @Override
+  public boolean equals(Object obj) {
+    return this == obj || (obj instanceof ModifierNBT other && this.modifiers.equals(other.modifiers));
+  }
+
+  @Override
+  public int hashCode() {
+    return modifiers.hashCode();
+  }
+  
+
   /* Helpers */
 
   /** Gets the modifiers from a stack */
