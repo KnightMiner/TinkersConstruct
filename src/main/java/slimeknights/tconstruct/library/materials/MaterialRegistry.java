@@ -31,6 +31,7 @@ import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -51,6 +52,10 @@ public final class MaterialRegistry {
   private static final Map<MaterialStatsId,IMaterial> FIRST_MATERIALS = new HashMap<>();
   /** Cache of holder instances for each material */
   private static final Map<MaterialId,MaterialHolder> HOLDERS = new ConcurrentHashMap<>();
+  /** Cache of material holder list for all visible materials */
+  private static List<MaterialHolder> VISIBLE_HOLDERS;
+  /** Cache of material holder list for all visible materials */
+  private static List<MaterialHolder> ALL_HOLDERS;
 
   private final MaterialManager materialManager;
   private final MaterialStatsManager materialStatsManager;
@@ -99,6 +104,8 @@ public final class MaterialRegistry {
   public MaterialRegistry() {
     materialManager = new MaterialManager(() -> {
       materialsLoaded = true;
+      VISIBLE_HOLDERS = null;
+      ALL_HOLDERS = null;
       checkAllLoaded();
     });
     materialStatsManager = new MaterialStatsManager(() -> {
@@ -193,9 +200,33 @@ public final class MaterialRegistry {
   /**
    * Gets all currently registered materials
    * @return  Collection of all materials
+   * @deprecated use {@link #getVisibleMaterials()} or {@link IMaterialRegistry#getVisibleMaterials()}
    */
+  @Deprecated(forRemoval = true)
   public static Collection<IMaterial> getMaterials() {
     return INSTANCE.registry.getVisibleMaterials();
+  }
+
+  /**
+   * Gets all currently registered non-hidden materials as {@link MaterialHolder}.
+   * @return  Collection of all materials
+   */
+  public static Collection<MaterialHolder> getVisibleMaterials() {
+    if (VISIBLE_HOLDERS == null) {
+      VISIBLE_HOLDERS = INSTANCE.registry.getVisibleMaterials().stream().map(mat -> getHolder(mat.getId())).toList();
+    }
+    return VISIBLE_HOLDERS;
+  }
+
+  /**
+   * Gets all currently registered non-hidden materials as {@link MaterialHolder}.
+   * @return  Collection of all materials
+   */
+  public static Collection<MaterialHolder> getAllMaterials() {
+    if (ALL_HOLDERS == null) {
+      ALL_HOLDERS = INSTANCE.registry.getAllMaterials().stream().map(mat -> getHolder(mat.getId())).toList();
+    }
+    return ALL_HOLDERS;
   }
 
   /** Gets the tag source for materials for use in commands. Generally better to use methods from {@link IMaterialRegistry} for addons for the sake of tests */

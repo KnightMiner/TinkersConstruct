@@ -2,14 +2,14 @@ package slimeknights.tconstruct.library.client.book.content.material;
 
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.util.html.HtmlSerializable;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 
 import javax.annotation.Nullable;
 
 /** Base class for material types supporting just a single material */
 public abstract class SingleMaterialStatContent extends AbstractMaterialContent {
-  public SingleMaterialStatContent(MaterialVariantId materialVariant, boolean detailed) {
+  public SingleMaterialStatContent(MaterialVariant materialVariant, boolean detailed) {
     super(materialVariant, detailed);
   }
 

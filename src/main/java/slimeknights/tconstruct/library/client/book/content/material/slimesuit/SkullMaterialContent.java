@@ -12,7 +12,7 @@ import slimeknights.mantle.recipe.helper.RecipeHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.content.material.SingleMaterialStatContent;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
@@ -42,7 +42,7 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
   /** List of skull items as inputs */
   protected transient List<ItemStack> skullStacks = null;
 
-  public SkullMaterialContent(MaterialVariantId material, boolean detailed) {
+  public SkullMaterialContent(MaterialVariant material, boolean detailed) {
     super(material, detailed);
   }
 
@@ -82,7 +82,7 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
 
   @Override
   public Component getTitleComponent() {
-    Component material = CustomMaterialName.getMaterialName(getMaterialVariant(), "skull");
+    Component material = CustomMaterialName.getMaterialName(getMaterialVariant().id(), "skull");
     if (titleSuffix != null) {
       return Component.translatable(TooltipUtil.KEY_FORMAT, material, titleSuffix);
     }
@@ -109,7 +109,7 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
   }
 
   @Override
-  protected void addPrimaryDisplayItems(List<ItemElement> displayTools, MaterialVariantId materialId) {
+  protected void addPrimaryDisplayItems(List<ItemElement> displayTools, MaterialVariant materialId) {
     List<ItemStack> repairStacks = getRepairStacks();
     if (!repairStacks.isEmpty() && repairStacks.get(0).getItem() != TinkerToolParts.repairKit.asItem()) {
       displayTools.add(new TinkerItemElement(TinkerToolParts.repairKit.get().withMaterialForDisplay(materialId)));

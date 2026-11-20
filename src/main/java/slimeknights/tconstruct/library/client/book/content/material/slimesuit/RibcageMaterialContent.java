@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.client.book.content.material.slimesuit;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.content.material.SingleMaterialStatContent;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.tools.stats.RepairStats;
 
@@ -11,7 +11,7 @@ import slimeknights.tconstruct.tools.stats.RepairStats;
 public class RibcageMaterialContent extends SingleMaterialStatContent {
   public static final ResourceLocation ID = TConstruct.getResource("ribcage_material");
 
-  public RibcageMaterialContent(MaterialVariantId materialVariant, boolean detailed) {
+  public RibcageMaterialContent(MaterialVariant materialVariant, boolean detailed) {
     super(materialVariant, detailed);
   }
 

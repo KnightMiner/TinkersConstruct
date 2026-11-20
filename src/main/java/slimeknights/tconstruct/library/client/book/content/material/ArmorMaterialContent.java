@@ -21,11 +21,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
 import slimeknights.tconstruct.library.json.variable.ToFloatFunction;
-import slimeknights.tconstruct.library.materials.IMaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -68,7 +64,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
   private static final Component SHIELD_LABEL = TConstruct.makeTranslation("stat", "plating_shield").withStyle(ChatFormatting.BOLD, ChatFormatting.UNDERLINE);
 
 
-  public ArmorMaterialContent(MaterialVariantId materialVariant, boolean detailed) {
+  public ArmorMaterialContent(MaterialVariant materialVariant, boolean detailed) {
     super(materialVariant, detailed);
   }
 
@@ -99,7 +95,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
   }
 
   /** Gets the tool to display for the given stat type, just hardcoding to plate armor for simplicity */
-  private static void addPlatingItem(MaterialStatsId statType, List<ItemStack> stacks, MaterialVariantId variant) {
+  private static void addPlatingItem(MaterialStatsId statType, List<ItemStack> stacks, MaterialVariant variant) {
     for (ArmorItem.Type slotType : ArmorItem.Type.values()) {
       if (statType.equals(PlatingMaterialStats.TYPES.get(slotType.ordinal()).getId())) {
         stacks.add(TinkerToolParts.plating.get(slotType).withMaterialForDisplay(variant));
@@ -107,7 +103,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
       }
     }
     // gotta have something, so just fallback to shield
-    ItemStack tool = ToolBuildHandler.createSingleMaterial(TinkerTools.plateShield.get(), MaterialVariant.create(variant));
+    ItemStack tool = ToolBuildHandler.createSingleMaterial(TinkerTools.plateShield.get(), variant);
     if (!tool.isEmpty()) {
       stacks.add(tool);
     } else {
@@ -117,23 +113,21 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
-    MaterialVariantId materialVariant = getMaterialVariant();
-    MaterialId material = materialVariant.material();
-    this.addTitle(list, getTitle(), true, MaterialTooltipCache.getColor(materialVariant).getValue());
+    MaterialVariant material = getMaterialVariant();
+    this.addTitle(list, getTitle(), true, MaterialTooltipCache.getColor(material.id()).getValue());
 
     // the cool tools to the left/right
-    this.addDisplayItems(list, rightSide ? BookScreen.PAGE_WIDTH - 18 : 0, materialVariant);
+    this.addDisplayItems(list, rightSide ? BookScreen.PAGE_WIDTH - 18 : 0, material);
 
     int y = getTitleHeight();
     int x = (rightSide ? 0 : COLUMN_MARGIN) + 2;
 
     // we want a combined stats display for all 5 plating types
-    IMaterialRegistry registry = MaterialRegistry.getInstance();
-    List<PlatingMaterialStats> stats = TOP_DOWN_STATS.stream().flatMap(id -> registry.<PlatingMaterialStats>getMaterialStats(material, id).stream()).toList();
+    List<PlatingMaterialStats> stats = TOP_DOWN_STATS.stream().flatMap(id -> Stream.ofNullable(material.<PlatingMaterialStats>getStats(id))).toList();
     if (!stats.isEmpty()) {
       List<ItemStack> plating = new ArrayList<>();
       for (PlatingMaterialStats stat : stats) {
-        addPlatingItem(stat.getIdentifier(), plating, materialVariant);
+        addPlatingItem(stat.getIdentifier(), plating, material);
       }
       int platingWidth = book.fontRenderer.width(PLATING_LABEL);
       list.add(new TextComponentElement(x, y, platingWidth, 10, PLATING_LABEL));
@@ -184,9 +178,8 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
 
   /** Adds trait info to the listing */
   private int addTraits(int x, int y, List<BookElement> list, Component title, MaterialStatsId statsId) {
-    IMaterialRegistry registry = MaterialRegistry.getInstance();
-    MaterialVariantId material = getMaterialVariant();
-    if (registry.getMaterialStats(material.material(), statsId).isEmpty()) {
+    MaterialVariant material = getMaterialVariant();
+    if (!material.hasStats(statsId)) {
       return y;
     }
 
@@ -195,7 +188,7 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
     y += 12;
 
     List<TextComponentData> lineData = Lists.newArrayList();
-    addTraitLines(lineData, registry.getTraits(material.material(), statsId));
+    addTraitLines(lineData, material.getTraits(statsId));
     list.add(new TextComponentElement(x, y, STAT_WIDTH, BookScreen.PAGE_HEIGHT, lineData));
 
     // TODO: calculate actual height to properly wrap long lines?
@@ -207,8 +200,9 @@ public class ArmorMaterialContent extends AbstractMaterialContent {
     HtmlGroup group = HtmlGroup.indent();
 
     // add stats
+    MaterialVariant material = getMaterialVariant();
     List<PlatingMaterialStats> stats = TOP_DOWN_STATS.stream()
-      .flatMap(id -> MaterialRegistry.getInstance().<PlatingMaterialStats>getMaterialStats(getMaterial().getId(), id).stream())
+      .flatMap(id -> Stream.ofNullable(material.<PlatingMaterialStats>getStats(id)))
       .toList();
     if (!stats.isEmpty()) {
       HtmlElement divider = HtmlElement.div().classes("row").style("gap", 32)

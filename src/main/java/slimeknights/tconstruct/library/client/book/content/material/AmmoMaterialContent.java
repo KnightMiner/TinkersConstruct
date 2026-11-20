@@ -8,7 +8,7 @@ import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tools.stats.StatlessMaterialStats;
@@ -21,7 +21,7 @@ public class AmmoMaterialContent extends AbstractMaterialContent {
   /** Page ID for using this index directly */
   public static final ResourceLocation ID = TConstruct.getResource("ammo_material");
 
-  public AmmoMaterialContent(MaterialVariantId materialVariant, boolean detailed) {
+  public AmmoMaterialContent(MaterialVariant materialVariant, boolean detailed) {
     super(materialVariant, detailed);
   }
 
@@ -54,7 +54,7 @@ public class AmmoMaterialContent extends AbstractMaterialContent {
   }
 
   @Override
-  protected void addPrimaryDisplayItems(List<ItemElement> displayTools, MaterialVariantId materialId) {
+  protected void addPrimaryDisplayItems(List<ItemElement> displayTools, MaterialVariant materialId) {
     // ammo is always craftable, regardless of what the material properties say
     // never castable or compositable
     ItemElement elementItem = new TinkerItemElement(new ItemStack(TinkerTables.partBuilder));

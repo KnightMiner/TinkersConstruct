@@ -27,7 +27,6 @@ import slimeknights.tconstruct.library.client.book.sectiontransformer.ToolSectio
 import slimeknights.tconstruct.library.client.book.sectiontransformer.ToolTagInjectorTransformer;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.shared.item.TinkerBookItem.BookType;
 import slimeknights.tconstruct.tools.stats.GripMaterialStats;
 import slimeknights.tconstruct.tools.stats.HandleMaterialStats;
@@ -100,7 +99,7 @@ public class TinkerBook extends BookData {
         .thenComparing(hasStatType(StatlessMaterialStats.ARROW_SHAFT)),
       StatlessMaterialStats.ARROW_HEAD.getIdentifier(), StatlessMaterialStats.ARROW_SHAFT.getIdentifier(), StatlessMaterialStats.FLETCHING.getIdentifier());
     MaterialSectionTransformer.registerMaterialType(getResource("armor"), ArmorMaterialContent::new,
-      Comparator.comparing(mat -> {
+      Comparator.comparing(material -> {
         // ordering:
         // 1: cuirass exclusive
         // 2: cuirass + maille
@@ -108,19 +107,18 @@ public class TinkerBook extends BookData {
         // 4: plating
         // 5: shield core
         IMaterialRegistry registry = MaterialRegistry.getInstance();
-        MaterialId id = mat.getId();
 
         // anything with a cuirass goes first
-        if (registry.getMaterialStats(id, StatlessMaterialStats.CUIRASS.getIdentifier()).isPresent()) {
+        if (material.hasStats(StatlessMaterialStats.CUIRASS.getIdentifier())) {
           // among cuirass, sort maille last so they are next to maille exclusive
-          return registry.getMaterialStats(id, StatlessMaterialStats.MAILLE.getIdentifier()).isPresent() ? 2 : 1;
+          return material.hasStats(StatlessMaterialStats.MAILLE.getIdentifier()) ? 2 : 1;
         }
         // anything with plating goes 4th
-        if (registry.getMaterialStats(id, CHESTPLATE.getId()).isPresent()) {
+        if (material.hasStats(CHESTPLATE.getId())) {
           return 4;
         }
         // if it has maille, it goes before plating. Otherwise (shield cores), it goes after
-        return registry.getMaterialStats(id, StatlessMaterialStats.MAILLE.getIdentifier()).isPresent() ? 3 : 5;
+        return material.hasStats(StatlessMaterialStats.MAILLE.getIdentifier()) ? 3 : 5;
       }),
       HELMET.getId(), CHESTPLATE.getId(), LEGGINGS.getId(), BOOTS.getId(), SHIELD.getId(),
       StatlessMaterialStats.MAILLE.getIdentifier(), StatlessMaterialStats.CUIRASS.getIdentifier(),

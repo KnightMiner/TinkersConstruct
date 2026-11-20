@@ -29,11 +29,11 @@ import slimeknights.tconstruct.library.client.book.content.material.AbstractMate
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.IMaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 
@@ -66,27 +66,27 @@ public class MaterialSectionTransformer extends BookTransformer {
   public static final MaterialSectionTransformer INSTANCE = new MaterialSectionTransformer();
 
   /** Internal record from the registry */
-  private record MaterialType(BiFunction<MaterialVariantId,Boolean,AbstractMaterialContent> pageConstructor, Set<MaterialStatsId> visibleStats, @Nullable Comparator<IMaterial> sortComparator) {
-    public Function<MaterialVariantId,AbstractMaterialContent> getMapping(boolean detailed) {
+  private record MaterialType(BiFunction<MaterialVariant,Boolean,AbstractMaterialContent> pageConstructor, Set<MaterialStatsId> visibleStats, @Nullable Comparator<MaterialHolder> sortComparator) {
+    public Function<MaterialVariant,AbstractMaterialContent> getMapping(boolean detailed) {
       return id -> pageConstructor.apply(id, detailed);
     }
   }
 
   /** Registers a new group of stat types to show on a page */
-  public static void registerMaterialType(ResourceLocation id, BiFunction<MaterialVariantId,Boolean,AbstractMaterialContent> constructor, @Nullable Comparator<IMaterial> sortComparator, MaterialStatsId... stats) {
+  public static void registerMaterialType(ResourceLocation id, BiFunction<MaterialVariant,Boolean,AbstractMaterialContent> constructor, @Nullable Comparator<MaterialHolder> sortComparator, MaterialStatsId... stats) {
     if (MATERIAL_TYPES.putIfAbsent(id, new MaterialType(constructor, ImmutableSet.copyOf(stats), sortComparator)) != null) {
       throw new IllegalArgumentException("Duplicate material stat group " + id);
     }
   }
 
   /** Registers a new group of stat types to show on a page */
-  public static void registerMaterialType(ResourceLocation id, BiFunction<MaterialVariantId,Boolean,AbstractMaterialContent> constructor, MaterialStatsId... stats) {
+  public static void registerMaterialType(ResourceLocation id, BiFunction<MaterialVariant,Boolean,AbstractMaterialContent> constructor, MaterialStatsId... stats) {
     registerMaterialType(id, constructor, null, stats);
   }
 
   /** Registers a new single stat type page, using the stat type ID as the ID */
-  public static void registerMaterialType(MaterialStatsId id, BiFunction<MaterialVariantId,Boolean,AbstractMaterialContent> constructor) {
-    registerMaterialType(id, constructor, id);
+  public static void registerMaterialType(MaterialStatsId id, BiFunction<MaterialVariant,Boolean,AbstractMaterialContent> constructor) {
+    registerMaterialType(id.id(), constructor, id);
   }
 
   @Override
@@ -117,20 +117,18 @@ public class MaterialSectionTransformer extends BookTransformer {
   }
 
   /** Helper to create a material predicate */
-  public record ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, IJsonPredicate<MaterialVariantId> predicate) implements Predicate<IMaterial> {
+  public record ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, IJsonPredicate<MaterialVariantId> predicate) implements Predicate<MaterialHolder> {
     @Override
-    public boolean test(IMaterial material) {
-      if (!this.tier.test(material.getTier())) {
+    public boolean test(MaterialHolder holder) {
+      if (!this.tier.test(holder.get().getTier())) {
         return false;
       }
-      IMaterialRegistry registry = MaterialRegistry.getInstance();
-      MaterialId id = material.getId();
-      if (!predicate.matches(id)) {
+      if (!predicate.matches(holder.id())) {
         return false;
       }
       // only show material stats for types with the proper stat types, as otherwise the page will be empty
       // if you want to show another stat type, just override this method/implement the parent class
-      for (IMaterialStats stats : registry.getAllStats(id)) {
+      for (IMaterialStats stats : holder.getAllStats()) {
         if (visibleStats.contains(stats.getIdentifier())) {
           return true;
         }
@@ -146,7 +144,7 @@ public class MaterialSectionTransformer extends BookTransformer {
    * @param pageCreator     Logic to create a page.
    * @param sortComparator  Comparator for ordering pages. If null, uses natural material order.
    */
-  public record MaterialTier(String name, Predicate<IMaterial> validMaterial, Function<MaterialVariantId,AbstractMaterialContent> pageCreator, @Nullable Comparator<IMaterial> sortComparator, @Nullable Component titleSuffix) {
+  public record MaterialTier(String name, Predicate<MaterialHolder> validMaterial, Function<MaterialVariant,AbstractMaterialContent> pageCreator, @Nullable Comparator<MaterialHolder> sortComparator, @Nullable Component titleSuffix) {
     /** Deserializes the tier info from JSON */
     public static MaterialTier deserialize(JsonObject json) throws JsonSyntaxException {
       // we handle tier range outside of predicate for efficiency, since the predicates have to refetch materials otherwise
@@ -167,7 +165,7 @@ public class MaterialSectionTransformer extends BookTransformer {
       if (typeData == null) {
         throw new JsonSyntaxException("Invalid material section type " + type);
       }
-      Function<MaterialVariantId,AbstractMaterialContent> pageBuilder = typeData.getMapping(GsonHelper.getAsBoolean(json, "detailed", false));
+      Function<MaterialVariant,AbstractMaterialContent> pageBuilder = typeData.getMapping(GsonHelper.getAsBoolean(json, "detailed", false));
 
       String name;
       if (json.has("name")) {
@@ -186,8 +184,8 @@ public class MaterialSectionTransformer extends BookTransformer {
     }
 
     /** Gets the material list for this tier */
-    public List<IMaterial> getMaterials() {
-      Stream<IMaterial> materialStream = MaterialRegistry.getMaterials().stream().filter(validMaterial);
+    public List<MaterialHolder> getMaterials() {
+      Stream<MaterialHolder> materialStream = MaterialRegistry.getVisibleMaterials().stream().filter(validMaterial);
       if (sortComparator != null) {
         materialStream = materialStream.sorted(sortComparator);
       }
@@ -216,12 +214,11 @@ public class MaterialSectionTransformer extends BookTransformer {
      * @param materials    List of materials from {@link #getMaterials()}
      * @return  New index to fill
      */
-    private ContentPageIconList addPages(SectionData sectionData, String prefix, List<PageData> newPages, ContentPageIconList overview, ListIterator<ContentPageIconList> iter, List<IMaterial> materials) {
-      for (IMaterial material : materials) {
-        MaterialId materialId = material.getId();
-        AbstractMaterialContent contentMaterial = pageCreator.apply(materialId);
+    private ContentPageIconList addPages(SectionData sectionData, String prefix, List<PageData> newPages, ContentPageIconList overview, ListIterator<ContentPageIconList> iter, List<MaterialHolder> materials) {
+      for (MaterialHolder material : materials) {
+        AbstractMaterialContent contentMaterial = pageCreator.apply(material);
         contentMaterial.titleSuffix = titleSuffix;
-        PageData page = createPage(sectionData, prefix + materialId, contentMaterial.getId(), contentMaterial);
+        PageData page = createPage(sectionData, prefix + material.id(), contentMaterial.getId(), contentMaterial);
         newPages.add(page);
 
         SizedBookElement icon = new ItemElement(0, 0, 1f, contentMaterial.getDisplayStacks());
@@ -242,7 +239,7 @@ public class MaterialSectionTransformer extends BookTransformer {
       sectionData.source = BookRepository.DUMMY;
       sectionData.parent = book;
 
-      List<IMaterial> materialList = getMaterials();
+      List<MaterialHolder> materialList = getMaterials();
       if (materialList.isEmpty()) {
         return;
       }
@@ -268,7 +265,7 @@ public class MaterialSectionTransformer extends BookTransformer {
       sectionData.source = BookRepository.DUMMY;
       sectionData.parent = book;
 
-      List<List<IMaterial>> materials = tiers.stream().map(MaterialTier::getMaterials).toList();
+      List<List<MaterialHolder>> materials = tiers.stream().map(MaterialTier::getMaterials).toList();
       int size = 0;
       for (List<?> list : materials) {
         size += list.size();
@@ -298,20 +295,20 @@ public class MaterialSectionTransformer extends BookTransformer {
   /* Helpers */
 
   /** Creates a feature extractor for a comparator that sorts based on a stat type being present, with order absent -> present */
-  public static Function<IMaterial,Boolean> hasStatType(MaterialStatsId statType) {
-    return mat -> MaterialRegistry.getInstance().getMaterialStats(mat.getId(), statType).isPresent();
+  public static Function<MaterialHolder,Boolean> hasStatType(MaterialStatsId statType) {
+    return statType::canUseMaterial;
   }
 
   /** Creates a feature extractor for a comparator that sorts based on a stat type being present, with order absent -> present */
-  public static Function<IMaterial,Boolean> hasStatType(IMaterialStats statType) {
+  public static Function<MaterialHolder,Boolean> hasStatType(IMaterialStats statType) {
     return hasStatType(statType.getIdentifier());
   }
 
   /** Creates a feature extractor for a comparator that sorts based on tag order */
-  public static Function<IMaterial,Integer> tagOrder(TagKey<IMaterial> tag) {
-    return mat -> {
+  public static Function<MaterialHolder,Integer> tagOrder(TagKey<IMaterial> tag) {
+    return holder -> {
       List<IMaterial> values = MaterialRegistry.getInstance().getTagValues(tag);
-      int index = values.indexOf(mat);
+      int index = values.indexOf(holder.get());
       return index == -1 ? values.size() : index;
     };
   }
