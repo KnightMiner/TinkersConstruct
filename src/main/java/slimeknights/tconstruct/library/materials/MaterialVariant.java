@@ -12,9 +12,13 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
-/** Class for a material variant, lazily loads the material instance and stores the variant string */
+/**
+ * Class for a material variant, lazily loads the material instance and stores the variant string.
+ * For a default instance, see {@link MaterialHolder#UNKNOWN}.
+ */
 public interface MaterialVariant extends Comparable<MaterialVariant> {
   /** Loadable instance for JSON serializing */
   Loadable<MaterialVariant> LOADABLE = MaterialVariantId.LOADABLE.map(MaterialVariant::create, MaterialVariant::serializedId);
@@ -120,6 +124,9 @@ public interface MaterialVariant extends Comparable<MaterialVariant> {
     T stats = getStats(id);
     return stats != null ? stats : MaterialRegistry.getInstance().getDefaultStats(id);
   }
+
+  /** Gets all stats for the given material */
+  Collection<IMaterialStats> getAllStats();
 
   /** Gets the traits for the given stats ID */
   List<ModifierEntry> getTraits(MaterialStatsId id);

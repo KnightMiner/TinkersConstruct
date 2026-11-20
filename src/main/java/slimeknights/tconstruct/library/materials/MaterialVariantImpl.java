@@ -6,6 +6,7 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 /** Implementation of {@link MaterialVariant} for {@link MaterialVariantId} */
@@ -60,6 +61,11 @@ record MaterialVariantImpl(MaterialVariantId id, MaterialHolder holder) implemen
   @Nullable
   public <T extends IMaterialStats> T getStats(MaterialStatsId stats) {
     return holder.getStats(stats);
+  }
+
+  @Override
+  public Collection<IMaterialStats> getAllStats() {
+    return holder.getAllStats();
   }
 
   @Override

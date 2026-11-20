@@ -15,6 +15,7 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class MaterialHolder implements MaterialVariant {
   @Getter @Accessors(fluent = true)
   private final MaterialId id;
   private IMaterial material;
+  private Collection<IMaterialStats> allStats;
 
   // stats
   /** Cache of fetched stats for this material */
@@ -63,6 +65,7 @@ public class MaterialHolder implements MaterialVariant {
   private MaterialHolder() {
     this(MaterialId.UNKNOWN);
     material = IMaterial.UNKNOWN;
+    allStats = List.of();
   }
 
   /** Gets a material holder for the given ID */
@@ -149,6 +152,14 @@ public class MaterialHolder implements MaterialVariant {
       return (T) this.stats.computeIfAbsent(id, statsGetter).orElse(null);
     }
     return null;
+  }
+
+  @Override
+  public Collection<IMaterialStats> getAllStats() {
+    if (allStats == null) {
+      allStats = MaterialRegistry.getInstance().getAllStats(id);
+    }
+    return allStats;
   }
 
   @Override
