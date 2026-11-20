@@ -77,7 +77,7 @@ public abstract class RandomMaterial implements IHaveLoader {
   }
 
   /** Creates a predicate for a random material variant. Will include material variants unlike {@link #random()} */
-  public static RandomMaterial randomVariant(IJsonPredicate<MaterialVariantId> materials) {
+  public static RandomMaterial randomVariant(IJsonPredicate<MaterialVariant> materials) {
     return new RandomVariant(materials);
   }
 
@@ -184,7 +184,7 @@ public abstract class RandomMaterial implements IHaveLoader {
     /** If true, hidden materials are allowed */
     private final boolean allowHidden;
     /** Material condition */
-    private final IJsonPredicate<MaterialVariantId> material;
+    private final IJsonPredicate<MaterialVariant> material;
 
     /** Cached list of material choices, automatically deleted when loot tables reload */
     private final Map<MaterialStatsId,List<MaterialHolder>> materialChoices = new ConcurrentHashMap<>();
@@ -193,12 +193,9 @@ public abstract class RandomMaterial implements IHaveLoader {
     public List<MaterialHolder> apply(MaterialStatsId statType) {
       List<MaterialHolder> choices = (allowHidden ? MaterialRegistry.getAllMaterials() : MaterialRegistry.getVisibleMaterials())
         .stream()
-        .filter(holder -> {
-          IMaterial material = holder.get();
-          return this.tier.test(material.getTier())
-            && this.material.matches(material.getId())
-            && holder.hasStats(statType);
-        })
+        .filter(material -> this.tier.test(material.get().getTier())
+          && this.material.matches(material)
+          && material.hasStats(statType))
         .toList();
       if (choices.isEmpty()) {
         TConstruct.LOG.warn("Random material found no options for statType={}, tier={}, allowHidden={}, predicate={}", statType, tier, allowHidden, material);
@@ -242,7 +239,7 @@ public abstract class RandomMaterial implements IHaveLoader {
     public static final RecordLoadable<RandomVariant> LOADER = RecordLoadable.create(MaterialPredicate.LOADER.defaultField("material", r -> r.material), RandomVariant::new);
 
     /** Material condition */
-    private final IJsonPredicate<MaterialVariantId> material;
+    private final IJsonPredicate<MaterialVariant> material;
 
     /** Cached list of material choices, each containing a list of variant choices. Ensures materials with more variants don't get weighted higher */
     private final Map<MaterialStatsId,List<List<MaterialVariant>>> materialChoices = new ConcurrentHashMap<>();
@@ -255,7 +252,7 @@ public abstract class RandomMaterial implements IHaveLoader {
           if (!material.hasStats(statType)) {
             return List.<MaterialVariant>of();
           }
-          return MaterialRecipeCache.getVariants(material.id()).stream().filter(variant -> this.material.matches(variant.id())).toList();
+          return MaterialRecipeCache.getVariants(material.id()).stream().filter(this.material::matches).toList();
         })
         .filter(list -> !list.isEmpty())
         .toList();
@@ -315,7 +312,7 @@ public abstract class RandomMaterial implements IHaveLoader {
     private boolean allowHidden = false;
     /** Material tag condition */
     @Setter @Accessors(fluent = true)
-    private IJsonPredicate<MaterialVariantId> material = MaterialPredicate.ANY;
+    private IJsonPredicate<MaterialVariant> material = MaterialPredicate.ANY;
 
     /** Sets the required tier */
     public RandomBuilder tier(int tier) {

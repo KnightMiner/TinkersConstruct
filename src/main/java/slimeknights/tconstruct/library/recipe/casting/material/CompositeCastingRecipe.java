@@ -39,7 +39,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
   @Nullable
   private final MaterialStatsId castingStatConflict;
 
-  public CompositeCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariantId> materials, @Nullable MaterialStatsId castingStatConflict) {
+  public CompositeCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariant> materials, @Nullable MaterialStatsId castingStatConflict) {
     super(type, serializer, group, Ingredient.of(result), itemCost, result, materials, true, false);
     this.castingStatConflict = castingStatConflict;
   }
@@ -82,9 +82,8 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
       int maxTime = 0;
       for (MaterialFluidRecipe recipe : recipes) {
         MaterialVariant output = recipe.getOutput();
-        MaterialVariantId outputId = output.id();
         MaterialVariant input = recipe.getInput();
-        if (input == null || !result.canUseMaterial(output.holder()) || !result.canUseMaterial(input.holder()) || !materials.matches(outputId)) {
+        if (input == null || !result.canUseMaterial(output.holder()) || !result.canUseMaterial(input.holder()) || !materials.matches(output)) {
           continue;
         }
         // filter fluids for the casting stat conflict

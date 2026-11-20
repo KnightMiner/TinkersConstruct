@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.json.predicate.material;
 
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 /** Predicate matching materials that can use the given stat type */
@@ -10,8 +10,8 @@ public record MaterialHasPartPredicate(IMaterialItem part) implements MaterialPr
   public static final RecordLoadable<MaterialHasPartPredicate> LOADER = RecordLoadable.create(TinkerLoadables.MATERIAL_ITEM.requiredField("part", MaterialHasPartPredicate::part), MaterialHasPartPredicate::new);
 
   @Override
-  public boolean matches(MaterialVariantId variant) {
-    return part.canUseMaterial(variant.material());
+  public boolean matches(MaterialVariant variant) {
+    return part.canUseMaterial(variant.holder());
   }
 
   @Override

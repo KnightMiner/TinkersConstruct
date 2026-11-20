@@ -32,7 +32,6 @@ import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate
 import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -117,13 +116,13 @@ public class MaterialSectionTransformer extends BookTransformer {
   }
 
   /** Helper to create a material predicate */
-  public record ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, IJsonPredicate<MaterialVariantId> predicate) implements Predicate<MaterialHolder> {
+  public record ValidMaterial(Set<MaterialStatsId> visibleStats, IntRange tier, IJsonPredicate<MaterialVariant> predicate) implements Predicate<MaterialHolder> {
     @Override
     public boolean test(MaterialHolder holder) {
       if (!this.tier.test(holder.get().getTier())) {
         return false;
       }
-      if (!predicate.matches(holder.id())) {
+      if (!predicate.matches(holder)) {
         return false;
       }
       // only show material stats for types with the proper stat types, as otherwise the page will be empty
@@ -151,7 +150,7 @@ public class MaterialSectionTransformer extends BookTransformer {
       IntRange tier = TIER.getOrDefault(json, "tier");
 
       // load in predicate
-      IJsonPredicate<MaterialVariantId> predicate = MaterialPredicate.ANY;
+      IJsonPredicate<MaterialVariant> predicate = MaterialPredicate.ANY;
       if (json.has("predicate")) {
         predicate = MaterialPredicate.LOADER.getIfPresent(json, "predicate", CONTEXT);
       } else if (json.has("tag")) {

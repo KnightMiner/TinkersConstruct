@@ -28,8 +28,8 @@ import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.loot.tool.AddToolDataFunction;
 import slimeknights.tconstruct.library.loot.tool.ToolPartLootEntry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.tools.TinkerTools;
@@ -61,7 +61,7 @@ public class LootTableInjectionProvider extends AbstractLootTableInjectionProvid
       .addToPool("main", makeSeed(FoliageType.ENDER, 5), makeSapling(FoliageType.ENDER, 3));
 
     // bartering
-    IJsonPredicate<MaterialVariantId> includeInLoot = MaterialPredicate.tag(TinkerTags.Materials.EXCLUDE_FROM_LOOT).inverted();
+    IJsonPredicate<MaterialVariant> includeInLoot = MaterialPredicate.tag(TinkerTags.Materials.EXCLUDE_FROM_LOOT).inverted();
     RandomMaterial random = RandomMaterial.ancient();
     AddToolDataFunction.Builder ancientToolData2 = AddToolDataFunction.builder().addMaterial(random).addMaterial(random);
     injectGameplay("piglin_bartering")

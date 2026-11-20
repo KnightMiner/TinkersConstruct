@@ -30,7 +30,7 @@ import slimeknights.tconstruct.library.json.predicate.material.MaterialHasPartPr
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialStatTypePredicate;
 import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.recipe.casting.item.ItemCastingRecipeBuilder;
@@ -190,7 +190,7 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
       MaterialValueIngredient.of(MaterialPredicate.and(MaterialPredicate.or(MaterialPredicate.CASTABLE, MaterialPredicate.COMPOSITE), new MaterialStatTypePredicate(type)), 1),
       MaterialIngredient.of(TinkerToolParts.fakeIngot, new MaterialStatTypePredicate(type))
     );
-    IJsonPredicate<MaterialVariantId> travelersCuirass = new MaterialStatTypePredicate(StatlessMaterialStats.CUIRASS.getIdentifier());
+    IJsonPredicate<MaterialVariant> travelersCuirass = new MaterialStatTypePredicate(StatlessMaterialStats.CUIRASS.getIdentifier());
     Ingredient cuirass = MaterialValueIngredient.of(travelersCuirass, 1);
     ShapedMaterialsRecipeBuilder.shaped(TinkerTools.travelersGear.get(ArmorItem.Type.HELMET))
       .category(RecipeCategory.COMBAT)
@@ -395,6 +395,7 @@ public class ToolsRecipeProvider extends BaseRecipeProvider implements IMaterial
           case CHESTPLATE -> TinkerToolParts.ribcage.get();
           case LEGGINGS -> TinkerToolParts.shell.get();
           case BOOTS -> TinkerToolParts.laces.get();
+          default -> throw new IllegalStateException("Unexpected value: " + type);
         })
         // slime lacks a part so do repair kit
         .part(TinkerToolParts.repairKit)

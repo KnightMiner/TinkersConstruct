@@ -16,6 +16,7 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.material.ToolCastingRecipe.CastPurpose;
@@ -51,7 +52,7 @@ public class MaterialCastingRecipeBuilder extends AbstractRecipeBuilder<Material
   @Setter
   private boolean fluidSwapping = true;
   @Setter
-  private IJsonPredicate<MaterialVariantId> allowedMaterials = MaterialPredicate.ANY;
+  private IJsonPredicate<MaterialVariant> allowedMaterials = MaterialPredicate.ANY;
   /** Extra materials for tool casting. Has no impact on part casting. */
   private final List<MaterialVariantId> extraMaterials = new ArrayList<>();
 

@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolContext;
  * @param material   Material variant to locate.
  * @param index      Index to check for the material. If -1, will check all materials on the tool.
  */
-public record HasMaterialPredicate(IJsonPredicate<MaterialVariantId> material, int index) implements ToolContextPredicate {
+public record HasMaterialPredicate(IJsonPredicate<MaterialVariant> material, int index) implements ToolContextPredicate {
   public static final RecordLoadable<HasMaterialPredicate> LOADER = RecordLoadable.create(
     new MaterialPredicateField<>("material", HasMaterialPredicate::material),
     IntLoadable.FROM_MINUS_ONE.defaultField("index", -1, HasMaterialPredicate::index),
@@ -32,11 +32,11 @@ public record HasMaterialPredicate(IJsonPredicate<MaterialVariantId> material, i
   public boolean matches(IToolContext input) {
     // if given an index, use exact location match
     if (index >= 0) {
-      return material.matches(input.getMaterial(index).id());
+      return material.matches(input.getMaterial(index));
     }
     // otherwise, search each material
     for (MaterialVariant variant : input.getMaterials().getList()) {
-      if (material.matches(variant.id())) {
+      if (material.matches(variant)) {
         return true;
       }
     }

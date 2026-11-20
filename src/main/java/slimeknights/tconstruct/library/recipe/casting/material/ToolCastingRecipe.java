@@ -63,7 +63,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
   /** If true, this recipe's information will be used to also add a fluid part swapping recipe. Mainly useful to disable if there are multiple copies of this recipe (like slimeskulls) */
   private final boolean fluidSwapping;
 
-  protected ToolCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, CastPurpose castPurpose, IModifiable result, IJsonPredicate<MaterialVariantId> allowedMaterials, List<MaterialVariantId> extraMaterials, boolean fluidSwapping) {
+  protected ToolCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, CastPurpose castPurpose, IModifiable result, IJsonPredicate<MaterialVariant> allowedMaterials, List<MaterialVariantId> extraMaterials, boolean fluidSwapping) {
     super(type, serializer, group, cast, itemCost, castPurpose.fluidIndex, allowedMaterials);
     this.result = result;
     this.extraMaterials = extraMaterials;
@@ -356,9 +356,9 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     @Override
     public List<FluidStack> getFluids(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
-        MaterialVariantId material = MaterialIdNBT.getMaterial(focus, fluidIndex);
-        if (materials.matches(material) && castItem.canUseMaterial(material.material())) {
-          List<FluidStack> fluids = MaterialCastingLookup.getCastingFluids(material).stream()
+        MaterialVariant material = MaterialVariant.create(MaterialIdNBT.getMaterial(focus, fluidIndex));
+        if (materials.matches(material) && castItem.canUseMaterial(material.holder())) {
+          List<FluidStack> fluids = MaterialCastingLookup.getCastingFluids(material.id()).stream()
             .flatMap(recipe -> recipe.getFluids().stream().map(ToolCastingRecipe.this::resizeFluid))
             .toList();
           if (!fluids.isEmpty()) {

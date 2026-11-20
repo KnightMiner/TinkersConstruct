@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.json.predicate.material;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public record MaterialIdPredicate(Set<MaterialId> ids) implements MaterialPredic
   }
 
   @Override
-  public boolean matches(MaterialVariantId variant) {
+  public boolean matches(MaterialVariant variant) {
     return ids.contains(variant.material());
   }
 

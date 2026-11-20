@@ -9,6 +9,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicateField;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
@@ -19,19 +20,19 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /** Ingredient matching material items with the given value based on {@link MaterialRecipe}. Typically, matches ingots or blocks */
-public record MaterialValueIngredient(IJsonPredicate<MaterialVariantId> material, Range range) implements ICustomIngredient {
+public record MaterialValueIngredient(IJsonPredicate<MaterialVariant> material, Range range) implements ICustomIngredient {
   public static final RecordLoadable<MaterialValueIngredient> LOADABLE = RecordLoadable.create(
     new MaterialPredicateField<>("material", MaterialValueIngredient::material),
     Range.LOADABLE.requiredField("value", MaterialValueIngredient::range),
     MaterialValueIngredient::new);
 
   /** Creates an ingredient matching a range of values */
-  public static Ingredient of(IJsonPredicate<MaterialVariantId> materials, float minValue, float maxValue) {
+  public static Ingredient of(IJsonPredicate<MaterialVariant> materials, float minValue, float maxValue) {
     return new MaterialValueIngredient(materials, new Range(minValue, maxValue)).toVanilla();
   }
 
   /** Creates an ingredient matching an exact value */
-  public static Ingredient of(IJsonPredicate<MaterialVariantId> materials, float value) {
+  public static Ingredient of(IJsonPredicate<MaterialVariant> materials, float value) {
     return of(materials, value, value);
   }
 
@@ -47,7 +48,7 @@ public record MaterialValueIngredient(IJsonPredicate<MaterialVariantId> material
 
   /** Checks the given material recipe against our filters */
   public boolean test(MaterialRecipe material) {
-    return range.test(material.getValue() / (float) material.getNeeded()) && this.material.matches(material.getMaterial().id());
+    return range.test(material.getValue() / (float) material.getNeeded()) && this.material.matches(material.getMaterial());
   }
 
   @Override
@@ -76,7 +77,7 @@ public record MaterialValueIngredient(IJsonPredicate<MaterialVariantId> material
     if (this == other) return this;
 
     // if we have the same predicate, we can possibly skip creating a new instance
-    IJsonPredicate<MaterialVariantId> predicate = this.material;
+    IJsonPredicate<MaterialVariant> predicate = this.material;
     if (this.material.equals(other.material)) {
       if (this.contains(other)) {
         return this;

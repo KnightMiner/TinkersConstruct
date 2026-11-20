@@ -11,7 +11,7 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
@@ -30,7 +30,7 @@ public class CompositeCastingRecipeBuilder extends AbstractRecipeBuilder<Composi
   @Setter @Nullable
   private MaterialStatsId castingStatConflict = null;
   @Setter
-  private IJsonPredicate<MaterialVariantId> allowedMaterials = MaterialPredicate.ANY;
+  private IJsonPredicate<MaterialVariant> allowedMaterials = MaterialPredicate.ANY;
 
   /** Creates a builder for a table */
   public static CompositeCastingRecipeBuilder table(IMaterialItem result, int itemCost) {

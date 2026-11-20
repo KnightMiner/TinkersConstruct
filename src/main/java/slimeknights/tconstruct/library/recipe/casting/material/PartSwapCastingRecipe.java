@@ -60,7 +60,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
   @Nullable
   private MaterialFluidRecipe cachedPartSwapping = null;
 
-  protected PartSwapCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, int index, IJsonPredicate<MaterialVariantId> materials) {
+  protected PartSwapCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, int index, IJsonPredicate<MaterialVariant> materials) {
     super(type, serializer, group, cast, itemCost, true, false, materials);
     this.index = index;
   }
@@ -230,7 +230,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     for (MaterialFluidRecipe recipe : fluidRecipes) {
       MaterialVariant output = recipe.getOutput();
       // ensure the recipe can use the materials
-      if (!materials.matches(output.id())) continue;
+      if (!materials.matches(output)) continue;
       MaterialVariant input = recipe.getInput();
       if (composite) {
         // composite recipes require an input, really just a safety here

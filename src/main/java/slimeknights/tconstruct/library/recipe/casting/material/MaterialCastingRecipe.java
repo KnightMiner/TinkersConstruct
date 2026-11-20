@@ -16,7 +16,6 @@ import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeLookup;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
@@ -40,7 +39,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
 
   protected final IMaterialItem result;
 
-  public MaterialCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariantId> materials, boolean consumed, boolean switchSlots) {
+  public MaterialCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, IMaterialItem result, IJsonPredicate<MaterialVariant> materials, boolean consumed, boolean switchSlots) {
     super(type, serializer, group, cast, itemCost, consumed, switchSlots, materials);
     this.result = result;
     CastingRecipeLookup.registerCastable(result);
@@ -80,7 +79,7 @@ public class MaterialCastingRecipe extends AbstractMaterialCastingRecipe impleme
       for (MaterialFluidRecipe recipe : recipes) {
         // must support this material
         MaterialVariant output = recipe.getOutput();
-        if (!result.canUseMaterial(output.holder()) || !this.materials.matches(output.id())) {
+        if (!result.canUseMaterial(output.holder()) || !this.materials.matches(output)) {
           continue;
         }
 

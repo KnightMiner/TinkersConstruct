@@ -14,7 +14,8 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 
@@ -42,13 +43,13 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
   /** Ingredient for the input part, used by fixed */
   private SizedIngredient ingredient = null;
   /** Material to swap to, used by fixed */
-  private MaterialVariantId material = MaterialId.UNKNOWN;
+  private MaterialVariant material = MaterialHolder.UNKNOWN;
   /** Repair value on swapping, used by fixed and material value */
   @Setter
   private int repairValue = 0;
 
   /** Material predicate, used by material value */
-  private IJsonPredicate<MaterialVariantId> materials = MaterialPredicate.ANY;
+  private IJsonPredicate<MaterialVariant> materials = MaterialPredicate.ANY;
 
   /** Creates a builder for the given tool */
   public static MaterialSwappingRecipeBuilder tool(ItemLike tool) {
@@ -68,7 +69,7 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
 
   /** Sets the material for this builder */
   public MaterialSwappingRecipeBuilder material(MaterialVariantId material, SizedIngredient ingredient) {
-    this.material = material;
+    this.material = MaterialVariant.create(material);
     this.ingredient = ingredient;
     return this;
   }
@@ -79,7 +80,7 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
   }
 
   /** Sets the materials for this builder */
-  public MaterialSwappingRecipeBuilder materials(IJsonPredicate<MaterialVariantId> materials, int cost) {
+  public MaterialSwappingRecipeBuilder materials(IJsonPredicate<MaterialVariant> materials, int cost) {
     this.materials = materials;
     this.repairValue = cost;
     return this;
@@ -117,7 +118,7 @@ public class MaterialSwappingRecipeBuilder extends AbstractRecipeBuilder<Materia
         throw new IllegalStateException("Cannot set both part and ingredient");
       }
       output.accept(id, new PartSwappingOverrideRecipe(tools, maxStackSize, part, indices, extraRequirements), null);
-    } else if (material != MaterialId.UNKNOWN) {
+    } else if (material != MaterialHolder.UNKNOWN) {
       output.accept(id, new FixedMaterialSwappingRecipe(tools, maxStackSize, ingredient, material, indices, repairValue, extraRequirements), null);
     } else if (repairValue > 0) {
       output.accept(id, new MaterialValueSwappingRecipe(tools, maxStackSize, materials, repairValue, indices, extraRequirements), null);

@@ -12,6 +12,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicateField;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
@@ -22,20 +23,20 @@ import java.util.stream.Stream;
 /**
  * Extension of the vanilla ingredient to display materials on items and support matching by materials
  */
-public record MaterialIngredient(HolderSet<Item> item, IJsonPredicate<MaterialVariantId> material) implements ICustomIngredient {
+public record MaterialIngredient(HolderSet<Item> item, IJsonPredicate<MaterialVariant> material) implements ICustomIngredient {
   public static final RecordLoadable<MaterialIngredient> LOADABLE = RecordLoadable.create(
     Loadables.ITEM_SET.requiredField("item", MaterialIngredient::item),
     new MaterialPredicateField<>("material", MaterialIngredient::material),
     MaterialIngredient::new);
 
   /** Creates an ingredient matching the given materials */
-  public static Ingredient of(HolderSet<Item> item, IJsonPredicate<MaterialVariantId> material) {
+  public static Ingredient of(HolderSet<Item> item, IJsonPredicate<MaterialVariant> material) {
     return new MaterialIngredient(item, material).toVanilla();
   }
 
   /** Creates an ingredient matching the given materials */
   @SuppressWarnings("deprecation")
-  public static Ingredient of(ItemLike item, IJsonPredicate<MaterialVariantId> material) {
+  public static Ingredient of(ItemLike item, IJsonPredicate<MaterialVariant> material) {
     return of(HolderSet.direct(item.asItem().builtInRegistryHolder()), material);
   }
 
@@ -82,14 +83,14 @@ public record MaterialIngredient(HolderSet<Item> item, IJsonPredicate<MaterialVa
       return false;
     }
     // no need to read material NBT if the material is the any predicate
-    return material == MaterialPredicate.ANY || material.matches(IMaterialItem.getMaterialFromStack(stack).id());
+    return material == MaterialPredicate.ANY || material.matches(IMaterialItem.getMaterialFromStack(stack));
   }
 
   @Override
   public Stream<ItemStack> getItems() {
     // no material? apply all materials for variants
     return item.stream().flatMap(item -> MaterialRecipeCache.getAllVariants().stream()
-      .filter(material -> this.material.matches(material.id()))
+      .filter(this.material::matches)
       .map(mat -> IMaterialItem.withMaterial(item.value(), mat))
       .filter(stack -> !stack.isEmpty()));
   }

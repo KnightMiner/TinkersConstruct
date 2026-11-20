@@ -9,7 +9,7 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.recipe.casting.AbstractCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.ICastingRecipe;
@@ -21,14 +21,14 @@ import java.util.List;
  */
 public abstract class AbstractMaterialCastingRecipe extends AbstractCastingRecipe {
   protected static final LoadableField<Integer,AbstractMaterialCastingRecipe> ITEM_COST_FIELD = IntLoadable.FROM_ONE.requiredField("item_cost", r -> r.itemCost);
-  protected static final LoadableField<IJsonPredicate<MaterialVariantId>,AbstractMaterialCastingRecipe> MATERIALS_FIELD = MaterialPredicate.LOADER.defaultField("allowed_materials", r -> r.materials);
+  protected static final LoadableField<IJsonPredicate<MaterialVariant>,AbstractMaterialCastingRecipe> MATERIALS_FIELD = MaterialPredicate.LOADER.defaultField("allowed_materials", r -> r.materials);
 
   @Getter
   private final RecipeSerializer<?> serializer;
   protected final int itemCost;
-  protected final IJsonPredicate<MaterialVariantId> materials;
+  protected final IJsonPredicate<MaterialVariant> materials;
 
-  public AbstractMaterialCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, boolean consumed, boolean switchSlots, IJsonPredicate<MaterialVariantId> materials) {
+  public AbstractMaterialCastingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient cast, int itemCost, boolean consumed, boolean switchSlots, IJsonPredicate<MaterialVariant> materials) {
     super(type, group, cast, consumed, switchSlots);
     this.serializer = serializer;
     this.itemCost = itemCost;

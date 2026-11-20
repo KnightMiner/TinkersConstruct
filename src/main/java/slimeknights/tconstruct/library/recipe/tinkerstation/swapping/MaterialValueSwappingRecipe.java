@@ -43,11 +43,11 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
     MaterialValueSwappingRecipe::new);
 
   /** Predicate matching materials to allow */
-  private final IJsonPredicate<MaterialVariantId> material;
+  private final IJsonPredicate<MaterialVariant> material;
   /** Amount of material needed to swap the part */
   private final int cost;
 
-  protected MaterialValueSwappingRecipe(Ingredient tools, int maxStackSize, IJsonPredicate<MaterialVariantId> material, int cost, int[] indices, List<SizedIngredient> extraRequirements) {
+  protected MaterialValueSwappingRecipe(Ingredient tools, int maxStackSize, IJsonPredicate<MaterialVariant> material, int cost, int[] indices, List<SizedIngredient> extraRequirements) {
     super(tools, maxStackSize, indices, extraRequirements);
     this.material = material;
     this.cost = cost;
@@ -56,7 +56,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
   @Override
   protected boolean isMaterial(ItemStack stack) {
     MaterialRecipe recipe = MaterialRecipeCache.findRecipe(stack);
-    return recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().id()) && stack.getCount() >= recipe.getItemsUsed(cost);
+    return recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial()) && stack.getCount() >= recipe.getItemsUsed(cost);
   }
 
   @Override
@@ -78,7 +78,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
   protected boolean shrinkPart(TinkerStationRecipeInput.Mutable inv, int index, ItemStack stack) {
     MaterialRecipe recipe = MaterialRecipeCache.findRecipe(stack);
     // need to ensure the recipe is a valid material, for the sake of extra requirements
-    if (recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial().id())) {
+    if (recipe != MaterialRecipe.EMPTY && this.material.matches(recipe.getMaterial())) {
       int used = recipe.getItemsUsed(cost);
       inv.shrinkInput(index, used);
       ItemStack leftover = recipe.getLeftover(cost);
@@ -101,7 +101,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
       record MaterialStacks(MaterialVariant variant, List<ItemStack> stacks) {}
       List<MaterialStacks> materialStacks = new ArrayList<>();
       for (MaterialVariant material : MaterialRecipeCache.getAllVariants()) {
-        if (this.material.matches(material.id())) {
+        if (this.material.matches(material)) {
           List<ItemStack> newStacks = MaterialRecipeCache.getRecipes(material.id()).stream()
             .flatMap(recipe -> Arrays.stream(recipe.getIngredient().getItems())
               .map(stack -> stack.copyWithCount(recipe.getItemsUsed(cost)))).toList();

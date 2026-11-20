@@ -19,7 +19,6 @@ import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.MetalItemObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
-import slimeknights.tconstruct.library.json.predicate.material.MaterialDefinitionPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialHasPartPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialIdPredicate;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
@@ -98,9 +97,9 @@ public final class TinkerMaterials extends TinkerModule {
       MaterialPredicate.LOADER.register(getResource("stat_type"), MaterialStatTypePredicate.LOADER);
       MaterialPredicate.LOADER.register(getResource("castable"), MaterialPredicate.CASTABLE.getLoader());
       MaterialPredicate.LOADER.register(getResource("composite"), MaterialPredicate.COMPOSITE.getLoader());
-      MaterialPredicate.LOADER.register(getResource("craftable"), MaterialDefinitionPredicate.CRAFTABLE.getLoader());
-      MaterialPredicate.LOADER.register(getResource("not_hidden"), MaterialDefinitionPredicate.NOT_HIDDEN.getLoader());
-      MaterialPredicate.LOADER.register(getResource("registered"), MaterialDefinitionPredicate.REGISTERED.getLoader());
+      MaterialPredicate.LOADER.register(getResource("craftable"), MaterialPredicate.CRAFTABLE.getLoader());
+      MaterialPredicate.LOADER.register(getResource("not_hidden"), MaterialPredicate.NOT_HIDDEN.getLoader());
+      MaterialPredicate.LOADER.register(getResource("registered"), MaterialPredicate.REGISTERED.getLoader());
       MaterialPredicate.LOADER.register(getResource("tier"), MaterialTierPredicate.LOADER);
     }
   }

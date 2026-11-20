@@ -189,9 +189,9 @@ public class MaterialCastingLookup {
    * @param filter Material filter, will skip recipes that don't match
    * @return  Recipe, or {@link MaterialFluidRecipe#EMPTY} if not found.
    */
-  public static MaterialFluidRecipe getCastingFluid(Fluid fluid, IJsonPredicate<MaterialVariantId> filter) {
+  public static MaterialFluidRecipe getCastingFluid(Fluid fluid, IJsonPredicate<MaterialVariant> filter) {
     MaterialFluidRecipe recipe = getCastingFluid(fluid);
-    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().id())) {
+    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput())) {
       return recipe;
     }
     return MaterialFluidRecipe.EMPTY;
@@ -214,9 +214,9 @@ public class MaterialCastingLookup {
    * @param filter    Material filter, will skip recipes that don't match
    * @return  Composite fluid recipe, or {@link MaterialFluidRecipe#EMPTY} if not found.
    */
-  public static MaterialFluidRecipe getCompositeFluid(Fluid fluid, MaterialVariantId material, IJsonPredicate<MaterialVariantId> filter) {
+  public static MaterialFluidRecipe getCompositeFluid(Fluid fluid, MaterialVariantId material, IJsonPredicate<MaterialVariant> filter) {
     MaterialFluidRecipe recipe = getCompositeFluid(fluid, material);
-    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput().id())) {
+    if (recipe != MaterialFluidRecipe.EMPTY && filter.matches(recipe.getOutput())) {
       return recipe;
     }
     return MaterialFluidRecipe.EMPTY;

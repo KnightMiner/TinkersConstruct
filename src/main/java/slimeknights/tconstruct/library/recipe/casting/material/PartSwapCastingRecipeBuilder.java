@@ -12,7 +12,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 
 /** Builder for {@link PartSwapCastingRecipe} */
@@ -27,7 +27,7 @@ public class PartSwapCastingRecipeBuilder extends AbstractRecipeBuilder<PartSwap
   @Accessors(fluent = true)
   private int index = 0;
   @Setter
-  private IJsonPredicate<MaterialVariantId> allowedMaterials = MaterialPredicate.ANY;
+  private IJsonPredicate<MaterialVariant> allowedMaterials = MaterialPredicate.ANY;
 
   /** Creates a builder for part swapping in a table */
   public static PartSwapCastingRecipeBuilder tableRecipe(Ingredient tools, int itemCost) {
