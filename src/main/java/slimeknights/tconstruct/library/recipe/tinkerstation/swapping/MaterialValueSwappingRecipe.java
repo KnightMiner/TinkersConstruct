@@ -120,7 +120,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
           return NamedRecipe.<IDisplayToolTinkering>of(toolId.withSuffix("/material_" + i), parent, new DisplayRecipe(
             i,
             filtered.stream().flatMap(count -> count.stacks.stream()).toList(),
-            List.of(withMaterial(tool.copy(), i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i)))),
+            List.of(withMaterial(tool.copy(), i, ToolBuildHandler.getRenderMaterial(i))),
             materialStacks.stream().flatMap(count -> {
               ItemStack withMaterial = withMaterial(tool.copy(), i, count.variant);
               return IntStream.range(0, count.stacks.size()).mapToObj(j -> withMaterial);

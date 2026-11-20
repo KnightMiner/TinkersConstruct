@@ -117,7 +117,7 @@ public class MaterialRenderInfoProvider extends AbstractMaterialRenderInfoProvid
     buildRenderInfo(MaterialIds.ironwood);
     buildRenderInfo(MaterialIds.silver).color(0xDAF3ED).fallbacks("metal");
     buildRenderInfo(MaterialIds.lead).color(0x696579).fallbacks("metal");
-    buildRenderInfo(MaterialIds.whitestoneComposite, MaterialIds.whitestone).color(0xE0E9EC).fallbacks("rock");
+    buildRenderInfo(MaterialIds.whitestoneComposite, MaterialIds.whitestone.id()).color(0xE0E9EC).fallbacks("rock");
     buildRenderInfo(MaterialIds.treatedWood);
     buildRenderInfo(MaterialIds.aluminum);
 
@@ -172,11 +172,11 @@ public class MaterialRenderInfoProvider extends AbstractMaterialRenderInfoProvid
     buildRenderInfo(MaterialIds.cheese);
 
     // UI internal
-    redirect(ToolBuildHandler.getRenderMaterial(0), MaterialIds.iron);
-    redirect(ToolBuildHandler.getRenderMaterial(1), MaterialIds.wood);
-    redirect(ToolBuildHandler.getRenderMaterial(2), MaterialIds.cobalt);
-    redirect(ToolBuildHandler.getRenderMaterial(3), MaterialIds.manyullyn);
-    redirect(ToolBuildHandler.getRenderMaterial(4), MaterialIds.copper);
+    redirect(ToolBuildHandler.getRenderMaterial(0).id(), MaterialIds.iron);
+    redirect(ToolBuildHandler.getRenderMaterial(1).id(), MaterialIds.wood);
+    redirect(ToolBuildHandler.getRenderMaterial(2).id(), MaterialIds.cobalt);
+    redirect(ToolBuildHandler.getRenderMaterial(3).id(), MaterialIds.manyullyn);
+    redirect(ToolBuildHandler.getRenderMaterial(4).id(), MaterialIds.copper);
   }
 
   @Override

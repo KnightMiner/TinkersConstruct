@@ -50,7 +50,7 @@ public class TinkerCreativeTabs {
         if (MaterialRegistry.isFullyLoaded()) {
           material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create());
         } else {
-          material = MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0));
+          material = ToolBuildHandler.getRenderMaterial(0);
         }
         return TinkerToolParts.pickHead.get().withMaterialForDisplay(material);
       })

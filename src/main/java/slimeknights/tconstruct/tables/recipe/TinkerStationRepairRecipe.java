@@ -260,7 +260,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
   public List<NamedRecipe<IDisplayCraftingTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       Tag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
-      MaterialNBT displayMaterials = MaterialNBT.of(IntStream.range(0, 5).mapToObj(i -> MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i))).toList());
+      MaterialNBT displayMaterials = MaterialNBT.of(IntStream.range(0, 5).mapToObj(i -> ToolBuildHandler.getRenderMaterial(i)).toList());
       IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
 
       // list of materials to try for repair

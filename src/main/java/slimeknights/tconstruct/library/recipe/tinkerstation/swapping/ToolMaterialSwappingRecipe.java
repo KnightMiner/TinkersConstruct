@@ -152,7 +152,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         if (stats.size() > MAX_SLOTS) {
           continue;
         }
-        List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(i -> MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i))).toList();
+        List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(ToolBuildHandler::getRenderMaterial).toList();
         ToolStack displayTool = tool.copy();
         displayTool.setMaterials(MaterialNBT.of(renderMaterials));
         ResourceLocation toolId = id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName());

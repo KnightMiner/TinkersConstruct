@@ -10,7 +10,6 @@ import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -21,7 +20,6 @@ import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -45,12 +43,17 @@ public final class ToolBuildHandler {
   }
 
   /** Materials for use in multipart tool rendering */
-  private static final List<MaterialVariantId> RENDER_MATERIALS = Arrays.asList(
-    MaterialVariantId.create(RENDER_MATERIAL, "head"),
-    MaterialVariantId.create(RENDER_MATERIAL, "handle"),
-    MaterialVariantId.create(RENDER_MATERIAL, "extra"),
-    MaterialVariantId.create(RENDER_MATERIAL, "large"),
-    MaterialVariantId.create(RENDER_MATERIAL, "extra_large"));
+  private static final MaterialNBT RENDER_MATERIALS;
+  static {
+    MaterialHolder holder = MaterialHolder.create(RENDER_MATERIAL);
+    RENDER_MATERIALS = MaterialNBT.of(
+      MaterialVariant.create(holder, "head"),
+      MaterialVariant.create(holder, "handle"),
+      MaterialVariant.create(holder, "extra"),
+      MaterialVariant.create(holder, "large"),
+      MaterialVariant.create(holder, "extra_large")
+    );
+  }
 
   /**
    * Builds a tool stack from a material list and a given tool definition
@@ -84,7 +87,7 @@ public final class ToolBuildHandler {
    * @param index  Index
    * @return  Render material
    */
-  public static MaterialVariantId getRenderMaterial(int index) {
+  public static MaterialVariant getRenderMaterial(int index) {
     return RENDER_MATERIALS.get(index % RENDER_MATERIALS.size());
   }
 
@@ -100,7 +103,7 @@ public final class ToolBuildHandler {
     // during datagen we have no idea if we will or won't have materials, so just add them regardless, won't hurt anything
     if (!definition.isDataLoaded() || definition.hasMaterials()) {
 		  // use all 5 render materials for display stacks, having too many materials is not a problem and its easier than making this reload sensitive
-      stack = MaterialNBT.of(RENDER_MATERIALS.stream().map(MaterialVariant::create).toList()).updateStack(stack);
+      stack = RENDER_MATERIALS.updateStack(stack);
     }
     stack.set(TinkerData.DISPLAY, true);
     return stack;
@@ -195,5 +198,4 @@ public final class ToolBuildHandler {
     item.set(TinkerData.DISPLAY, true);
     return item;
   }
-
 }

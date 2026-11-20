@@ -88,7 +88,7 @@ public class PartSwappingOverrideRecipe extends MaterialIndexSwappingRecipe impl
             // one part per material
             materials.stream().map(part::withMaterialForDisplay).toList(),
             // single tool with the material to swap left blank
-            List.of(withMaterial(copy, i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0))).copy()),
+            List.of(withMaterial(copy, i, ToolBuildHandler.getRenderMaterial(0)).copy()),
             // one output per material
             materials.stream().map(mat -> withMaterial(copy, i, mat).copy()).toList(),
             // part info

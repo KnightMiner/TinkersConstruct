@@ -308,7 +308,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
 
     /** Creates an input for the given materials list */
     protected List<ItemStack> createDisplayStack(MaterialNBT materials, ItemStack focus) {
-      return List.of(replaceMaterial(materials, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0)), focus));
+      return List.of(replaceMaterial(materials, ToolBuildHandler.getRenderMaterial(0), focus));
     }
 
     /** Creates the list for the focus as an input */

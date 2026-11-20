@@ -192,7 +192,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
   /** Gets tool requirement objects from the casts ingredient */
   protected List<ToolRequirement> getTools(ItemStack... casts) {
     // always use 0 as it has good contract
-    MaterialVariant renderMaterial = MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0));
+    MaterialVariant renderMaterial = ToolBuildHandler.getRenderMaterial(0);
     List<ToolRequirement> tools = new ArrayList<>(casts.length);
     for (ItemStack cast : casts) {
       ToolStack tool = ToolStack.from(cast);

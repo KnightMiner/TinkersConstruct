@@ -156,7 +156,7 @@ public class PartMaterialSwappingRecipe extends MaterialSwappingRecipe implement
             // one part per material
             filtered.stream().map(part::withMaterialForDisplay).toList(),
             // single tool with the material to swap left blank
-            List.of(withMaterial(copy, i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(0))).copy()),
+            List.of(withMaterial(copy, i, ToolBuildHandler.getRenderMaterial(0)).copy()),
             // one output per material
             filtered.stream().map(material -> withMaterial(copy, i, material).copy()).toList(),
             // part info

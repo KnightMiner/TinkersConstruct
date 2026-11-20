@@ -155,7 +155,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
       List<ResourceLocation> parent = List.of(id);
       multiRecipes = Arrays.stream(indices).filter(VALID_SLOT).mapToObj(i -> {
         // for each index, use first as the material on input, desired material on output
-        List<ItemStack> withoutMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i)))).toList();
+        List<ItemStack> withoutMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, ToolBuildHandler.getRenderMaterial(i))).toList();
         List<ItemStack> withMaterial = Arrays.stream(tools).map(stack -> withMaterial(stack.copy(), i, material)).toList();
         return NamedRecipe.<IDisplayToolTinkering>of(id.withSuffix("/material_" + i), parent, new DisplayRecipe(variantText, i, inputs, withoutMaterial, withMaterial));
       }).toList();
