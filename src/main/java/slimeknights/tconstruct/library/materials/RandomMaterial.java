@@ -63,7 +63,7 @@ public abstract class RandomMaterial implements IHaveLoader {
 
   /** Creates an instance for a fixed material */
   public static RandomMaterial fixed(MaterialVariantId materialId) {
-    return new Fixed(materialId);
+    return new Fixed(MaterialVariant.create(materialId));
   }
 
   /** Creates an instance for a fixed material */
@@ -93,7 +93,7 @@ public abstract class RandomMaterial implements IHaveLoader {
 
 
   /** Gets a random material */
-  public abstract MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random);
+  public abstract MaterialVariant getMaterial(MaterialStatsId statType, RandomSource random);
 
   @Override
   public abstract RecordLoadable<? extends RandomMaterial> getLoader();
@@ -119,12 +119,12 @@ public abstract class RandomMaterial implements IHaveLoader {
   /** Constant material */
   @RequiredArgsConstructor
   private static class Fixed extends RandomMaterial {
-    private static final RecordLoadable<Fixed> LOADER = RecordLoadable.create(MaterialVariantId.LOADABLE.requiredField("material", r -> r.material), Fixed::new);
+    private static final RecordLoadable<Fixed> LOADER = RecordLoadable.create(MaterialVariant.LOADABLE.requiredField("material", r -> r.material), Fixed::new);
 
-    private final MaterialVariantId material;
+    private final MaterialVariant material;
 
     @Override
-    public MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random) {
+    public MaterialVariant getMaterial(MaterialStatsId statType, RandomSource random) {
       return material;
     }
 
@@ -142,8 +142,8 @@ public abstract class RandomMaterial implements IHaveLoader {
 
 
     @Override
-    public MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random) {
-      return MaterialRegistry.firstWithStatType(statType).getId();
+    public MaterialVariant getMaterial(MaterialStatsId statType, RandomSource random) {
+      return MaterialRegistry.firstWithStatType(statType);
     }
 
     @Override
@@ -154,7 +154,7 @@ public abstract class RandomMaterial implements IHaveLoader {
 
   /** Produces a random material from a material tier */
   @RequiredArgsConstructor
-  private static class Randomized extends RandomMaterial implements Function<MaterialStatsId,List<MaterialId>> {
+  private static class Randomized extends RandomMaterial implements Function<MaterialStatsId,List<MaterialHolder>> {
     public static final IntRange TIER_RANGE = new IntRange(0, Integer.MAX_VALUE);
     public static final RecordLoadable<Randomized> LOADER = new LegacyLoadable<>(RecordLoadable.create(
       TIER_RANGE.defaultField("tier", r -> r.tier),
@@ -187,22 +187,18 @@ public abstract class RandomMaterial implements IHaveLoader {
     private final IJsonPredicate<MaterialVariantId> material;
 
     /** Cached list of material choices, automatically deleted when loot tables reload */
-    private final Map<MaterialStatsId,List<MaterialId>> materialChoices = new ConcurrentHashMap<>();
+    private final Map<MaterialStatsId,List<MaterialHolder>> materialChoices = new ConcurrentHashMap<>();
 
     @Override
-    public List<MaterialId> apply(MaterialStatsId statType) {
-      IMaterialRegistry registry = MaterialRegistry.getInstance();
-      List<MaterialId> choices = MaterialRegistry
-        .getInstance()
-        .getAllMaterials()
+    public List<MaterialHolder> apply(MaterialStatsId statType) {
+      List<MaterialHolder> choices = (allowHidden ? MaterialRegistry.getAllMaterials() : MaterialRegistry.getVisibleMaterials())
         .stream()
-        .filter(material -> {
-          MaterialId id = material.getId();
-          return this.tier.test(material.getTier()) && (allowHidden || !material.isHidden())
-                 && this.material.matches(material.getId())
-                 && registry.getMaterialStats(id, statType).isPresent();
+        .filter(holder -> {
+          IMaterial material = holder.get();
+          return this.tier.test(material.getTier())
+            && this.material.matches(material.getId())
+            && holder.hasStats(statType);
         })
-        .map(IMaterial::getId)
         .toList();
       if (choices.isEmpty()) {
         TConstruct.LOG.warn("Random material found no options for statType={}, tier={}, allowHidden={}, predicate={}", statType, tier, allowHidden, material);
@@ -216,12 +212,12 @@ public abstract class RandomMaterial implements IHaveLoader {
     }
 
     @Override
-    public MaterialId getMaterial(MaterialStatsId statType, RandomSource random) {
-      List<MaterialId> materialChoices = this.materialChoices.computeIfAbsent(statType, this);
+    public MaterialHolder getMaterial(MaterialStatsId statType, RandomSource random) {
+      List<MaterialHolder> materialChoices = this.materialChoices.computeIfAbsent(statType, this);
       if (materialChoices.isEmpty()) {
         // if we have no options, just get the first with the stat type
         // either this stat type is empty (and thus we end up with unknown), or the filter is too strict (so we end up with a useful material at least)
-        return MaterialRegistry.firstWithStatType(statType).getId();
+        return MaterialRegistry.firstWithStatType(statType);
       }
       return materialChoices.get(random.nextInt(materialChoices.size()));
     }
@@ -242,27 +238,24 @@ public abstract class RandomMaterial implements IHaveLoader {
 
   /** Produces a random material from a material tier */
   @RequiredArgsConstructor
-  private static class RandomVariant extends RandomMaterial implements Function<MaterialStatsId,List<List<MaterialVariantId>>> {
+  private static class RandomVariant extends RandomMaterial implements Function<MaterialStatsId,List<List<MaterialVariant>>> {
     public static final RecordLoadable<RandomVariant> LOADER = RecordLoadable.create(MaterialPredicate.LOADER.defaultField("material", r -> r.material), RandomVariant::new);
 
     /** Material condition */
     private final IJsonPredicate<MaterialVariantId> material;
 
     /** Cached list of material choices, each containing a list of variant choices. Ensures materials with more variants don't get weighted higher */
-    private final Map<MaterialStatsId,List<List<MaterialVariantId>>> materialChoices = new ConcurrentHashMap<>();
+    private final Map<MaterialStatsId,List<List<MaterialVariant>>> materialChoices = new ConcurrentHashMap<>();
 
     @Override
-    public List<List<MaterialVariantId>> apply(MaterialStatsId statType) {
-      IMaterialRegistry registry = MaterialRegistry.getInstance();
-      List<List<MaterialVariantId>> choices = MaterialRegistry
-        .getInstance()
-        .getAllMaterials()
+    public List<List<MaterialVariant>> apply(MaterialStatsId statType) {
+      List<List<MaterialVariant>> choices = MaterialRegistry.getAllMaterials()
         .stream()
         .map(material -> {
           if (!material.hasStats(statType)) {
             return List.<MaterialVariant>of();
           }
-          return MaterialRecipeCache.getVariants(material.id()).stream().filter(variant -> this.material.matches(variant.id())).map(MaterialVariant::id).toList();
+          return MaterialRecipeCache.getVariants(material.id()).stream().filter(variant -> this.material.matches(variant.id())).toList();
         })
         .filter(list -> !list.isEmpty())
         .toList();
@@ -278,14 +271,14 @@ public abstract class RandomMaterial implements IHaveLoader {
     }
 
     @Override
-    public MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random) {
-      List<List<MaterialVariantId>> materialChoices = this.materialChoices.computeIfAbsent(statType, this);
+    public MaterialVariant getMaterial(MaterialStatsId statType, RandomSource random) {
+      List<List<MaterialVariant>> materialChoices = this.materialChoices.computeIfAbsent(statType, this);
       if (materialChoices.isEmpty()) {
         // if we have no options, just get the first with the stat type
         // either this stat type is empty (and thus we end up with unknown), or the filter is too strict (so we end up with a useful material at least)
-        return MaterialRegistry.firstWithStatType(statType).getId();
+        return MaterialRegistry.firstWithStatType(statType);
       }
-      List<MaterialVariantId> variantChoices = materialChoices.get(random.nextInt(materialChoices.size()));
+      List<MaterialVariant> variantChoices = materialChoices.get(random.nextInt(materialChoices.size()));
       return variantChoices.get(random.nextInt(variantChoices.size()));
     }
 
@@ -305,7 +298,7 @@ public abstract class RandomMaterial implements IHaveLoader {
     private final ICondition[] conditions;
 
     @Override
-    public MaterialVariantId getMaterial(MaterialStatsId statType, RandomSource random) {
+    public MaterialVariant getMaterial(MaterialStatsId statType, RandomSource random) {
       return (Util.testConditions(conditions) ? ifTrue : ifFalse).getMaterial(statType, random);
     }
 

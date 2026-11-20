@@ -15,8 +15,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.library.loot.TinkerLoot;
-import slimeknights.tconstruct.library.materials.RandomMaterial;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 
 import java.util.List;
@@ -51,9 +52,9 @@ public class ToolPartLootEntry extends LootPoolSingletonContainer {
     if (!options.isEmpty()) {
       RandomSource random = context.getRandom();
       IToolPart choice = options.get(random.nextInt(options.size()));
-      MaterialVariantId material = this.material.getMaterial(choice.getStatType(), random);
+      MaterialVariant material = this.material.getMaterial(choice.getStatType(), random);
       if (choice.canUseMaterial(material.material())) {
-        consumer.accept(choice.withMaterial(material));
+        consumer.accept(choice.withMaterial(material.id()));
       }
     }
   }

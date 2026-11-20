@@ -48,7 +48,7 @@ public class TinkerCreativeTabs {
       .icon(() -> {
         MaterialVariantId material;
         if (MaterialRegistry.isFullyLoaded()) {
-          material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create());
+          material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create()).id();
         } else {
           material = ToolBuildHandler.getRenderMaterial(0);
         }
