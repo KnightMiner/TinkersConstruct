@@ -102,9 +102,24 @@ public interface MaterialVariant extends Comparable<MaterialVariant> {
   /** Checks if the given stats ID is supported by this material */
   boolean hasStats(MaterialStatsId stats);
 
-  /** Gets the traits for the given stats ID */
+  /**
+   * Gets the stats for the given stats ID, returning null if undefined.
+   * @return stats, or null if the stats ID is invalid or the stats are not defined for this material
+   * @see #hasStats(MaterialStatsId)
+   */
   @Nullable
   <T extends IMaterialStats> T getStats(MaterialStatsId stats);
+
+  /**
+   * Gets the stats for the given stats ID, returning default stats if undefined.
+   * @return stats, or null if the stats ID is invalid.
+   * @see #hasStats(MaterialStatsId)
+   */
+  @Nullable
+  default <T extends IMaterialStats> T getStatsOrDefault(MaterialStatsId id) {
+    T stats = getStats(id);
+    return stats != null ? stats : MaterialRegistry.getInstance().getDefaultStats(id);
+  }
 
   /** Gets the traits for the given stats ID */
   List<ModifierEntry> getTraits(MaterialStatsId id);

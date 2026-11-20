@@ -146,12 +146,9 @@ public class MaterialHolder implements MaterialVariant {
     // if the material is not registered, ignore its stats
     if (isBound()) {
       // if the stats are not supported, return the default
-      Optional<IMaterialStats> stats = this.stats.computeIfAbsent(id, statsGetter);
-      if (stats.isPresent()) {
-        return (T) stats.get();
-      }
+      return (T) this.stats.computeIfAbsent(id, statsGetter).orElse(null);
     }
-    return MaterialRegistry.getInstance().getDefaultStats(id);
+    return null;
   }
 
   @Override
