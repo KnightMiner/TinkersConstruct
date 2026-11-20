@@ -15,9 +15,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.Icons;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -282,8 +280,7 @@ public class PartBuilderScreen extends BaseTabbedScreen<PartBuilderBlockEntity,P
       tips.add(Component.empty());
     }
 
-    MaterialId id = materialVariant.material();
-    List<IMaterialStats> materialStats = new ArrayList<>(MaterialRegistry.getInstance().getAllStats(id));
+    List<IMaterialStats> materialStats = new ArrayList<>(materialVariant.getAllStats());
     materialStats.sort(STATS_COMPARATOR);
     for (IMaterialStats stat : materialStats) {
       // skip repair kit, its just an internal marker and the traits are inaccurate
@@ -297,7 +294,7 @@ public class PartBuilderScreen extends BaseTabbedScreen<PartBuilderBlockEntity,P
         stats.addAll(info);
         tips.addAll(stat.getLocalizedDescriptions());
 
-        List<ModifierEntry> traits = MaterialRegistry.getInstance().getTraits(id, stat.getIdentifier());
+        List<ModifierEntry> traits = materialVariant.getTraits(stat.getIdentifier());
         if (!traits.isEmpty()) {
           for (ModifierEntry trait : traits) {
             if (trait.isBound()) {

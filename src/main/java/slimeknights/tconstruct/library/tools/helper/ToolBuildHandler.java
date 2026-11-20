@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.library.TinkerData;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
@@ -141,9 +142,9 @@ public final class ToolBuildHandler {
       }
       // add all materials to the parent, conditionally to search
       if (!added) {
-        for (IMaterial material : MaterialRegistry.getInstance().getVisibleMaterials()) {
+        for (MaterialHolder material : MaterialRegistry.getVisibleMaterials()) {
           // if we added it and we want a single material, we are done
-          ItemStack tool = createSingleMaterial(item, MaterialVariant.create(material));
+          ItemStack tool = createSingleMaterial(item, material);
           if (!tool.isEmpty()) {
             tab.accept(tool);
             // if filter is set we wanted just the 1 item
@@ -168,7 +169,7 @@ public final class ToolBuildHandler {
     boolean useMaterial = false;
     for (MaterialStatsId requirement : required) {
       // try to use requested material
-      if (requirement.canUseMaterial(material.material())) {
+      if (requirement.canUseMaterial(material.holder())) {
         materials.add(material);
         useMaterial = true;
       } else {

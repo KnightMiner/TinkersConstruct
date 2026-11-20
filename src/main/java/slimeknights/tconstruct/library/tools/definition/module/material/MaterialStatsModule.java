@@ -16,9 +16,9 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.json.field.OptionallyNestedLoadable;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatType;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
@@ -185,7 +185,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
       for (int i = 0; i < statTypes.size(); i++) {
         MaterialStatsId statType = statTypes.get(i);
         // apply the stats for the material, assuming the stat ID is valid
-        IMaterialStats stats = registry.getStatsOrDefault(materials.get(i).material(), statType);
+        IMaterialStats stats = materials.get(i).getStatsOrDefault(statType);
         if (stats != null) {
           stats.apply(builder, scales[i]);
         }

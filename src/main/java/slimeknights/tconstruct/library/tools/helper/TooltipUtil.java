@@ -28,8 +28,8 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
+import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -359,23 +359,26 @@ public class TooltipUtil {
     List<IToolPart> parts = ToolPartsHook.parts(item.getToolDefinition());
     int partCount = parts.size();
     for (int i = 0; i <= max; i++) {
-      MaterialVariantId material = materials.get(i).id();
+      MaterialVariant material = materials.get(i);
       // display tool parts as the tool part name, nicer to work with
       Component componentName;
       if (i < partCount) {
         componentName = parts.get(i).withMaterialForDisplay(material).getHoverName();
       } else {
-        componentName = Component.translatable(KEY_FORMAT, MaterialTooltipCache.getDisplayName(material), Component.translatable(Util.makeTranslationKey("stat", components.get(i))));
+        componentName = Component.translatable(KEY_FORMAT, MaterialTooltipCache.getDisplayName(material.id()), Component.translatable(Util.makeTranslationKey("stat", components.get(i).id())));
       }
       // underline it and color it with the material name
-      tooltips.add(componentName.copy().withStyle(ChatFormatting.UNDERLINE).withStyle(style -> style.withColor(MaterialTooltipCache.getColor(material))));
+      tooltips.add(componentName.copy().withStyle(ChatFormatting.UNDERLINE).withStyle(style -> style.withColor(MaterialTooltipCache.getColor(material.id()))));
       // material IDs on advanced
       if (flag.isAdvanced()) {
         tooltips.add((Component.literal(material.toString())).withStyle(ChatFormatting.DARK_GRAY));
       }
       // material stats
       float scale = hook.scaleStats(definition, i);
-      MaterialRegistry.getInstance().getMaterialStats(material.material(), components.get(i)).ifPresent(stat -> tooltips.addAll(stat.getLocalizedInfo(scale)));
+      IMaterialStats stats = material.getStats(components.get(i));
+      if (stats != null) {
+        tooltips.addAll(stats.getLocalizedInfo(scale));
+      }
       if (i != max) {
         tooltips.add(Component.empty());
       }
