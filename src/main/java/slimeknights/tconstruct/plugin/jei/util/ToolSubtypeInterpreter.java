@@ -1,18 +1,19 @@
 package slimeknights.tconstruct.plugin.jei.util;
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 
 import java.util.List;
 
 /**
  * Subtype interpreter for tools, treats the tool as unique in ingredient list, generic in recipes
  */
-public enum ToolSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
+public enum ToolSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
   /** Materials are always considered */
   ALWAYS,
   /** Materials are only considered in the ingredients view */
@@ -20,11 +21,27 @@ public enum ToolSubtypeInterpreter implements IIngredientSubtypeInterpreter<Item
   /** Materials are only considered in the ingredients view or the first material. */
   FIRST;
 
+  @Nullable
   @Override
-  public String apply(ItemStack itemStack, UidContext context) {
+  public Object getSubtypeData(ItemStack stack, UidContext context) {
+    if (context == UidContext.Ingredient || this != INGREDIENT) {
+      MaterialNBT materials = MaterialNBT.get(stack);
+      if (!materials.isEmpty()) {
+        // if in first mode and looking at a recipe, only use the first material
+        if (context == UidContext.Recipe && this == FIRST) {
+          return materials.get(0);
+        }
+        return materials;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
     boolean isIngredient = context == UidContext.Ingredient;
     if (isIngredient || this != INGREDIENT) {
-      List<MaterialVariantId> materialList = MaterialIdNBT.from(itemStack).getMaterials();
+      List<MaterialVariant> materialList = MaterialNBT.get(stack).getList();
       if (!materialList.isEmpty()) {
         // if in first mode and looking at a recipe, only use the first material
         MaterialId first = materialList.get(0).material();
@@ -41,6 +58,6 @@ public enum ToolSubtypeInterpreter implements IIngredientSubtypeInterpreter<Item
         return builder.toString();
       }
     }
-    return NONE;
+    return "";
   }
 }

@@ -53,7 +53,7 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader
 import slimeknights.tconstruct.library.client.model.ModelProperties;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 import javax.annotation.Nonnull;
@@ -263,8 +263,8 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
 
   /** Custom overrides logic to sub in materials from NBT. */
   private static class MaterialsOverrides extends NestedOverrides {
-    private final AbstractBaked<?, MaterialIdNBT> baked;
-    public MaterialsOverrides(AbstractBaked<?,MaterialIdNBT> baked, ItemOverrides nested) {
+    private final AbstractBaked<?, MaterialNBT> baked;
+    public MaterialsOverrides(AbstractBaked<?,MaterialNBT> baked, ItemOverrides nested) {
       super(nested);
       this.baked = baked;
     }
@@ -279,14 +279,14 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
       if (stack.isEmpty()) {
         return originalModel;
       }
-      return baked.getCachedModel(MaterialIdNBT.from(stack));
+      return baked.getCachedModel(MaterialNBT.get(stack));
     }
   }
 
   /** Baked model for tools with multiple materials. */
-  private static class BakedTool extends AbstractBaked<MaterialIdNBT,MaterialIdNBT> {
+  private static class BakedTool extends AbstractBaked<MaterialNBT,MaterialNBT> {
     /** Cache of texture name to baked model */
-    private final Cache<MaterialIdNBT, BakedModel> cache = CacheBuilder
+    private final Cache<MaterialNBT, BakedModel> cache = CacheBuilder
       .newBuilder()
       // ensure we can display every single tool that shows in JEI, plus a couple extra
       .maximumSize(MaterialRenderInfoLoader.INSTANCE.getAllRenderInfos().size() * 3L / 2)
@@ -302,15 +302,15 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
     }
 
     @Override
-    protected void fetchMaterials(MaterialIdNBT materials, Function<Material, TextureAtlasSprite> spriteGetter, Map<String, Material> replacements, Map<String, TintedSprite> tints) {
+    protected void fetchMaterials(MaterialNBT materials, Function<Material, TextureAtlasSprite> spriteGetter, Map<String, Material> replacements, Map<String, TintedSprite> tints) {
       for (int i = 0; i < parts.size(); i++) {
-        fetchMaterial(materials.getMaterial(i), parts.get(i), spriteGetter, replacements, tints);
+        fetchMaterial(materials.get(i).id(), parts.get(i), spriteGetter, replacements, tints);
       }
     }
 
     @Override
-    protected BakedModel getCachedModel(MaterialIdNBT materials) {
-      if (!materials.getMaterials().isEmpty()) {
+    protected BakedModel getCachedModel(MaterialNBT materials) {
+      if (!materials.isEmpty()) {
         try {
           return cache.get(materials, () -> bakeWith(materials));
         } catch (ExecutionException e) {
@@ -349,7 +349,7 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
   }
 
   /** Baked model for tools with just 1 material. */
-  private static class SimpleBakedTool extends BakedSingleMaterial<MaterialIdNBT> {
+  private static class SimpleBakedTool extends BakedSingleMaterial<MaterialNBT> {
     @Getter
     private final ItemOverrides overrides;
     private SimpleBakedTool(BakedModel original, IGeometryBakingContext owner, SimpleBlockModel model, ModelState transform, Set<String> retexture) {
@@ -358,8 +358,8 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
     }
 
     @Override
-    protected BakedModel getCachedModel(MaterialIdNBT materials) {
-      return getCachedModel(materials.getMaterial(0));
+    protected BakedModel getCachedModel(MaterialNBT materials) {
+      return getCachedModel(materials.get(0).id());
     }
   }
 

@@ -17,7 +17,6 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
@@ -101,7 +100,7 @@ public final class ToolBuildHandler {
     // during datagen we have no idea if we will or won't have materials, so just add them regardless, won't hurt anything
     if (!definition.isDataLoaded() || definition.hasMaterials()) {
 		  // use all 5 render materials for display stacks, having too many materials is not a problem and its easier than making this reload sensitive
-      stack = new MaterialIdNBT(RENDER_MATERIALS).updateStack(stack);
+      stack = MaterialNBT.of(RENDER_MATERIALS.stream().map(MaterialVariant::create).toList()).updateStack(stack);
     }
     stack.set(TinkerData.DISPLAY, true);
     return stack;

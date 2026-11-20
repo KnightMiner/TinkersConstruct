@@ -34,7 +34,6 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolMate
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
@@ -169,18 +168,18 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
 
   /** Checks if the given stack matches the extra materials */
   private boolean matchesExtraMaterials(ItemStack stack) {
-    MaterialIdNBT materials = MaterialIdNBT.from(stack);
+    MaterialNBT materials = MaterialNBT.get(stack);
     int index = 0;
     // if consumed offset, the first extra material is at index 0
     if (castPurpose == CastPurpose.CONSUMED_OFFSET) {
-      if (!this.extraMaterials.get(0).sameId(materials.getMaterial(0))) {
+      if (!this.extraMaterials.get(0).sameId(materials.get(0))) {
         return false;
       }
       index = 1;
     }
     for (; index < extraMaterials.size(); index++) {
       // this method is only called if we have 1 material
-      if (!this.extraMaterials.get(index).sameId(materials.getMaterial(index + 1))) {
+      if (!this.extraMaterials.get(index).sameId(materials.get(index + 1))) {
         return false;
       }
     }
@@ -345,8 +344,8 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     @Override
     public List<ItemStack> getCastItems(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
-        MaterialVariantId castMaterial = MaterialIdNBT.getMaterial(focus, castIndex);
-        if (castItem.canUseMaterial(castMaterial.material())) {
+        MaterialVariant castMaterial = MaterialNBT.get(focus, castIndex);
+        if (castItem.canUseMaterial(castMaterial.holder())) {
           return List.of(castItem.withMaterialForDisplay(castMaterial));
         }
       }
@@ -356,7 +355,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     @Override
     public List<FluidStack> getFluids(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
-        MaterialVariant material = MaterialVariant.create(MaterialIdNBT.getMaterial(focus, fluidIndex));
+        MaterialVariant material = MaterialNBT.get(focus, fluidIndex);
         if (materials.matches(material) && castItem.canUseMaterial(material.holder())) {
           List<FluidStack> fluids = MaterialCastingLookup.getCastingFluids(material.id()).stream()
             .flatMap(recipe -> recipe.getFluids().stream().map(ToolCastingRecipe.this::resizeFluid))
@@ -393,10 +392,10 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
       if (!output) {
         return false;
       }
-      MaterialIdNBT materials = MaterialIdNBT.from(focus);
+      MaterialNBT materials = MaterialNBT.get(focus);
       for (int i = 0; i < extraMaterials.size(); i++) {
         // we always have 2 materials before extra materials in this recipe
-        if (!extraMaterials.get(i).sameId(materials.getMaterial(i + 2))) {
+        if (!extraMaterials.get(i).sameId(materials.get(i + 2))) {
           return false;
         }
       }

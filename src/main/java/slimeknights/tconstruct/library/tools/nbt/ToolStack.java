@@ -839,17 +839,8 @@ public class ToolStack implements IToolStackView {
       return;
     }
 
-    // resolve all material redirects
-    boolean hasMaterials = MaterialRegistry.isFullyLoaded() && tag.contains(ToolStack.TAG_MATERIALS, Tag.TAG_LIST);
-    if (hasMaterials) {
-      MaterialIdNBT stored = MaterialIdNBT.readFromNBT(tag.getList(ToolStack.TAG_MATERIALS, Tag.TAG_STRING));
-      MaterialIdNBT resolved = stored.resolveRedirects();
-      if (resolved != stored) {
-        resolved.updateNBT(tag);
-      }
-    }
     // only rebuild stats if we either have materials, or we don't need materials
-    if (definition.isDataLoaded() && (hasMaterials || !definition.hasMaterials())) {
+    if (definition.isDataLoaded() && (MaterialRegistry.isFullyLoaded() && tag.contains(ToolStack.TAG_MATERIALS, Tag.TAG_LIST) || !definition.hasMaterials())) {
       ToolStack.from(item, definition, tag).rebuildStats();
     }
   }

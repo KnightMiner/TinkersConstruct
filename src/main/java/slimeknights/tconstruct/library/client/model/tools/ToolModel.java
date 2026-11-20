@@ -60,14 +60,13 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMap;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -112,7 +111,6 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
         List<ModifierEntry> modifiers = tool.getUpgrades().modifiers();
         for (int i = modifiers.size() - 1; i >= 0; i--) {
           ModifierEntry entry = modifiers.get(i);
-          ModifierId id = entry.id();
           // colors are assumed to not be sensitive to the model's large status
           ModifierModel modifierModel = overrides.modifierModels.get(entry.id());
           if (modifierModel != null) {
@@ -264,7 +262,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
   }
 
   /**
-   * Same as {@link #bake(IGeometryBakingContext, ModelBaker, Function, ModelState, ItemOverrides, ResourceLocation)}, but uses fewer arguments and does not require an instance
+   * Same as {@link #bake(IGeometryBakingContext, ModelBaker, Function, ModelState, ItemOverrides)}, but uses fewer arguments and does not require an instance
    * @param owner           Model configuration
    * @param spriteGetter    Sprite getter function
    * @param largeTransforms Transform to apply to the large parts. If null, only generates small parts
@@ -280,7 +278,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
    */
   private static BakedModel bakeInternal(IGeometryBakingContext owner, Function<Material, TextureAtlasSprite> spriteGetter, @Nullable Transformation largeTransforms,
                                          List<ToolPart> parts, ModifierModelMap modifierModels,
-                                         List<MaterialVariantId> materials, @Nullable IToolStackView tool, ItemOverrides overrides,
+                                         MaterialNBT materials, @Nullable IToolStackView tool, ItemOverrides overrides,
                                          Collection<BakedQuad> smallExtraQuads, Collection<BakedQuad> largeExtraQuads, Collection<BakedQuad> leftExtraQuads) {
     Transformation smallTransforms = Transformation.identity();
 
@@ -310,7 +308,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       if (part.hasMaterials()) {
         // start by fetching the material we are rendering at this position, should only be null on invalid tools or during the initial bake
         int index = part.index();
-        MaterialVariantId material = index < materials.size() ? materials.get(index) : MaterialId.UNKNOWN;
+        MaterialVariantId material = materials.get(index).id();
         TintedSprite materialSprite = MaterialModel.getMaterialSprite(spriteGetter, owner.getMaterial(part.getName(false)), material);
         particle = materialSprite.sprite();
 
@@ -406,7 +404,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
     // default is just a single part named tool, no material
     List<ToolPart> toolParts = this.toolParts;
     if (toolParts.isEmpty()) {
@@ -463,7 +461,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
     }
     overrides = new MaterialOverrideHandler(owner, toolParts, largeTransforms, modifierModels, overrides, ammoKey, flipAmmo, smallAmmoTransforms, largeAmmoTransforms, leftAmmoTransforms);
     // bake the original with no tool, meaning it will skip modifiers and materials
-    return bakeInternal(owner, spriteGetter, largeTransforms, toolParts, modifierModels, List.of(), null, overrides, List.of(), List.of(), List.of());
+    return bakeInternal(owner, spriteGetter, largeTransforms, toolParts, modifierModels, MaterialNBT.EMPTY, null, overrides, List.of(), List.of(), List.of());
   }
 
   /** Swaps out the large model for the small or gui model as needed */
@@ -579,7 +577,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
      * @param materials  New materials for the model
      * @return  Baked model
      */
-    private BakedModel bakeDynamic(List<MaterialVariantId> materials, IToolStackView tool, ItemStack ammo, int seed) {
+    private BakedModel bakeDynamic(MaterialNBT materials, IToolStackView tool, ItemStack ammo, int seed) {
       // start by finding ammo quads
       List<BakedQuad> smallAmmoQuads = List.of();
       List<BakedQuad> largeAmmoQuads = List.of();
@@ -645,13 +643,13 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       }
       
       // use material IDs for the sake of internal rendering materials
-      List<MaterialVariantId> materialIds = MaterialIdNBT.from(stack).getMaterials();
+      MaterialNBT materials = MaterialNBT.get(stack);
       IToolStackView tool = ToolStack.from(stack);
 
       // if nothing unique, render original
       // TODO 1.21: with how forced modifiers work, this will probably be true way more often
       ModifierNBT modifiers = tool.getUpgrades();
-      if (materialIds.isEmpty() && modifiers.isEmpty() && modifierModels.sortedConstant().isEmpty()) {
+      if (materials.isEmpty() && modifiers.isEmpty() && modifierModels.sortedConstant().isEmpty()) {
         return originalModel;
       }
 
@@ -694,7 +692,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
 
       // render special model
       try {
-        return cache.get(new ToolCacheKey(materialIds, builder.build()), () -> bakeDynamic(materialIds, tool, ammo, seed));
+        return cache.get(new ToolCacheKey(materials, builder.build()), () -> bakeDynamic(materials, tool, ammo, seed));
       } catch (ExecutionException e) {
         TConstruct.LOG.error("Failed to get tool model from cache", e);
         return originalModel;
@@ -703,5 +701,5 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
   }
 
   /** Simple data class to cache built tool modifiers, contains everything unique in the textures */
-  private record ToolCacheKey(List<MaterialVariantId> materials, List<Object> modifierData) {}
+  private record ToolCacheKey(MaterialNBT materials, List<Object> modifierData) {}
 }

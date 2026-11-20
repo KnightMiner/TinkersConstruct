@@ -37,7 +37,6 @@ import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.layout.LayoutSlot;
 import slimeknights.tconstruct.library.tools.layout.StationSlotLayoutLoader;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
@@ -191,7 +190,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
     }
     // create tool
     Item item = output.asItem();
-    ToolStack tool = ToolStack.createTool(item, output.getToolDefinition(), new MaterialNBT(materials));
+    ToolStack tool = ToolStack.createTool(item, output.getToolDefinition(), MaterialNBT.of(materials));
     int count;
     // if we have any parts set, run the count hook
     // no point running it if all materials are set through override/no materials, just set the recipe count in that case
@@ -287,23 +286,23 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
         int offset = getToolParts().size();
         int materialCount = ToolMaterialHook.stats(output.getToolDefinition()).size();
         if (offset < materialCount) {
-          List<MaterialVariantId> list = new ArrayList<>(materialCount);
+          MaterialNBT.Builder builder = MaterialNBT.builder();
           // fill in all provided parts with render materials
           for (int i = 0; i < offset; i++) {
-            list.add(ToolBuildHandler.getRenderMaterial(i));
+            builder.add(ToolBuildHandler.getRenderMaterial(i));
           }
           // finally, if the original size was too small, append to the end
           int max = Math.min(materialCount - offset, materials.size());
           for (int i = 0; i < max; i++) {
-            list.add(materials.get(i));
+            builder.add(materials.get(i));
           }
           // if we have only real materials, make a proper tool
           if (offset == 0) {
-            result = ToolBuildHandler.buildItemFromMaterials(output, new MaterialNBT(list.stream().map(MaterialVariant::create).toList()));
+            result = ToolBuildHandler.buildItemFromMaterials(output, builder.build());
             result.setCount(outputCount);
           } else {
             // not a full list? mark it for display with just the materials on the end
-            result = new MaterialIdNBT(list).updateStack(new ItemStack(output, outputCount));
+            result = builder.build().updateStack(new ItemStack(output, outputCount));
             result.set(TinkerData.DISPLAY, true);
           }
         }

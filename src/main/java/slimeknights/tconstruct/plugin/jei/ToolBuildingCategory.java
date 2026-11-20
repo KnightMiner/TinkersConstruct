@@ -19,13 +19,12 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.layout.LayoutSlot;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
@@ -89,11 +88,11 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
       // if we have an output focus, set the input slots to match
       if (!focus.isEmpty()) {
         List<IToolPart> parts = recipe.getToolParts();
-        MaterialIdNBT materials = MaterialIdNBT.from(focus);
+        MaterialNBT materials = MaterialNBT.get(focus);
         for (int i = 0; i < partCount; i++) {
           IMaterialItem part = parts.get(i);
-          MaterialVariantId material = materials.getMaterial(i);
-          if (part.canUseMaterial(material.material())) {
+          MaterialVariant material = materials.get(i);
+          if (part.canUseMaterial(material.holder())) {
             partsAndExtras.set(i, List.of(part.withMaterialForDisplay(material)));
           }
         }
@@ -147,19 +146,12 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
     List<IRecipeSlotDrawable> inputSlots = CategoryUtil.filterSlots(recipeSlots, PART_SLOT_PREFIX);
     if (resultSlot != null && !inputSlots.isEmpty()) {
       List<IToolPart> parts = recipe.getToolParts();
-      List<MaterialVariantId> variants = new ArrayList<>(parts.size());
+      MaterialNBT.Builder builder = MaterialNBT.builder();
       for (int i = 0; i < parts.size(); i++) {
-        variants.add(parts.get(i).getMaterial(inputSlots.get(i).getDisplayedItemStack().orElse(ItemStack.EMPTY)).id());
+        builder.add(parts.get(i).getMaterial(inputSlots.get(i).getDisplayedItemStack().orElse(ItemStack.EMPTY)));
       }
-      variants.addAll(recipe.getExtraMaterials());
-      ItemStack stack = new MaterialIdNBT(variants).updateStack(new ItemStack(recipe.getOutput()));
-      if (stack.getMaxStackSize() > 1) {
-        ToolStack tool = ToolStack.from(stack);
-        tool.rebuildStats();
-        stack.setCount(CraftCountModifierHook.maxStackSize(tool, recipe.shrinkToolSlotBy()));
-      }
-
-      resultSlot.createDisplayOverrides().addItemStack(CraftCountModifierHook.copyMaterials(new MaterialIdNBT(variants), recipe.getOutput(), recipe.getOutputCount()));
+      builder.add(recipe.getExtraMaterials());
+      resultSlot.createDisplayOverrides().addItemStack(CraftCountModifierHook.copyMaterials(builder.build(), recipe.getOutput(), recipe.getOutputCount()));
     }
   }
 

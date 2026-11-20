@@ -28,7 +28,7 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolMate
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.Arrays;
@@ -186,8 +186,8 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
     public List<ItemStack> getToolWithoutModifier(ItemStack focus, boolean focusOutput) {
       if (!focus.isEmpty() && (focusOutput || isTool(focus))) {
         // if focusing on an input tool, it becomes our tool without modifier provided we can change it
-        MaterialIdNBT materials = MaterialIdNBT.from(focus);
-        if (!focusOutput && !materials.getMaterial(index).sameVariant(material)) {
+        MaterialNBT materials = MaterialNBT.get(focus);
+        if (!focusOutput && !materials.get(index).sameVariant(material)) {
           return focusInput(focus);
         }
         // otherwise, copy all materials to the input except the one we plan to swap
@@ -201,9 +201,9 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
       if (!focus.isEmpty() && (focusOutput || isTool(focus))) {
         if (focusOutput) {
           // for output focus, want to make the simplest output with the material
-          MaterialIdNBT materials = MaterialIdNBT.from(focus);
+          MaterialNBT materials = MaterialNBT.get(focus);
           // skip duplicating if the material is already there
-          if (!materials.getMaterial(index).sameVariant(material)) {
+          if (!materials.get(index).sameVariant(material)) {
             materials = materials.replaceMaterial(index, material.id());
           }
           return List.of(copyMaterials(materials, focus.getItem()));
@@ -228,7 +228,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
 
     @Override
     public boolean isVisibleFromItem(ItemStack focus, boolean output) {
-      return output == MaterialIdNBT.getMaterial(focus, index).sameId(material);
+      return output == MaterialNBT.get(focus, index).is(material.holder());
     }
   }
 }

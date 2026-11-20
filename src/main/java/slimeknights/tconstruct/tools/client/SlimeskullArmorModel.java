@@ -24,11 +24,13 @@ import slimeknights.tconstruct.library.client.armor.ArmorModelManager.ArmorModel
 import slimeknights.tconstruct.library.client.armor.MultilayerArmorModel;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.world.client.BlockModelSkullRenderer;
@@ -71,24 +73,25 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
   /** Prepares the model */
   public Model setup(LivingEntity living, ItemStack stack, HumanoidModel<?> base, ArmorModel model) {
     super.setup(living, stack, EquipmentSlot.HEAD, base, model);
-    MaterialId materialId = MaterialIdNBT.from(stack).getMaterial(0).material();
-    if (!materialId.equals(MaterialId.UNKNOWN)) {
-      SkullModelBase skull = getHeadModel(materialId);
-      ResourceLocation texture = HEAD_TEXTURES.get(materialId);
+    MaterialHolder material = MaterialNBT.get(stack, 0).holder();
+    if (material.isPresent()) {
+      MaterialId id = material.id();
+      SkullModelBase skull = getHeadModel(id);
+      ResourceLocation texture = HEAD_TEXTURES.get(id);
       if (skull != null && texture != null) {
         headModel = skull;
         headTexture = texture;
         // if dyed, color is the dye
         ModifierId dyed = TinkerModifiers.dyed.id();
         if (ModifierUtil.getModifierLevel(stack, dyed) > 0) {
-          headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed, -1);
+          headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed.id(), -1);
         } else {
           // if not dyed, color is the material, fallback to no tint if missing
-          MaterialVariantId material = MaterialIdNBT.getMaterial(stack, 1);
-          if (MaterialId.UNKNOWN.equals(material)) {
-            headColor = -1;
+          MaterialVariant slime = MaterialNBT.get(stack, 1);
+          if (slime.isPresent()) {
+            headColor = MATERIAL_COLOR_CACHE.apply(slime.id());
           } else {
-            headColor = MATERIAL_COLOR_CACHE.apply(material);
+            headColor = -1;
           }
         }
 

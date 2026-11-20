@@ -14,6 +14,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
@@ -47,6 +48,8 @@ public class TinkerData {
   public static final DeferredDataComponent<Boolean> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Codec.BOOL, ByteBufCodecs.BOOL);
   
   /* Tool */
+  /** Holds a single material on an item. Used for tool parts and other material items */
+  public static final DeferredDataComponent<MaterialNBT> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", MaterialNBT.CODEC, MaterialNBT.STREAM_CODEC);
   /** Holds the list of modifiers from recipes, such as upgrades or abilities */
   public static final DeferredDataComponent<ModifierNBT> CRAFTED_MODIFIERS = DATA_COMPONENTS.registerPersistent("crafted_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);
   /** Holds the combined list of modifiers, including {@link #CRAFTED_MODIFIERS} and traits, sorted by priority. */

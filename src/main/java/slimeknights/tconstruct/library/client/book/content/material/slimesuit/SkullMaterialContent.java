@@ -5,10 +5,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.client.screen.book.element.ItemElement;
-import slimeknights.mantle.recipe.helper.RecipeHelper;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.book.content.material.SingleMaterialStatContent;
 import slimeknights.tconstruct.library.client.book.elements.TinkerItemElement;
@@ -18,7 +19,7 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.display.CustomMaterialName;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.stats.RepairStats;
@@ -71,9 +72,9 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
   private IDisplayableCastingRecipe getSkullRecipe() {
     Level world = Minecraft.getInstance().level;
     if (!searchedSkullRecipe && world != null) {
-      skullRecipe = RecipeHelper.getJEIRecipes(world.registryAccess(), world.getRecipeManager(), TinkerRecipes.castingBasinType.get(), IDisplayableCastingRecipe.class).stream()
-        .filter(recipe -> recipe.getOutputs().stream().anyMatch(output ->
-          output.getItem() == TinkerTools.slimesuit.get(ArmorItem.Type.HELMET) && materialName.equals(MaterialIdNBT.getMaterial(output, 0).toString())))
+      Item skull = TinkerTools.slimesuit.get(ArmorItem.Type.HELMET);
+      skullRecipe = MultiNamedRecipe.streamRecipes(world.registryAccess(), world.getRecipeManager(), TinkerRecipes.castingBasinType.get(), IDisplayableCastingRecipe.class)
+        .filter(recipe -> recipe.getOutputs().stream().anyMatch(output -> output.is(skull) && getMaterialVariant().matchesVariant(MaterialNBT.get(output, 0))))
         .findFirst().orElse(null);
       searchedSkullRecipe = true;
     }

@@ -15,7 +15,6 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
@@ -25,7 +24,7 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeI
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,7 +158,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
     @Override
     public List<ItemStack> getDisplayItems(int slot, ItemStack focus, boolean focusOutput) {
       if (slot == index && !focus.isEmpty() && (focusOutput || isTool(focus))) {
-        MaterialVariantId material = MaterialIdNBT.getMaterial(focus, index);
+        MaterialVariant material = MaterialNBT.get(focus, index);
         IntStream indices;
         if (focusOutput) {
           // if focusing on the output, filter to just materials that produce the output
@@ -180,9 +179,9 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
       if (!focus.isEmpty()) {
         if (focusOutput) {
           // find all matching materials to display. This may include material variants hence mapping instead of a single item
-          MaterialIdNBT materials = MaterialIdNBT.from(focus);
-          MaterialVariantId material = materials.getMaterial(index);
-          Function<MaterialVariant,ItemStack> applyMaterial = newMaterial -> replaceMaterial(materials, newMaterial.id(), focus);
+          MaterialNBT materials = MaterialNBT.get(focus);
+          MaterialVariant material = materials.get(index);
+          Function<MaterialVariant,ItemStack> applyMaterial = newMaterial -> replaceMaterial(materials, newMaterial, focus);
           List<ItemStack> results = this.materials.stream().filter(material::matchesVariant).map(applyMaterial).toList();
           if (!results.isEmpty()) {
             return results;

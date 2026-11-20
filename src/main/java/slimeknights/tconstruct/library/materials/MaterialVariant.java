@@ -156,6 +156,12 @@ public interface MaterialVariant extends Comparable<MaterialVariant> {
     return material().equals(id);
   }
 
+  /** Checks if the material is in the given holder */
+  default boolean is(MaterialHolder material) {
+    // holders are cached so instance comparison is correct
+    return holder() == material;
+  }
+
   /** Checks if the modifier is in the given tag */
   default boolean is(TagKey<IMaterial> tag) {
     return MaterialRegistry.getInstance().isInTag(material(), tag);

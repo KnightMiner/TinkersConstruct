@@ -33,7 +33,7 @@ public interface MissingMaterialsToolHook {
     for (int i = oldSize; i < newSize; i++) {
       materials.add(newMaterials.get(i));
     }
-    return new MaterialNBT(materials);
+    return MaterialNBT.of(materials);
   }
 
   /** Checks if we are missing materials */

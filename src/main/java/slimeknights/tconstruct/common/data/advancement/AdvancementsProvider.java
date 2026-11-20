@@ -71,7 +71,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerMaterials;
@@ -433,9 +433,9 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     });
     builder(TinkerGadgets.piggyBackpack, resource("world/piggybackpack"), tinkersGadgetry, AdvancementType.GOAL, builder ->
       builder.addCriterion("used_pack", PlayerInteractTrigger.TriggerInstance.itemUsedOnEntity(Optional.empty(), ItemPredicate.Builder.item().of(TinkerGadgets.piggyBackpack), Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(EntityType.PIG))))));
-    AdvancementHolder slimesuit = builder(new MaterialIdNBT(List.of(MaterialIds.bone, MaterialIds.skyslime)).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.CHESTPLATE))), resource("world/slimesuit"), skyslimeIsland, AdvancementType.GOAL, builder ->
+    AdvancementHolder slimesuit = builder(MaterialNBT.of(MaterialIds.bone, MaterialIds.skyslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.CHESTPLATE))), resource("world/slimesuit"), skyslimeIsland, AdvancementType.GOAL, builder ->
       TinkerTools.slimesuit.forEach((type, armor) -> builder.addCriterion("crafted_" + type.getName(), hasItem(armor))));
-    builder(new MaterialIdNBT(List.of(MaterialIds.gunpowder, MaterialIds.enderslime)).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.HELMET))),
+    builder(MaterialNBT.of(MaterialIds.gunpowder, MaterialIds.enderslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.HELMET))),
             resource("world/slimeskull"), slimesuit, AdvancementType.CHALLENGE, builder -> {
       Item helmet = TinkerTools.slimesuit.get(ArmorItem.Type.HELMET);
       Consumer<MaterialId> with = mat -> builder.addCriterion(mat.getPath(), hasTool(ToolContextPredicate.set(helmet), new HasMaterialPredicate(mat, 0)));

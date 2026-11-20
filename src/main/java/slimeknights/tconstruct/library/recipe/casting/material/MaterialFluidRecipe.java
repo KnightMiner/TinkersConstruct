@@ -11,8 +11,8 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.ICustomOutputRecipe;
 import slimeknights.tconstruct.library.json.FluidStackSet;
-import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
@@ -63,7 +63,7 @@ public class MaterialFluidRecipe implements ICustomOutputRecipe<CastingRecipeInp
   }
 
   /** Checks if this recipe is valid for the given fluid and material */
-  public boolean matches(Fluid fluid, MaterialVariantId material) {
+  public boolean matches(Fluid fluid, MaterialVariant material) {
     // disallow casting if the input material matches the output (including variant) to prevent wasted resources
     return matches(fluid) && (input == null || input.matchesVariant(material)) && !output.sameVariant(material);
   }

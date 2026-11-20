@@ -15,16 +15,15 @@ import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialsCraftingTableRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapelessMaterialsRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -105,12 +104,12 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
     ItemStack focus = CategoryUtil.getResultItemFocus(focuses);
     // if we have an output focus, set the input slots to match
     if (!focus.isEmpty()) {
-      MaterialIdNBT materials = MaterialIdNBT.from(focus);
+      MaterialNBT materials = MaterialNBT.get(focus);
       // loop through finding all overrides to display, but skip any that are not present on the too
       int partCount = partSlots.size();
       for (int i = 0; i < partCount; i++) {
         // find all inputs matching the material
-        MaterialVariantId material = materials.getMaterial(i);
+        MaterialVariant material = materials.get(i);
         List<ItemStack> matchingStacks = Arrays.stream(recipe.getParts().get(i).getItems())
           .filter(stack -> material.matchesVariant(MaterialRecipeCache.getMaterial(stack)))
           .toList();
@@ -160,13 +159,13 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
           width = height = CategoryUtil.getShapelessSize(recipe.getIngredients().size());
         }
         // find input materials and use to set the output
-        List<MaterialVariantId> variants = new ArrayList<>(partSlots.size());
+        MaterialNBT.Builder builder = MaterialNBT.builder();
         for (int[] partSlot : partSlots) {
           ItemStack stack = recipeSlots.get(MantleJEIConstants.getCraftingIndex(partSlot[0], width, height)).getDisplayedItemStack().orElse(ItemStack.EMPTY);
-          variants.add(MaterialRecipeCache.getMaterial(stack));
+          builder.add(MaterialRecipeCache.getMaterial(stack));
         }
-        variants.addAll(recipe.getExtraMaterials());
-        resultSlot.createDisplayOverrides().addItemStack(new MaterialIdNBT(variants).updateStack(plainResult.copy()));
+        builder.add(recipe.getExtraMaterials());
+        resultSlot.createDisplayOverrides().addItemStack(builder.build().updateStack(plainResult.copy()));
       }
     }
   }

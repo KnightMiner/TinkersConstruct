@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.RandomSource;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
@@ -77,7 +77,7 @@ public record RemappingMaterialsModule(List<RandomMaterial> materials, List<Map<
     for (int i = oldSize; i < newSize; i++) {
       materials.add(newMaterials.get(i));
     }
-    return new MaterialNBT(materials);
+    return MaterialNBT.of(materials);
   }
 
 

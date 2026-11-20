@@ -2,17 +2,24 @@ package slimeknights.tconstruct.library.tools.nbt;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.materials.MaterialHolder;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
+import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,37 +29,55 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNullElse;
+import java.util.function.Function;
 
 /**
  * All the materials contained within the tool. Determines a portion of the modifiers, along with the stats.
  */
 @EqualsAndHashCode
 @ToString
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MaterialNBT implements Iterable<MaterialVariant> {
   /** Instance containing no materials, for errors with parsing NBT */
-  public final static MaterialNBT EMPTY = new MaterialNBT(ImmutableList.of());
+  public final static MaterialNBT EMPTY = new MaterialNBT(List.of());
+
+  /** Codec instance for NBT */
+  public static final Codec<MaterialNBT> CODEC;
+  /** Stream codec instance for network */
+  public static final StreamCodec<ByteBuf,MaterialNBT> STREAM_CODEC;
+  static {
+    Function<List<MaterialVariant>,MaterialNBT> constuctor = MaterialNBT::of;
+    Function<MaterialNBT,List<MaterialVariant>> getter = m -> m.list;
+    CODEC = MaterialVariant.CODEC.listOf().xmap(constuctor, getter);
+    STREAM_CODEC = MaterialVariant.STREAM_CODEC.apply(ByteBufCodecs.list()).map(constuctor, getter);
+  }
 
   /** List of materials contained in this NBT */
   @Getter
   private final List<MaterialVariant> list;
 
-  /** Creates a new material NBT */
-  public MaterialNBT(List<MaterialVariant> list) {
-    this.list = ImmutableList.copyOf(list);
+  /** Creates a new instance, returning {@link #EMPTY} if no materials are passed. */
+  public static MaterialNBT of(List<MaterialVariant> list) {
+    if (list.isEmpty()) {
+      return EMPTY;
+    }
+    return new MaterialNBT(List.copyOf(list));
   }
 
   /** Creates a new material NBT */
   @VisibleForTesting
   public static MaterialNBT of(IMaterial... materials) {
-    return new MaterialNBT(Arrays.stream(materials).map(MaterialVariant::create).toList());
+    return of(Arrays.stream(materials).map(MaterialVariant::create).toList());
   }
 
   /** Creates a new material NBT */
   public static MaterialNBT of(MaterialVariant... materials) {
-    return new MaterialNBT(List.of(materials));
+    return of(List.of(materials));
+  }
+
+  /** Creates a new material NBT */
+  public static MaterialNBT of(MaterialVariantId... materials) {
+    return of(Arrays.stream(materials).map(MaterialVariant::create).toList());
   }
 
   /** Creates a builder for this NBT */
@@ -112,8 +137,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
       }
       list.add(replacement);
     }
-
-    return new MaterialNBT(list);
+    return of(list);
   }
 
   /**
@@ -127,36 +151,23 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     return replaceMaterial(index, MaterialVariant.create(replacement));
   }
 
-  /**
-   * Parses the material list from NBT
-   * @param nbt  NBT instance
-   * @return  MaterialNBT instance
-   */
-  public static MaterialNBT readFromNBT(@Nullable Tag nbt) {
-    if (nbt == null || nbt.getId() != Tag.TAG_LIST) {
+  /** @deprecated use {@link #CODEC} */
+  @Deprecated
+  public static MaterialNBT readFromNBT(@Nullable Tag tag) {
+    if (tag == null || tag.getId() != Tag.TAG_LIST) {
       return EMPTY;
     }
-    ListTag listNBT = (ListTag) nbt;
+    ListTag listNBT = (ListTag) tag;
     if (listNBT.getElementType() != Tag.TAG_STRING || listNBT.isEmpty()) {
       return EMPTY;
     }
-
-    List<MaterialVariant> materials = listNBT.stream()
-      // if any material ID fails to parse (invalid string), replace with unknown
-      .map(tag -> requireNonNullElse(MaterialVariantId.tryParse(tag.getAsString()), MaterialId.UNKNOWN))
-      .map(MaterialVariant::create)
-      .toList();
-    return new MaterialNBT(materials);
+    return TagUtil.decode(CODEC, "material nbt", tag).orElse(EMPTY);
   }
 
-  /**
-   * Writes this material list to NBT
-   * @return  List of materials
-   */
-  public ListTag serializeToNBT() {
-    return list.stream()
-               .map(lazy -> StringTag.valueOf(lazy.id().toString()))
-               .collect(Collectors.toCollection(ListTag::new));
+  /** @deprecated use {@link #CODEC} */
+  @Deprecated
+  public Tag serializeToNBT() {
+    return TagUtil.encode(CODEC, this);
   }
 
 
@@ -176,6 +187,25 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
   @Override
   public Spliterator<MaterialVariant> spliterator() {
     return list.spliterator();
+  }
+
+
+  /* Helpers */
+
+  /** Gets the materials from a stack */
+  public static MaterialNBT get(ItemStack stack) {
+    return stack.getOrDefault(TinkerData.MATERIALS, EMPTY);
+  }
+
+  /** Helper to quickly fetch a single material from a stack. Use {@link #get(ItemStack)} and {@link #get(int)} instead if you need to get multiple. */
+  public static MaterialVariant get(ItemStack stack, int index) {
+    return get(stack).get(index);
+  }
+
+  /** Writes this material list to the given stack */
+  public ItemStack updateStack(ItemStack stack) {
+    stack.set(TinkerData.MATERIALS, this);
+    return stack;
   }
 
 
@@ -220,11 +250,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
 
     /** Builds the final list */
     public MaterialNBT build() {
-      List<MaterialVariant> materials = builder.build();
-      if (materials.isEmpty()) {
-        return MaterialNBT.EMPTY;
-      }
-      return new MaterialNBT(materials);
+      return of(builder.build());
     }
   }
 }

@@ -17,7 +17,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
@@ -31,7 +30,6 @@ import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -156,7 +154,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         }
         List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(i -> MaterialVariant.create(ToolBuildHandler.getRenderMaterial(i))).toList();
         ToolStack displayTool = tool.copy();
-        displayTool.setMaterials(new MaterialNBT(renderMaterials));
+        displayTool.setMaterials(MaterialNBT.of(renderMaterials));
         ResourceLocation toolId = id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName());
         // start making recipes
         for (int i = 0; i < stats.size(); i++) {
@@ -223,10 +221,10 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     @Override
     public List<ItemStack> getDisplayItems(int slot, ItemStack focus, boolean focusOutput) {
       if (slot == index && !focus.isEmpty() && (focusOutput || isTool(focus))) {
-        MaterialVariantId material = MaterialIdNBT.getMaterial(focus, index);
+        MaterialVariant material = MaterialNBT.get(focus, index);
         // if focusing on the output, display a sacrifice that would create this tool
         if (focusOutput) {
-          if (statType.canUseMaterial(material.material())) {
+          if (material.hasStats(statType)) {
             ToolStack tool = displayTool.copy();
             tool.replaceMaterial(index, material);
             return List.of(tool.createStack());
@@ -282,7 +280,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     @Override
     public List<ItemStack> getToolWithModifier(ItemStack focus, boolean focusOutput) {
       // copy materials from the display output, but replace the swapped material to that from the focus
-      return List.of(replaceMaterial(MaterialIdNBT.from(toolWithoutModifier.get(0)), MaterialIdNBT.getMaterial(focus, index), focus));
+      return List.of(replaceMaterial(MaterialNBT.get(toolWithoutModifier.get(0)), MaterialNBT.get(focus, index), focus));
     }
 
 

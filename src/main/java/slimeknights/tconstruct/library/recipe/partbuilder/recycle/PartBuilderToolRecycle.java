@@ -38,7 +38,6 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.MaterialIdNBT;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
@@ -96,8 +95,8 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
     // use the parts override if set
     ItemStack tool = inv.getItem();
     List<? extends IMaterialItem> parts = getParts(IModifiable.getToolDefinition(tool.getItem()));
-    MaterialIdNBT materials = MaterialIdNBT.from(tool);
-    return IntStream.range(0, parts.size()).filter(i -> parts.get(i).canUseMaterial(materials.getMaterial(i).material()))
+    MaterialNBT materials = MaterialNBT.get(tool);
+    return IntStream.range(0, parts.size()).filter(i -> parts.get(i).canUseMaterial(materials.get(i).holder()))
       .mapToObj(i -> Pattern.fromItem(parts.get(i)))
       .distinct();
   }
@@ -305,13 +304,12 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
             MaterialVariant material = IMaterialItem.getMaterialFromStack(focusStack);
             if (material.isPresent()) {
               // create a copy of the tool with the material replaced
-              MaterialIdNBT materials = MaterialIdNBT.from(displayTool);
-              return List.of(materials.replaceMaterial(index, material.id()).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
+              return List.of(MaterialNBT.get(displayTool).replaceMaterial(index, material).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
             }
           }
         } else if (focusStack.is(displayTool.getItem())) {
           // if focusing on a tool, display the input as having the same tool materials. Don't copy other data as we need no modifiers to recycle
-          return List.of(MaterialIdNBT.from(focusStack).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
+          return List.of(MaterialNBT.get(focusStack).updateStack(new ItemStack(displayTool.getItem(), displayTool.getCount())));
         }
       }
       return materialItems;
@@ -328,9 +326,9 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
           }
         } else if (focusStack.is(materialItems.get(0).getItem())) {
           // if focusing on a tool, display its actual parts as results
-          MaterialIdNBT materials = MaterialIdNBT.from(focusStack);
+          MaterialNBT materials = MaterialNBT.get(focusStack);
           return parts.object2IntEntrySet().stream()
-            .map(pi -> pi.getKey().withMaterialForDisplay(materials.getMaterial(pi.getIntValue())))
+            .map(pi -> pi.getKey().withMaterialForDisplay(materials.get(pi.getIntValue())))
             .toList();
         }
       }
