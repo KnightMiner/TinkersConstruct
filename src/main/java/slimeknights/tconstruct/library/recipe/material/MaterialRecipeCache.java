@@ -7,10 +7,12 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator;
 import slimeknights.tconstruct.common.recipe.RecipeCacheInvalidator.DuelSidedListener;
 import slimeknights.tconstruct.library.materials.IMaterialRegistry;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 
@@ -59,13 +61,13 @@ public class MaterialRecipeCache {
     }).toList());
 
   /** Mapping from material ID to all variants for the material */
-  private static final Multimap<MaterialId, MaterialVariantId> KNOWN_VARIANTS = HashMultimap.create();
+  private static final Multimap<MaterialId, MaterialVariant> KNOWN_VARIANTS = HashMultimap.create();
   /** List of all material variants in sorted order. See also {@link IMaterialRegistry#getVisibleMaterials()} */
   @Nullable
-  private static List<MaterialVariantId> SORTED_VARIANTS = null;
+  private static List<MaterialVariant> SORTED_VARIANTS = null;
   /** List of all hidden material variants in sorted order. See also {@link IMaterialRegistry#getVisibleMaterials()} */
   @Nullable
-  private static List<MaterialVariantId> HIDDEN_VARIANTS = null;
+  private static List<MaterialVariant> HIDDEN_VARIANTS = null;
 
   /** Listener for clearing the cache */
   private static final DuelSidedListener LISTENER = RecipeCacheInvalidator.addDuelSidedListener(() -> {
@@ -89,11 +91,11 @@ public class MaterialRecipeCache {
       RECIPES.add(recipe);
       SORTED_RECIPES = null;
       // mark the variant as known
-      MaterialVariantId variant = recipe.getMaterial().id();
+      MaterialVariant variant = recipe.getMaterial();
       addKnownVariant(variant);
       // add lookup for the variant
-      RECIPES_BY_MATERIAL.put(variant, recipe);
-      SORTED_RECIPES_BY_MATERIAL.remove(variant);
+      RECIPES_BY_MATERIAL.put(variant.id(), recipe);
+      SORTED_RECIPES_BY_MATERIAL.remove(variant.id());
     }
   }
 
@@ -117,14 +119,14 @@ public class MaterialRecipeCache {
   }
   
   /** Gets the material from the given stack, using {@link IMaterialItem} if present, otherwise falling back to {@link #findRecipe(ItemStack)} */
-  public static MaterialVariantId getMaterial(ItemStack stack) {
+  public static MaterialVariant getMaterial(ItemStack stack) {
     if (stack.isEmpty()) {
-      return MaterialId.UNKNOWN;
+      return MaterialHolder.UNKNOWN;
     }
     if (stack.getItem() instanceof IMaterialItem materialItem) {
       return materialItem.getMaterial(stack);
     }
-    return findRecipe(stack).getMaterial().id();
+    return findRecipe(stack).getMaterial();
   }
 
   /** Gets a list of all material recipes, including hidden */
@@ -175,7 +177,7 @@ public class MaterialRecipeCache {
   /* Material variants */
 
   /** Registers a material variant for the lookups. */
-  public static void addKnownVariant(MaterialVariantId variant) {
+  public static void addKnownVariant(MaterialVariant variant) {
     LISTENER.checkClear();
     KNOWN_VARIANTS.put(variant.material(), variant);
     // null cache of sorted variants as its outdated now
@@ -184,25 +186,25 @@ public class MaterialRecipeCache {
   }
 
   /** Gets a list of known material variants for the given material ID */
-  public static Collection<MaterialVariantId> getVariants(MaterialId materialId) {
-    Collection<MaterialVariantId> variants = KNOWN_VARIANTS.get(materialId);
+  public static Collection<MaterialVariant> getVariants(MaterialId material) {
+    Collection<MaterialVariant> variants = KNOWN_VARIANTS.get(material);
     if (variants.isEmpty()) {
-      return List.of(materialId);
+      return List.of(MaterialVariant.create(material));
     }
     return Collections.unmodifiableCollection(variants);
   }
 
   /** Gets a sorted list of all known non-hidden material variants */
-  public static List<MaterialVariantId> getAllVariants() {
+  public static List<MaterialVariant> getAllVariants() {
     if (SORTED_VARIANTS == null) {
-      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::variant);
-      SORTED_VARIANTS = MaterialRegistry.getInstance().getVisibleMaterials().stream()
+      Comparator<MaterialVariant> variantSorter = Comparator.comparing(MaterialVariant::variant);
+      SORTED_VARIANTS = MaterialRegistry.getVisibleMaterials().stream()
         .flatMap(material -> {
           // if no variants are registered, just list the material itself; useful for uncraftable materials
-          MaterialId id = material.getId();
-          Collection<MaterialVariantId> variants = KNOWN_VARIANTS.get(id);
+          MaterialId id = material.id();
+          Collection<MaterialVariant> variants = KNOWN_VARIANTS.get(id);
           if (variants.isEmpty()) {
-            return Stream.of(id);
+            return Stream.of(material);
           }
           return variants.stream().sorted(variantSorter);
         }).toList();
@@ -211,17 +213,17 @@ public class MaterialRecipeCache {
   }
 
   /** Gets a sorted list of all known hidden material variants. Should not be directly displayed in recipes, rather added as a hidden input. */
-  public static List<MaterialVariantId> getHiddenVariants() {
+  public static List<MaterialVariant> getHiddenVariants() {
     if (HIDDEN_VARIANTS == null) {
-      Comparator<MaterialVariantId> variantSorter = Comparator.comparing(MaterialVariantId::variant);
+      Comparator<MaterialVariant> variantSorter = Comparator.comparing(MaterialVariant::variant);
       HIDDEN_VARIANTS = MaterialRegistry.getInstance().getAllMaterials().stream()
         .filter(IMaterial::isHidden).sorted()
         .flatMap(material -> {
           // if no variants are registered, just list the material itself; useful for uncraftable materials
           MaterialId id = material.getId();
-          Collection<MaterialVariantId> variants = KNOWN_VARIANTS.get(id);
+          Collection<MaterialVariant> variants = KNOWN_VARIANTS.get(id);
           if (variants.isEmpty()) {
-            return Stream.of(id);
+            return Stream.of(MaterialVariant.create(material));
           }
           return variants.stream().sorted(variantSorter);
         }).toList();

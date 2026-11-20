@@ -249,7 +249,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       hiddenInputs = getToolParts().stream()
         .flatMap(part -> MaterialRecipeCache.getHiddenVariants().stream()
           .filter(mat -> part.canUseMaterial(mat.material()))
-          .map(part::withMaterial))
+          .map(mat -> part.withMaterial(mat.id())))
         .toList();
     }
     return hiddenInputs;

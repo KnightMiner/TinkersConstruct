@@ -145,7 +145,7 @@ public class MaterialCastingLookup {
       COMPOSITE_FLUIDS.add(recipe);
       SORTED_COMPOSITE = null;
     }
-    MaterialRecipeCache.addKnownVariant(recipe.getOutput().id());
+    MaterialRecipeCache.addKnownVariant(recipe.getOutput());
   }
 
   /**

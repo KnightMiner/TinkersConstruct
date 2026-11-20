@@ -109,7 +109,7 @@ public class CompositeCastingRecipe extends MaterialCastingRecipe implements Mul
         List<ItemStack> inputs;
         if (inputId.variant().isEmpty()) {
           // skip outputs that are the same variant as the input; those are not valid recipes
-          inputs = MaterialRecipeCache.getVariants(input.material()).stream().filter(material -> !output.sameVariant(material)).map(result::withMaterial).toList();
+          inputs = MaterialRecipeCache.getVariants(input.material()).stream().filter(material -> !output.sameVariant(material)).map(material -> result.withMaterial(material.id())).toList();
         } else {
           inputs = List.of(result.withMaterial(inputId.normalizeVariant()));
         }

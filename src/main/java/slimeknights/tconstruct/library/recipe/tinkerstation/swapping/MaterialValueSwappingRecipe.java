@@ -100,12 +100,12 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
       // however, we can avoid duplicating the stacks more than once since the cost is constant, along with apply the common filter
       record MaterialStacks(MaterialVariant variant, List<ItemStack> stacks) {}
       List<MaterialStacks> materialStacks = new ArrayList<>();
-      for (MaterialVariantId material : MaterialRecipeCache.getAllVariants()) {
-        if (this.material.matches(material)) {
-          List<ItemStack> newStacks = MaterialRecipeCache.getRecipes(material).stream()
+      for (MaterialVariant material : MaterialRecipeCache.getAllVariants()) {
+        if (this.material.matches(material.id())) {
+          List<ItemStack> newStacks = MaterialRecipeCache.getRecipes(material.id()).stream()
             .flatMap(recipe -> Arrays.stream(recipe.getIngredient().getItems())
               .map(stack -> stack.copyWithCount(recipe.getItemsUsed(cost)))).toList();
-          materialStacks.add(new MaterialStacks(MaterialVariant.create(material), newStacks));
+          materialStacks.add(new MaterialStacks(material, newStacks));
         }
       }
       // final recipes: 1 per tool and 1 per part in the tool

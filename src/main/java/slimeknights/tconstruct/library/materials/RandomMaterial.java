@@ -259,11 +259,10 @@ public abstract class RandomMaterial implements IHaveLoader {
         .getAllMaterials()
         .stream()
         .map(material -> {
-          MaterialId id = material.getId();
-          if (registry.getMaterialStats(id, statType).isEmpty()) {
-            return List.<MaterialVariantId>of();
+          if (!material.hasStats(statType)) {
+            return List.<MaterialVariant>of();
           }
-          return MaterialRecipeCache.getVariants(material.getId()).stream().filter(this.material::matches).toList();
+          return MaterialRecipeCache.getVariants(material.id()).stream().filter(variant -> this.material.matches(variant.id())).map(MaterialVariant::id).toList();
         })
         .filter(list -> !list.isEmpty())
         .toList();

@@ -23,8 +23,6 @@ import slimeknights.tconstruct.library.json.field.MergingField.MissingMode;
 import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.IMaterialValue;
@@ -168,31 +166,28 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
       List<ItemStack> resultItems = new ArrayList<>();
 
       // iterate materials to generate recipes
-      for (IMaterial material : MaterialRegistry.getMaterials()) {
+      for (MaterialHolder material : MaterialRegistry.getVisibleMaterials()) {
         // require the material to be craftable and valid for this part
-        if ((allowUncraftable || material.isCraftable()) && output.canUseMaterial(material)) {
-          List<MaterialVariantId> variants = MaterialRecipeCache.getVariants(material.getId())
-            .stream().filter(variant -> !MaterialRecipeCache.getRecipes(variant).isEmpty()).toList();
+        if ((allowUncraftable || material.get().isCraftable()) && output.canUseMaterial(material)) {
+          List<MaterialVariant> variants = MaterialRecipeCache.getVariants(material.id())
+            .stream().filter(variant -> !MaterialRecipeCache.getRecipes(variant.id()).isEmpty()).toList();
           if (variants.isEmpty()) continue;
 
           // if the size is 1, add the variant itself as display variant
-          MaterialVariantId displayId;
           MaterialVariant displayVariant;
           List<ItemStack> newItems = new ArrayList<>();
           if (variants.size() == 1) {
-            displayId = variants.get(0);
-            displayVariant = MaterialVariant.create(displayId);
+            displayVariant = variants.get(0);
 
             // process items
-            MaterialRecipeCache.addItems(displayId, cost, newItems);
+            MaterialRecipeCache.addItems(displayVariant.id(), cost, newItems);
           } else {
             // if we have multiple variants, use the base as display variant
-            displayId = material.getId();
-            displayVariant = MaterialVariant.create(material);
+            displayVariant = material;
 
             // process items
-            for (MaterialVariantId variant : variants) {
-              MaterialRecipeCache.addItems(variant, cost, newItems);
+            for (MaterialVariant variant : variants) {
+              MaterialRecipeCache.addItems(variant.id(), cost, newItems);
             }
           }
 
@@ -206,7 +201,7 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
 
           // add the material info
           materials.add(displayVariant);
-          resultItems.add(output.withMaterialForDisplay(displayId));
+          resultItems.add(output.withMaterialForDisplay(displayVariant.id()));
         }
       }
 
@@ -229,8 +224,8 @@ public class MaterialPartRecipe implements IPartBuilderRecipe, MultiNamedRecipe<
     if (id.hasVariant()) {
       MaterialRecipeCache.addItems(id, cost, stacks);
     } else {
-      for (MaterialVariantId variant : MaterialRecipeCache.getVariants(id.material())) {
-        MaterialRecipeCache.addItems(variant, cost, stacks);
+      for (MaterialVariant variant : MaterialRecipeCache.getVariants(id.material())) {
+        MaterialRecipeCache.addItems(variant.id(), cost, stacks);
       }
     }
     return stacks;

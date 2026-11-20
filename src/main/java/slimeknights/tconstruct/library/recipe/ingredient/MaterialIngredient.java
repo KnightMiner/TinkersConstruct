@@ -82,15 +82,15 @@ public record MaterialIngredient(HolderSet<Item> item, IJsonPredicate<MaterialVa
       return false;
     }
     // no need to read material NBT if the material is the any predicate
-    return material == MaterialPredicate.ANY || material.matches(IMaterialItem.getMaterialFromStack(stack));
+    return material == MaterialPredicate.ANY || material.matches(IMaterialItem.getMaterialFromStack(stack).id());
   }
 
   @Override
   public Stream<ItemStack> getItems() {
     // no material? apply all materials for variants
     return item.stream().flatMap(item -> MaterialRecipeCache.getAllVariants().stream()
-      .filter(material::matches)
-      .map(mat -> IMaterialItem.withMaterial(item.value(), mat))
+      .filter(material -> this.material.matches(material.id()))
+      .map(mat -> IMaterialItem.withMaterial(item.value(), mat.id()))
       .filter(stack -> !stack.isEmpty()));
   }
 }
