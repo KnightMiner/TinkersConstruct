@@ -1,13 +1,16 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
 import com.mojang.serialization.Codec;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.ApiStatus.Internal;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.TinkerData;
@@ -20,8 +23,9 @@ import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
 import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,33 +33,44 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /**
  * NBT object containing all current modifiers.
- * @param modifiers  List of modifiers in order. Should be immutable.
  */
-public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<ModifierEntry> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class ModifierNBT implements Iterable<ModifierEntry> {
   /** Instance containing no modifiers */
-  public static final ModifierNBT EMPTY = new ModifierNBT(Collections.emptyList());
+  public static final ModifierNBT EMPTY = new ModifierNBT(List.of(), Map.of());
 
   /** Codec for NBT serializing */
   public static final Codec<ModifierNBT> CODEC;
   /** Stream for NBT syncing */
   public static final StreamCodec<FriendlyByteBuf,ModifierNBT> STREAM_CODEC;
   static {
-    Function<ModifierNBT,List<ModifierEntry>> getter = ModifierNBT::modifiers;
-    Function<List<ModifierEntry>,ModifierNBT> constructor = ModifierNBT::create;
+    Function<ModifierNBT,List<ModifierEntry>> getter = m -> m.modifiers;
+    Function<List<ModifierEntry>,ModifierNBT> constructor = ModifierNBT::createUnchecked;
     CODEC = ModifierEntry.CODEC.listOf().xmap(constructor, getter);
     STREAM_CODEC = ModifierEntry.STREAM_CODEC.apply(ByteBufCodecs.list()).map(constructor, getter);
   }
 
-  /** @apiNote use {@link #create(List)} */
-  @Internal
-  public ModifierNBT {}
-  
-  /** Creates a new modifier NBT */
-  public static ModifierNBT create(List<ModifierEntry> modifiers) {
-    return modifiers.isEmpty() ? EMPTY : new ModifierNBT(modifiers);
+  @Accessors(fluent = true)
+  @Getter
+  private final List<ModifierEntry> modifiers;
+  private final Map<ModifierId,ModifierEntry> modifierLookup;
+
+  /** Creates a new modifier NBT from a list of modifiers that may need merging */
+  private static ModifierNBT createUnchecked(List<ModifierEntry> modifiers) {
+    if (modifiers.isEmpty()) {
+      return EMPTY;
+    }
+    // using a linked map to preserve the order
+    Map<ModifierId,ModifierEntry> entries = new LinkedHashMap<>();
+    for (ModifierEntry entry : modifiers) {
+      entries.computeIfPresent(entry.id(), (id, existing) -> existing.merge(entry));
+    }
+    return new ModifierNBT(List.copyOf(entries.values()), Map.copyOf(entries));
   }
   
   /**
@@ -72,12 +87,7 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
    * @return  Modifier entry, or {@link ModifierEntry#EMPTY} if absent
    */
   public ModifierEntry getEntry(ModifierId modifier) {
-    for (ModifierEntry entry : modifiers) {
-      if (entry.matches(modifier)) {
-        return entry;
-      }
-    }
-    return ModifierEntry.EMPTY;
+    return modifierLookup.getOrDefault(modifier, ModifierEntry.EMPTY);
   }
 
   /**
@@ -140,6 +150,37 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
 
   /* Withers */
 
+  /** Updates the entry for the given modifier in the map */
+  private ModifierNBT updateEntry(ModifierId modifier, UnaryOperator<ModifierEntry> updater, @Nullable Supplier<ModifierEntry> ifAbsent) {
+    // locate the existing entry
+    ModifierEntry entry = getEntry(modifier);
+    // duplicate data structures to copy, will be doing a patch approach rather than recreating entirely
+    List<ModifierEntry> entries = new ArrayList<>(this.modifiers);
+    Map<ModifierId, ModifierEntry> lookup = new HashMap<>(modifierLookup);
+    // if its absent, just add to both structures
+    if (entry != ModifierEntry.EMPTY) {
+      // if present, need to swap out the entry in the list
+      int index = entries.indexOf(entry);
+      entry = updater.apply(entry);
+      // remove if the new level is 0
+      if (entry.getLevel() > 0) {
+        if (index == -1) {
+          entries.set(index, entry);
+        } else {
+          entries.add(entry);
+        }
+      } else if (index != -1) {
+        entries.remove(index);
+      }
+      lookup.put(modifier, entry);
+    } else if (ifAbsent != null) {
+      entry = ifAbsent.get();
+      entries.add(entry);
+      lookup.put(modifier, entry);
+    }
+    return new ModifierNBT(List.copyOf(entries), Map.copyOf(lookup));
+  }
+
   /**
    * Creates a copy of this NBT with the given modifier added. Result will be unsorted
    * Do not use if you need to make multiple additions, use {@link ModifierNBT.Builder}
@@ -151,27 +192,11 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
     if (level <= 0) {
       throw new IllegalArgumentException("Invalid level, must be above zero");
     }
-
-    // rather than using the builder, just use a raw list builder
-    // easier for adding a single entry, and the cases that call this method don't care about sorting
-    ImmutableList.Builder<ModifierEntry> builder = ImmutableList.builder();
-    boolean found = false;
-    for (ModifierEntry entry : this.modifiers) {
-      // first match increases the level
-      // shouldn't be a second match (all the methods are protected), but just in case we prevent modifier duplication
-      if (!found && entry.matches(modifier)) {
-        builder.add(entry.withLevel(entry.getLevel() + level));
-        found = true;
-      } else {
-        builder.add(entry);
-      }
-    }
-    // if no matching modifier, create a new entry
-    if (!found) {
-      builder.add(new ModifierEntry(modifier, level));
-    }
-    // guaranteed to have at least 1 modifier so no need for #create's empty check
-    return new ModifierNBT(builder.build());
+    return updateEntry(
+      modifier,
+      entry -> entry.withLevel(entry.getLevel() + level),
+      () -> new ModifierEntry(modifier, level)
+    );
   }
 
   /**
@@ -187,27 +212,11 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
     if (amount <= 0 || needed <= 0) {
       return this;
     }
-    // no shortcut here as amount being greater than need should lead to a full level
-    // rather than using the builder, just use a raw list builder
-    // easier for adding a single entry, and the cases that call this method don't care about sorting
-    ImmutableList.Builder<ModifierEntry> builder = ImmutableList.builder();
-    boolean found = false;
-    for (ModifierEntry entry : this.modifiers) {
-      // first match increases the level
-      // shouldn't be a second match (all the methods are protected), but just in case we prevent modifier duplication
-      if (!found && entry.matches(modifier)) {
-        builder.add(entry.addAmount(amount, needed));
-        found = true;
-      } else {
-        builder.add(entry);
-      }
-    }
-    // if no matching modifier, create a new entry
-    if (!found) {
-      builder.add(IncrementalModifierEntry.of(modifier, 1, amount, needed));
-    }
-    // guaranteed to have at least 1 modifier so no need for #create's empty check
-    return new ModifierNBT(builder.build());
+    return updateEntry(
+      modifier,
+      entry -> entry.addAmount(amount, needed),
+      () -> IncrementalModifierEntry.of(modifier, 1, amount, needed)
+    );
   }
 
   /**
@@ -220,23 +229,11 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
     if (level <= 0) {
       throw new IllegalArgumentException("Invalid level, must be above zero");
     }
-
-    // rather than using the builder, just use a raw list builder
-    // easier for adding a single entry, and the cases that call this method don't care about sorting
-    ImmutableList.Builder<ModifierEntry> builder = ImmutableList.builder();
-    for (ModifierEntry entry : this.modifiers) {
-      if (entry.matches(modifier) && level > 0) {
-        if (entry.getLevel() > level) {
-          builder.add(entry.withLevel(entry.getLevel() - level));
-          level = 0;
-        } else {
-          level -= entry.getLevel();
-        }
-      } else {
-        builder.add(entry);
-      }
-    }
-    return create(builder.build());
+    return updateEntry(
+      modifier,
+      entry -> entry.withLevel(entry.getLevel() - level),
+      null
+    );
   }
 
 
@@ -317,14 +314,25 @@ public record ModifierNBT(List<ModifierEntry> modifiers) implements Iterable<Mod
       return this;
     }
 
+    /** Builds the modifiers without applying modifier priority sorting */
+    public ModifierNBT buildUnsorted() {
+      if (modifiers.isEmpty()) {
+        return EMPTY;
+      }
+      return new ModifierNBT(List.copyOf(modifiers.values()), Map.copyOf(modifiers));
+    }
+
     @Override
     public ModifierNBT build() {
+      if (modifiers.isEmpty()) {
+        return EMPTY;
+      }
       // converts the map into a list of entries, priority sorted
       // note priority is negated so higher numbers go first
-      return create(modifiers.values().stream()
+      return new ModifierNBT(modifiers.values().stream()
         // sort on priority, falls back to the order they were added
         .sorted(Comparator.comparingInt(entry -> -entry.getModifier().getPriority()))
-        .toList());
+        .toList(), Map.copyOf(modifiers));
     }
   }
 }
