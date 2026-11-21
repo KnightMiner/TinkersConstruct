@@ -49,6 +49,8 @@ public class TinkerData {
   public static final DeferredDataComponent<Boolean> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Codec.BOOL, ByteBufCodecs.BOOL);
   
   /* Tool */
+  /** If true, the tool is currently broken and should not perform any actions that require durability. */
+  public static final DeferredDataComponent<Boolean> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Codec.BOOL, ByteBufCodecs.BOOL);
   /** Holds a single material on an item. Used for tool parts and other material items */
   public static final DeferredDataComponent<MaterialNBT> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", MaterialNBT.CODEC, MaterialNBT.STREAM_CODEC);
 

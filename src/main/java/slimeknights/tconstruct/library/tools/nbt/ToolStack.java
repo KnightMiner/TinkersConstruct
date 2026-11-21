@@ -50,12 +50,15 @@ public class ToolStack implements IToolStackView {
 
   // persistent NBT
   /** Tag for list of materials */
+  @Deprecated(forRemoval = true)
   public static final String TAG_MATERIALS = "tic_materials";
   /** Tag for extra arbitrary modifier data */
   public static final String TAG_PERSISTENT_MOD_DATA = "tic_persistent";
   /** Tag for recipe based modifier */
+  @Deprecated(forRemoval = true)
   public static final String TAG_UPGRADES = "tic_upgrades";
   /** Tag marking a tool as broken */
+  @Deprecated(forRemoval = true)
   public static final String TAG_BROKEN = "tic_broken";
 
   // volatile NBT
