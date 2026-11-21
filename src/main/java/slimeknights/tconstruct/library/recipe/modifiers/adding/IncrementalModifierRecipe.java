@@ -103,7 +103,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     if (isNewLevel) {
       SlotCount slots = getSlots();
       if (slots != null) {
-        tool.getPersistentData().addSlots(slots.type(), -slots.count());
+        tool.removeSlots(slots);
       }
     }
 

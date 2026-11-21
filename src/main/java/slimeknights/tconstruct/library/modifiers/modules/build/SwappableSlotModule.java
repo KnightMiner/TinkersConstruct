@@ -9,8 +9,8 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
-import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,8 +32,8 @@ import java.util.List;
  *                        Presently, changing this makes it incompatible with the swappable modifier recipe, this is added for future proofing.
  * @param slotCount       Number of slots to grant
  */
-public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<IToolContext> condition) implements VolatileDataModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SwappableSlotModule>defaultHooks(ModifierHooks.VOLATILE_DATA, ModifierHooks.DISPLAY_NAME, ModifierHooks.REMOVE);
+public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SwappableSlotModule>defaultHooks(ModifierHooks.ADD_SLOTS, ModifierHooks.DISPLAY_NAME, ModifierHooks.REMOVE);
   /** Format key for swappable variant */
   public static final String FORMAT = TConstruct.makeTranslationKey("modifier", "extra_modifier.type_format");
   public static final RecordLoadable<SwappableSlotModule> LOADER = RecordLoadable.create(
@@ -69,13 +69,13 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
+  public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
     if (condition.matches(context, modifier)) {
       String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
       if (!slotName.isEmpty()) {
         SlotType type = SlotType.getIfPresent(slotName);
         if (type != null) {
-          volatileData.addSlots(type, slotCount);
+          slots.add(type, slotCount);
         }
       }
     }
@@ -99,8 +99,8 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   /** Module to add (or remove) additional slots based on the given swappable slot type */
-  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<IToolContext> condition) implements VolatileDataModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
-    private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.VOLATILE_DATA);
+  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
+    private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.ADD_SLOTS);
     public static final RecordLoadable<BonusSlot> LOADER = RecordLoadable.create(
       ModuleWithKey.FIELD,
       SlotType.LOADABLE.requiredField("match", BonusSlot::match),
@@ -118,11 +118,11 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
     }
 
     @Override
-    public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
+    public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
       if (condition.matches(context, modifier)) {
         String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
         if (!slotName.isEmpty() && match.getName().equals(slotName)) {
-          volatileData.addSlots(bonus, slotCount);
+          slots.add(bonus, slotCount);
         }
       }
     }

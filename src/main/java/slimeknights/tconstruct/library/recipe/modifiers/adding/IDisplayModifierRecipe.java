@@ -25,7 +25,6 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import javax.annotation.Nullable;
@@ -161,8 +160,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     // spend the slots
     SlotCount slots = getSlots();
     if (slots != null) {
-      ToolDataNBT persistentData = tool.getPersistentData();
-      persistentData.addSlots(slots.type(), -slots.count());
+      tool.removeSlots(slots);
     }
   }
 
@@ -220,7 +218,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     CompoundTag persistentNBT = new CompoundTag();
     ModDataNBT persistentData = ModDataNBT.readFromNBT(persistentNBT);
     CompoundTag volatileNBT = new CompoundTag();
-    ToolDataNBT volatileData = ToolDataNBT.readFromNBT(volatileNBT);
+    ModDataNBT volatileData = ModDataNBT.readFromNBT(volatileNBT);
     persistentDataConsumer.accept(persistentData);
     ToolRebuildContext context = new ToolRebuildContext(stack.getItem(), ToolDefinition.EMPTY, MaterialNBT.EMPTY, modifiers, modifiers, persistentData);
     for (ModifierEntry entry : modifiers.modifiers()) {

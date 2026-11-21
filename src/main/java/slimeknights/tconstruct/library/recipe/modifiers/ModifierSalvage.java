@@ -72,7 +72,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<NoItemInput> {
    * @param tool  Tool instance
    */
   public void updateTool(ToolStack tool) {
-    tool.getPersistentData().addSlots(slots.type(), slots.count());
+    tool.setPersistentSlots(tool.getPersistentSlots().with(slots));
   }
 
   @Override

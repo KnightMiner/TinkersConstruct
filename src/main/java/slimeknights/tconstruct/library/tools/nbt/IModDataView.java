@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.tconstruct.library.tools.SlotType;
 
 import java.util.function.BiFunction;
 
@@ -54,15 +53,6 @@ public interface IModDataView {
    * @return  True if the tag is contained
    */
   boolean contains(ResourceLocation name, int type);
-
-  /**
-   * Gets the number of slots provided by this data. Will be 0 if this data does not support slots.
-   * @param type  Type of slot to get
-   * @return  Number of slots
-   */
-  default int getSlots(SlotType type) {
-    return 0;
-  }
 
 
   /* Helpers */

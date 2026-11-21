@@ -24,6 +24,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierTraitHook.TraitBuilder;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.context.ToolRebuildContext;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionData;
@@ -103,7 +104,7 @@ public class ToolStack implements IToolStackView {
   private ModifierNBT upgrades;
   /** Data object containing modifier data that persists on stat rebuild */
   @Nullable
-  private ToolDataNBT persistentModData;
+  private ModDataNBT persistentModData;
 
   // nbt cache: these values are calculated tool data
   /** Combination of modifiers from upgrades and material traits */
@@ -611,19 +612,57 @@ public class ToolStack implements IToolStackView {
   }
 
 
+  /* Slots */
+
+  /** Sets the volatile slot data */
+  public void setPersistentSlots(SlotsNBT slots) {
+    if (slots == SlotsNBT.EMPTY) {
+      // TODO: remove
+    } else {
+      // TODO: add
+    }
+  }
+
+  /** Removes the given slots from the tool */
+  public void removeSlots(SlotCount slots) {
+    setPersistentSlots(getPersistentSlots().without(slots));
+  }
+
+  @Override
+  public SlotsNBT getPersistentSlots() {
+    // TODO: use TinkerData to fetch
+    return SlotsNBT.EMPTY;
+  }
+
+  /** Sets the volatile slot data */
+  protected void setVolatileSlots(SlotsNBT slots) {
+    if (slots == SlotsNBT.EMPTY) {
+      // TODO: remove
+    } else {
+      // TODO: add
+    }
+  }
+
+  @Override
+  public SlotsNBT getVolatileSlots() {
+    // TODO: use TinkerData to fetch
+    return SlotsNBT.EMPTY;
+  }
+
+
   /* Data */
 
   @Override
-  public ToolDataNBT getPersistentData() {
+  public ModDataNBT getPersistentData() {
     if (persistentModData == null) {
       // parse if the tag already exists
       if (nbt.contains(TAG_PERSISTENT_MOD_DATA, Tag.TAG_COMPOUND)) {
-        persistentModData = ToolDataNBT.readFromNBT(nbt.getCompound(TAG_PERSISTENT_MOD_DATA));
+        persistentModData = ModDataNBT.readFromNBT(nbt.getCompound(TAG_PERSISTENT_MOD_DATA));
       } else {
         // if no tag exists, create it
         CompoundTag tag = new CompoundTag();
         nbt.put(TAG_PERSISTENT_MOD_DATA, tag);
-        persistentModData = ToolDataNBT.readFromNBT(tag);
+        persistentModData = ModDataNBT.readFromNBT(tag);
       }
     }
     return persistentModData;
@@ -634,7 +673,7 @@ public class ToolStack implements IToolStackView {
     if (volatileModData == null) {
       // parse if the tag already exists
       if (nbt.contains(TAG_VOLATILE_MOD_DATA, Tag.TAG_COMPOUND)) {
-        volatileModData = ToolDataNBT.readFromNBT(nbt.getCompound(TAG_VOLATILE_MOD_DATA));
+        volatileModData = ModDataNBT.readFromNBT(nbt.getCompound(TAG_VOLATILE_MOD_DATA));
       } else {
         // if no tag exists, return empty
         volatileModData = IModDataView.EMPTY;
@@ -647,7 +686,7 @@ public class ToolStack implements IToolStackView {
    * Updates the volatile mod data in NBT, called in {@link #rebuildStats()}
    * @param modData  New data
    */
-  protected void setVolatileModData(ToolDataNBT modData) {
+  protected void setVolatileModData(ModDataNBT modData) {
     CompoundTag data = modData.getData();
     if (data.isEmpty()) {
       volatileModData = IModDataView.EMPTY;
@@ -753,12 +792,20 @@ public class ToolStack implements IToolStackView {
     }
 
     // build volatile data first, it's a parameter to the other hooks
-    ToolDataNBT volatileData = new ToolDataNBT();
+    ModDataNBT volatileData = new ModDataNBT();
     toolData.getHook(ToolHooks.VOLATILE_DATA).addVolatileData(context, volatileData);
     for (ModifierEntry entry : modifierList) {
       entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
     }
     setVolatileModData(volatileData);
+
+    // build volatile slots
+    SlotsNBT.Builder slots = SlotsNBT.builder();
+    toolData.getHook(ToolHooks.ADD_SLOTS).addSlots(context, slots);
+    for (ModifierEntry entry : modifierList) {
+      entry.getHook(ModifierHooks.ADD_SLOTS).addSlots(context, entry, slots);
+    }
+    setVolatileSlots(slots.build());
 
     // regular stats last so we can include volatile data
     ModifierStatsBuilder statBuilder = ModifierStatsBuilder.builder();

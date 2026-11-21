@@ -9,16 +9,16 @@ import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /** Adds starting modifier slots to a tool */
-public record ToolSlotsModule(Map<SlotType,Integer> slots) implements VolatileDataToolHook, ToolModule {
+public record ToolSlotsModule(Map<SlotType,Integer> slots) implements AddSlotsToolHook, ToolModule {
   public static final RecordLoadable<ToolSlotsModule> LOADER = RecordLoadable.create(SlotType.LOADABLE.mapWithValues(IntLoadable.FROM_ONE).requiredField("slots", ToolSlotsModule::slots), ToolSlotsModule::new);
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolSlotsModule>defaultHooks(ToolHooks.VOLATILE_DATA);
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolSlotsModule>defaultHooks(ToolHooks.ADD_SLOTS);
 
   public static Builder builder() {
     return new Builder();
@@ -35,9 +35,9 @@ public record ToolSlotsModule(Map<SlotType,Integer> slots) implements VolatileDa
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ToolDataNBT volatileData) {
-    for (Entry<SlotType,Integer> entry : slots.entrySet()) {
-      volatileData.addSlots(entry.getKey(), entry.getValue());
+  public void addSlots(IToolContext context, SlotsNBT.Builder slots) {
+    for (Entry<SlotType,Integer> entry : this.slots.entrySet()) {
+      slots.add(entry.getKey(), entry.getValue());
     }
   }
 

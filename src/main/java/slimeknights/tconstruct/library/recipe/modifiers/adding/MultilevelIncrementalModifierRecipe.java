@@ -75,7 +75,7 @@ public class MultilevelIncrementalModifierRecipe extends IncrementalModifierReci
 
     // if a new level, consume slots now that we copied
     if (slots != null) {
-      tool.getPersistentData().addSlots(slots.type(), -slots.count());
+      tool.removeSlots(slots);
     }
 
     // crystal adds 1 level, does not care about amount

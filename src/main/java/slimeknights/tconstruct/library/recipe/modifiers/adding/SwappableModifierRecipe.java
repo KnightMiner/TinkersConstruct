@@ -27,7 +27,6 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeI
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -91,22 +90,22 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     }
 
     // do not allow adding the modifier if this variant is already present
-    if (level > 0 && tool.getPersistentData().getString(modifier).equals(value)) {
+    ResourceLocation key = modifier.id();
+    if (level > 0 && tool.getPersistentData().getString(key).equals(value)) {
       return RecipeResult.failure(ALREADY_PRESENT, result.get().getDisplayName(), variant);
     }
 
     // consume slots
     tool = tool.copy();
-    ToolDataNBT persistentData = tool.getPersistentData();
     if (needsModifier) {
       SlotCount slots = getSlots();
       if (slots != null) {
-        persistentData.addSlots(slots.type(), -slots.count());
+        tool.removeSlots(slots);
       }
     }
 
     // set the new value to the modifier
-    persistentData.putString(modifier, value);
+    tool.getPersistentData().putString(key, value);
 
     // add modifier if needed
     if (needsModifier) {
@@ -134,7 +133,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Override
   public List<ItemStack> getToolWithModifier() {
     if (toolWithModifier == null) {
-      ResourceLocation id = result.id();
+      ResourceLocation id = result.id().id();
       ModifierEntry result = getDisplayResult();
       toolWithModifier = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiersForResult(result, result), data -> data.putString(id, value))).collect(Collectors.toList());
     }
@@ -159,7 +158,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
       return checkSlots(tool, getSlots());
     }
     // if we already have it, ensure the variant is changing
-    if (tool.getPersistentData().getString(result).equals(value)) {
+    if (tool.getPersistentData().getString(result.id()).equals(value)) {
       return Component.translatable(ALREADY_PRESENT, this.result.get().getDisplayName(), variant);
     }
     return null;
@@ -173,7 +172,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
       super.applyModifier(tool);
     }
     // apply the variant
-    tool.getPersistentData().putString(result, value);
+    tool.getPersistentData().putString(result.id(), value);
   }
 
   /** Methods of formatting the variant string */
@@ -187,10 +186,10 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
     /* Formatters */
     /** Formats using the modifier ID as a base translation key */
-    VariantFormatter DEFAULT = LOADER.register(getResource("default"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier) + "." + variant));
+    VariantFormatter DEFAULT = LOADER.register(getResource("default"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier.id()) + "." + variant));
     /** Formats using the material translation key */
     VariantFormatter MATERIAL = LOADER.register(getResource("material"), (modifier, variant) -> MaterialTooltipCache.getDisplayName(Objects.requireNonNullElse(MaterialVariantId.tryParse(variant), MaterialId.UNKNOWN)));
     /** Formats using the modifier ID as the base with the variant as a parameter */
-    VariantFormatter PARAMETER = LOADER.register(getResource("parameter"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier) + ".variant", variant));
+    VariantFormatter PARAMETER = LOADER.register(getResource("parameter"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier.id()) + ".variant", variant));
   }
 }

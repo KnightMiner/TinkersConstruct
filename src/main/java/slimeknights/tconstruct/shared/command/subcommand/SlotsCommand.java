@@ -15,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.shared.command.HeldModifiableItemIterator;
 import slimeknights.tconstruct.shared.command.argument.SlotTypeArgument;
@@ -66,13 +66,14 @@ public class SlotsCommand {
     List<LivingEntity> successes = HeldModifiableItemIterator.apply(context, (living, stack) -> {
       // add slots
       ToolStack tool = ToolStack.copyFrom(stack);
-      ToolDataNBT slots = tool.getPersistentData();
+      SlotsNBT.Builder slots = tool.getPersistentSlots().toBuilder();
       if (op == Operation.ADD) {
-        slots.addSlots(slotType, count);
+        slots.add(slotType, count);
       } else {
         // for setting, we want to subtract slots from all sources, so this is the one true source
-        slots.addSlots(slotType, count - tool.getFreeSlots(slotType));
+        slots.add(slotType, count - tool.getFreeSlots(slotType));
       }
+      tool.setPersistentSlots(slots.build());
       tool.rebuildStats();
 
       // ensure no modifier problems after adding, mainly happens if we subtract slots

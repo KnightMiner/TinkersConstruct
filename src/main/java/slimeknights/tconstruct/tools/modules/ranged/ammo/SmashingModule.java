@@ -54,7 +54,6 @@ import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -101,7 +100,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /** Gets the capacity for the given fluid */
   private static int getAmount(Fluid fluid) {
     FluidEffects effects = FluidEffectManager.INSTANCE.find(fluid);
-    return effects.hasEffects() ? effects.ingredient().getAmount(fluid) : 0;
+    return effects.hasEffects() ? effects.fluids().amount() : 0;
   }
 
   /** Gets the capacity for the given fluid */
@@ -266,7 +265,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Tool data */
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
+  public void addVolatileData(IToolContext context, ModifierEntry modifier, ModDataNBT volatileData) {
     ToolFluidCapability.addTanks(modifier, volatileData, this);
   }
 

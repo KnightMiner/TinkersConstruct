@@ -3,6 +3,9 @@ package slimeknights.tconstruct.library.codec;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Instrument;
@@ -33,4 +36,9 @@ public class TinkerCodecs {
 
   /** Codec for a holder set of instruments. Used in {@link slimeknights.tconstruct.library.recipe.ingredient.InstrumentIngredient} */
   public static final Codec<HolderSet<Instrument>> INSTRUMENT_SET = MantleCodecs.holderSet(BuiltInRegistries.INSTRUMENT);
+
+  /** Creates a codec of an object to int map */
+  public static <T> Codec<Object2IntMap<T>> object2IntMap(Codec<T> codec) {
+    return Codec.unboundedMap(codec, Codec.INT).xmap(Object2IntOpenHashMap::new, Object2ObjectOpenHashMap::new);
+  }
 }

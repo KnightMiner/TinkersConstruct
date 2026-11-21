@@ -22,7 +22,6 @@ import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
-import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
@@ -32,7 +31,7 @@ import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
@@ -40,7 +39,6 @@ import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -184,16 +182,10 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
     if (!variant.isEmpty()) {
       persistentData.putString(result.id().id(), variant);
     }
-    // build volatile data, will read that for slot info
-    ToolDataNBT volatileData = new ToolDataNBT();
-    result.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(new DummyToolStack(tool, ModifierNBT.EMPTY, persistentData), result, volatileData);
-    return SlotType.getAllSlotTypes().stream().map(type -> {
-      int count = volatileData.getSlots(type);
-      if (count > 0) {
-        return new SlotCount(type, count);
-      }
-      return null;
-    }).filter(Objects::nonNull).toList();
+    // build slot data
+    SlotsNBT.Builder slots = SlotsNBT.builder();
+    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(new DummyToolStack(tool, ModifierNBT.EMPTY, persistentData), result, slots);
+    return slots.buildCounts();
   }
 
   @Override

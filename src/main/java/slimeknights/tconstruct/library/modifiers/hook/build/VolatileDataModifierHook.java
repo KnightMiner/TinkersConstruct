@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.build;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import java.util.Collection;
 
@@ -23,12 +23,12 @@ public interface VolatileDataModifierHook {
    * @param modifier        Modifier level
    * @param volatileData    Mutable mod NBT data, result of this method
    */
-  void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData);
+  void addVolatileData(IToolContext context, ModifierEntry modifier, ModDataNBT volatileData);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<VolatileDataModifierHook> modules) implements VolatileDataModifierHook {
     @Override
-    public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
+    public void addVolatileData(IToolContext context, ModifierEntry modifier, ModDataNBT volatileData) {
       for (VolatileDataModifierHook module : modules) {
         module.addVolatileData(context, modifier, volatileData);
       }

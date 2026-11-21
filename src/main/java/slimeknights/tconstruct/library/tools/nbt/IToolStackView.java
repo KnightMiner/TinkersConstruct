@@ -61,6 +61,12 @@ public interface IToolStackView extends IToolContext {
    */
   void setDamage(int damage);
 
+  /** Gets persistent slot count from the tool. This data will persistent on stat rebuild. */
+  SlotsNBT getPersistentSlots();
+
+  /** Gets volatile slot counts from the tool. This data is volatile and will reset stat rebuild. */
+  SlotsNBT getVolatileSlots();
+
   /**
    * Gets persistent modifier data from the tool.
    * This data may be edited by modifiers and will persist when stats rebuild
@@ -82,6 +88,6 @@ public interface IToolStackView extends IToolContext {
    * @return  Free upgrade slots
    */
   default int getFreeSlots(SlotType type) {
-    return getPersistentData().getSlots(type) + getVolatileData().getSlots(type);
+    return getPersistentSlots().get(type) + getVolatileSlots().get(type);
   }
 }

@@ -12,8 +12,8 @@ import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsMo
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -131,17 +131,18 @@ class ToolDefinitionDataTest extends BaseMcTest {
 
   @Test
   void data_buildSlots_withData() {
-    ToolDataNBT modData = new ToolDataNBT();
+    SlotsNBT.Builder builder = SlotsNBT.builder();
     ToolDefinitionData data = ToolDefinitionDataBuilder
       .builder()
       .module(new ToolSlotsModule(ImmutableMap.of(SlotType.UPGRADE, 5, SlotType.ABILITY, 2)))
       .build();
-    data.getHook(ToolHooks.VOLATILE_DATA).addVolatileData(mock(IToolContext.class), modData);
-    assertThat(modData.getSlots(SlotType.UPGRADE)).isEqualTo(5);
-    assertThat(modData.getSlots(SlotType.ABILITY)).isEqualTo(2);
+    data.getHook(ToolHooks.ADD_SLOTS).addSlots(mock(IToolContext.class), builder);
+    SlotsNBT slots = builder.build();
+    assertThat(slots.get(SlotType.UPGRADE)).isEqualTo(5);
+    assertThat(slots.get(SlotType.ABILITY)).isEqualTo(2);
     for (SlotType type : SlotType.getAllSlotTypes()) {
       if (type != SlotType.UPGRADE && type != SlotType.ABILITY) {
-        assertThat(modData.getSlots(type)).overridingErrorMessage("Slot type %s has a value", type.getName()).isEqualTo(0);
+        assertThat(slots.get(type)).overridingErrorMessage("Slot type %s has a value", type.getName()).isEqualTo(0);
       }
     }
 

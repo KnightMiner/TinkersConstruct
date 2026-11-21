@@ -84,7 +84,7 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements MultiNam
     // consume slots
     tool = tool.copy();
     if (slots != null) {
-      tool.getPersistentData().addSlots(slots.type(), -slots.count());
+      tool.removeSlots(slots);
     }
 
     // add modifier

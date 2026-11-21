@@ -9,7 +9,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
@@ -18,15 +18,15 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 
 import java.util.List;
 
 /**
  * Module that adds extra modifier slots to a tool.
  */
-public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondition<IToolContext> condition) implements VolatileDataModifierHook, ModifierModule, ConditionalModule<IToolContext> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierSlotModule>defaultHooks(ModifierHooks.VOLATILE_DATA);
+public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ConditionalModule<IToolContext> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierSlotModule>defaultHooks(ModifierHooks.ADD_SLOTS);
   public static final RecordLoadable<ModifierSlotModule> LOADER = RecordLoadable.create(
     SlotType.LOADABLE.requiredField("name", ModifierSlotModule::type),
     IntLoadable.ANY_SHORT.defaultField("flat", 0, m -> m.count.flat()),
@@ -46,9 +46,9 @@ public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondi
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, ToolDataNBT volatileData) {
+  public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
     if (condition.matches(context, modifier)) {
-      volatileData.addSlots(type, count.computeForLevel(modifier.getEffectiveLevel()));
+      slots.add(type, count.computeForLevel(modifier.getEffectiveLevel()));
     }
   }
 

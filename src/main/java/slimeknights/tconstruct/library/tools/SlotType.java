@@ -3,13 +3,18 @@ package slimeknights.tconstruct.library.tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.data.loadable.Loadable;
@@ -35,10 +40,24 @@ import java.util.regex.Pattern;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SlotType {
-  /** Loadable for a slot type */
-  public static final StringLoadable<SlotType> LOADABLE = StringLoadable.DEFAULT.comapFlatMap((name, error) -> {
+  /** Loadable for JSON */
+  public static final StringLoadable<SlotType> LOADABLE = StringLoadable.DEFAULT.mapChecked((name, error) -> {
     if (!isValidName(name)) {
       throw error.create("Invalid slot type name '" + name + '\'');
+    }
+    return SlotType.getOrCreate(name);
+  }, (type, error) -> type.getName());
+  /** Codec for data components */
+  public static final Codec<SlotType> CODEC = Codec.STRING.comapFlatMap(name -> {
+    if (!isValidName(name)) {
+      return DataResult.error(() -> "Invalid slot type name '" + name + '\'');
+    }
+    return DataResult.success(SlotType.getOrCreate(name));
+  }, SlotType::getName);
+  /** Stream codec for networking */
+  public static final StreamCodec<ByteBuf,SlotType> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(name -> {
+    if (!isValidName(name)) {
+      throw new IllegalStateException("Invalid slot type name '" + name + '\'');
     }
     return SlotType.getOrCreate(name);
   }, SlotType::getName);
@@ -77,7 +96,7 @@ public final class SlotType {
 
   /**
    * Gets an existing slot type, or creates it if missing.
-   * Note that you will also want to define a texture for the creative modifier and JEI using {@link slimeknights.mantle.client.model.NBTKeyModel#registerExtraTexture(ResourceLocation, String, ResourceLocation)}
+   * Note that you will also want to define a texture for the creative modifier and JEI using {@link slimeknights.mantle.client.model.TextureMapManager}.
    * @param name     Name of the slot type
    * @return  Slot type instance for the name, only once instance for each name
    * @throws IllegalArgumentException  Error if a name is invalid
@@ -183,19 +202,19 @@ public final class SlotType {
       }
 
       @Override
-      public JsonElement serialize(SlotCount slots) {
+      public JsonElement serialize(SlotCount slots, TypedMap context) {
         JsonObject json = new JsonObject();
         json.addProperty(slots.type.getName(), slots.count);
         return json;
       }
 
       @Override
-      public SlotCount decode(FriendlyByteBuf buffer, TypedMap context) {
+      public SlotCount decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
         return new SlotCount(SlotType.read(buffer), buffer.readVarInt());
       }
 
       @Override
-      public void encode(FriendlyByteBuf buffer, SlotCount slots) {
+      public void encode(RegistryFriendlyByteBuf buffer, SlotCount slots, TypedMap context) {
         slots.type().write(buffer);
         buffer.writeVarInt(slots.count());
       }
@@ -215,7 +234,7 @@ public final class SlotType {
       }
 
       @Override
-      public void serialize(P parent, JsonObject json) {
+      public void serializeInto(P parent, JsonObject json, TypedMap context) {
         SlotCount count = getter.apply(parent);
         if (count != null) {
           json.add(key, LOADABLE.serialize(count));
@@ -224,7 +243,7 @@ public final class SlotType {
 
       @Nullable
       @Override
-      public SlotCount decode(FriendlyByteBuf buffer, TypedMap context) {
+      public SlotCount decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
         int count = buffer.readVarInt();
         if (count == 0) {
           return null;
@@ -233,7 +252,7 @@ public final class SlotType {
       }
 
       @Override
-      public void encode(FriendlyByteBuf buffer, P parent) {
+      public void encode(RegistryFriendlyByteBuf buffer, P parent, TypedMap context) {
         SlotCount slotCount = getter.apply(parent);
         if (slotCount == null) {
           buffer.writeVarInt(0);

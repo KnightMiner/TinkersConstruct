@@ -29,6 +29,16 @@ public class DummyToolStack implements IToolStackView {
   }
 
   @Override
+  public SlotsNBT getPersistentSlots() {
+    return SlotsNBT.EMPTY;
+  }
+
+  @Override
+  public SlotsNBT getVolatileSlots() {
+    return SlotsNBT.EMPTY;
+  }
+
+  @Override
   public IModDataView getVolatileData() {
     return IModDataView.EMPTY;
   }

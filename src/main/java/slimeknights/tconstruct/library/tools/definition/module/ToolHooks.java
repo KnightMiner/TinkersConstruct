@@ -4,12 +4,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import slimeknights.mantle.data.registry.IdAwareComponentRegistry;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
+import slimeknights.tconstruct.library.tools.definition.module.build.AddSlotsToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolStatsHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
@@ -92,6 +93,8 @@ public class ToolHooks {
   public static final ModuleHook<ToolStatsHook> TOOL_STATS = register("tool_stats", ToolStatsHook.class, ToolStatsHook.AllMerger::new, (context, builder) -> {});
   /** Hook for checking if a tool can perform a given action. */
   public static final ModuleHook<VolatileDataToolHook> VOLATILE_DATA = register("volatile_data", VolatileDataToolHook.class, VolatileDataToolHook.AllMerger::new, (context, data) -> {});
+  /** Hook to add modifier slots to a tool */
+  public static final ModuleHook<AddSlotsToolHook> ADD_SLOTS = register("add_slots", AddSlotsToolHook.class, AddSlotsToolHook.AllMerger::new, (context, data) -> {});
   /** Hook for fetching tool traits */
   public static final ModuleHook<ToolTraitHook> TOOL_TRAITS;
   /** Hook for fetching traits for the rebalanced modifier */

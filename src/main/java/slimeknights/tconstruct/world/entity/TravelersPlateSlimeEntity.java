@@ -8,8 +8,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.level.Level;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -55,7 +55,7 @@ public abstract class TravelersPlateSlimeEntity extends ArmoredSlimeEntity {
         helmetItem.asItem(), definition,
         RandomMaterial.build(ToolMaterialHook.stats(definition), List.of(RandomMaterial.fixed(getPlating()), RandomMaterial.ancient()), random));
       ModifierNBT modifiers = tool.getUpgrades();
-      ToolDataNBT persistentData = tool.getPersistentData();
+      SlotsNBT.Builder slots = tool.getPersistentSlots().toBuilder();
 
       // add some random defense modifiers
       int max = tool.getFreeSlots(SlotType.DEFENSE);
@@ -63,16 +63,17 @@ public abstract class TravelersPlateSlimeEntity extends ArmoredSlimeEntity {
         if (this.random.nextFloat() > 0.5f * multiplier) {
           break;
         }
-        persistentData.addSlots(SlotType.DEFENSE, -1);
+        slots.add(SlotType.DEFENSE, -1);
         modifiers = modifiers.withModifier(randomModifier(this.random, TinkerTags.Modifiers.SLIME_DEFENSE), 1);
       }
       // chance of diamond or emerald
       if (tool.getFreeSlots(SlotType.UPGRADE) > 0 && this.random.nextFloat() < 0.5f * multiplier) {
-        persistentData.addSlots(SlotType.UPGRADE, -1);
+        slots.add(SlotType.UPGRADE, -1);
         modifiers = modifiers.withModifier(randomModifier(this.random, TinkerTags.Modifiers.GEMS), 1);
       }
 
       // triggers stat rebuild
+      tool.setPersistentSlots(slots.build());
       tool.setUpgrades(modifiers);
 
       // finally, give the slime the helmet
