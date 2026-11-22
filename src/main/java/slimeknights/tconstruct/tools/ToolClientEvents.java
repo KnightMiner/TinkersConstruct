@@ -37,6 +37,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
+import slimeknights.mantle.client.model.ItemKey;
 import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.ClientEventBase;
@@ -77,6 +78,7 @@ import slimeknights.tconstruct.tools.data.material.MaterialRenderInfoProvider;
 import slimeknights.tconstruct.tools.data.sprite.TinkerMaterialSpriteProvider;
 import slimeknights.tconstruct.tools.data.sprite.TinkerPartSpriteProvider;
 import slimeknights.tconstruct.tools.data.sprite.TinkerTrimMaterialPaletteGenerator;
+import slimeknights.tconstruct.tools.item.CreativeSlotItem;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
@@ -117,6 +119,7 @@ public class ToolClientEvents extends ClientEventBase {
     event.register(TConstruct.getResource("material"), MaterialModel.LOADER);
     event.register(TConstruct.getResource("tool"), ToolModel.LOADER);
     event.register(TConstruct.getResource("material_block"), MaterialBlockModel.LOADER);
+    ItemKey.LOADER.register(TConstruct.getResource("slot"), CreativeSlotItem.SLOT_KEY.getLoader());
   }
 
   @SubscribeEvent

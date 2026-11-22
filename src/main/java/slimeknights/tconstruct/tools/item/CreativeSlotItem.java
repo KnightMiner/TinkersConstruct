@@ -1,8 +1,6 @@
 package slimeknights.tconstruct.tools.item;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
@@ -12,19 +10,20 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import slimeknights.mantle.client.model.ItemKey;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.fluid.FluidTransferHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.CollectionComponent;
+import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerModifiers;
-import slimeknights.tconstruct.tools.modifiers.creative.CreativeSlotModifier;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -32,10 +31,15 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CreativeSlotItem extends Item {
-  private static final String NBT_KEY = "slot";
   private static final String TOOLTIP = TConstruct.makeTranslationKey("item", "creative_slot.tooltip");
   private static final Component TOOLTIP_MISSING = TConstruct.makeTranslation("item", "creative_slot.missing").withStyle(ChatFormatting.RED);
   private static final Component CREATIVE_ONLY = TConstruct.makeTranslation("item", "creative_slot.only").withStyle(ChatFormatting.RED);
+
+  /** Getter for texture names for {@link slimeknights.mantle.client.model.ItemKeyModel} */
+  public static final ItemKey SLOT_KEY = ItemKey.simple(stack -> {
+    SlotType slot = getSlot(stack);
+    return slot == null ? "slotless" : slot.toString();
+  });
 
   public CreativeSlotItem(Properties properties) {
     super(properties);
@@ -44,16 +48,12 @@ public class CreativeSlotItem extends Item {
   /** Gets the value of the slot tag from the given stack */
   @Nullable
   public static SlotType getSlot(ItemStack stack) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null && nbt.contains(NBT_KEY, Tag.TAG_STRING)) {
-      return SlotType.getIfPresent(nbt.getString(NBT_KEY));
-    }
-    return null;
+    return stack.get(TinkerData.SLOT);
   }
 
   /** Makes an item stack with the given slot type */
   public static ItemStack withSlot(ItemStack stack, SlotType type) {
-    stack.getOrCreateTag().putString(NBT_KEY, type.getName());
+    stack.set(TinkerData.SLOT, type);
     return stack;
   }
 
@@ -71,7 +71,7 @@ public class CreativeSlotItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     SlotType slot = getSlot(stack);
     if (slot != null) {
       tooltip.add(Component.translatable(TOOLTIP, slot.getDisplayName()).withStyle(ChatFormatting.GRAY));
@@ -109,37 +109,21 @@ public class CreativeSlotItem extends Item {
             return true;
           }
 
-          // find the tool data
-          ModDataNBT persistentData = tool.getPersistentData();
-          CompoundTag slots;
-          if (persistentData.contains(CreativeSlotModifier.KEY_SLOTS, Tag.TAG_COMPOUND)) {
-            slots = persistentData.getCompound(CreativeSlotModifier.KEY_SLOTS);
-          } else {
-            slots = new CompoundTag();
-            persistentData.put(CreativeSlotModifier.KEY_SLOTS, slots);
-          }
-
-          // add the slot
-          String name = slotType.getName();
-          int updated = slots.getInt(name) + amount;
-          if (updated == 0) {
-            slots.remove(name);
-          } else {
-            slots.putInt(name, updated);
-          }
+          // add the slot - automatically removes if empty
+          SlotsNBT slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY).add(slotType, amount);
+          CollectionComponent.set(tool, TinkerData.CREATIVE_SLOTS, slots);
 
           // if no slot remain in the creative modifier, remove it
           ModifierId creative = TinkerModifiers.creativeSlot.id();
           int currentLevel = tool.getModifierLevel(creative);
           if (slots.isEmpty()) {
             // if no slots exist anymore, remove the creative modifier
-            persistentData.remove(CreativeSlotModifier.KEY_SLOTS);
             tool.removeModifier(creative, currentLevel);
           } else if (currentLevel == 0) {
             // add creative modifier if needed
             tool.addModifier(creative, 1);
           } else {
-            // neither add or removing modifier, just build it
+            // neither adding nor removing modifier, just build it
             tool.rebuildStats();
           }
           if (amount > 0) {

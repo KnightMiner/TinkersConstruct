@@ -1,10 +1,7 @@
 package slimeknights.tconstruct.tools.modifiers.creative;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -13,7 +10,6 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
@@ -24,9 +20,6 @@ import java.util.List;
 
 /** Modifier that adds a variable number of slots to a tool. Could easily be done via Tag editing, but this makes it easier */
 public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsModifierHook, ModifierRemovalHook {
-  /** Key representing the slots object in the modifier */
-  public static final ResourceLocation KEY_SLOTS = TConstruct.getResource("creative");
-
   @Override
   protected void registerHooks(Builder hookBuilder) {
     super.registerHooks(hookBuilder);
@@ -36,22 +29,13 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
   @Nullable
   @Override
   public Component onRemoved(IToolStackView tool, Modifier modifier) {
-    tool.getPersistentData().remove(KEY_SLOTS);
+    tool.remove(TinkerData.CREATIVE_SLOTS);
     return null;
   }
 
   @Override
   public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder builder) {
-    IModDataView persistentData = context.getPersistentData();
-    if (persistentData.contains(KEY_SLOTS, Tag.TAG_COMPOUND)) {
-      CompoundTag slots = persistentData.getCompound(KEY_SLOTS);
-      for (String key : slots.getAllKeys()) {
-        SlotType slotType = SlotType.getIfPresent(key);
-        if (slotType != null) {
-          builder.add(slotType, slots.getInt(key));
-        }
-      }
-    }
+    builder.add(context.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY));
   }
 
   /** Formats the given slot type as a count */
@@ -64,21 +48,19 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
   @Override
   public List<Component> getDescriptionList(IToolStackView tool, ModifierEntry entry) {
     List<Component> tooltip = getDescriptionList(entry.getLevel());
-    IModDataView persistentData = tool.getPersistentData();
-    if (persistentData.contains(KEY_SLOTS, Tag.TAG_COMPOUND)) {
-      CompoundTag slots = persistentData.getCompound(KEY_SLOTS);
-
+    SlotsNBT slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY);
+    if (!slots.isEmpty() ) {
       // first one found has special behavior
       boolean first = true;
-      for (String key : slots.getAllKeys()) {
-        SlotType slotType = SlotType.getIfPresent(key);
-        if (slotType != null) {
+      for (SlotType slotType : SlotType.getAllSlotTypes()) {
+        int count = slots.get(slotType);
+        if (count > 0) {
           if (first) {
             // found a valid slot? copy the list once then add the rest
             tooltip = new ArrayList<>(tooltip);
             first = false;
           }
-          tooltip.add(formatCount(slotType, slots.getInt(key)));
+          tooltip.add(formatCount(slotType, count));
         }
       }
     }

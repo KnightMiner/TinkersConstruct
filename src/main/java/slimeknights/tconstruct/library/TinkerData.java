@@ -14,6 +14,7 @@ import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
+import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -44,6 +45,8 @@ public class TinkerData {
   public static final DeferredDataComponent<ModifierHolder> MODIFIER = DATA_COMPONENTS.registerPersistent("modifier", ModifierHolder.CODEC, ModifierHolder.STREAM_CODEC);
   /** Holds a single material on an item. Used for tool parts and other material items */
   public static final DeferredDataComponent<MaterialVariant> MATERIAL = DATA_COMPONENTS.registerPersistent("material", MaterialVariant.CODEC, MaterialVariant.STREAM_CODEC);
+  /** Holds a single slot type on an item. Used for the creative slot item */
+  public static final DeferredDataComponent<SlotType> SLOT = DATA_COMPONENTS.registerPersistent("modifier_slot", SlotType.CODEC, SlotType.STREAM_CODEC);
 
   /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
   public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Unit.CODEC, TinkerStreamCodecs.UNIT);
@@ -68,4 +71,9 @@ public class TinkerData {
   public static final DeferredDataComponent<SlotsNBT> VOLATILE_SLOTS = DATA_COMPONENTS.registerPersistent("volatile_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
   /** Modifier slots on the tool due to recipes or cheats. Will typically be negative. */
   public static final DeferredDataComponent<SlotsNBT> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+
+
+  /* Modifiers */
+  /** Modifier slots added through the creative modifier. */
+  public static final DeferredDataComponent<SlotsNBT> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
 }

@@ -9,6 +9,6 @@
     "souls": "tconstruct:item/materials/hollow_gem",
     "defense": "tconstruct:item/slot/defense"
   },
-  "nbt_key": "slot",
+  "item_key": "tconstruct:slot",
   "extra_textures_key": "tconstruct:creative_slot"
 }
