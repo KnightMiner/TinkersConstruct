@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -294,7 +295,7 @@ public class ToolStack implements IToolStackView {
    */
   @Override
   public boolean isBroken() {
-    return stack.getOrDefault(TinkerData.BROKEN, false);
+    return stack.has(TinkerData.BROKEN);
   }
 
   @Override
@@ -307,7 +308,11 @@ public class ToolStack implements IToolStackView {
    * @param broken  New broken value
    */
   protected void setBrokenRaw(boolean broken) {
-    stack.set(TinkerData.BROKEN, broken);
+    if (broken) {
+      stack.set(TinkerData.BROKEN, Unit.INSTANCE);
+    } else {
+      stack.remove(TinkerData.BROKEN);
+    }
   }
 
   /**

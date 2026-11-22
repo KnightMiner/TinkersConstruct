@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.library.tools.helper;
 
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.TConstruct;
@@ -109,7 +110,7 @@ public final class ToolBuildHandler {
 		  // use all 5 render materials for display stacks, having too many materials is not a problem and its easier than making this reload sensitive
       stack = RENDER_MATERIALS.updateStack(stack);
     }
-    stack.set(TinkerData.DISPLAY, true);
+    stack.set(TinkerData.DISPLAY, Unit.INSTANCE);
     return stack;
   }
 
@@ -199,7 +200,7 @@ public final class ToolBuildHandler {
   public static ItemStack getDisplayPart(IToolPart toolPart, int i) {
     // mark the part as display to suppress the invalid material tooltip
     ItemStack item = toolPart.withMaterialForDisplay(ToolBuildHandler.getRenderMaterial(i));
-    item.set(TinkerData.DISPLAY, true);
+    item.set(TinkerData.DISPLAY, Unit.INSTANCE);
     return item;
   }
 }

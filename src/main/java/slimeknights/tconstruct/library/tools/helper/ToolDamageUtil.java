@@ -30,7 +30,7 @@ public class ToolDamageUtil {
    * @return  True if broken
    */
   public static boolean isBroken(ItemStack stack) {
-    return stack.getOrDefault(TinkerData.BROKEN, false);
+    return stack.has(TinkerData.BROKEN);
   }
 
   /**

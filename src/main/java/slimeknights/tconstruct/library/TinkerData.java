@@ -1,8 +1,7 @@
 package slimeknights.tconstruct.library;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.Unit;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -12,6 +11,7 @@ import slimeknights.mantle.registration.holder.DeferredAttachment;
 import slimeknights.mantle.registration.holder.DeferredDataComponent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
+import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
@@ -46,11 +46,11 @@ public class TinkerData {
   public static final DeferredDataComponent<MaterialVariant> MATERIAL = DATA_COMPONENTS.registerPersistent("material", MaterialVariant.CODEC, MaterialVariant.STREAM_CODEC);
 
   /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
-  public static final DeferredDataComponent<Boolean> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Codec.BOOL, ByteBufCodecs.BOOL);
+  public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Unit.CODEC, TinkerStreamCodecs.UNIT);
   
   /* Tool */
   /** If true, the tool is currently broken and should not perform any actions that require durability. */
-  public static final DeferredDataComponent<Boolean> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Codec.BOOL, ByteBufCodecs.BOOL);
+  public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Unit.CODEC, TinkerStreamCodecs.UNIT);
   /** Holds a single material on an item. Used for tool parts and other material items */
   public static final DeferredDataComponent<MaterialNBT> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", MaterialNBT.CODEC, MaterialNBT.STREAM_CODEC);
 

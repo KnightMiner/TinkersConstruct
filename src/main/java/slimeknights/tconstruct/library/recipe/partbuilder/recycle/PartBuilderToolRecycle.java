@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -254,7 +255,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
             List.of(IModifiableDisplay.getDisplayStack(stack)),
             parts.object2IntEntrySet().stream().map(pi -> {
               ItemStack part = pi.getKey().withMaterialForDisplay(ToolBuildHandler.getRenderMaterial(pi.getIntValue()));
-              part.set(TinkerData.DISPLAY, true);
+              part.set(TinkerData.DISPLAY, Unit.INSTANCE);
               return part;
             }).toList(),
             partItems.stream().flatMap(part -> MaterialItemCache.getAllMaterials(part).stream()).toList()

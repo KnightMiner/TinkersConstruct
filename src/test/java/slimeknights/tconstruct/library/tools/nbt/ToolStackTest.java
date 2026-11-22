@@ -1,6 +1,7 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tiers;
@@ -110,7 +111,6 @@ class ToolStackTest extends ToolItemTest {
 
     ItemStack stack = tool.getStack();
     assertThat(stack.has(TinkerData.BROKEN)).isTrue();
-    assertThat(stack.get(TinkerData.BROKEN)).isTrue();
     assertThat(stack.has(DataComponents.DAMAGE)).isTrue();
     assertThat(stack.get(DataComponents.DAMAGE)).isEqualTo(1);
   }
@@ -119,7 +119,7 @@ class ToolStackTest extends ToolItemTest {
   void deserialize_damageBroken() {
     ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
     stack.set(DataComponents.DAMAGE, 4);
-    stack.set(TinkerData.BROKEN, true);
+    stack.set(TinkerData.BROKEN, Unit.INSTANCE);
 
     ToolStack tool = ToolStack.from(stack);
     assertThat(tool.getDamageRaw()).isEqualTo(4);
@@ -146,7 +146,7 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void damage_setDamageUnbreaksTool() {
     ItemStack stack = buildTestTool();
-    stack.set(TinkerData.BROKEN, true);
+    stack.set(TinkerData.BROKEN, Unit.INSTANCE);
 
     ToolStack tool = ToolStack.from(stack);
     assertThat(tool.isBroken()).isTrue();

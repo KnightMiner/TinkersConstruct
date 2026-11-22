@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -281,7 +282,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
             tool.rebuildStats();
           }
           // break the tool - tool stack will figure out how to do the durability later
-          stack.set(TinkerData.BROKEN, true);
+          stack.set(TinkerData.BROKEN, Unit.INSTANCE);
 
           Set<MaterialId> repairMaterials = MaterialRepairToolHook.getRepairMaterials(tool);
           if (!repairMaterials.isEmpty()) {

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -303,7 +304,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
           } else {
             // not a full list? mark it for display with just the materials on the end
             result = builder.build().updateStack(new ItemStack(output, outputCount));
-            result.set(TinkerData.DISPLAY, true);
+            result.set(TinkerData.DISPLAY, Unit.INSTANCE);
           }
         }
       }

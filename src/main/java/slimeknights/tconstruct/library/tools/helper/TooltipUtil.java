@@ -96,7 +96,7 @@ public class TooltipUtil {
    * @return  True if marked display
    */
   public static boolean isDisplay(ItemStack stack) {
-    return stack.getOrDefault(TinkerData.DISPLAY, false);
+    return stack.has(TinkerData.DISPLAY);
   }
 
   /** Sets the tool name in a way that will not be italic */
