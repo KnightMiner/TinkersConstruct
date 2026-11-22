@@ -19,12 +19,12 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.helper.ModifierLootingHandler;
-import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nonnull;
 
@@ -53,12 +53,12 @@ public class ModifierLootModifier extends LootModifier {
       // if this loot is due to a projectile fired by one of our tools, then use that projectile as the loot source
       // prevents weirdness when held tool switches after firing a projectile
       if (context.getParamOrNull(LootContextParams.DIRECT_ATTACKING_ENTITY) instanceof Projectile projectile) {
-        ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(projectile);
+        ModifierEntries modifiers = EntityModifierCapability.getOrEmpty(projectile);
 
         // no need to build the dummy tool if we lack modifiers
         if (!modifiers.isEmpty()) {
           ModDataNBT persistentData = ModDataNBT.get(projectile);
-          IToolStackView dummyTool = new DummyToolStack(Items.AIR, modifiers, persistentData);
+          ToolStackView dummyTool = new DummyToolStack(Items.AIR, modifiers, persistentData);
           for (ModifierEntry entry : modifiers) {
             entry.getHook(ModifierHooks.PROCESS_LOOT).processLoot(dummyTool, entry, generatedLoot, context);
           }

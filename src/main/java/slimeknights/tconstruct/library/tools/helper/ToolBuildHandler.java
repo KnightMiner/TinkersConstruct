@@ -17,8 +17,8 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 
 import java.util.Collections;
@@ -44,10 +44,10 @@ public final class ToolBuildHandler {
   }
 
   /** Materials for use in multipart tool rendering */
-  private static final MaterialNBT RENDER_MATERIALS;
+  private static final ToolMaterials RENDER_MATERIALS;
   static {
     MaterialHolder holder = MaterialHolder.create(RENDER_MATERIAL);
-    RENDER_MATERIALS = MaterialNBT.of(
+    RENDER_MATERIALS = ToolMaterials.of(
       MaterialVariant.create(holder, "head"),
       MaterialVariant.create(holder, "handle"),
       MaterialVariant.create(holder, "extra"),
@@ -62,7 +62,7 @@ public final class ToolBuildHandler {
    * @param materials  Material list
    * @return  Item stack with materials
    */
-  public static ItemStack buildItemFromMaterials(IModifiable item, MaterialNBT materials) {
+  public static ItemStack buildItemFromMaterials(IModifiable item, ToolMaterials materials) {
     ToolStack tool = ToolStack.create(item);
     tool.setMaterials(materials);
     return tool.getStack();
@@ -130,7 +130,7 @@ public final class ToolBuildHandler {
       tab.accept(new ItemStack(item));
     } else if (!hasMaterials) {
       // no parts? just add this item
-      tab.accept(buildItemFromMaterials(item, MaterialNBT.EMPTY));
+      tab.accept(buildItemFromMaterials(item, ToolMaterials.EMPTY));
     } else {
       // if a specific material is set, show just that in search
       boolean added = false;
@@ -172,7 +172,7 @@ public final class ToolBuildHandler {
    */
   public static ItemStack createSingleMaterial(IModifiable item, MaterialVariant material) {
     List<MaterialStatsId> required = ToolMaterialHook.stats(item.getToolDefinition());
-    MaterialNBT.Builder materials = MaterialNBT.builder();
+    ToolMaterials.Builder materials = ToolMaterials.builder();
     boolean useMaterial = false;
     for (MaterialStatsId requirement : required) {
       // try to use requested material

@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.json.variable.tool;
 import slimeknights.tconstruct.library.json.math.ModifierFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ public record ToolFormula(ModifierFormula formula, List<ToolVariable> variables,
   }
 
   /** Builds the arguments from the context */
-  private float[] getArguments(IToolStackView tool, ModifierEntry modifier) {
+  private float[] getArguments(ToolStackView tool, ModifierEntry modifier) {
     int size = variables.size();
     float[] arguments = new float[1 + size];
     arguments[LEVEL] = formula.processLevel(modifier);
@@ -33,7 +33,7 @@ public record ToolFormula(ModifierFormula formula, List<ToolVariable> variables,
   }
 
   /** Runs this formula */
-  public float apply(IToolStackView tool, ModifierEntry modifier) {
+  public float apply(ToolStackView tool, ModifierEntry modifier) {
     return formula.apply(getArguments(tool, modifier));
   }
 }

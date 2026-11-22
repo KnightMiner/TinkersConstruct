@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifie
 import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,13 +27,13 @@ public record CapacityBarValidator(CapacityBarHook bar) implements HookProvider,
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     return IncrementalModifierEntry.addAmountToName(entry.getModifier().getDisplayName(entry.getLevel()), bar.getAmount(tool), bar.getCapacity(tool, entry));
   }
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     // clear excess amount
     int cap = bar.getCapacity(tool, modifier);
     if (bar.getCapacity(tool, modifier) > cap) {
@@ -44,7 +44,7 @@ public record CapacityBarValidator(CapacityBarHook bar) implements HookProvider,
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     bar.setAmount(tool, ModifierEntry.EMPTY, 0);
     return null;
   }

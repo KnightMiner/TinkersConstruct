@@ -7,8 +7,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Collection;
 
@@ -23,7 +23,7 @@ public interface SlotStackModifierHook {
    * @param player    Player in the inventory
    * @return  True if standard slot interactions should be prevented
    */
-  default boolean overrideStackedOnOther(IToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
+  default boolean overrideStackedOnOther(ToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
     return false;
   }
 
@@ -37,7 +37,7 @@ public interface SlotStackModifierHook {
    * @param access    Slot access
    * @return  True if standard slot interactions should be prevented
    */
-  default boolean overrideOtherStackedOnMe(IToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
+  default boolean overrideOtherStackedOnMe(ToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
     return false;
   }
 
@@ -70,7 +70,7 @@ public interface SlotStackModifierHook {
   /** Merger that stops after the first success */
   record FirstMerger(Collection<SlotStackModifierHook> modules) implements SlotStackModifierHook {
     @Override
-    public boolean overrideStackedOnOther(IToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
+    public boolean overrideStackedOnOther(ToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
       for (SlotStackModifierHook module : modules) {
         if (module.overrideStackedOnOther(heldTool, modifier, slot, player)) {
           return true;
@@ -80,7 +80,7 @@ public interface SlotStackModifierHook {
     }
 
     @Override
-    public boolean overrideOtherStackedOnMe(IToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
+    public boolean overrideOtherStackedOnMe(ToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
       for (SlotStackModifierHook module : modules) {
         if (module.overrideOtherStackedOnMe(slotTool, modifier, held, slot, player, access)) {
           return true;

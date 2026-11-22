@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -145,7 +145,7 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
 
     @Override
     protected MaterialVariantId getMaterial(ItemStack stack) {
-      return MaterialNBT.get(stack, index).id();
+      return ToolMaterials.get(stack, index).id();
     }
 
     @Override

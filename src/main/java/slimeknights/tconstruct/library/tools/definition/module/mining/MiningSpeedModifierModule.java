@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public record MiningSpeedModifierModule(float modifier, IJsonPredicate<BlockStat
   }
 
   @Override
-  public float modifyDestroySpeed(IToolStackView tool, BlockState state, float speed) {
+  public float modifyDestroySpeed(ToolStackView tool, BlockState state, float speed) {
     if (predicate.matches(state)) {
       speed *= modifier;
     }

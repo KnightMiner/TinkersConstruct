@@ -21,14 +21,14 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /**
  * Module for armor modifiers that makes the wearer immune to a mob effect
  */
-public record EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLevel, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLevel, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MobDisguiseModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final ComputableDataKey<Multiset<Holder<MobEffect>>> EFFECT_IMMUNITY = TConstruct.createKey("effect_immunity", HashMultiset::create);
   private static final LevelingInt ANY_LEVEL = LevelingInt.flat(255);
@@ -57,7 +57,7 @@ public record EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLeve
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (!tool.isBroken() && ArmorLevelModule.validSlot(tool, context.getChangedSlot(), TinkerTags.Items.HELD_ARMOR) && condition.matches(tool, modifier)) {
       TinkerDataCapability.Holder data = context.getDataHolder();
       if (data != null) {
@@ -67,7 +67,7 @@ public record EffectImmunityModule(Holder<MobEffect> effect, LevelingInt maxLeve
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (!tool.isBroken() && ArmorLevelModule.validSlot(tool, context.getChangedSlot(), TinkerTags.Items.HELD_ARMOR) && condition.matches(tool, modifier)) {
       TinkerDataCapability.Holder data = context.getDataHolder();
       if (data != null) {

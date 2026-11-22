@@ -23,10 +23,10 @@ import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHoo
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -62,13 +62,13 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
+  public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
     // gives +0.5 per effect level, for +2.5 per modifier level at max
     return damage + (getEffect(context.getAttacker(), ToolType.MELEE) * modifier.getEffectiveLevel() / 2f * tool.getMultiplier(ToolStats.ATTACK_DAMAGE));
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     // 5 hits gets you to max
     if (!context.isExtraAttack() && context.isFullyCharged()) {
       applyEffect(context.getAttacker(), ToolType.MELEE, 5*20, 1, 4);
@@ -76,7 +76,7 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+  public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
     if (stat == ToolStats.PROJECTILE_DAMAGE) {
       // gives +0.25 power per effect level, up to +1.25 at 5 levels
       baseValue += (getEffect(living, ToolType.RANGED) * modifier.getEffectiveLevel() / 4f * multiplier);
@@ -85,7 +85,7 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     if (attacker != null) {
       applyEffect(attacker, ToolType.RANGED, 10*20, 1, 4);
     }
@@ -93,13 +93,13 @@ public class InsatiableModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     // if the sling launches, it hits
     applyEffect(holder, ToolType.RANGED, 10*20, 1, 4);
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     // run both tooltips always, helps for ranged weapons to show the right bonus
     for (ToolType type : TYPES) {
       if (tool.hasTag(type.getTag())) {

@@ -42,13 +42,13 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -200,7 +200,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
    * @param hand       Hand fired from
    * @param heldAmmo   Ammo used to fire, should be non-empty
    */
-  public static void fireCrossbow(IToolStackView tool, Player player, InteractionHand hand, CompoundTag heldAmmo) {
+  public static void fireCrossbow(ToolStackView tool, Player player, InteractionHand hand, CompoundTag heldAmmo) {
     fireCrossbow(tool, player, player.getAbilities().instabuild, hand, heldAmmo);
   }
 
@@ -212,7 +212,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
    * @param hand       Hand fired from
    * @param heldAmmo   Ammo used to fire, should be non-empty
    */
-  public static void fireCrossbow(IToolStackView tool, LivingEntity living, boolean creative, InteractionHand hand, CompoundTag heldAmmo) {
+  public static void fireCrossbow(ToolStackView tool, LivingEntity living, boolean creative, InteractionHand hand, CompoundTag heldAmmo) {
     // ammo already loaded? time to fire
     Level level = living.level();
     if (!level.isClientSide) {
@@ -267,7 +267,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
         projectile.shoot(targetVector.x(), targetVector.y(), targetVector.z(), velocity * speed, inaccuracy);
 
         // add modifiers to the projectile, will let us use them on impact
-        ModifierNBT modifiers = tool.getModifiers();
+        ModifierEntries modifiers = tool.getModifiers();
         EntityModifierCapability.getCapability(projectile).addModifiers(modifiers);
 
         // fetch the persistent data for the arrow as modifiers may want to store data
@@ -329,7 +329,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
   }
 
   @Override
-  public List<Component> getStatInformation(IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
+  public List<Component> getStatInformation(ToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
     tooltips = super.getStatInformation(tool, player, tooltips, key, tooltipFlag);
 
     // if we have ammo, render that in the tooltip

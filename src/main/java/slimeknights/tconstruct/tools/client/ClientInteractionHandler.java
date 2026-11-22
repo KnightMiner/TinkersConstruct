@@ -19,7 +19,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
 import slimeknights.tconstruct.tools.network.InteractWithAirPacket;
 
@@ -31,7 +31,7 @@ public class ClientInteractionHandler {
   /** If true, next offhand interaction should be canceled, used since we cannot tell Forge to break the hand loop from the main hand */
   private static boolean cancelNextOffhand = false;
 
-  /** Implements the client side of chestplate {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} */
+  /** Implements the client side of chestplate {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} */
   @SubscribeEvent(priority = EventPriority.LOW)
   static void chestplateToolUse(PlayerInteractEvent.RightClickEmpty event) {
     // not sure if anyone sets the result, but just in case listen to it so they can stop us running
@@ -72,7 +72,7 @@ public class ClientInteractionHandler {
     }
   }
 
-  /** Implements the client side of left click interaction for {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} */
+  /** Implements the client side of left click interaction for {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} */
   @SubscribeEvent
   static void leftClickAir(LeftClickEmpty event) {
     // not sure if anyone sets the result, but just in case listen to it so they can stop us running

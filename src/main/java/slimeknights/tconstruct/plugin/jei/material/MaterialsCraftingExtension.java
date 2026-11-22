@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.MaterialsCraftingTableRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ShapelessMaterialsRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
 
 import javax.annotation.Nullable;
@@ -104,7 +104,7 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
     ItemStack focus = CategoryUtil.getResultItemFocus(focuses);
     // if we have an output focus, set the input slots to match
     if (!focus.isEmpty()) {
-      MaterialNBT materials = MaterialNBT.get(focus);
+      ToolMaterials materials = ToolMaterials.get(focus);
       // loop through finding all overrides to display, but skip any that are not present on the too
       int partCount = partSlots.size();
       for (int i = 0; i < partCount; i++) {
@@ -142,7 +142,7 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
       int fHeight = height;
       builder.createFocusLink(Streams.concat(
         Stream.of(outputSlot),
-        Arrays.stream(outputLink).mapToObj(i -> inputSlots.get(MantleJEIConstants.getCraftingIndex(i, fWidth, fHeight)))
+        Arrays.stream(outputLink).mapToObj(i -> inputSlots.get(craftingGridHelper.getCraftingIndex(i, fWidth, fHeight)))
       ).toArray(IRecipeSlotBuilder[]::new));
     }
   }
@@ -159,7 +159,7 @@ public class MaterialsCraftingExtension<T extends CraftingRecipe & MaterialsCraf
           width = height = CategoryUtil.getShapelessSize(recipe.getIngredients().size());
         }
         // find input materials and use to set the output
-        MaterialNBT.Builder builder = MaterialNBT.builder();
+        ToolMaterials.Builder builder = ToolMaterials.builder();
         for (int[] partSlot : partSlots) {
           ItemStack stack = recipeSlots.get(MantleJEIConstants.getCraftingIndex(partSlot[0], width, height)).getDisplayedItemStack().orElse(ItemStack.EMPTY);
           builder.add(MaterialRecipeCache.getMaterial(stack));

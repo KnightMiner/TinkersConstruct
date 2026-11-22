@@ -5,7 +5,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.utils.Schedule;
 import slimeknights.tconstruct.library.utils.Schedule.ListScheduler;
@@ -28,7 +28,7 @@ public interface ScheduledProjectileTaskModifierHook {
    * @param persistentData  Persistent data instance stored on the arrow to write arbitrary data. Note the modifier list was already written.
    * @param scheduler       Scheduler for adding tasks. Task index is already localized to your modifier hook, so start from 0. Time is in ticks.
    */
-  void scheduleProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler);
+  void scheduleProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler);
 
   /**
    * Called when a schedule task's time is met to perform the task.
@@ -38,16 +38,16 @@ public interface ScheduledProjectileTaskModifierHook {
    * @param projectile      Acting projectile
    * @param arrow           Acting arrow
    * @param persistentData  Persistent data instance stored on the arrow to write arbitrary data.
-   * @param task            Task index that was run. Should match the index you passed in {@link #scheduleProjectileTask(IToolStackView, ModifierEntry, ItemStack, Projectile, AbstractArrow, ModDataNBT, Scheduler)}.
+   * @param task            Task index that was run. Should match the index you passed in {@link #scheduleProjectileTask(ToolStackView, ModifierEntry, ItemStack, Projectile, AbstractArrow, ModDataNBT, Scheduler)}.
    *                        It's a good idea to validate the index even when only using one to minimize issues with task indices breaking when datapacks change.
    */
-  void onScheduledProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task);
+  void onScheduledProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task);
 
 
   /* Helpers */
 
   /** Creates the schedule for the given tool */
-  static Schedule createSchedule(IToolStackView tool, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData) {
+  static Schedule createSchedule(ToolStackView tool, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData) {
     List<ModifierEntry> modifiers = tool.getModifiers().modifiers();
     ScheduleBuilder builder = new ScheduleBuilder();
     int size = modifiers.size();
@@ -61,7 +61,7 @@ public interface ScheduledProjectileTaskModifierHook {
   }
 
   /** Creates the schedule for the given tool */
-  static void checkSchedule(IToolStackView tool, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, Schedule schedule) {
+  static void checkSchedule(ToolStackView tool, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, Schedule schedule) {
     do {
       int task = schedule.check(projectile.tickCount);
       if (task < 0) {
@@ -85,7 +85,7 @@ public interface ScheduledProjectileTaskModifierHook {
     }
 
     @Override
-    public void scheduleProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {
+    public void scheduleProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {
       int size = modules.size();
       ListScheduler listScheduler = scheduler.list(modules.size());
       for (int i = 0; i < size; i++) {
@@ -95,7 +95,7 @@ public interface ScheduledProjectileTaskModifierHook {
     }
 
     @Override
-    public void onScheduledProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {
+    public void onScheduledProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {
       int size = modules.size();
       int index = Schedule.index(task, size);
       if (index < size) {

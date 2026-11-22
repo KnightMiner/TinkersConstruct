@@ -16,7 +16,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.effect.NoMilkEffect;
 
 import java.util.function.Consumer;
@@ -76,7 +76,7 @@ public class HelmetChargingEffect extends NoMilkEffect {
   /* Helpers */
 
   /** Starts using the helmet with the charge time rendering */
-  public static int startUsingHelmet(IToolStackView tool, LivingEntity living, float speedFactor) {
+  public static int startUsingHelmet(ToolStackView tool, LivingEntity living, float speedFactor) {
     int time = GeneralInteractionModifierHook.startDrawing(tool, living, speedFactor);
     living.addEffect(new MobEffectInstance(TinkerEffects.helmetCharging, time + 20, 0, true, false, true));
     return time;

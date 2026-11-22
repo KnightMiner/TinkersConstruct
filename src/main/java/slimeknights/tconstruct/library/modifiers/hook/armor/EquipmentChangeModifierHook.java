@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.armor;
 import net.minecraft.world.entity.EquipmentSlot;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -15,78 +15,78 @@ public interface EquipmentChangeModifierHook {
    * <br>
    * Alternatives:
    * <ul>
-   *   <li>{@link #onUnequip(IToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is removed from an entity</li>
-   *   <li>{@link #onEquipmentChange(IToolStackView, ModifierEntry, EquipmentChangeContext, EquipmentSlot)}: Called on all other slots did not change</li>
+   *   <li>{@link #onUnequip(ToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is removed from an entity</li>
+   *   <li>{@link #onEquipmentChange(ToolStackView, ModifierEntry, EquipmentChangeContext, EquipmentSlot)}: Called on all other slots did not change</li>
    * </ul>
    * @param tool         Tool equipped
    * @param modifier     Level of the modifier
    * @param context      Context about the event
    */
-  default void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {}
+  default void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {}
 
   /**
    * Called when a tinker tool is unequipped from an entity
    * <br>
    * Alternatives:
    * <ul>
-   *   <li>{@link #onEquip(IToolStackView, ModifierEntry, EquipmentChangeContext)}}: Called when a tool is added to an entity</li>
-   *   <li>{@link #onEquipmentChange(IToolStackView, ModifierEntry, EquipmentChangeContext, EquipmentSlot)}: Called on all other slots that did not change</li>
+   *   <li>{@link #onEquip(ToolStackView, ModifierEntry, EquipmentChangeContext)}}: Called when a tool is added to an entity</li>
+   *   <li>{@link #onEquipmentChange(ToolStackView, ModifierEntry, EquipmentChangeContext, EquipmentSlot)}: Called on all other slots that did not change</li>
    * </ul>
    * @param tool         Tool unequipped
    * @param modifier     Level of the modifier
    * @param context      Context about the event
    */
-  default void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {}
+  default void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {}
 
   /**
    * Called when a stack in a different slot changed. Not called on the slot that changed
    * <br>
    * Alternatives:
    * <ul>
-   *   <li>{@link #onUnequip(IToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is removed from an entity</li>
-   *   <li>{@link #onEquip(IToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is added to an entity. Called instead of this hook for the new item</li>
+   *   <li>{@link #onUnequip(ToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is removed from an entity</li>
+   *   <li>{@link #onEquip(ToolStackView, ModifierEntry, EquipmentChangeContext)}: Called when a tool is added to an entity. Called instead of this hook for the new item</li>
    * </ul>
    * @param tool      Tool instance
    * @param modifier  Level of the modifier
    * @param context   Context describing the change
    * @param slotType  Slot containing this tool, did not change
    */
-  default void onEquipmentChange(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {}
+  default void onEquipmentChange(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {}
 
   /** Checks if this tool changed. */
-  static boolean didChange(IToolStackView tool, @Nullable IToolStackView other) {
+  static boolean didChange(ToolStackView tool, @Nullable ToolStackView other) {
     // modifier list changing is a good heuristic for tool changing
     return (other == null || other.getItem() != tool.getItem() || !other.getModifiers().equals(tool.getModifiers()));
   }
 
-  /** Checks if this tool was equip, as {@link #onUnequip(IToolStackView, ModifierEntry, EquipmentChangeContext)} may be called on the tool itself changing NBT. */
-  static boolean didEquip(IToolStackView tool, EquipmentChangeContext context) {
+  /** Checks if this tool was equip, as {@link #onUnequip(ToolStackView, ModifierEntry, EquipmentChangeContext)} may be called on the tool itself changing NBT. */
+  static boolean didEquip(ToolStackView tool, EquipmentChangeContext context) {
     return didChange(tool, context.getOriginalTool());
   }
 
-  /** Checks if this tool was unequip, as {@link #onUnequip(IToolStackView, ModifierEntry, EquipmentChangeContext)} may be called on the tool itself changing NBT. */
-  static boolean didUnequip(IToolStackView tool, EquipmentChangeContext context) {
+  /** Checks if this tool was unequip, as {@link #onUnequip(ToolStackView, ModifierEntry, EquipmentChangeContext)} may be called on the tool itself changing NBT. */
+  static boolean didUnequip(ToolStackView tool, EquipmentChangeContext context) {
     return didChange(tool, context.getReplacementTool());
   }
 
   /** Record that runs all nested hooks */
   record AllMerger(Collection<EquipmentChangeModifierHook> modules) implements EquipmentChangeModifierHook {
     @Override
-    public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+    public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
       for (EquipmentChangeModifierHook module : modules) {
         module.onEquip(tool, modifier, context);
       }
     }
 
     @Override
-    public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+    public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
       for (EquipmentChangeModifierHook module : modules) {
         module.onUnequip(tool, modifier, context);
       }
     }
 
     @Override
-    public void onEquipmentChange(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
+    public void onEquipmentChange(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
       EquipmentChangeModifierHook.super.onEquipmentChange(tool, modifier, context, slotType);
       for (EquipmentChangeModifierHook module : modules) {
         module.onEquipmentChange(tool, modifier, context, slotType);

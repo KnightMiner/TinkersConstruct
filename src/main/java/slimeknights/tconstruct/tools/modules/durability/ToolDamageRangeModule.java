@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * @param holder Condition on the entity holding the tool.
  * @param condition  Condition of when this module applies
  */
-public record ToolDamageRangeModule(int min, int max, IJsonPredicate<ModifierId> cause, IJsonPredicate<LivingEntity> holder, ModifierCondition<IToolStackView> condition) implements ModifierModule, ToolDamageModifierHook, ConditionalModule<IToolStackView> {
+public record ToolDamageRangeModule(int min, int max, IJsonPredicate<ModifierId> cause, IJsonPredicate<LivingEntity> holder, ModifierCondition<ToolStackView> condition) implements ModifierModule, ToolDamageModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolDamageRangeModule>defaultHooks(ModifierHooks.TOOL_DAMAGE);
   public static final RecordLoadable<ToolDamageRangeModule> LOADER = RecordLoadable.create(
     IntLoadable.FROM_ZERO.defaultField("min", 0, ToolDamageRangeModule::min),
@@ -56,7 +56,7 @@ public record ToolDamageRangeModule(int min, int max, IJsonPredicate<ModifierId>
   }
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     if (condition.matches(tool, modifier) && this.cause.matches(cause) && TinkerPredicate.matches(this.holder, holder)) {
       // if the range is closed, all actions deal that
       if (min == max) {

@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.List;
@@ -34,27 +34,27 @@ public enum DurabilityAsCapacityModule implements ModifierModule, CapacityBarHoo
   }
 
   @Override
-  public int getAmount(IToolStackView tool) {
+  public int getAmount(ToolStackView tool) {
     return tool.getCurrentDurability();
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     return tool.getStats().getInt(ToolStats.DURABILITY);
   }
 
   @Override
-  public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+  public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
     tool.setDamage(tool.getStats().getInt(ToolStats.DURABILITY) - amount);
   }
 
   @Override
-  public void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void addAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     tool.setDamage(tool.getDamage() - amount);
   }
 
   @Override
-  public void removeAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void removeAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     tool.setDamage(tool.getDamage() + amount);
   }
 }

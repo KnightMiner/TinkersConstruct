@@ -14,7 +14,7 @@ import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -63,7 +63,7 @@ public class TankModifierModel implements ModifierModel {
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     ToolTankHelper helper = tankHelper();
     FluidStack fluid = helper.getFluid(tool);
     if (!fluid.isEmpty()) {
@@ -73,7 +73,7 @@ public class TankModifierModel implements ModifierModel {
   }
 
   @Override
-  public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     Material partial, full;
     if (isLarge) {
       partial = largePartial;

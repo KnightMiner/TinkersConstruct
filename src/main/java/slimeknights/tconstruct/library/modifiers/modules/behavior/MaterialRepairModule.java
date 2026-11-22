@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Set;
@@ -30,7 +30,7 @@ import static slimeknights.tconstruct.library.tools.definition.module.material.M
 
 /** Collection of modules for different repair options */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public sealed class MaterialRepairModule implements ModifierModule, MaterialRepairModifierHook, ConditionalModule<IToolStackView>, IAmLoadable.Record permits MaterialRepairModule.StatType {
+public sealed class MaterialRepairModule implements ModifierModule, MaterialRepairModifierHook, ConditionalModule<ToolStackView>, IAmLoadable.Record permits MaterialRepairModule.StatType {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MaterialRepairModule>defaultHooks(ModifierHooks.MATERIAL_REPAIR);
   private static final LoadableField<MaterialId, MaterialRepairModule> MATERIAL_FIELD = MaterialId.LOADABLE.requiredField("material", m -> m.material);
   private static final RecordLoadable<MaterialRepairModule> CONSTANT = RecordLoadable.create(MATERIAL_FIELD, IntLoadable.FROM_ONE.requiredField("durability", m -> m.repairAmount), ModifierCondition.TOOL_FIELD, MaterialRepairModule::new);
@@ -44,7 +44,7 @@ public sealed class MaterialRepairModule implements ModifierModule, MaterialRepa
   /** Conditions to apply this module */
   @Getter
   @Accessors(fluent = true)
-  private final ModifierCondition<IToolStackView> condition;
+  private final ModifierCondition<ToolStackView> condition;
 
   @Override
   public List<ModuleHook<?>> getDefaultHooks() {
@@ -62,29 +62,29 @@ public sealed class MaterialRepairModule implements ModifierModule, MaterialRepa
   }
 
   @Override
-  public boolean isRepairMaterial(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+  public boolean isRepairMaterial(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
     return this.material.equals(material) && condition().matches(tool, modifier);
   }
 
   @Override
-  public void addRepairMaterials(IToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {
+  public void addRepairMaterials(ToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {
     materials.add(material);
   }
 
   /** Gets the repair amount for the given tool after validating conditions */
-  protected int getRepairAmount(IToolStackView tool) {
+  protected int getRepairAmount(ToolStackView tool) {
     return repairAmount;
   }
 
   @Override
-  public float getRepairAmount(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+  public float getRepairAmount(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
     return isRepairMaterial(tool, modifier, material) ? getRepairAmount(tool) * modifier.getLevel(): 0;
   }
 
   /** Repair method that does a lookup for a stat type to determine repair amount */
   static final class StatType extends MaterialRepairModule {
     private final MaterialStatsId statType;
-    public StatType(MaterialId material, MaterialStatsId statType, ModifierCondition<IToolStackView> condition) {
+    public StatType(MaterialId material, MaterialStatsId statType, ModifierCondition<ToolStackView> condition) {
       super(material, -1, condition);
       this.statType = statType;
     }
@@ -95,7 +95,7 @@ public sealed class MaterialRepairModule implements ModifierModule, MaterialRepa
     }
 
     @Override
-    public int getRepairAmount(IToolStackView tool) {
+    public int getRepairAmount(ToolStackView tool) {
       if (repairAmount == -1) {
         repairAmount = getDurability(tool.getDefinition().getId(), material, statType);
       }

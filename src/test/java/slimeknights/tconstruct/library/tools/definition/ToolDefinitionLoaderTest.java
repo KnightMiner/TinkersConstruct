@@ -17,34 +17,32 @@ import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierFixture;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
+import slimeknights.tconstruct.library.tools.definition.module.build.AddSlotsToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilitiesModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.MultiplyStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitsModule;
-import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.PartStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveModule;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.weapon.MeleeHitToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.weapon.SweepWeaponAttack;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.test.BaseMcTest;
 import slimeknights.tconstruct.test.JsonFileLoader;
 import slimeknights.tconstruct.test.TestHelper;
 import slimeknights.tconstruct.test.TestHelper.ToolDefinitionStats;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -92,17 +90,9 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
     assertThat(stats.multipliers().get(ToolStats.ATTACK_DAMAGE)).isEqualTo(2f);
     assertThat(stats.multipliers().get(ToolStats.MINING_SPEED)).isEqualTo(0.5f);
     // slots
-    VolatileDataToolHook volatileHook = data.getHook(ToolHooks.VOLATILE_DATA);
-    if (hasMaterials) {
-      assertThat(volatileHook).isInstanceOf(VolatileDataToolHook.AllMerger.class);
-      Collection<VolatileDataToolHook> collection = ((VolatileDataToolHook.AllMerger) volatileHook).modules();
-      assertThat(collection).hasSize(2);
-      Iterator<VolatileDataToolHook> iterator = collection.iterator();
-      assertThat(iterator.next()).isInstanceOf(PartStatsModule.class);
-      volatileHook = iterator.next();
-    }
-    assertThat(volatileHook).isInstanceOf(ToolSlotsModule.class);
-    Map<SlotType,Integer> slots = ((ToolSlotsModule) volatileHook).slots();
+    AddSlotsToolHook addSlotsHook = data.getHook(ToolHooks.ADD_SLOTS);
+    assertThat(addSlotsHook).isInstanceOf(ToolSlotsModule.class);
+    Map<SlotType,Integer> slots = ((ToolSlotsModule) addSlotsHook).slots();
     assertThat(slots).hasSize(3);
     assertThat(slots).containsEntry(SlotType.UPGRADE, 3);
     assertThat(slots).containsEntry(SlotType.DEFENSE, 2);
@@ -118,7 +108,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
     ItemAbilityToolHook actions = data.getHook(ToolHooks.ITEM_ABILITY);
     assertThat(actions).isInstanceOf(ItemAbilitiesModule.class);
     assertThat(((ItemAbilitiesModule) actions).abilities()).hasSize(2);
-    IToolStackView tool = mock(IToolStackView.class);
+    ToolStackView tool = mock(ToolStackView.class);
     assertThat(data.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbilities.AXE_DIG)).isTrue();
     assertThat(data.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ItemAbility.get("custom_action"))).isTrue();
     // harvest
@@ -140,7 +130,7 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
 
   /** Gets some invalid data to ensure the data changed */
   private static ToolDefinitionData getWrongData() {
-    return ToolDefinitionDataBuilder.builder().module(new SetStatsModule(StatsNBT.builder().set(ToolStats.DURABILITY, 100).build())).build();
+    return ToolDefinitionDataBuilder.builder().module(new SetStatsModule(StatValues.builder().set(ToolStats.DURABILITY, 100).build())).build();
   }
 
   @BeforeAll

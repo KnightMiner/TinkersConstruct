@@ -4,7 +4,7 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 
 import java.util.List;
 
@@ -68,11 +68,11 @@ public interface ModifierBuilder {
    * @param nbt  NBT object
    * @return  Builder instance
    */
-  default ModifierBuilder add(ModifierNBT nbt) {
+  default ModifierBuilder add(ModifierEntries nbt) {
     add(nbt.modifiers());
     return this;
   }
 
   /** Builds the NBT */
-  ModifierNBT build();
+  ModifierEntries build();
 }

@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.function.Function;
@@ -56,7 +56,7 @@ public enum InventoryMenuModule implements ModifierModule, KeybindInteractModifi
   }
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (requiredKey == TooltipKey.UNKNOWN || requiredKey == keyModifier) {
       return ToolInventoryCapability.tryOpenContainer(player.getItemBySlot(slot), tool, player, slot).consumesAction();
     }
@@ -64,7 +64,7 @@ public enum InventoryMenuModule implements ModifierModule, KeybindInteractModifi
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if ((requiredKey == TooltipKey.UNKNOWN || requiredKey == (player.isCrouching() ? TooltipKey.SHIFT : TooltipKey.NORMAL))
       && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       EquipmentSlot slot = source.getSlot(hand);

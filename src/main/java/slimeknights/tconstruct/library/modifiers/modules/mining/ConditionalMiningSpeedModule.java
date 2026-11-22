@@ -25,7 +25,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -41,8 +41,8 @@ import java.util.List;
  */
 public record ConditionalMiningSpeedModule(
   IJsonPredicate<BlockState> block, IJsonPredicate<LivingEntity> holder, boolean requireEffective,
-  MiningSpeedFormula formula, ModifierCondition<IToolStackView> condition
-) implements BreakSpeedModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<IToolStackView> {
+  MiningSpeedFormula formula, ModifierCondition<ToolStackView> condition
+) implements BreakSpeedModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ConditionalMiningSpeedModule>defaultHooks(ModifierHooks.BREAK_SPEED, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ConditionalMiningSpeedModule> LOADER = RecordLoadable.create(
     BlockPredicate.LOADER.defaultField("blocks", ConditionalMiningSpeedModule::block),
@@ -69,7 +69,7 @@ public record ConditionalMiningSpeedModule(
   }
 
   @Override
-  public float modifyBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
+  public float modifyBreakSpeed(ToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
     Player player = context.player();
     if ((!requireEffective || context.isEffective()) && condition.matches(tool, modifier) && block.matches(context.state()) && holder.matches(player)) {
       return formula.apply(tool, modifier, context, player, context.originalSpeed(), speed, context.miningSpeedMultiplier());
@@ -83,7 +83,7 @@ public record ConditionalMiningSpeedModule(
   }
 
   @Override
-  public float computeTooltipValue(IToolStackView tool, ModifierEntry entry, @Nullable Player player) {
+  public float computeTooltipValue(ToolStackView tool, ModifierEntry entry, @Nullable Player player) {
     return formula.apply(tool, entry, null, player, 1, 1, 1);
   }
 

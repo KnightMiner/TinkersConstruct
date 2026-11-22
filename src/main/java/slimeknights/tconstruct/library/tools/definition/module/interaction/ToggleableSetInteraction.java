@@ -10,7 +10,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public record ToggleableSetInteraction(IJsonPredicate<ModifierId> interactModifi
     ToggleableSetInteraction::new);
 
   @Override
-  public boolean canInteract(IToolStackView tool, ModifierId modifier, InteractionSource source) {
+  public boolean canInteract(ToolStackView tool, ModifierId modifier, InteractionSource source) {
     // no usecase for mixing armor and not armor
     if (source == InteractionSource.ARMOR) {
       return false;

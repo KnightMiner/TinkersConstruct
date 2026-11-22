@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModul
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -44,7 +44,7 @@ public record OvershieldModule(LevelingValue protection, LevelingInt consumed) i
   }
 
   @Override
-  public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
+  public float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
     if (DamageSourcePredicate.CAN_PROTECT.matches(source)) {
       int overslime = OverslimeModule.INSTANCE.getAmount(tool);
       if (overslime > 0) {
@@ -61,7 +61,7 @@ public record OvershieldModule(LevelingValue protection, LevelingInt consumed) i
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     float level = modifier.getEffectiveLevel();
     float protection = this.protection.compute(level);
     if (tooltipKey == TooltipKey.SHIFT) {

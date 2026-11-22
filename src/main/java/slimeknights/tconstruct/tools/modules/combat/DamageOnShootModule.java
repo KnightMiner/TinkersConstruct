@@ -20,14 +20,14 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module to damage the player when shooting projectiles */
-public record DamageOnShootModule(float damage, ResourceKey<DamageType> damageType, ModifierCondition<IToolStackView> condition) implements ModifierModule, ProjectileShootModifierHook, SlingLaunchModifierHook, ConditionalModule<IToolStackView> {
+public record DamageOnShootModule(float damage, ResourceKey<DamageType> damageType, ModifierCondition<ToolStackView> condition) implements ModifierModule, ProjectileShootModifierHook, SlingLaunchModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<DamageOnShootModule>defaultHooks(ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_THROWN, ModifierHooks.SLING_LAUNCH);
   public static final RecordLoadable<DamageOnShootModule> LOADER = RecordLoadable.create(
     FloatLoadable.FROM_ZERO.requiredField("damage", DamageOnShootModule::damage),
@@ -46,14 +46,14 @@ public record DamageOnShootModule(float damage, ResourceKey<DamageType> damageTy
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (shooter != null && condition.matches(tool, modifier)) {
       shooter.hurt(TinkerDamageTypes.source(shooter.level().registryAccess(), damageType), damage * modifier.getEffectiveLevel());
     }
   }
 
   @Override
-  public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     if (condition.matches(tool, modifier)) {
       holder.hurt(TinkerDamageTypes.source(holder.level().registryAccess(), damageType), damage * modifier.getEffectiveLevel());
     }

@@ -29,7 +29,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.List;
  * @param amount     Amount of the attribute to apply
  * @param condition  Standard modifier conditions
  */
-public record MeleeAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, ConditionalModule<IToolStackView> {
+public record MeleeAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, IJsonPredicate<LivingEntity> target, ModifierCondition<ToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeAttributeModule>defaultHooks(ModifierHooks.MELEE_HIT);
   public static final RecordLoadable<MeleeAttributeModule> LOADER = RecordLoadable.create(
     new AttributeUniqueField<>(MeleeAttributeModule::unique),
@@ -63,7 +63,7 @@ public record MeleeAttributeModule(ResourceLocation unique, Holder<Attribute> at
   }
 
   @Override
-  public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+  public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
     if (condition.matches(tool, modifier)) {
       LivingEntity target = context.getLivingTarget();
       if (target != null && this.target.matches(target)) {
@@ -88,12 +88,12 @@ public record MeleeAttributeModule(ResourceLocation unique, Holder<Attribute> at
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     removeAttribute(context.getLivingTarget());
   }
 
   @Override
-  public void failedMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageAttempted) {
+  public void failedMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageAttempted) {
     removeAttribute(context.getLivingTarget());
   }
 

@@ -4,7 +4,7 @@ import net.minecraft.network.chat.Component;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public interface ModifierRemovalHook {
    * Alternatives:
    * <ul>
    *   <li>{@link ValidateModifierHook}: Called when the modifier still has levels on the tool</li>
-   *   <li>{@link RawDataModifierHook#removeRawData(IToolStackView, Modifier)}: Grants access to the tools raw NBT, but called before tool stats are rebuilt</li>
+   *   <li>{@link RawDataModifierHook#removeRawData(ToolStackView, Modifier)}: Grants access to the tools raw NBT, but called before tool stats are rebuilt</li>
    *   <li>{@link VolatileDataModifierHook}: Adds NBT that is automatically removed</li>
    * </ul>
    * @param tool      Tool instance
@@ -27,12 +27,12 @@ public interface ModifierRemovalHook {
    * @return  null if the modifier can be removed, text component with error message if there was an error
    */
   @Nullable
-  Component onRemoved(IToolStackView tool, Modifier modifier);
+  Component onRemoved(ToolStackView tool, Modifier modifier);
 
   /** Merger that runs all hooks */
   record FirstMerger(Collection<ModifierRemovalHook> modules) implements ModifierRemovalHook {
     @Override
-    public Component onRemoved(IToolStackView tool, Modifier modifier) {
+    public Component onRemoved(ToolStackView tool, Modifier modifier) {
       for (ModifierRemovalHook module : modules) {
         Component error = module.onRemoved(tool, modifier);
         if (error != null) {
@@ -51,7 +51,7 @@ public interface ModifierRemovalHook {
    * @return  Error message if a removed modifier errored, or null if no error
    */
   @Nullable
-  static Component onRemoved(IToolStackView original, IToolStackView updated) {
+  static Component onRemoved(ToolStackView original, ToolStackView updated) {
     for (ModifierEntry entry : original.getModifierList()) {
       ModifierRemovalHook hook = entry.getModifier().getHooks().getOrNull(ModifierHooks.REMOVE);
       if (hook != null && updated.getModifierLevel(entry.id()) == 0) {

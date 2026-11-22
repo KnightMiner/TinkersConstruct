@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -25,7 +25,7 @@ public record EffectiveMiningSpeedVariable(MiningSpeedVariable ifTrue, MiningSpe
   }
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     return (context != null && context.isEffective() ? ifTrue : ifFalse).getValue(tool, context, player);
   }
 }

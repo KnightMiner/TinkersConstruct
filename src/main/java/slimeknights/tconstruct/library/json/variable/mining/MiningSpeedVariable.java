@@ -6,7 +6,7 @@ import slimeknights.mantle.data.registry.GenericLoaderRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.tconstruct.library.json.variable.VariableLoaderRegistry;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -21,14 +21,14 @@ public interface MiningSpeedVariable extends IHaveLoader {
    * @param player    Player instance, may be defined when event is null, but still may be null on tooltips.
    * @return  Value of this variable, using a fallback if appropiate
    */
-  float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player);
+  float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player);
 
   /** Constant value instance for this object */
   record Constant(float value) implements VariableLoaderRegistry.ConstantFloat, MiningSpeedVariable {
     public static final RecordLoadable<Constant> LOADER = VariableLoaderRegistry.constantLoader(Constant::new);
 
     @Override
-    public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+    public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
       return value;
     }
 

@@ -31,7 +31,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.data.ModifierIds;
 
@@ -45,7 +45,7 @@ import java.util.List;
  * @param formula   Protection formula
  * @param condition Modifier module conditions
  */
-public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, EntityTargetPredicate attacker, ProtectionFormula formula, ModifierCondition<IToolStackView> condition) implements ProtectionModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, EntityTargetPredicate attacker, ProtectionFormula formula, ModifierCondition<ToolStackView> condition) implements ProtectionModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ProtectionModule>defaultHooks(ModifierHooks.PROTECTION, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ProtectionModule> LOADER = RecordLoadable.create(
     DamageSourcePredicate.LOADER.defaultField("damage_source", ProtectionModule::source),
@@ -65,7 +65,7 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
   }
 
   @Override
-  public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
+  public float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
     // apply the main protection bonus
     if (condition.matches(tool, modifier) && this.source.matches(source) && this.entity.matches(context.getEntity()) && EntityTargetPredicate.matchesNullable(attacker, source.getEntity())) {
       modifierValue = formula.apply(tool, modifier, context, context.getEntity(), slotType, source, modifierValue);
@@ -74,7 +74,7 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
   }
 
   /** Adds the tooltip for the module */
-  public static void addResistanceTooltip(IToolStackView tool, Modifier modifier, float amount, @Nullable Player player, List<Component> tooltip) {
+  public static void addResistanceTooltip(ToolStackView tool, Modifier modifier, float amount, @Nullable Player player, List<Component> tooltip) {
     double cap;
     if (player != null) {
       cap = ProtectionModifierHook.getProtectionCap(player);
@@ -87,7 +87,7 @@ public record ProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredica
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (condition.matches(tool, modifier) && TinkerPredicate.matchesInTooltip(this.entity, player, tooltipKey)) {
       float value = formula.apply(tool, modifier, null, tooltipKey == TooltipKey.SHIFT ? player : null, null, null, 0);
       if (Math.abs(value) > 0.25f) {

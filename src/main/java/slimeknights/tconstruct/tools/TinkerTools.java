@@ -116,8 +116,8 @@ import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.item.armor.MultilayerArmorItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
 import slimeknights.tconstruct.tools.data.ModifierIds;
@@ -468,7 +468,7 @@ public final class TinkerTools extends TinkerModule {
       IMaterial prismarine = MaterialRegistry.getMaterial(MaterialIds.prismarine);
       if (gunpowder != IMaterial.UNKNOWN && prismarine != IMaterial.UNKNOWN) {
         ToolStack efln = ToolStack.create(item);
-        efln.setMaterials(MaterialNBT.of(gunpowder, prismarine));
+        efln.setMaterials(ToolMaterials.of(gunpowder, prismarine));
         if (ModifierManager.INSTANCE.contains(ModifierIds.redirected)) {
           efln.addModifier(ModifierIds.redirected, 1);
         }

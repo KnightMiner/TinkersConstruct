@@ -68,10 +68,10 @@ import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerMaterials;
@@ -433,9 +433,9 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     });
     builder(TinkerGadgets.piggyBackpack, resource("world/piggybackpack"), tinkersGadgetry, AdvancementType.GOAL, builder ->
       builder.addCriterion("used_pack", PlayerInteractTrigger.TriggerInstance.itemUsedOnEntity(Optional.empty(), ItemPredicate.Builder.item().of(TinkerGadgets.piggyBackpack), Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(EntityType.PIG))))));
-    AdvancementHolder slimesuit = builder(MaterialNBT.of(MaterialIds.bone, MaterialIds.skyslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.CHESTPLATE))), resource("world/slimesuit"), skyslimeIsland, AdvancementType.GOAL, builder ->
+    AdvancementHolder slimesuit = builder(ToolMaterials.of(MaterialIds.bone, MaterialIds.skyslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.CHESTPLATE))), resource("world/slimesuit"), skyslimeIsland, AdvancementType.GOAL, builder ->
       TinkerTools.slimesuit.forEach((type, armor) -> builder.addCriterion("crafted_" + type.getName(), hasItem(armor))));
-    builder(MaterialNBT.of(MaterialIds.gunpowder, MaterialIds.enderslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.HELMET))),
+    builder(ToolMaterials.of(MaterialIds.gunpowder, MaterialIds.enderslime).updateStack(new ItemStack(TinkerTools.slimesuit.get(ArmorItem.Type.HELMET))),
             resource("world/slimeskull"), slimesuit, AdvancementType.CHALLENGE, builder -> {
       Item helmet = TinkerTools.slimesuit.get(ArmorItem.Type.HELMET);
       Consumer<MaterialId> with = mat -> builder.addCriterion(mat.getPath(), hasTool(ToolContextPredicate.set(helmet), new HasMaterialPredicate(mat, 0)));
@@ -505,7 +505,7 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     );
     // despite having multiple criteria, these use an any condition so easier to just bypass criteria
     // iron armor expects iron from armor plating's trait
-    IJsonPredicate<IToolStackView> hasTag = ToolStackPredicate.tag(TinkerTags.Items.WORN_ARMOR);
+    IJsonPredicate<ToolStackView> hasTag = ToolStackPredicate.tag(TinkerTags.Items.WORN_ARMOR);
     grantAdvancement(resource("internal/iron_armor"), AdvancementIds.OBTAIN_ARMOR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileDataPredicate(AdvancementIds.IRON_ARMOR))));
     // diamond armor wants the diamond modifier
     grantAdvancement(resource("internal/diamond_armor"), AdvancementIds.SHINY_GEAR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileDataPredicate(AdvancementIds.DIAMOND_ARMOR))));
@@ -544,29 +544,29 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
   }
 
   /** Creates a builder for a tool predicate */
-  private ItemPredicate.Builder toolPredicate(IJsonPredicate<IToolStackView> predicate) {
+  private ItemPredicate.Builder toolPredicate(IJsonPredicate<ToolStackView> predicate) {
     return ItemPredicate.Builder.item().withSubPredicate(TinkerAdvancements.toolPredicate.get(), new ToolSubPredicate(predicate));
   }
 
   /** Creates a predicate for a tool stack */
-  private Criterion<InventoryChangeTrigger.TriggerInstance> hasToolStack(IJsonPredicate<IToolStackView> predicate) {
+  private Criterion<InventoryChangeTrigger.TriggerInstance> hasToolStack(IJsonPredicate<ToolStackView> predicate) {
     return InventoryChangeTrigger.TriggerInstance.hasItems(toolPredicate(predicate));
   }
 
   /** Creates a predicate for a tool stack */
   @SafeVarargs
-  private Criterion<InventoryChangeTrigger.TriggerInstance> hasToolStack(IJsonPredicate<IToolStackView>... predicate) {
+  private Criterion<InventoryChangeTrigger.TriggerInstance> hasToolStack(IJsonPredicate<ToolStackView>... predicate) {
     return hasToolStack(ToolStackPredicate.and(predicate));
   }
 
   /** Creates a predicate for a tool context */
-  private Criterion<InventoryChangeTrigger.TriggerInstance> hasTool(IJsonPredicate<IToolContext> predicate) {
+  private Criterion<InventoryChangeTrigger.TriggerInstance> hasTool(IJsonPredicate<ToolContext> predicate) {
     return hasToolStack(ToolStackPredicate.context(predicate));
   }
 
   /** Creates a predicate for a tool context */
   @SafeVarargs
-  private Criterion<InventoryChangeTrigger.TriggerInstance> hasTool(IJsonPredicate<IToolContext>... predicate) {
+  private Criterion<InventoryChangeTrigger.TriggerInstance> hasTool(IJsonPredicate<ToolContext>... predicate) {
     return hasTool(ToolContextPredicate.and(predicate));
   }
 

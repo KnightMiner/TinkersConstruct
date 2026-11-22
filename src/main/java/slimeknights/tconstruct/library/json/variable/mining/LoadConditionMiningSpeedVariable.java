@@ -5,7 +5,7 @@ import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // API
 public record LoadConditionMiningSpeedVariable(MiningSpeedVariable ifTrue, MiningSpeedVariable ifFalse, ICondition... conditions) implements MiningSpeedVariable, ConditionalObject<MiningSpeedVariable> {
   @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     return (Util.testConditions(conditions) ? ifTrue : ifFalse).getValue(tool, context, player);
   }
 

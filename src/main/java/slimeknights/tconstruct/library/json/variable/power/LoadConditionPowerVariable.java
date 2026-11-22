@@ -7,8 +7,8 @@ import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // API
 public record LoadConditionPowerVariable(PowerVariable ifTrue, PowerVariable ifFalse, ICondition... conditions) implements PowerVariable, ConditionalObject<PowerVariable> {
   @Override
-  public float getValue(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public float getValue(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     return (Util.testConditions(conditions) ? ifTrue : ifFalse).getValue(modifiers, persistentData, modifier, projectile, hit, attacker, target);
   }
 

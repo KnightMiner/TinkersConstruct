@@ -19,7 +19,7 @@ import slimeknights.tconstruct.library.modifiers.modules.armor.ProtectionModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modifiers.melee.ConductingModifier;
 
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public record FlameBarrierModule(LevelingValue amount) implements ModifierModule
   }
 
   @Override
-  public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
+  public float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
     if (!source.is(DamageTypeTags.IS_FIRE) && DamageSourcePredicate.CAN_PROTECT.matches(source)) {
       float amount = this.amount.compute(modifier.getEffectiveLevel());
       if (amount != 0) {
@@ -52,7 +52,7 @@ public record FlameBarrierModule(LevelingValue amount) implements ModifierModule
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     float bonus = amount.compute(modifier.getEffectiveLevel());
     // client only knows if the player is on fire or not, not the amount of fire, so just show full if on fire
     if (bonus > 0 && (player == null || tooltipKey != TooltipKey.SHIFT || player.getRemainingFireTicks() > 0)) {

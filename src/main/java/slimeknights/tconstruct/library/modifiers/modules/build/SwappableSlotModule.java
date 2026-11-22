@@ -19,9 +19,9 @@ import slimeknights.tconstruct.library.modifiers.util.ModuleWithKey;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  *                        Presently, changing this makes it incompatible with the swappable modifier recipe, this is added for future proofing.
  * @param slotCount       Number of slots to grant
  */
-public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
+public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SwappableSlotModule>defaultHooks(ModifierHooks.ADD_SLOTS, ModifierHooks.DISPLAY_NAME, ModifierHooks.REMOVE);
   /** Format key for swappable variant */
   public static final String FORMAT = TConstruct.makeTranslationKey("modifier", "extra_modifier.type_format");
@@ -51,7 +51,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     String slotName = tool.getPersistentData().getString(getKey(entry.getModifier()));
     if (!slotName.isEmpty()) {
       SlotType type = SlotType.getIfPresent(slotName);
@@ -69,7 +69,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   @Override
-  public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
+  public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
     if (condition.matches(context, modifier)) {
       String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
       if (!slotName.isEmpty()) {
@@ -83,7 +83,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(getKey(modifier));
     return null;
   }
@@ -99,7 +99,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   /** Module to add (or remove) additional slots based on the given swappable slot type */
-  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<IToolContext> {
+  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.ADD_SLOTS);
     public static final RecordLoadable<BonusSlot> LOADER = RecordLoadable.create(
       ModuleWithKey.FIELD,
@@ -118,7 +118,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
     }
 
     @Override
-    public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
+    public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
       if (condition.matches(context, modifier)) {
         String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
         if (!slotName.isEmpty() && match.getName().equals(slotName)) {

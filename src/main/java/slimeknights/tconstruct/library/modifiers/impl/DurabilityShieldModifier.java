@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.modules.capacity.CapacityBarVal
 import slimeknights.tconstruct.library.modifiers.modules.capacity.DurabilityShieldModule;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
@@ -34,7 +34,7 @@ public abstract class DurabilityShieldModifier extends Modifier implements Capac
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
     return IncrementalModifierEntry.addAmountToName(getDisplayName(entry.getLevel()), getAmount(tool), getCapacity(tool, entry));
   }
 
@@ -42,12 +42,12 @@ public abstract class DurabilityShieldModifier extends Modifier implements Capac
   /* Damaging */
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     return DurabilityShieldModule.onDamageTool(this, tool, modifier, amount, 1);
   }
 
   @Override
-  public int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier) {
     int shield = getAmount(tool);
     if (shield > 0) {
       return DurabilityDisplayModifierHook.getWidthFor(shield, getCapacity(tool, modifier));
@@ -63,28 +63,28 @@ public abstract class DurabilityShieldModifier extends Modifier implements Capac
     return id();
   }
 
-  /** @deprecated use {@link #getAmount(IToolStackView)} */
+  /** @deprecated use {@link #getAmount(ToolStackView)} */
   @Deprecated
-  public int getShield(IToolStackView tool) {
+  public int getShield(ToolStackView tool) {
     return tool.getPersistentData().getInt(getShieldKey());
   }
 
   @Override
-  public int getAmount(IToolStackView tool) {
+  public int getAmount(ToolStackView tool) {
     return getShield(tool);
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     return getShieldCapacity(tool, entry);
   }
 
   /**
    * Gets the capacity of the shield for the given tool.
-   * @deprecated use {@link CapacityBarHook#getCapacity(IToolStackView, ModifierEntry)}. Overriding is okay though you really should migrate to {@link CapacityBarModule} or alike.
+   * @deprecated use {@link CapacityBarHook#getCapacity(ToolStackView, ModifierEntry)}. Overriding is okay though you really should migrate to {@link CapacityBarModule} or alike.
    */
   @Deprecated
-  public abstract int getShieldCapacity(IToolStackView tool, ModifierEntry modifier);
+  public abstract int getShieldCapacity(ToolStackView tool, ModifierEntry modifier);
 
   /**
    * Sets the shield, bypassing the capacity
@@ -99,24 +99,24 @@ public abstract class DurabilityShieldModifier extends Modifier implements Capac
 
   /**
    * Sets the shield on a tool.
-   * @deprecated use {@link #setAmount(IToolStackView, ModifierEntry, int)}
+   * @deprecated use {@link #setAmount(ToolStackView, ModifierEntry, int)}
    */
   @Deprecated
-  public void setShield(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void setShield(ToolStackView tool, ModifierEntry modifier, int amount) {
     setShield(tool.getPersistentData(), Math.min(amount, getShieldCapacity(tool, modifier)));
   }
 
   @Override
-  public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+  public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
     setShield(tool, entry, amount);
   }
 
   /**
    * Adds the given amount to the current shield.
-   * @deprecated use {@link #addAmount(IToolStackView, ModifierEntry, int)}
+   * @deprecated use {@link #addAmount(ToolStackView, ModifierEntry, int)}
    */
   @Deprecated
-  protected void addShield(IToolStackView tool, ModifierEntry modifier, int amount) {
+  protected void addShield(ToolStackView tool, ModifierEntry modifier, int amount) {
     setShield(tool, modifier, amount + getAmount(tool));
   }
 }

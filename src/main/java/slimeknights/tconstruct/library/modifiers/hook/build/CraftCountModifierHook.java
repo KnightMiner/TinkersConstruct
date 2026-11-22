@@ -4,9 +4,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Collection;
 
@@ -24,12 +24,12 @@ public interface CraftCountModifierHook {
    * @param amount  Amount crafted
    * @return  New amount crafted. Will be floored if a non-whole number. If 0, nothing will be crafted.
    */
-  float modifyCraftCount(IToolStackView tool, ModifierEntry entry, float amount);
+  float modifyCraftCount(ToolStackView tool, ModifierEntry entry, float amount);
 
   /** Merger running each hook */
   record ComposeMerger(Collection<CraftCountModifierHook> modules) implements CraftCountModifierHook {
     @Override
-    public float modifyCraftCount(IToolStackView tool, ModifierEntry entry, float amount) {
+    public float modifyCraftCount(ToolStackView tool, ModifierEntry entry, float amount) {
       for (CraftCountModifierHook module : modules) {
         amount = module.modifyCraftCount(tool, entry, amount);
         if (amount <= 0) {
@@ -44,7 +44,7 @@ public interface CraftCountModifierHook {
   /* Helpers */
 
   /** Gets the max stack size for the given tool, calling the modifier hook */
-  static int maxStackSize(IToolStackView tool, float count) {
+  static int maxStackSize(ToolStackView tool, float count) {
     // don't bother running if the tool can't go above count 1. Prevents the trait from being abused on non-ammo
     int itemMax = tool.getItem().getDefaultMaxStackSize();
     if (itemMax == 1) return 1;
@@ -58,7 +58,7 @@ public interface CraftCountModifierHook {
   }
 
   /** Creates a stack with the max size from the given materials and focus, running the material stack size hook as needed. */
-  static ItemStack copyMaterials(MaterialNBT materials, ItemLike focus, int count) {
+  static ItemStack copyMaterials(ToolMaterials materials, ItemLike focus, int count) {
     ItemStack stack = materials.updateStack(new ItemStack(focus));
     if (stack.getMaxStackSize() > 1) {
       ToolStack tool = ToolStack.from(stack);

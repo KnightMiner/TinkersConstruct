@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.world.entity.EquipmentSlot;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.CheckForNull;
 import java.util.Collections;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class EquipmentIterator extends AbstractIterator<EquipmentEntry> {
   /** Creates an iterable over the given tools */
-  public static Iterable<EquipmentEntry> iterable(List<IToolStackView> tools, List<EquipmentSlot> slots) {
+  public static Iterable<EquipmentEntry> iterable(List<ToolStackView> tools, List<EquipmentSlot> slots) {
     if (tools.size() != slots.size()) {
       throw new IllegalArgumentException("Tools and slots sizes must match");
     }
@@ -28,7 +28,7 @@ public class EquipmentIterator extends AbstractIterator<EquipmentEntry> {
     // if the size is 1, we can optimize by just worrying about a single tool
     if (tools.size() == 1) {
       // only bind the values, not the whole list
-      IToolStackView tool = tools.get(0);
+      ToolStackView tool = tools.get(0);
       EquipmentSlot slot = slots.get(0);
       return () -> new SingleEquipmentIterator(tool, slot);
     }
@@ -131,7 +131,7 @@ public class EquipmentIterator extends AbstractIterator<EquipmentEntry> {
     private final int size;
     private int index = 0;
 
-    private SingleEquipmentIterator(IToolStackView tool, EquipmentSlot slot) {
+    private SingleEquipmentIterator(ToolStackView tool, EquipmentSlot slot) {
       this.entry.tool = tool;
       this.entry.slot = slot;
       this.modifiers = tool.getModifierList();
@@ -156,9 +156,9 @@ public class EquipmentIterator extends AbstractIterator<EquipmentEntry> {
   /* Helpers */
 
   /** Entry of a tool and its modifiers */
-  private record ToolEntry(IToolStackView tool, List<ModifierEntry> modifiers, int size, EquipmentSlot slot) {
+  private record ToolEntry(ToolStackView tool, List<ModifierEntry> modifiers, int size, EquipmentSlot slot) {
     /** Creates a new instance from the given tool */
-    public static ToolEntry from(IToolStackView tool, EquipmentSlot slot) {
+    public static ToolEntry from(ToolStackView tool, EquipmentSlot slot) {
       List<ModifierEntry> modifiers = tool.getModifierList();
       return new ToolEntry(tool, modifiers, modifiers.size(), slot);
     }
@@ -169,7 +169,7 @@ public class EquipmentIterator extends AbstractIterator<EquipmentEntry> {
   @Getter
   public static class EquipmentEntry {
     /** Active tool for this iteration */
-    private IToolStackView tool;
+    private ToolStackView tool;
     /** Slot containing the active tool */
     private EquipmentSlot slot;
     /** Active modifier */

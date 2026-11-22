@@ -41,7 +41,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Tin
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * Module that applies an attribute conditioned on the amount of gold the player is wearing.
  * Used for {@link slimeknights.tconstruct.tools.data.ModifierIds#goldGuard} and {@link slimeknights.tconstruct.tools.data.ModifierIds#chrysophilite} */
-public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<TotalGold> dataKey, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<TotalGold> dataKey, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<GoldenAttributeModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<GoldenAttributeModule> LOADER = RecordLoadable.create(
     new AttributeUniqueField<>(GoldenAttributeModule::unique),
@@ -98,7 +98,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     // adding armor? activate bonus
     EquipmentSlot slot = context.getChangedSlot();
     if (context.getChangedSlot().isArmor()) {
@@ -118,9 +118,9 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (context.getChangedSlot().isArmor()) {
-      IToolStackView newTool = context.getReplacementTool();
+      ToolStackView newTool = context.getReplacementTool();
       // when replacing with a helmet that lacks this modifier, remove bonus
       if (newTool == null || newTool.getModifierLevel(modifier.id()) == 0) {
         TinkerDataCapability.Holder data = context.getDataHolder();
@@ -138,7 +138,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
   }
 
   @Override
-  public void onEquipmentChange(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
+  public void onEquipmentChange(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
     // adding a helmet? activate bonus
     EquipmentSlot changed = context.getChangedSlot();
     if (slotType.isArmor() && changed.isArmor()) {
@@ -153,7 +153,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     double amount = this.amount.compute(tool.getVolatileData().getBoolean(ModifiableArmorItem.PIGLIN_NEUTRAL) ? 1 : 0);
     if (player != null && tooltipKey == TooltipKey.SHIFT) {
       AttributeInstance instance = player.getAttribute(attribute);
@@ -174,7 +174,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
 
   /** Checks if the entity has gold in the given slot */
   public static boolean hasGold(EquipmentChangeContext context, EquipmentSlot slotType) {
-    IToolStackView tool = context.getToolInSlot(slotType);
+    ToolStackView tool = context.getToolInSlot(slotType);
     if (tool != null) {
       return tool.getVolatileData().getBoolean(ModifiableArmorItem.PIGLIN_NEUTRAL);
     } else {

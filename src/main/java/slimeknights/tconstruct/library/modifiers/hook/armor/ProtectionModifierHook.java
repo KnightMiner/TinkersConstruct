@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.TinkerAttributes;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -31,7 +31,7 @@ public interface ProtectionModifierHook {
    * @param modifierValue   Modifier value from previous modifiers to add
    * @return  New modifier value
    */
-  float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue);
+  float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue);
 
   /** Gets the maximum protection amount on the given entity */
   static double getProtectionCap(LivingEntity living) {
@@ -41,7 +41,7 @@ public interface ProtectionModifierHook {
   /** Merger that combines all values */
   record AllMerger(Collection<ProtectionModifierHook> modules) implements ProtectionModifierHook {
     @Override
-    public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
+    public float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
       for (ProtectionModifierHook module : modules) {
         modifierValue = module.getProtectionModifier(tool, modifier, context, slotType, source, modifierValue);
       }

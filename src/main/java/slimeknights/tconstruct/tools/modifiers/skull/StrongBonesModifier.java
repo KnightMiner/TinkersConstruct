@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelMod
 import slimeknights.tconstruct.library.modifiers.modules.technical.CureOnRemovalModule;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 // TODO: make JSON?
@@ -48,7 +48,7 @@ public class StrongBonesModifier extends SingleLevelModifier {
     // TODO 1.20: can use the new cure effects to make this work in any slot
     ItemStack helmet = living.getItemBySlot(EquipmentSlot.HEAD);
     boolean didSomething = false;
-    int level = ModifierNBT.getLevel(helmet, TinkerModifiers.strongBones.id());
+    int level = ModifierEntries.getLevel(helmet, TinkerModifiers.strongBones.id());
     if (level > 0) {
       MobEffectInstance effect = new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, flat + eachLevel * level);
       effect.getCures().clear();

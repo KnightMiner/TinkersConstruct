@@ -9,7 +9,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.RawDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public record HeadlightModule(int defaultLight) implements ModifierModule, RawDa
   }
 
   @Override
-  public void addRawData(IToolStackView tool, ModifierEntry modifier) {
+  public void addRawData(ToolStackView tool, ModifierEntry modifier) {
     String lightStr = tool.getPersistentData().getString(modifier.id());
     if (!lightStr.isEmpty()) {
       try {
@@ -46,7 +46,7 @@ public record HeadlightModule(int defaultLight) implements ModifierModule, RawDa
   }
 
   @Override
-  public void removeRawData(IToolStackView tool, Modifier modifier) {
+  public void removeRawData(ToolStackView tool, Modifier modifier) {
     tag.remove(HEADLIGHT_LIGHT);
   }
 }

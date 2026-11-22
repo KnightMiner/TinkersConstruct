@@ -29,7 +29,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ import static slimeknights.tconstruct.TConstruct.RANDOM;
  * @param condition  Condition for this module to run
  * @param reinforcedTooltip  If true, tooltip shows a custom lang key for reduction instead of just the modifier name
  */
-public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonPredicate<ModifierId> cause, ConditionalStatFormula formula, boolean reinforcedTooltip, ModifierCondition<IToolStackView> condition) implements ModifierModule, ToolDamageModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonPredicate<ModifierId> cause, ConditionalStatFormula formula, boolean reinforcedTooltip, ModifierCondition<ToolStackView> condition) implements ModifierModule, ToolDamageModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ReduceToolDamageModule>defaultHooks(ModifierHooks.TOOL_DAMAGE, ModifierHooks.TOOLTIP);
   /** Loader instance */
   public static final RecordLoadable<ReduceToolDamageModule> LOADER = RecordLoadable.create(
@@ -96,7 +96,7 @@ public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonP
   }
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     if (this.condition.matches(tool, modifier) && this.cause.matches(cause)) {
       return reduceDamage(amount, formula.apply(tool, modifier, holder, 0, 1));
     }
@@ -104,7 +104,7 @@ public record ReduceToolDamageModule(IJsonPredicate<LivingEntity> holder, IJsonP
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (this.condition.matches(tool, entry)) {
       float percent = formula.apply(tool, entry, tooltipKey == TooltipKey.SHIFT ? player : null, 0, 1);
       if (percent > 0) {

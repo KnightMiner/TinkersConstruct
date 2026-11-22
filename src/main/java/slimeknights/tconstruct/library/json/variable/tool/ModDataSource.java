@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.json.variable.tool;
 
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Enum representing sources of {@link IModDataView} on tools. */
 public enum ModDataSource {
@@ -13,7 +13,7 @@ public enum ModDataSource {
   /**
    * Gets the data for this source
    */
-  public IModDataView getData(IToolStackView tool) {
+  public IModDataView getData(ToolStackView tool) {
     return this == PERSISTENT ? tool.getPersistentData() : tool.getVolatileData();
   }
 }

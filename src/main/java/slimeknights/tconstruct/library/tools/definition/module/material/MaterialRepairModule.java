@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.ArmorModuleBuilder;
 
 import javax.annotation.Nullable;
@@ -69,17 +69,17 @@ public class MaterialRepairModule implements MaterialRepairToolHook, ToolModule,
   }
 
   @Override
-  public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
+  public boolean isRepairMaterial(ToolStackView tool, MaterialId material) {
     return this.material.equals(material);
   }
 
   @Override
-  public void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {
+  public void addRepairMaterials(ToolStackView tool, Set<MaterialId> materials) {
     materials.add(material);
   }
 
   @Override
-  public float getRepairAmount(IToolStackView tool, MaterialId material) {
+  public float getRepairAmount(ToolStackView tool, MaterialId material) {
     return this.material.equals(material) ? repairAmount : 0;
   }
 
@@ -110,7 +110,7 @@ public class MaterialRepairModule implements MaterialRepairToolHook, ToolModule,
     }
 
     @Override
-    public float getRepairAmount(IToolStackView tool, MaterialId material) {
+    public float getRepairAmount(ToolStackView tool, MaterialId material) {
       return this.material.equals(material) ? getRepairAmount(tool.getDefinition().getId()) : 0;
     }
 

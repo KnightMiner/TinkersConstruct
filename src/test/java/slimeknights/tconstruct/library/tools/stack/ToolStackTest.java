@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Unit;
@@ -13,21 +13,27 @@ import slimeknights.tconstruct.fixture.ToolDefinitionFixture;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierFixture;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ToolItemTest;
+import slimeknights.tconstruct.library.tools.nbt.IModDataView;
+import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ToolStackTest extends ToolItemTest {
-  private final StatsNBT testStatsNBT = StatsNBT.builder()
-                                                .set(ToolStats.DURABILITY, 100f)
-                                                .set(ToolStats.HARVEST_TIER, Tiers.NETHERITE)
-                                                .set(ToolStats.ATTACK_DAMAGE, 2f)
-                                                .set(ToolStats.MINING_SPEED, 3f)
-                                                .set(ToolStats.ATTACK_SPEED, 5f)
-                                                .build();
+  private final StatValues testStatValues = StatValues.builder()
+    .set(ToolStats.DURABILITY, 100f)
+    .set(ToolStats.HARVEST_TIER, Tiers.NETHERITE)
+    .set(ToolStats.ATTACK_DAMAGE, 2f)
+    .set(ToolStats.MINING_SPEED, 3f)
+    .set(ToolStats.ATTACK_SPEED, 5f)
+    .build();
 
   @BeforeAll
   static void before() {
@@ -80,11 +86,11 @@ class ToolStackTest extends ToolItemTest {
     assertThat(tool.getDefinition()).isNotNull();
     assertThat(tool.getDamage()).isEqualTo(0);
     assertThat(tool.isBroken()).isFalse();
-    assertThat(tool.getMaterials()).isEqualTo(MaterialNBT.EMPTY);
-    assertThat(tool.getCraftedModifiers()).isEqualTo(ModifierNBT.EMPTY);
+    assertThat(tool.getMaterials()).isEqualTo(ToolMaterials.EMPTY);
+    assertThat(tool.getCraftedModifiers()).isEqualTo(ModifierEntries.EMPTY);
     assertThat(tool.getPersistentData()).isEqualTo(new ModDataNBT());
-    assertThat(tool.getModifiers()).isEqualTo(ModifierNBT.EMPTY);
-    assertThat(tool.getStats()).isEqualTo(StatsNBT.EMPTY);
+    assertThat(tool.getModifiers()).isEqualTo(ModifierEntries.EMPTY);
+    assertThat(tool.getStats()).isEqualTo(StatValues.EMPTY);
     assertThat(tool.getVolatileData()).isEqualTo(IModDataView.EMPTY);
   }
 
@@ -105,7 +111,7 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void serialize_damageBroken() {
     ToolStack tool = ToolStack.create(Items.DIAMOND_PICKAXE, ToolDefinitionFixture.getStandardToolDefinition());
-    tool.setStats(StatsNBT.builder().set(ToolStats.DURABILITY, 100f).build());
+    tool.setStats(StatValues.builder().set(ToolStats.DURABILITY, 100f).build());
     tool.setDamage(1);
     tool.setBrokenRaw(true);
 
@@ -185,24 +191,24 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void stats_serialize() {
     ToolStack tool = ToolStack.create(Items.DIAMOND_PICKAXE, ToolDefinition.EMPTY);
-    tool.setStats(testStatsNBT);
+    tool.setStats(testStatValues);
     ItemStack stack = tool.getStack();
 
     assertThat(stack.has(TinkerData.TOOL_STATS)).isTrue();
     // assumes stats NBT properly deserializes
-    StatsNBT stackStats = stack.get(TinkerData.TOOL_STATS);
-    assertThat(stackStats).isEqualTo(testStatsNBT);
+    StatValues stackStats = stack.get(TinkerData.TOOL_STATS);
+    assertThat(stackStats).isEqualTo(testStatValues);
   }
 
   @Test
   void stats_deserialize() {
     ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
-    stack.set(TinkerData.TOOL_STATS, testStatsNBT);
+    stack.set(TinkerData.TOOL_STATS, testStatValues);
 
     ToolStack tool = ToolStack.from(stack);
-    StatsNBT readStats = tool.getStats();
-    assertThat(readStats).isNotEqualTo(StatsNBT.EMPTY);
-    assertThat(readStats).isEqualTo(testStatsNBT);
+    StatValues readStats = tool.getStats();
+    assertThat(readStats).isNotEqualTo(StatValues.EMPTY);
+    assertThat(readStats).isEqualTo(testStatValues);
   }
 
   @Test
@@ -211,7 +217,7 @@ class ToolStackTest extends ToolItemTest {
     stack.setDamageValue(100);
 
     ToolStack tool = ToolStack.from(stack);
-    tool.setStats(StatsNBT.builder().set(ToolStats.DURABILITY, 50f).build());
+    tool.setStats(StatValues.builder().set(ToolStats.DURABILITY, 50f).build());
     assertThat(tool.getDamageRaw()).isEqualTo(50);
     assertThat(tool.isBroken()).isTrue();
   }
@@ -222,25 +228,25 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void materials_serialize() {
     ToolStack toolStack = ToolStack.create(tool, tool.getToolDefinition());
-    MaterialNBT setMaterials = MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
+    ToolMaterials setMaterials = ToolMaterials.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
     toolStack.setMaterialsRaw(setMaterials);
 
     ItemStack stack = toolStack.getStack();
     assertThat(stack.has(TinkerData.MATERIALS)).isTrue();
-    MaterialNBT stackMaterials = stack.get(TinkerData.MATERIALS);
-    assertThat(stackMaterials).isNotEqualTo(MaterialNBT.EMPTY);
+    ToolMaterials stackMaterials = stack.get(TinkerData.MATERIALS);
+    assertThat(stackMaterials).isNotEqualTo(ToolMaterials.EMPTY);
     assertThat(stackMaterials).isEqualTo(setMaterials);
   }
 
   @Test
   void materials_deserialize() {
     ItemStack stack = new ItemStack(tool);
-    MaterialNBT setMaterials = MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
+    ToolMaterials setMaterials = ToolMaterials.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
     stack.set(TinkerData.MATERIALS, setMaterials);
 
     ToolStack tool = ToolStack.from(stack);
-    MaterialNBT toolMaterials = tool.getMaterials();
-    assertThat(toolMaterials).isNotEqualTo(MaterialNBT.EMPTY);
+    ToolMaterials toolMaterials = tool.getMaterials();
+    assertThat(toolMaterials).isNotEqualTo(ToolMaterials.EMPTY);
     assertThat(toolMaterials).isEqualTo(setMaterials);
   }
 
@@ -278,45 +284,45 @@ class ToolStackTest extends ToolItemTest {
 
     ItemStack stack = toolStack.getStack();
     assertThat(stack.has(TinkerData.CRAFTED_MODIFIERS)).isTrue();
-    ModifierNBT stackModifiers = stack.get(TinkerData.CRAFTED_MODIFIERS);
-    assertThat(stackModifiers).isNotEqualTo(ModifierNBT.EMPTY);
-    assertThat(stackModifiers).isEqualTo(ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1));
+    ModifierEntries stackModifiers = stack.get(TinkerData.CRAFTED_MODIFIERS);
+    assertThat(stackModifiers).isNotEqualTo(ModifierEntries.EMPTY);
+    assertThat(stackModifiers).isEqualTo(ModifierEntries.EMPTY.withModifier(ModifierFixture.TEST_1, 1));
   }
 
   @Test
   void modifiers_deserialize() {
     ItemStack stack = buildTestTool();
-    ModifierNBT setModifiers = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
+    ModifierEntries setModifiers = ModifierEntries.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
     stack.set(TinkerData.CRAFTED_MODIFIERS, setModifiers);
 
     ToolStack tool = ToolStack.from(stack);
-    ModifierNBT readModifiers = tool.getCraftedModifiers();
-    assertThat(readModifiers).isNotEqualTo(ModifierNBT.EMPTY);
+    ModifierEntries readModifiers = tool.getCraftedModifiers();
+    assertThat(readModifiers).isNotEqualTo(ModifierEntries.EMPTY);
     assertThat(readModifiers).isEqualTo(setModifiers);
   }
 
   @Test
   void allMods_serialize() {
     ToolStack toolStack = ToolStack.from(buildTestTool());
-    ModifierNBT setModifiers = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
+    ModifierEntries setModifiers = ModifierEntries.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
     toolStack.setModifiers(setModifiers);
 
     ItemStack stack = toolStack.getStack();
     assertThat(stack.has(TinkerData.ALL_MODIFIERS)).isTrue();
-    ModifierNBT readModifiers = stack.get(TinkerData.ALL_MODIFIERS);
-    assertThat(readModifiers).isNotEqualTo(ModifierNBT.EMPTY);
+    ModifierEntries readModifiers = stack.get(TinkerData.ALL_MODIFIERS);
+    assertThat(readModifiers).isNotEqualTo(ModifierEntries.EMPTY);
     assertThat(readModifiers).isEqualTo(setModifiers);
   }
 
   @Test
   void allMods_deserialize() {
     ItemStack stack = buildTestTool();
-    ModifierNBT setModifiers = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
+    ModifierEntries setModifiers = ModifierEntries.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
     stack.set(TinkerData.ALL_MODIFIERS, setModifiers);
 
     ToolStack tool = ToolStack.from(stack);
-    ModifierNBT readModifiers = tool.getModifiers();
-    assertThat(readModifiers).isNotEqualTo(ModifierNBT.EMPTY);
+    ModifierEntries readModifiers = tool.getModifiers();
+    assertThat(readModifiers).isNotEqualTo(ModifierEntries.EMPTY);
     assertThat(readModifiers).isEqualTo(setModifiers);
   }
 
@@ -374,22 +380,22 @@ class ToolStackTest extends ToolItemTest {
   @Test
   void setMaterials_refreshesData() {
     ToolStack toolStack = ToolStack.create(tool, tool.getToolDefinition());
-    assertThat(toolStack.getStats()).isEqualTo(StatsNBT.EMPTY);
+    assertThat(toolStack.getStats()).isEqualTo(StatValues.EMPTY);
 
-    MaterialNBT materials = MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
+    ToolMaterials materials = ToolMaterials.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA);
     toolStack.setMaterials(materials);
-    assertThat(toolStack.getStats()).isNotEqualTo(StatsNBT.EMPTY);
+    assertThat(toolStack.getStats()).isNotEqualTo(StatValues.EMPTY);
   }
 
   @Test
   void addModifier_refreshesData() {
     ToolStack toolStack = ToolStack.create(tool, tool.getToolDefinition());
     // need materials for rebuild
-    toolStack.setMaterialsRaw(MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA));
+    toolStack.setMaterialsRaw(ToolMaterials.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA));
     // set some data that will get cleared out
-    SlotsNBT volatileSlots = SlotsNBT.builder().add(SlotType.UPGRADE, 4).build();
+    ModifierSlots volatileSlots = ModifierSlots.builder().add(SlotType.UPGRADE, 4).build();
     toolStack.setVolatileSlots(volatileSlots);
-    assertThat(toolStack.getModifiers()).isEqualTo(ModifierNBT.EMPTY);
+    assertThat(toolStack.getModifiers()).isEqualTo(ModifierEntries.EMPTY);
 
     toolStack.addModifier(ModifierFixture.TEST_1, 2);
     assertThat(toolStack.getVolatileSlots()).isNotEqualTo(volatileSlots);

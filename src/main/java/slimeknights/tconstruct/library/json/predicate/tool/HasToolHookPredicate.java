@@ -4,19 +4,19 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 /** Predicate matching tools with the given hook */
 public record HasToolHookPredicate(ModuleHook<?> hook) implements ToolContextPredicate {
   public static final RecordLoadable<HasToolHookPredicate> LOADER = RecordLoadable.create(ToolHooks.LOADER.requiredField("hook", HasToolHookPredicate::hook), HasToolHookPredicate::new);
 
   @Override
-  public boolean matches(IToolContext tool) {
+  public boolean matches(ToolContext tool) {
     return tool.getDefinition().getData().getHooks().hasHook(hook);
   }
 
   @Override
-  public RecordLoadable<? extends IJsonPredicate<IToolContext>> getLoader() {
+  public RecordLoadable<? extends IJsonPredicate<ToolContext>> getLoader() {
     return LOADER;
   }
 }

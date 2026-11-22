@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,19 +78,19 @@ public record ChannelingModule(float clearChance, float rainChance, float thunde
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (context.isFullyCharged() && (allowMelee || context.isProjectile())) {
       tryStrike(context.getLevel(), context.getPlayerAttacker(), context.getTarget().blockPosition());
     }
   }
 
   @Override
-  public void onLauncherHitEntity(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
+  public void onLauncherHitEntity(ToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
     tryStrike(projectile.level(), attacker, target.blockPosition());
   }
 
   @Override
-  public void onLauncherHitBlock(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity owner, BlockPos target) {
+  public void onLauncherHitBlock(ToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity owner, BlockPos target) {
     tryStrike(projectile.level(), owner, target);
   }
 }

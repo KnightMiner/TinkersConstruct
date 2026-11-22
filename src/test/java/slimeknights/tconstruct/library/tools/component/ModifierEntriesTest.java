@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -11,7 +11,7 @@ import slimeknights.tconstruct.test.BaseMcTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ModifierNBTest extends BaseMcTest {
+class ModifierEntriesTest extends BaseMcTest {
   @BeforeAll
   static void before() {
     ModifierFixture.init();
@@ -19,55 +19,55 @@ class ModifierNBTest extends BaseMcTest {
 
   @Test
   void modifierBuilder_empty() {
-    ModifierNBT modifierNBT = ModifierNBT.builder().build();
+    ModifierEntries modifierEntries = ModifierEntries.builder().build();
 
-    assertThat(modifierNBT.modifiers().size()).isEqualTo(0);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(0);
+    assertThat(modifierEntries.modifiers().size()).isEqualTo(0);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(0);
   }
 
   @Test
   void modifierBuilder_single() {
-    ModifierNBT.Builder builder = ModifierNBT.builder();
+    ModifierEntries.Builder builder = ModifierEntries.builder();
     builder.add(ModifierFixture.TEST_MODIFIER_1, 2);
-    ModifierNBT modifierNBT = builder.build();
+    ModifierEntries modifierEntries = builder.build();
 
-    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
+    assertThat(modifierEntries.modifiers().size()).isEqualTo(1);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
   }
 
   @Test
   void modifierBuilder_added() {
-    ModifierNBT.Builder builder = ModifierNBT.builder();
+    ModifierEntries.Builder builder = ModifierEntries.builder();
     builder.add(ModifierFixture.TEST_MODIFIER_1, 2);
     builder.add(ModifierFixture.TEST_MODIFIER_1, 1);
-    ModifierNBT modifierNBT = builder.build();
+    ModifierEntries modifierEntries = builder.build();
 
-    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(3);
+    assertThat(modifierEntries.modifiers().size()).isEqualTo(1);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(3);
   }
 
   @Test
   void modifierBuilder_multiple() {
-    ModifierNBT.Builder builder = ModifierNBT.builder();
+    ModifierEntries.Builder builder = ModifierEntries.builder();
     builder.add(ModifierFixture.TEST_MODIFIER_1, 2);
     builder.add(ModifierFixture.TEST_MODIFIER_2, 1);
-    ModifierNBT modifierNBT = builder.build();
+    ModifierEntries modifierEntries = builder.build();
 
-    assertThat(modifierNBT.modifiers().size()).isEqualTo(2);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_2)).isEqualTo(1);
+    assertThat(modifierEntries.modifiers().size()).isEqualTo(2);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_2)).isEqualTo(1);
   }
 
   @Test
   void withModifier() {
-    ModifierNBT modifierNBT = ModifierNBT.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
-    assertThat(modifierNBT.modifiers().size()).isEqualTo(1);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(1);
+    ModifierEntries modifierEntries = ModifierEntries.EMPTY.withModifier(ModifierFixture.TEST_1, 1);
+    assertThat(modifierEntries.modifiers().size()).isEqualTo(1);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(1);
   }
 
   @Test
   void serialize() {
-    ModifierNBT.Builder builder = ModifierNBT.builder();
+    ModifierEntries.Builder builder = ModifierEntries.builder();
     builder.add(ModifierFixture.TEST_MODIFIER_1, 2);
     builder.add(ModifierFixture.TEST_MODIFIER_2, 3);
 
@@ -94,26 +94,26 @@ class ModifierNBTest extends BaseMcTest {
     tag.putInt(ModifierEntry.TAG_LEVEL, 3);
     list.add(tag);
 
-    ModifierNBT modifierNBT = ModifierNBT.readFromNBT(list);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
-    assertThat(modifierNBT.getLevel(ModifierFixture.TEST_2)).isEqualTo(3);
+    ModifierEntries modifierEntries = ModifierEntries.readFromNBT(list);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_1)).isEqualTo(2);
+    assertThat(modifierEntries.getLevel(ModifierFixture.TEST_2)).isEqualTo(3);
   }
 
   @Test
   void deserializeNoData_empty() {
     ListTag nbt = new ListTag();
 
-    ModifierNBT modifierNBT = ModifierNBT.readFromNBT(nbt);
+    ModifierEntries modifierEntries = ModifierEntries.readFromNBT(nbt);
 
-    assertThat(modifierNBT).isEqualTo(ModifierNBT.EMPTY);
+    assertThat(modifierEntries).isEqualTo(ModifierEntries.EMPTY);
   }
 
   @Test
   void wrongNbtType_empty() {
     Tag wrongNbt = new CompoundTag();
 
-    ModifierNBT modifierNBT = ModifierNBT.readFromNBT(wrongNbt);
+    ModifierEntries modifierEntries = ModifierEntries.readFromNBT(wrongNbt);
 
-    assertThat(modifierNBT).isEqualTo(ModifierNBT.EMPTY);
+    assertThat(modifierEntries).isEqualTo(ModifierEntries.EMPTY);
   }
 }

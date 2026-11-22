@@ -43,7 +43,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Objects;
@@ -79,7 +79,7 @@ public record BucketModule(IJsonPredicate<Fluid> fluids) implements ModifierModu
   }
 
   @Override
-  public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (!tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
@@ -156,7 +156,7 @@ public record BucketModule(IJsonPredicate<Fluid> fluids) implements ModifierModu
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (player.isCrouching() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }

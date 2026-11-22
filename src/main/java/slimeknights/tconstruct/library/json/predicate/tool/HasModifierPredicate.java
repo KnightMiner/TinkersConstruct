@@ -8,8 +8,8 @@ import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate
 import slimeknights.tconstruct.library.json.predicate.modifier.SingleModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 /**
  * Predicate that checks a tool for the given modifier within the level range.
@@ -29,9 +29,9 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
   }
 
   @Override
-  public boolean matches(IToolContext tool) {
+  public boolean matches(ToolContext tool) {
     // can quickly exit if we only care about the modifier being absent or present
-    ModifierNBT modifiers = check.getModifiers(tool);
+    ModifierEntries modifiers = check.getModifiers(tool);
     if (this.level.isExactly(0)) {
       return !modifiers.has(modifier);
     }
@@ -49,7 +49,7 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
   }
 
   @Override
-  public IJsonPredicate<IToolContext> inverted() {
+  public IJsonPredicate<ToolContext> inverted() {
     // if our range touches the maximum bound, then inverted just goes from min to our min-1
     if (level.max() == ModifierEntry.ANY_LEVEL.max()) {
       return new HasModifierPredicate(modifier, new IntRange(ModifierEntry.ANY_LEVEL.min(), level.min() - 1), check);
@@ -71,20 +71,20 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
   public enum ModifierCheck {
     CRAFTED {
       @Override
-      public ModifierNBT getModifiers(IToolContext tool) {
+      public ModifierEntries getModifiers(ToolContext tool) {
         return tool.getCraftedModifiers();
       }
     },
     ALL {
       @Override
-      public ModifierNBT getModifiers(IToolContext tool) {
+      public ModifierEntries getModifiers(ToolContext tool) {
         return tool.getModifiers();
       }
     };
 
     public static final EnumLoadable<ModifierCheck> LOADABLE = new EnumLoadable<>(ModifierCheck.class);
 
-    public abstract ModifierNBT getModifiers(IToolContext tool);
+    public abstract ModifierEntries getModifiers(ToolContext tool);
   }
 
 

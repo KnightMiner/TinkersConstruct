@@ -26,8 +26,8 @@ import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 import javax.annotation.Nullable;
@@ -144,7 +144,7 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
     if (extraMaterials.isEmpty() && stack.getItem() instanceof IMaterialItem materialItem) {
       materialItem.setMaterial(stack, material);
     } else {
-      MaterialNBT.Builder builder = MaterialNBT.builder();
+      ToolMaterials.Builder builder = ToolMaterials.builder();
       builder.add(material);
       builder.add(extraMaterials);
       ToolStack.from(stack).setMaterials(builder.build());
@@ -165,7 +165,7 @@ public class ShapedMaterialsRecipe extends ShapedRecipe implements MaterialsCraf
       if (materials.length == 1 && extraMaterials.isEmpty() && stack.getItem() instanceof IMaterialItem materialItem) {
         return materialItem.setMaterial(stack, materials[0]);
       }
-      MaterialNBT.Builder builder = MaterialNBT.builder();
+      ToolMaterials.Builder builder = ToolMaterials.builder();
       // add each material
       for (MaterialVariant material : materials) {
         builder.add(material);

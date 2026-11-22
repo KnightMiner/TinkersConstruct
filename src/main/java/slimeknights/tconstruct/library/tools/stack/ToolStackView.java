@@ -1,11 +1,16 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
+import slimeknights.tconstruct.library.tools.nbt.IModDataView;
+import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 
 /**
@@ -13,7 +18,7 @@ import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
  * Used since modifiers should not be modifying the tool materials or modifiers in their behaviors.
  * If you receive an instance of this interface a parameter, do NOT use an instanceof check and cast it to a ToolStack. Don't make me use a private wrapper class.
  */
-public interface IToolStackView extends IToolContext, MutableDataComponentHolder {
+public interface ToolStackView extends ToolContext, MutableDataComponentHolder {
   /* Item stack */
 
   /**
@@ -27,13 +32,13 @@ public interface IToolStackView extends IToolContext, MutableDataComponentHolder
   /* Stats */
 
   /** On built tools, contains the full tool stats. During tool rebuild, contains the base stats before considering modifiers. */
-  StatsNBT getStats();
+  StatValues getStats();
 
   /**
    * Gets the tool stats if parsed, or parses from NBT if not yet parsed
    * @return stats
    */
-  MultiplierNBT getMultipliers();
+  StatMultipliers getMultipliers();
 
   /** Commonly used operation, getting a stat multiplier */
   default float getMultiplier(INumericToolStat<?> stat) {
@@ -57,16 +62,16 @@ public interface IToolStackView extends IToolContext, MutableDataComponentHolder
 
   /**
    * Sets the tools current damage.
-   * Note in general you should use {@link ToolDamageUtil#damage(IToolStackView, int, LivingEntity, ItemStack)} or {@link ToolDamageUtil#repair(IToolStackView, int)} as they handle modifiers.
+   * Note in general you should use {@link ToolDamageUtil#damage(ToolStackView, int, LivingEntity, ItemStack)} or {@link ToolDamageUtil#repair(ToolStackView, int)} as they handle modifiers.
    * @param damage  New damage
    */
   void setDamage(int damage);
 
   /** Gets persistent slot count from the tool. This data will persistent on stat rebuild. */
-  SlotsNBT getPersistentSlots();
+  ModifierSlots getPersistentSlots();
 
   /** Gets volatile slot counts from the tool. This data is volatile and will reset stat rebuild. */
-  SlotsNBT getVolatileSlots();
+  ModifierSlots getVolatileSlots();
 
   @Deprecated(forRemoval = true)
   @Override

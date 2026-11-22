@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.json.predicate.tool;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.predicate.VariableRangePredicate;
 import slimeknights.tconstruct.library.json.variable.tool.ToolVariable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Predicate that checks the value of a {@link ToolVariable} falls in the given range.
@@ -25,7 +25,7 @@ public record ToolVariableRangePredicate(ToolVariable variable, float min, float
   }
 
   @Override
-  public boolean matches(IToolStackView tool) {
+  public boolean matches(ToolStackView tool) {
     return matches(variable.getValue(tool));
   }
 

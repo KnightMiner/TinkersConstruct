@@ -30,7 +30,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -44,7 +44,7 @@ import java.util.List;
  * @param tooltipValue Value to use for computing the tooltip formula. Used since often formulas are reductions.
  * @param condition    Condition on the tool and modifier entry.
  */
-public record AdjustDamageModule(ProtectionFormula formula, IJsonPredicate<LivingEntity> holder, IJsonPredicate<DamageSource> damageSource, float tooltipValue, ModifierCondition<IToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record AdjustDamageModule(ProtectionFormula formula, IJsonPredicate<LivingEntity> holder, IJsonPredicate<DamageSource> damageSource, float tooltipValue, ModifierCondition<ToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   public static final RecordLoadable<AdjustDamageModule> LOADER = RecordLoadable.create(
     ProtectionFormula.DAMAGE_LOADER.directField(AdjustDamageModule::formula),
     LivingEntityPredicate.LOADER.defaultField("holder", AdjustDamageModule::holder),
@@ -68,7 +68,7 @@ public record AdjustDamageModule(ProtectionFormula formula, IJsonPredicate<Livin
   }
 
   @Override
-  public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     if (condition.matches(tool, modifier) && this.holder.matches(context.getEntity()) && this.damageSource.matches(source)) {
       amount = formula.apply(tool, modifier, context, context.getEntity(), slotType, source, amount);
     }
@@ -76,7 +76,7 @@ public record AdjustDamageModule(ProtectionFormula formula, IJsonPredicate<Livin
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (condition.matches(tool, entry) && TinkerPredicate.matchesInTooltip(holder, player, tooltipKey)) {
       // using tooltip value then subtracting it later ensures we produce a proper offset within the allowed range
       float reduction = formula.apply(tool, entry, null, tooltipKey == TooltipKey.SHIFT ? player : null, null, null, tooltipValue) - tooltipValue;

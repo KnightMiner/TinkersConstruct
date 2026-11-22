@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -22,12 +22,12 @@ public interface SlingLaunchModifierHook {
    * @param multiplier  Force multiplier from other sources such as sling type and partial charge.
    * @param angle       Final angle that was applied.
    */
-  void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle);
+  void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle);
 
   /** Merger running all nested hooks in sequence. */
   record AllMerger(Collection<SlingLaunchModifierHook> modules) implements SlingLaunchModifierHook {
     @Override
-    public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+    public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
       for (SlingLaunchModifierHook module : modules) {
         module.afterSlingLaunch(tool, modifier, holder, target, slingSource, force, multiplier, angle);
       }
@@ -37,8 +37,8 @@ public interface SlingLaunchModifierHook {
 
   /* Helpers */
 
-  /** Helper to call {@link #afterSlingLaunch(IToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float, Vec3)} on all modifiers. */
-  static void afterSlingLaunch(IToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  /** Helper to call {@link #afterSlingLaunch(ToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float, Vec3)} on all modifiers. */
+  static void afterSlingLaunch(ToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     for (ModifierEntry entry : tool.getModifiers()) {
       entry.getHook(ModifierHooks.SLING_LAUNCH).afterSlingLaunch(tool, entry, holder, target, slingSource, force, multiplier, angle);
     }

@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.tools.definition.module.material;
 import net.minecraft.util.RandomSource;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +11,14 @@ import java.util.List;
 /** Hook for filling a tool with materials */
 public interface MissingMaterialsToolHook {
   /** Fills the tool with materials */
-  MaterialNBT fillMaterials(ToolDefinition definition, RandomSource random);
+  ToolMaterials fillMaterials(ToolDefinition definition, RandomSource random);
 
   /**
    * Fills the given existing materials with any missing materials.
-   * Will only be called if {@link #needsMaterials(ToolDefinition, MaterialNBT)} returns true.
+   * Will only be called if {@link #needsMaterials(ToolDefinition, ToolMaterials)} returns true.
    */
-  default MaterialNBT fillMaterials(ToolDefinition definition, MaterialNBT existing, RandomSource random) {
-    MaterialNBT newMaterials = fillMaterials(definition, random);
+  default ToolMaterials fillMaterials(ToolDefinition definition, ToolMaterials existing, RandomSource random) {
+    ToolMaterials newMaterials = fillMaterials(definition, random);
     int oldSize = existing.size();
     // no existing materials, return the full new ones
     if (oldSize == 0) {
@@ -33,11 +33,11 @@ public interface MissingMaterialsToolHook {
     for (int i = oldSize; i < newSize; i++) {
       materials.add(newMaterials.get(i));
     }
-    return MaterialNBT.of(materials);
+    return ToolMaterials.of(materials);
   }
 
   /** Checks if we are missing materials */
-  default boolean needsMaterials(ToolDefinition definition, MaterialNBT existing) {
+  default boolean needsMaterials(ToolDefinition definition, ToolMaterials existing) {
     return existing.size() < ToolMaterialHook.stats(definition).size();
   }
 }

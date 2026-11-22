@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.json.variable.protection.ProtectionVariab
 import slimeknights.tconstruct.library.json.variable.stat.ConditionalStatVariable;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +28,7 @@ public interface ToolVariable extends IHaveLoader, MeleeVariable, ConditionalSta
   GenericLoaderRegistry<ToolVariable> LOADER = new VariableLoaderRegistry<>("Tool Variable", ToolVariable.Constant::new);
 
   /** Gets a value from the given tool */
-  float getValue(IToolStackView tool);
+  float getValue(ToolStackView tool);
 
   @Override
   RecordLoadable<? extends ToolVariable> getLoader();
@@ -37,17 +37,17 @@ public interface ToolVariable extends IHaveLoader, MeleeVariable, ConditionalSta
   /* delegating methods, all tool variables are automatically the other types */
 
   @Override
-  default float getValue(IToolStackView tool, @Nullable LivingEntity entity) {
+  default float getValue(ToolStackView tool, @Nullable LivingEntity entity) {
     return getValue(tool);
   }
 
   @Override
-  default float getValue(IToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
+  default float getValue(ToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
     return getValue(tool);
   }
 
   @Override
-  default float getValue(IToolStackView tool, @Nullable EquipmentContext context, @Nullable LivingEntity target, @Nullable DamageSource source, @Nullable EquipmentSlot slotType) {
+  default float getValue(ToolStackView tool, @Nullable EquipmentContext context, @Nullable LivingEntity target, @Nullable DamageSource source, @Nullable EquipmentSlot slotType) {
     return getValue(tool);
   }
 
@@ -55,10 +55,10 @@ public interface ToolVariable extends IHaveLoader, MeleeVariable, ConditionalSta
   /* Singletons */
 
   /** Creates a new singleton variable getter */
-  static ToolVariable simple(ToFloatFunction<IToolStackView> getter) {
+  static ToolVariable simple(ToFloatFunction<ToolStackView> getter) {
     return singleton(loader -> new ToolVariable() {
       @Override
-      public float getValue(IToolStackView tool) {
+      public float getValue(ToolStackView tool) {
         return getter.apply(tool);
       }
 
@@ -70,9 +70,9 @@ public interface ToolVariable extends IHaveLoader, MeleeVariable, ConditionalSta
   }
 
   /** Current durability of the tool */
-  ToolVariable CURRENT_DURABILITY = simple(IToolStackView::getCurrentDurability);
+  ToolVariable CURRENT_DURABILITY = simple(ToolStackView::getCurrentDurability);
   /** Current lost durability of the tool */
-  ToolVariable CURRENT_DAMAGE = simple(IToolStackView::getDamage);
+  ToolVariable CURRENT_DAMAGE = simple(ToolStackView::getDamage);
 
 
   /** Registers a variable with tools, melee, conditional stat, and mining speed */
@@ -89,7 +89,7 @@ public interface ToolVariable extends IHaveLoader, MeleeVariable, ConditionalSta
     public static final RecordLoadable<ToolVariable.Constant> LOADER = VariableLoaderRegistry.constantLoader(ToolVariable.Constant::new);
 
     @Override
-    public float getValue(IToolStackView tool) {
+    public float getValue(ToolStackView tool) {
       return value;
     }
 

@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.variable.entity.EntityVariable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +20,7 @@ public record EntityConditionalStatVariable(EntityVariable entity, float fallbac
     EntityConditionalStatVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable LivingEntity entity) {
+  public float getValue(ToolStackView tool, @Nullable LivingEntity entity) {
     if (entity != null) {
       return this.entity.getValue(entity);
     }

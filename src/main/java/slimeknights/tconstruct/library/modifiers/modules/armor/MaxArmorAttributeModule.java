@@ -37,13 +37,13 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module that sets an attribute value on the entity based on the largest level equipped. TODO: tooltip value on max piece. */
-public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ComputableDataKey<ModifierMaxLevel> maxLevel, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements EquipmentChangeModifierHook, ModifierModule, MaxArmorLevelModule, TooltipModifierHook {
+public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, ComputableDataKey<ModifierMaxLevel> maxLevel, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<ToolStackView> condition) implements EquipmentChangeModifierHook, ModifierModule, MaxArmorLevelModule, TooltipModifierHook {
   public static final RecordLoadable<MaxArmorAttributeModule> LOADER = RecordLoadable.create(
     new AttributeUniqueField<>(MaxArmorAttributeModule::unique),
     Loadables.ATTRIBUTE.requiredField("attribute", MaxArmorAttributeModule::attribute),
@@ -59,7 +59,7 @@ public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute>
   @Internal
   public MaxArmorAttributeModule {}
 
-  private MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) {
+  private MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, LevelingValue amount, boolean allowBroken, @Nullable TagKey<Item> heldTag, TooltipStyle tooltipStyle, ModifierCondition<ToolStackView> condition) {
     this(unique, attribute, operation, amount, MaxArmorLevelModule.createKey(Loadables.ATTRIBUTE.getKey(attribute)), allowBroken, heldTag, tooltipStyle, condition);
   }
 
@@ -74,7 +74,7 @@ public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute>
   }
 
   @Override
-  public void updateValue(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, TinkerDataCapability.Holder data, float newLevel, float oldLevel) {
+  public void updateValue(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, TinkerDataCapability.Holder data, float newLevel, float oldLevel) {
     AttributeInstance instance = context.getEntity().getAttribute(attribute);
     if (instance != null) {
       instance.removeModifier(unique);
@@ -86,7 +86,7 @@ public record MaxArmorAttributeModule(ResourceLocation unique, Holder<Attribute>
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (MaxArmorLevelModule.shouldAddTooltip(this, tool, modifier, player)) {
       float value = amount.computeForLevel(modifier.getEffectiveLevel());
       if (value != 0) {

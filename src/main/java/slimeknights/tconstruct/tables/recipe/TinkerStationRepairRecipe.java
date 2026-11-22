@@ -31,17 +31,17 @@ import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.MaterialRepairToolHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 
@@ -89,7 +89,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
   }
 
   /** Gets the amount to repair given the passed tool */
-  protected float getRepairAmount(IToolStackView tool, MaterialId repairMaterial) {
+  protected float getRepairAmount(ToolStackView tool, MaterialId repairMaterial) {
     return MaterialRepairToolHook.repairAmount(tool, repairMaterial);
   }
 
@@ -259,8 +259,8 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
   @Override
   public List<NamedRecipe<IDisplayCraftingTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build();
-      MaterialNBT displayMaterials = MaterialNBT.of(IntStream.range(0, 5).mapToObj(i -> ToolBuildHandler.getRenderMaterial(i)).toList());
+      StatValues stats = StatValues.builder().set(ToolStats.DURABILITY, 1000).build();
+      ToolMaterials displayMaterials = ToolMaterials.of(IntStream.range(0, 5).mapToObj(ToolBuildHandler::getRenderMaterial).toList());
       IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
 
       // list of materials to try for repair

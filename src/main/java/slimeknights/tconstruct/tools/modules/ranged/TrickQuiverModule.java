@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.InventorySelectionModule;
 
 import javax.annotation.Nullable;
@@ -54,30 +54,30 @@ public enum TrickQuiverModule implements ModifierModule, BowAmmoModifierHook, Ge
   }
 
   @Override
-  public ItemStack findAmmo(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack standardAmmo, Predicate<ItemStack> ammoPredicate) {
+  public ItemStack findAmmo(ToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack standardAmmo, Predicate<ItemStack> ammoPredicate) {
     // if selected is too big (disabled), will automatially return nothing
     return modifier.getHook(ToolInventoryCapability.HOOK).getStack(tool, modifier, tool.getPersistentData().getInt(SELECTED_SLOT));
   }
 
   @Override
-  public void shrinkAmmo(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, int needed) {
+  public void shrinkAmmo(ToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, int needed) {
     // assume no one else touched our selected slot, good assumption
     ammo.shrink(needed);
     modifier.getHook(ToolInventoryCapability.HOOK).setStack(tool, modifier, tool.getPersistentData().getInt(SELECTED_SLOT), ammo);
   }
 
   @Override
-  public void onDisableSelection(IToolStackView tool, ModifierEntry modifier, Player player) {
+  public void onDisableSelection(ToolStackView tool, ModifierEntry modifier, Player player) {
     player.displayClientMessage(Component.translatable(DISABLED, modifier.getModifier().getDisplayName()), true);
   }
 
   @Override
-  public void onInventorySelect(IToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
+  public void onInventorySelect(ToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
     player.displayClientMessage(Component.translatable(SELECTED, modifier.getModifier().getDisplayName(), stack.getHoverName(), newIndex + 1), true);
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (!player.isCrouching()) {
       return selectNext(tool, modifier, player, SELECTED_SLOT) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
@@ -86,7 +86,7 @@ public enum TrickQuiverModule implements ModifierModule, BowAmmoModifierHook, Ge
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(SELECTED_SLOT);
     return null;
   }

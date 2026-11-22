@@ -24,14 +24,14 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
 
 import java.util.List;
 
 /** Common logic for sling modifiers such as bonking or flinging. */
-public interface SlingModule extends ModifierModule, GeneralInteractionModifierHook, UsingToolModifierHook, KeybindInteractModifierHook, ConditionalModule<IToolStackView> {
+public interface SlingModule extends ModifierModule, GeneralInteractionModifierHook, UsingToolModifierHook, KeybindInteractModifierHook, ConditionalModule<ToolStackView> {
   List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SlingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.TOOL_USING, ModifierHooks.ARMOR_INTERACT);
   /** Field for the force multiplier */
   RecordField<LevelingValue,SlingModule> FORCE_FIELD = LevelingValue.LOADABLE.requiredField("force_multiplier", SlingModule::forceMultiplier);
@@ -62,13 +62,13 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
    * @param chargeTime      Duration the tool has been used
    * @param activeModifier  Currently active modifier on the tool
    */
-  void sling(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier);
+  void sling(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier);
 
 
   /* Held */
 
   @Override
-  default InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  default InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (!tool.isBroken() && source == InteractionSource.RIGHT_CLICK && condition().matches(tool, modifier)) {
       GeneralInteractionModifierHook.startUsingWithDrawtime(tool, modifier.id(), player, hand, drawtimeMultiplier());
       return InteractionResult.SUCCESS;
@@ -77,17 +77,17 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  default int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  default int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 72000;
   }
 
   @Override
-  default UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  default UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return ModifierUtil.blockWhileCharging(tool, UseAnim.BOW);
   }
 
   @Override
-  default void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  default void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (!tool.isBroken() && condition().matches(tool, modifier)) {
       int chargeTime = getUseDuration(tool, modifier) - timeLeft;
       if (chargeTime > 0) {
@@ -100,7 +100,7 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
   /* Helmet */
 
   @Override
-  default boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  default boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (!tool.isBroken() && keyModifier == TooltipKey.NORMAL && condition().matches(tool, modifier)) {
       HelmetChargingEffect.startUsingHelmet(tool, player, drawtimeMultiplier());
       return true;
@@ -109,7 +109,7 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  default void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
+  default void stopInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     if (chargeTime > 0 && !tool.isBroken() && condition().matches(tool, modifier)) {
       sling(tool, modifier, player, chargeTime, activeModifier);
     }
@@ -119,12 +119,12 @@ public interface SlingModule extends ModifierModule, GeneralInteractionModifierH
   /* Helpers */
 
   /** Gets the current charge amount for this tool */
-  default float getCharge(IToolStackView tool, ModifierEntry entry, int chargeTime) {
+  default float getCharge(ToolStackView tool, ModifierEntry entry, int chargeTime) {
     return GeneralInteractionModifierHook.getToolCharge(tool, chargeTime);
   }
 
   /** Gets the scaled power to apply as a force multiplier. This is equivalent to 50% of power times velocity. */
-  static float getPower(IToolStackView tool, LivingEntity living) {
+  static float getPower(ToolStackView tool, LivingEntity living) {
     return ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.PROJECTILE_DAMAGE) / 2f * ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.VELOCITY);
   }
 }

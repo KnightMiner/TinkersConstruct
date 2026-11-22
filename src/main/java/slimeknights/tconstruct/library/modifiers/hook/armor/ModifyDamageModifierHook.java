@@ -6,7 +6,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -32,12 +32,12 @@ public interface ModifyDamageModifierHook {
    * @param isDirectDamage   If true, this attack is direct damage from an entity
    * @return  Replacement amount of damage, if 0 will stop further hooks
    */
-  float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage);
+  float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage);
 
   /** Merger that runs all submodules */
   record AllMerger(Collection<ModifyDamageModifierHook> modules) implements ModifyDamageModifierHook {
     @Override
-    public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+    public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
       for (ModifyDamageModifierHook module : modules) {
         amount = module.modifyDamageTaken(tool, modifier, context, slotType, source, amount, isDirectDamage);
         if (amount <= 0) {

@@ -27,7 +27,7 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModi
 import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -63,7 +63,7 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
   }
 
   @Override
-  public float modifyBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
+  public float modifyBreakSpeed(ToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
     if (context.isEffective()) {
       // 25% boost per level at max
       speed *= 1 + getBonus(context.player(), ToolType.HARVEST, modifier) / 40f;
@@ -72,7 +72,7 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
   }
 
   @Override
-  public void afterBlockBreak(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+  public void afterBlockBreak(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     if (context.canHarvest() && context.isEffective() && !context.isAOE() && tool.hasTag(TinkerTags.Items.HARVEST)) {
       // grant the effect for 5 seconds, though grant a longer effect if the blocks hardness is particularly high compared to our mining speed
       int duration = Math.max(5*20, (int) (2.5f * 20f * context.getState().getDestroySpeed(context.getWorld(), context.getPos()) / tool.getStats().get(ToolStats.MINING_SPEED)));
@@ -82,7 +82,7 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (primary && shooter != null && (arrow == null || arrow.isCritArrow())) {
       // 10 arrows gets you to max
       applyEffect(shooter, ToolType.RANGED, 10*20, 9);
@@ -90,12 +90,12 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
   }
 
   @Override
-  public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     applyEffect(holder, ToolType.RANGED, 10*20, 9);
   }
 
   @Override
-  public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+  public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
     if (stat == ToolStats.DRAW_SPEED) {
       // +25% at max level
       return baseValue * (1 + getBonus(living, ToolType.RANGED, modifier) / 40f);
@@ -104,7 +104,7 @@ public class MomentumModifier extends Modifier implements ProjectileShootModifie
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     ToolType type = ToolType.from(tool.getItem(), ToolType.HARVEST, ToolType.RANGED);
     if (type != null) {
       float bonus;

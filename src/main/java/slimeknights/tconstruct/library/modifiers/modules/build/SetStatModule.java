@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -29,7 +29,7 @@ import java.util.List;
  * Module that sets a stat to a particular value
  * @param <T>  Stat type
  */
-public record SetStatModule<T>(IToolStat<T> stat, T value, ModifierCondition<IToolContext> condition) implements ModifierModule, ToolStatsModifierHook, ConditionalModule<IToolContext> {
+public record SetStatModule<T>(IToolStat<T> stat, T value, ModifierCondition<ToolContext> condition) implements ModifierModule, ToolStatsModifierHook, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SetStatModule<?>>defaultHooks(ModifierHooks.TOOL_STATS);
 
   /** @apiNote Internal constructor, use {@link #set(IToolStat)} */
@@ -37,7 +37,7 @@ public record SetStatModule<T>(IToolStat<T> stat, T value, ModifierCondition<ITo
   public SetStatModule {}
 
   @Override
-  public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     if (condition.matches(context, modifier) && stat.supports(context.getItem())) {
       stat.update(builder, value);
     }

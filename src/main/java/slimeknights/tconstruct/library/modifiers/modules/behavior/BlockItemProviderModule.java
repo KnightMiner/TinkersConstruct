@@ -15,7 +15,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderModifierHook;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
  * @param damage The amount of damage it takes to provide one block (can be 0)
  * @param condition Other conditions that you might want to condition the providing on, such as only happening on certain tool types.
  */
-public record BlockItemProviderModule(ItemStack item, int damage, ModifierCondition<IToolStackView> condition) implements ModifierModule, BlockItemProviderModifierHook, ModifierCondition.ConditionalModule<IToolStackView> {
+public record BlockItemProviderModule(ItemStack item, int damage, ModifierCondition<ToolStackView> condition) implements ModifierModule, BlockItemProviderModifierHook, ModifierCondition.ConditionalModule<ToolStackView> {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.BLOCK_ITEM_PROVIDER);
     public static final RecordLoadable<BlockItemProviderModule> LOADER = RecordLoadable.create(
       ItemStackLoadable.REQUIRED_ITEM_NBT.validate((stack, error) -> {
@@ -52,12 +52,12 @@ public record BlockItemProviderModule(ItemStack item, int damage, ModifierCondit
     }
 
     @Override
-    public ItemStack getBlockItemStack(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity) {
+    public ItemStack getBlockItemStack(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity) {
         return !tool.isBroken() && condition.matches(tool, modifier) ? item : ItemStack.EMPTY;
     }
 
     @Override
-    public boolean consumeBlockItem(IToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity) {
+    public boolean consumeBlockItem(ToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity) {
         // if this is not our item, then we did not provide it so we should avoid consuming
         if (item != backingStack) return false;
 

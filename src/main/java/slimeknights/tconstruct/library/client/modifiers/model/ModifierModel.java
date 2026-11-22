@@ -15,7 +15,7 @@ import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -26,11 +26,11 @@ import java.util.function.Function;
 public interface ModifierModel extends IHaveLoader {
   ModifierModel EMPTY = SingletonLoader.singleton(loader -> new ModifierModel() {
     @Override
-    public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {}
+    public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {}
 
     @Nullable
     @Override
-    public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+    public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
       return null;
     }
 
@@ -63,7 +63,7 @@ public interface ModifierModel extends IHaveLoader {
    * @return  Cache key for the given data, or null to not cache anything
    */
   @Nullable
-  default Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  default Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     return modifier == ModifierEntry.EMPTY ? null : modifier.id();
   }
 
@@ -74,11 +74,11 @@ public interface ModifierModel extends IHaveLoader {
    * @param spriteGetter     Function to fetch sprites
    * @param transforms       Transforms
    * @param isLarge          If true, use the large sprites and quads
-   * @param startTintIndex   First tint index that can be used for this model. Use with {@link #getTintIndexes()} and {@link #getTint(IToolStackView, ModifierEntry, int)}, if neither is used this index will not work
+   * @param startTintIndex   First tint index that can be used for this model. Use with {@link #getTintIndexes()} and {@link #getTint(ToolStackView, ModifierEntry, int)}, if neither is used this index will not work
    * @param quadConsumer     Consumer accepting modifier quads. Note you are expected to add quads in top down order, that is whatever you want visible should be added first.
    * @param pixels           Item layer pixels to reduce z-fighting. Pass into methods from {@link slimeknights.mantle.client.model.util.MantleItemLayerModel}
    */
-  void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels);
+  void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels);
 
   /** {@return  Number of tint indexes used by this model} */
   default int getTintIndexes() {
@@ -92,7 +92,7 @@ public interface ModifierModel extends IHaveLoader {
    * @param index  Localized tint index for this modifier, starting from 0. Only considers tint indexes this model handles as per {@link #getTintIndexes()}
    * @return  Color for this quad
    */
-  default int getTint(IToolStackView tool, ModifierEntry entry, int index) {
+  default int getTint(ToolStackView tool, ModifierEntry entry, int index) {
     return -1;
   }
 

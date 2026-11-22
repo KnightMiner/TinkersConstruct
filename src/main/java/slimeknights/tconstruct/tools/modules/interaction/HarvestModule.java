@@ -31,7 +31,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -55,7 +55,7 @@ public enum HarvestModule implements ModifierModule, BlockInteractionModifierHoo
   }
 
   @Override
-  public boolean shouldHighlight(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
+  public boolean shouldHighlight(ToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
     return state.is(TinkerTags.Blocks.HARVESTABLE);
   }
 
@@ -178,7 +178,7 @@ public enum HarvestModule implements ModifierModule, BlockInteractionModifierHoo
    * @return  True if harvested
    */
   @SuppressWarnings("deprecation")
-  private static boolean harvest(UseOnContext context, IToolStackView tool, ServerLevel world, BlockState state, BlockPos pos, InteractionSource source) {
+  private static boolean harvest(UseOnContext context, ToolStackView tool, ServerLevel world, BlockState state, BlockPos pos, InteractionSource source) {
     Player player = context.getPlayer();
     // first, check main harvestable tag
     Holder<Block> holder = state.getBlock().builtInRegistryHolder();
@@ -215,7 +215,7 @@ public enum HarvestModule implements ModifierModule, BlockInteractionModifierHoo
   }
 
   @Override
-  public InteractionResult beforeBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult beforeBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }

@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.DurabilityDisplayM
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,17 +27,17 @@ public record DurabilityBarColorModule(int color) implements DurabilityDisplayMo
   }
   @Nullable
   @Override
-  public Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier) {
+  public Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier) {
     return null; // null means no change
   }
 
   @Override
-  public int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier) {
     return 0; // 0 means no change
   }
 
   @Override
-  public int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier) {
     return color;
   }
 

@@ -7,22 +7,22 @@ import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.data.predicate.FallbackPredicateRegistry;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 /** Simple serializable tool predicate, for early loading context */
-public interface ToolContextPredicate extends IJsonPredicate<IToolContext> {
+public interface ToolContextPredicate extends IJsonPredicate<ToolContext> {
   /** Predicate that matches all tools */
   ToolContextPredicate ANY = simple(tool -> true);
   /** Predicate that matches no tools */
   ToolContextPredicate NONE = simple(tool -> true);
   /** Loader for tool predicates */
-  FallbackPredicateRegistry<IToolContext,Item> LOADER = new FallbackPredicateRegistry<>("Tool Context Predicate", ANY, NONE, ItemPredicate.LOADER, IToolContext::getItem, "item");
+  FallbackPredicateRegistry<ToolContext,Item> LOADER = new FallbackPredicateRegistry<>("Tool Context Predicate", ANY, NONE, ItemPredicate.LOADER, ToolContext::getItem, "item");
 
   @Override
-  default IJsonPredicate<IToolContext> inverted() {
+  default IJsonPredicate<ToolContext> inverted() {
     return LOADER.invert(this);
   }
 
@@ -33,10 +33,10 @@ public interface ToolContextPredicate extends IJsonPredicate<IToolContext> {
   ToolContextPredicate HAS_CRAFTED_MODIFIERS = simple(tool -> !tool.getCraftedModifiers().isEmpty());
 
   /** Creates a new simple predicate */
-  static ToolContextPredicate simple(Predicate<IToolContext> predicate) {
+  static ToolContextPredicate simple(Predicate<ToolContext> predicate) {
     return SingletonLoader.singleton(loader -> new ToolContextPredicate() {
       @Override
-      public boolean matches(IToolContext tool) {
+      public boolean matches(ToolContext tool) {
         return predicate.test(tool);
       }
 
@@ -51,29 +51,29 @@ public interface ToolContextPredicate extends IJsonPredicate<IToolContext> {
   /* Helper methods */
 
   /** Creates an item predicate */
-  static IJsonPredicate<IToolContext> fallback(IJsonPredicate<Item> predicate) {
+  static IJsonPredicate<ToolContext> fallback(IJsonPredicate<Item> predicate) {
     return LOADER.fallback(predicate);
   }
 
   /** Creates an item set predicate */
-  static IJsonPredicate<IToolContext> set(Item... items) {
+  static IJsonPredicate<ToolContext> set(Item... items) {
     return LOADER.fallback(ItemPredicate.set(items));
   }
 
   /** Creates a tag predicate */
-  static IJsonPredicate<IToolContext> tag(TagKey<Item> tag) {
+  static IJsonPredicate<ToolContext> tag(TagKey<Item> tag) {
     return LOADER.fallback(ItemPredicate.tag(tag));
   }
 
   /** Creates an and predicate */
   @SafeVarargs
-  static IJsonPredicate<IToolContext> and(IJsonPredicate<IToolContext>... predicates) {
+  static IJsonPredicate<ToolContext> and(IJsonPredicate<ToolContext>... predicates) {
     return LOADER.and(List.of(predicates));
   }
 
   /** Creates an or predicate */
   @SafeVarargs
-  static IJsonPredicate<IToolContext> or(IJsonPredicate<IToolContext>... predicates) {
+  static IJsonPredicate<ToolContext> or(IJsonPredicate<ToolContext>... predicates) {
     return LOADER.or(List.of(predicates));
   }
 }

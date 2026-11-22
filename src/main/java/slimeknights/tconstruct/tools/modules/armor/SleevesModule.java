@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.InventoryModifierHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.InventorySelectionModule;
 
 import java.util.List;
@@ -49,17 +49,17 @@ public enum SleevesModule implements ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  public void onInventorySelect(IToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
+  public void onInventorySelect(ToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
     player.displayClientMessage(Component.translatable(SELECTED, stack.getHoverName(), newIndex + 1), true);
   }
 
   @Override
-  public void onDisableSelection(IToolStackView tool, ModifierEntry modifier, Player player) {
+  public void onDisableSelection(ToolStackView tool, ModifierEntry modifier, Player player) {
     player.displayClientMessage(DISABLED, true);
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       if (!player.isCrouching()) {
         InventoryModifierHook inventory = modifier.getHook(ToolInventoryCapability.HOOK);

@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -23,12 +23,12 @@ public interface SlingAngleModifierHook {
    * @param angle       Current direction to sling.
    * @return Updated direction
    */
-  Vec3 modifySlingAngle(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float power, float multiplier, Vec3 angle);
+  Vec3 modifySlingAngle(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float power, float multiplier, Vec3 angle);
 
   /** Merger composing the results of each nested hook */
   record ComposeMerger(Collection<SlingAngleModifierHook> modules) implements SlingAngleModifierHook {
     @Override
-    public Vec3 modifySlingAngle(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+    public Vec3 modifySlingAngle(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
       for (SlingAngleModifierHook module : modules) {
         angle = module.modifySlingAngle(tool, modifier, holder, target, slingSource, force, multiplier, angle);
       }
@@ -37,8 +37,8 @@ public interface SlingAngleModifierHook {
   }
 
 
-  /** Helper to call {@link #modifySlingAngle(IToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float, Vec3)} on all modifiers. */
-  static Vec3 modifySlingAngle(IToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  /** Helper to call {@link #modifySlingAngle(ToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float, Vec3)} on all modifiers. */
+  static Vec3 modifySlingAngle(ToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     for (ModifierEntry entry : tool.getModifiers()) {
       angle = entry.getHook(ModifierHooks.SLING_ANGLE).modifySlingAngle(tool, entry, holder, target, slingSource, force, multiplier, angle);
     }

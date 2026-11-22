@@ -19,10 +19,10 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.worktable.IModifierWorktableRecipe;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -127,7 +127,7 @@ public class ModifierSortingRecipe implements IModifierWorktableRecipe {
     }
     Collections.swap(newUpgrades, toMove, target);
     // recipe does not run unless we have modifiers
-    tool.setCraftedModifiers(ModifierNBT.create(newUpgrades));
+    tool.setCraftedModifiers(ModifierEntries.create(newUpgrades));
 
     // no need to validate, its the same modifiers
     return LazyToolStack.success(tool);

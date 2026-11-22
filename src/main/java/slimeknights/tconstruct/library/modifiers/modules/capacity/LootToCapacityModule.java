@@ -22,14 +22,14 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
 /** Module that restores capacity by consuming items from loot, used for stoneshield. */
-public record LootToCapacityModule(Ingredient consume, int amount, LevelingValue chance, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, ProcessLootModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
+public record LootToCapacityModule(Ingredient consume, int amount, LevelingValue chance, @Nullable ModifierId owner, ModifierCondition<ToolStackView> condition) implements ModifierModule, ProcessLootModifierHook, CapacitySourceModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<LootToCapacityModule>defaultHooks(ModifierHooks.PROCESS_LOOT);
   public static final RecordLoadable<LootToCapacityModule> LOADER = RecordLoadable.create(
     IngredientLoadable.DISALLOW_EMPTY.requiredField("consume", LootToCapacityModule::consume),
@@ -53,7 +53,7 @@ public record LootToCapacityModule(Ingredient consume, int amount, LevelingValue
   }
 
   @Override
-  public void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
+  public void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
     if (!condition.matches(tool, modifier)) {
       return;
     }

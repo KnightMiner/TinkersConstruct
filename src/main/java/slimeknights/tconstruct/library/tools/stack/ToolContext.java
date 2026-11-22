@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.tags.TagKey;
@@ -8,15 +8,18 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionData;
+import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 
 import java.util.List;
 
 /**
- * Provides partial access to tool data, essentially a bridge between {@link IToolStackView} and {@link slimeknights.tconstruct.library.tools.context.ToolRebuildContext}
+ * Provides partial access to tool data, essentially a bridge between {@link ToolStackView} and {@link slimeknights.tconstruct.library.tools.context.ToolRebuildContext}
  */
-public interface IToolContext extends DataComponentHolder {
+public interface ToolContext extends DataComponentHolder {
   /** Gets the item contained in this tool */
   Item getItem();
 
@@ -43,7 +46,7 @@ public interface IToolContext extends DataComponentHolder {
   /* Materials */
 
   /** Gets the list of current materials making this tool */
-  MaterialNBT getMaterials();
+  ToolMaterials getMaterials();
 
   /**
    * Gets the material at the given index
@@ -62,10 +65,10 @@ public interface IToolContext extends DataComponentHolder {
    * In general, you should use {@link #getModifiers()} when performing modifier actions to include traits.
    * @return  Crafted modifier list
    */
-  ModifierNBT getCraftedModifiers();
+  ModifierEntries getCraftedModifiers();
 
   /** Gets a full list of effective modifiers on this tool, from both upgrades/abilities and material traits */
-  ModifierNBT getModifiers();
+  ModifierEntries getModifiers();
 
   /**
    * Helper to get a list of all modifiers on the tool. Note this list is already sorted by priority

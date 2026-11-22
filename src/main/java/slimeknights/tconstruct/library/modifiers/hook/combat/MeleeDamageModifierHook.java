@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.combat;
 
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -26,12 +26,12 @@ public interface MeleeDamageModifierHook {
    * @param damage        Computed damage from all prior modifiers
    * @return  New damage to deal
    */
-  float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage);
+  float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage);
 
   /** Merger that runs all nested hooks */
   record AllMerger(Collection<MeleeDamageModifierHook> modules) implements MeleeDamageModifierHook {
     @Override
-    public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
+    public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
       for (MeleeDamageModifierHook module : modules) {
         damage = module.getMeleeDamage(tool, modifier, context, baseDamage, damage);
       }

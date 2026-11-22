@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -55,7 +55,7 @@ public record DurabilityShieldModule(LevelingInt cost, int color, IJsonPredicate
   }
 
   /** Logic for damaging a tool with the durability shield */
-  public static int onDamageTool(CapacityBarHook bar, IToolStackView tool, ModifierEntry modifier, int amount, int cost) {
+  public static int onDamageTool(CapacityBarHook bar, ToolStackView tool, ModifierEntry modifier, int amount, int cost) {
     int shield = bar.getAmount(tool);
     if (shield > 0 && cost > 0) {
       int canReduce = shield / cost;
@@ -79,7 +79,7 @@ public record DurabilityShieldModule(LevelingInt cost, int color, IJsonPredicate
   }
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     if (this.cause.matches(cause)) {
       return onDamageTool(modifier.getHook(ModifierHooks.CAPACITY_BAR), tool, modifier, amount, cost.compute(modifier));
     }
@@ -87,7 +87,7 @@ public record DurabilityShieldModule(LevelingInt cost, int color, IJsonPredicate
   }
 
   @Override
-  public int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier) {
     CapacityBarHook bar = modifier.getHook(ModifierHooks.CAPACITY_BAR);
     int shield = bar.getAmount(tool);
     if (shield > 0) {
@@ -98,12 +98,12 @@ public record DurabilityShieldModule(LevelingInt cost, int color, IJsonPredicate
 
   @Nullable
   @Override
-  public Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier) {
+  public Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier) {
     return modifier.getHook(ModifierHooks.CAPACITY_BAR).getAmount(tool) > 0 ? true : null;
   }
 
   @Override
-  public int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier) {
     if (modifier.getHook(ModifierHooks.CAPACITY_BAR).getAmount(tool) > 0) {
       return color;
     }

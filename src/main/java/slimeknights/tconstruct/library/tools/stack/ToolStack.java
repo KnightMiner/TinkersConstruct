@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,6 +32,12 @@ import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierTraitHook.TraitBuilder;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
+import slimeknights.tconstruct.library.tools.component.CollectionComponent;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.context.ToolRebuildContext;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinitionData;
@@ -52,7 +58,7 @@ import java.util.Set;
  * Class handling parsing all tool related NBT
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ToolStack implements IToolStackView {
+public class ToolStack implements ToolStackView {
   /** Error messages for when there are not enough remaining modifiers */
   private static final String KEY_VALIDATE_SLOTS = TConstruct.makeTranslationKey("recipe", "modifier.validate_slots");
 
@@ -366,15 +372,15 @@ public class ToolStack implements IToolStackView {
   /* Stats */
 
   @Override
-  public StatsNBT getStats() {
-    return stack.getOrDefault(TinkerData.TOOL_STATS, StatsNBT.EMPTY);
+  public StatValues getStats() {
+    return stack.getOrDefault(TinkerData.TOOL_STATS, StatValues.EMPTY);
   }
 
   /**
    * Sets the tool stats, and stores it in NBT
    * @param stats  Stats instance
    */
-  protected void setStats(StatsNBT stats) {
+  protected void setStats(StatValues stats) {
     stack.set(TinkerData.TOOL_STATS, stats);
     // if we no longer have enough durability, decrease the damage and mark it broken
     int newMax = stats.getInt(ToolStats.DURABILITY);
@@ -384,15 +390,15 @@ public class ToolStack implements IToolStackView {
   }
 
   @Override
-  public MultiplierNBT getMultipliers() {
-    return stack.getOrDefault(TinkerData.STAT_MULTIPLIERS, MultiplierNBT.EMPTY);
+  public StatMultipliers getMultipliers() {
+    return stack.getOrDefault(TinkerData.STAT_MULTIPLIERS, StatMultipliers.EMPTY);
   }
 
   /**
    * Sets the tool multipliers, and stores it in NBT
    * @param multipliers  Stats instance
    */
-  protected void setMultipliers(MultiplierNBT multipliers) {
+  protected void setMultipliers(StatMultipliers multipliers) {
     CollectionComponent.set(stack, TinkerData.STAT_MULTIPLIERS, multipliers);
   }
 
@@ -400,18 +406,18 @@ public class ToolStack implements IToolStackView {
   /* Materials */
 
   @Override
-  public MaterialNBT getMaterials() {
+  public ToolMaterials getMaterials() {
     if (!definition.hasMaterials()) {
-      return MaterialNBT.EMPTY;
+      return ToolMaterials.EMPTY;
     }
-    return stack.getOrDefault(TinkerData.MATERIALS, MaterialNBT.EMPTY);
+    return stack.getOrDefault(TinkerData.MATERIALS, ToolMaterials.EMPTY);
   }
 
   /**
    * Sets the materials without updating the tool stats
    * @param materials  New materials
    */
-  protected void setMaterialsRaw(MaterialNBT materials) {
+  protected void setMaterialsRaw(ToolMaterials materials) {
     CollectionComponent.set(stack, TinkerData.MATERIALS, materials);
   }
 
@@ -419,7 +425,7 @@ public class ToolStack implements IToolStackView {
    * Sets the materials on this tool stack, updating tool stats
    * @param materials  New materials NBT
    */
-  public void setMaterials(MaterialNBT materials) {
+  public void setMaterials(ToolMaterials materials) {
     setMaterialsRaw(materials);
     rebuildStats();
   }
@@ -448,15 +454,15 @@ public class ToolStack implements IToolStackView {
   /* Modifiers */
 
   @Override
-  public ModifierNBT getCraftedModifiers() {
-    return stack.getOrDefault(TinkerData.CRAFTED_MODIFIERS, ModifierNBT.EMPTY);
+  public ModifierEntries getCraftedModifiers() {
+    return stack.getOrDefault(TinkerData.CRAFTED_MODIFIERS, ModifierEntries.EMPTY);
   }
 
   /**
    * Updates the upgrades list on the tool
    * @param modifiers  New upgrades
    */
-  public void setCraftedModifiers(ModifierNBT modifiers) {
+  public void setCraftedModifiers(ModifierEntries modifiers) {
     CollectionComponent.set(stack, TinkerData.CRAFTED_MODIFIERS, modifiers);
     rebuildStats();
   }
@@ -501,15 +507,15 @@ public class ToolStack implements IToolStackView {
   }
 
   @Override
-  public ModifierNBT getModifiers() {
-    return stack.getOrDefault(TinkerData.ALL_MODIFIERS, ModifierNBT.EMPTY);
+  public ModifierEntries getModifiers() {
+    return stack.getOrDefault(TinkerData.ALL_MODIFIERS, ModifierEntries.EMPTY);
   }
 
   /**
    * Updates the list of all modifiers in NBT, called in {@link #rebuildStats()}
    * @param modifiers  New modifiers
    */
-  protected void setModifiers(ModifierNBT modifiers) {
+  protected void setModifiers(ModifierEntries modifiers) {
     CollectionComponent.set(stack, TinkerData.ALL_MODIFIERS, modifiers);
   }
 
@@ -517,7 +523,7 @@ public class ToolStack implements IToolStackView {
   /* Slots */
 
   /** Sets the volatile slot data */
-  public void setPersistentSlots(SlotsNBT slots) {
+  public void setPersistentSlots(ModifierSlots slots) {
     CollectionComponent.set(stack, TinkerData.PERSISTENT_SLOTS, slots);
   }
 
@@ -527,18 +533,18 @@ public class ToolStack implements IToolStackView {
   }
 
   @Override
-  public SlotsNBT getPersistentSlots() {
-    return stack.getOrDefault(TinkerData.PERSISTENT_SLOTS, SlotsNBT.EMPTY);
+  public ModifierSlots getPersistentSlots() {
+    return stack.getOrDefault(TinkerData.PERSISTENT_SLOTS, ModifierSlots.EMPTY);
   }
 
   /** Sets the volatile slot data */
-  protected void setVolatileSlots(SlotsNBT slots) {
+  protected void setVolatileSlots(ModifierSlots slots) {
     CollectionComponent.set(stack, TinkerData.VOLATILE_SLOTS, slots);
   }
 
   @Override
-  public SlotsNBT getVolatileSlots() {
-    return stack.getOrDefault(TinkerData.VOLATILE_SLOTS, SlotsNBT.EMPTY);
+  public ModifierSlots getVolatileSlots() {
+    return stack.getOrDefault(TinkerData.VOLATILE_SLOTS, ModifierSlots.EMPTY);
   }
 
 
@@ -609,13 +615,13 @@ public class ToolStack implements IToolStackView {
 
     // first, determine the list of modifiers, this is done in a couple stages
     // we start by cloning upgrades and adding tool traits and material traits
-    MaterialNBT materials = getMaterials();
-    ModifierNBT.Builder modBuilder = ModifierNBT.builder();
-    ModifierNBT craftedModifiers = getCraftedModifiers();
+    ToolMaterials materials = getMaterials();
+    ModifierEntries.Builder modBuilder = ModifierEntries.builder();
+    ModifierEntries craftedModifiers = getCraftedModifiers();
     modBuilder.add(craftedModifiers);
     ToolDefinitionData toolData = getDefinitionData();
     toolData.getHook(ToolHooks.TOOL_TRAITS).addTraits(definition, materials, modBuilder);
-    ModifierNBT beforeTraits = modBuilder.build();
+    ModifierEntries beforeTraits = modBuilder.build();
 
     // temporary context while we add modifier traits, will recreate if we have modifiers
     // clear out volatile data, mostly affects the volatile data hook
@@ -625,14 +631,14 @@ public class ToolStack implements IToolStackView {
     List<ModifierEntry> modifierList = Collections.emptyList();
     if (beforeTraits.isEmpty()) {
       // if no modifiers, just clear modifiers
-      setModifiers(ModifierNBT.EMPTY);
+      setModifiers(ModifierEntries.EMPTY);
     } else {
-      modBuilder = ModifierNBT.builder();
+      modBuilder = ModifierEntries.builder();
       TraitBuilder traitBuilder = new TraitBuilder(context, modBuilder);
       traitBuilder.add(beforeTraits);
 
       // set the final modifier list on the tool
-      ModifierNBT allMods = modBuilder.build();
+      ModifierEntries allMods = modBuilder.build();
       setModifiers(allMods);
       modifierList = allMods.modifiers();
       // context for further modifier hooks
@@ -647,7 +653,7 @@ public class ToolStack implements IToolStackView {
     }
 
     // build volatile slots
-    SlotsNBT.Builder slots = SlotsNBT.builder();
+    ModifierSlots.Builder slots = ModifierSlots.builder();
     toolData.getHook(ToolHooks.ADD_SLOTS).addSlots(context, slots);
     for (ModifierEntry entry : modifierList) {
       entry.getHook(ModifierHooks.ADD_SLOTS).addSlots(context, entry, slots);

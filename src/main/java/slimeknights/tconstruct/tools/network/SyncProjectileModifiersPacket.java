@@ -10,16 +10,16 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.network.ISimplePacket;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 /** Packet used to sync modifiers on a projectile. Automatically sent for all relevant projectiles. */
 @Internal
-public record SyncProjectileModifiersPacket(int entityId, ModifierNBT modifiers, CompoundTag persistentData) implements ISimplePacket {
+public record SyncProjectileModifiersPacket(int entityId, ModifierEntries modifiers, CompoundTag persistentData) implements ISimplePacket {
   public static final Type<SyncProjectileModifiersPacket> TYPE = new Type<>(TConstruct.getResource("sync_projectile_modifiers"));
   public static final StreamCodec<RegistryFriendlyByteBuf,SyncProjectileModifiersPacket> CODEC = StreamCodec.composite(
     ByteBufCodecs.VAR_INT, SyncProjectileModifiersPacket::entityId,
-    ModifierNBT.STREAM_CODEC, SyncProjectileModifiersPacket::modifiers,
+    ModifierEntries.STREAM_CODEC, SyncProjectileModifiersPacket::modifiers,
     ByteBufCodecs.COMPOUND_TAG, SyncProjectileModifiersPacket::persistentData,
     SyncProjectileModifiersPacket::new);
 

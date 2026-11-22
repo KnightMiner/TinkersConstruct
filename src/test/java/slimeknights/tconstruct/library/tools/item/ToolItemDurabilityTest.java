@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.tools.item;
 import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import static org.assertj.core.api.Assertions.assertThat;

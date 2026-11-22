@@ -6,7 +6,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Variable getting the current fluid amount on the tool using the given tank helper.
@@ -24,7 +24,7 @@ public record FluidAmountVariable(ToolTankHelper helper, IJsonPredicate<Fluid> f
   }
 
   @Override
-  public float getValue(IToolStackView tool) {
+  public float getValue(ToolStackView tool) {
     FluidStack fluid = helper.getFluid(tool);
     return !fluid.isEmpty() && this.fluid.matches(fluid.getFluid()) ? fluid.getAmount() : 0;
   }

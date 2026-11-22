@@ -9,7 +9,7 @@ import slimeknights.tconstruct.library.modifiers.hook.armor.EquipmentChangeModif
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -31,9 +31,9 @@ public enum CureOnRemovalModule implements HookProvider, EquipmentChangeModifier
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (context.getChangedSlot() == slot) {
-      IToolStackView replacement = context.getReplacementTool();
+      ToolStackView replacement = context.getReplacementTool();
       if (replacement == null || replacement.getModifierLevel(modifier.getModifier()) == 0 || replacement.getItem() != tool.getItem()) {
         // cure effects using the helmet
         context.getEntity().curePotionEffects(new ItemStack(tool.getItem()));

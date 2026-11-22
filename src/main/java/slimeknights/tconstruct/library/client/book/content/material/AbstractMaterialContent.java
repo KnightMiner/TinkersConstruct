@@ -50,7 +50,7 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolMate
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.library.utils.Util;
@@ -401,7 +401,7 @@ public abstract class AbstractMaterialContent extends PageContent {
         if (item.value() instanceof IModifiable tool && (showAllTools || !item.is(TinkerTags.Items.ANCIENT_TOOLS))) {
           List<MaterialStatsId> requirements = ToolMaterialHook.stats(tool.getToolDefinition());
           // start building the tool with the given material
-          MaterialNBT.Builder materials = MaterialNBT.builder();
+          ToolMaterials.Builder materials = ToolMaterials.builder();
           boolean usedMaterial = false;
           for (MaterialStatsId part : requirements) {
             // by default, give up if the tool contains any parts of another stat type. Mostly filters out ancient tools

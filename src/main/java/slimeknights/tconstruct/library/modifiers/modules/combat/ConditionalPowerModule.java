@@ -34,9 +34,9 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ConditionalStatToo
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -91,14 +91,14 @@ public record ConditionalPowerModule(EntityTargetPredicate target, IJsonPredicat
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // copy projectile multiplier into the arrow damage so we can use it later
     // we use a separate key for ammo vs bow as those may mismatch. But for the same weapon its fine if multiple modifiers reuse it
     persistentData.putFloat(tool.hasTag(TinkerTags.Items.AMMO) ? AMMO_MULTIPLIER : BOW_MULTIPLIER, tool.getMultiplier(ToolStats.PROJECTILE_DAMAGE));
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     ResourceLocation key = modifier.id().id();
     // if we already boosted power from an entity, don't boost again
     // minimizes issues with projectile bounces and piercing
@@ -125,7 +125,7 @@ public record ConditionalPowerModule(EntityTargetPredicate target, IJsonPredicat
   }
 
   @Override
-  public float modifySlingForce(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
+  public float modifySlingForce(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
     if (modifierLevel.test(modifier.getLevel()) && ToolStats.PROJECTILE_DAMAGE.supports(tool.getItem()) && this.holder.matches(holder) && this.target.matches(target)) {
       return formula.apply(tool.getModifiers(), tool.getPersistentData(), modifier, null, null, holder, target, force, multiplier * tool.getMultiplier(ToolStats.PROJECTILE_DAMAGE));
     }
@@ -138,17 +138,17 @@ public record ConditionalPowerModule(EntityTargetPredicate target, IJsonPredicat
   }
 
   @Override
-  public ModifierCondition<IToolStackView> condition() {
+  public ModifierCondition<ToolStackView> condition() {
     return new ModifierCondition<>(ToolStackPredicate.ANY, modifierLevel);
   }
 
   @Override
-  public boolean matchesTool(IToolStackView tool, ModifierEntry entry) {
+  public boolean matchesTool(ToolStackView tool, ModifierEntry entry) {
     return modifierLevel.test(entry.getLevel());
   }
 
   @Override
-  public float computeTooltipValue(IToolStackView tool, ModifierEntry entry, @Nullable Player player) {
+  public float computeTooltipValue(ToolStackView tool, ModifierEntry entry, @Nullable Player player) {
     return formula.apply(tool.getModifiers(), tool.getPersistentData(), entry, null, null, player, null, 1, tool.getMultiplier(ToolStats.PROJECTILE_DAMAGE));
   }
 

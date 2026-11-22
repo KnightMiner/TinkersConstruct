@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.tools.definition.module.build;
 
 import net.neoforged.neoforge.common.ItemAbility;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -13,12 +13,12 @@ public interface ItemAbilityToolHook {
    * @param ability  Ability to check
    * @return  True if the tool can perform the action.
    */
-  boolean canPerformAction(IToolStackView tool, ItemAbility ability);
+  boolean canPerformAction(ToolStackView tool, ItemAbility ability);
 
   /** Merger that returns true if any of the nested modules returns true */
   record AnyMerger(Collection<ItemAbilityToolHook> modules) implements ItemAbilityToolHook {
     @Override
-    public boolean canPerformAction(IToolStackView tool, ItemAbility ability) {
+    public boolean canPerformAction(ToolStackView tool, ItemAbility ability) {
       for (ItemAbilityToolHook module : modules) {
         if (module.canPerformAction(tool, ability)) {
           return true;

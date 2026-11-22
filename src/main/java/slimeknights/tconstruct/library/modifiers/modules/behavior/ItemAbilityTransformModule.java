@@ -26,7 +26,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Module which transforms a block using a tool action
  */
-public record ItemAbilityTransformModule(ItemAbility ability, SoundEvent sound, boolean requireGround, int eventId, ModifierCondition<IToolStackView> condition) implements BlockTransformModule, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+public record ItemAbilityTransformModule(ItemAbility ability, SoundEvent sound, boolean requireGround, int eventId, ModifierCondition<ToolStackView> condition) implements BlockTransformModule, ItemAbilityModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilityTransformModule>defaultHooks(ModifierHooks.BLOCK_INTERACT, ModifierHooks.ITEM_ABILITY, ModifierHooks.AOE_HIGHLIGHT);
   public static final RecordLoadable<ItemAbilityTransformModule> LOADER = RecordLoadable.create(
     Loadables.ITEM_ABILITY.requiredField("ability", ItemAbilityTransformModule::ability),
@@ -50,17 +50,17 @@ public record ItemAbilityTransformModule(ItemAbility ability, SoundEvent sound, 
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return condition.matches(tool, modifier) && this.ability == ability;
   }
 
   @Override
-  public boolean shouldHighlight(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
+  public boolean shouldHighlight(ToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
     return condition.matches(tool, modifier) && state.getToolModifiedState(Util.offset(context, offset), ability, true) != null;
   }
 
   @Override
-  public boolean transform(IToolStackView tool, UseOnContext context, BlockState original, boolean playSound) {
+  public boolean transform(ToolStackView tool, UseOnContext context, BlockState original, boolean playSound) {
     Level level = context.getLevel();
     BlockPos pos = context.getClickedPos();
     BlockPos above = pos.above();

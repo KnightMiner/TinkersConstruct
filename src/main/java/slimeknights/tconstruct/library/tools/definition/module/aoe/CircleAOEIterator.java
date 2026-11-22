@@ -10,7 +10,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.BoxAOEIterator.RectangleIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.IBoxExpansion.ExpansionDirections;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collections;
 import java.util.function.Predicate;
@@ -32,7 +32,7 @@ public record CircleAOEIterator(int diameter, boolean is3D) implements AreaOfEff
   }
 
   @Override
-  public Iterable<BlockPos> getBlocks(IToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
+  public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
     // expanded gives an extra width every odd level, and an extra height every even level
     return calculate(tool, context, diameter + tool.getVolatileData().getInt(IModifiable.EXPANDED), is3D, matchType);
   }
@@ -45,7 +45,7 @@ public record CircleAOEIterator(int diameter, boolean is3D) implements AreaOfEff
    * @param matchType  Type of harvest being performed
    * @return  List of block positions
    */
-  public static Iterable<BlockPos> calculate(IToolStackView tool, UseOnContext context, int diameter, boolean is3D, AOEMatchType matchType) {
+  public static Iterable<BlockPos> calculate(ToolStackView tool, UseOnContext context, int diameter, boolean is3D, AOEMatchType matchType) {
     // skip if no work
     if (diameter == 1) {
       return Collections.emptyList();

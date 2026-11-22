@@ -13,8 +13,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteractionModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public interface AttributesModifierHook {
    * @param slot      Slot for the attributes
    * @param consumer  Attribute consumer
    */
-  void addAttributes(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer);
+  void addAttributes(ToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer);
 
   /**
    * Gets attribute modifiers for a weapon with melee capability
@@ -49,30 +49,30 @@ public interface AttributesModifierHook {
    * @param slot  Held slot
    * @return  Map of attribute modifiers
    */
-  static Multimap<Attribute,AttributeModifier> getHeldAttributeModifiers(IToolStackView tool, EquipmentSlot slot) {
+  static Multimap<Attribute,AttributeModifier> getHeldAttributeModifiers(ToolStackView tool, EquipmentSlot slot) {
     ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
     if (!tool.isBroken()) {
       // base melee stats - skip if not melee
-      StatsNBT statsNBT = tool.getStats();
+      StatValues stats = tool.getStats();
       if (slot == EquipmentSlot.MAINHAND && EntityInteractionModifierHook.isMeleeWeapon(tool)) {
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "tconstruct.tool.attack_damage", statsNBT.get(ToolStats.ATTACK_DAMAGE), AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "tconstruct.tool.attack_damage", stats.get(ToolStats.ATTACK_DAMAGE), AttributeModifier.Operation.ADDITION));
         // base attack speed is 4, but our numbers start from 4
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "tconstruct.tool.attack_speed", statsNBT.get(ToolStats.ATTACK_SPEED) - 4d, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "tconstruct.tool.attack_speed", stats.get(ToolStats.ATTACK_SPEED) - 4d, AttributeModifier.Operation.ADDITION));
       }
 
       if (slot.getType() == Type.HAND) {
         // shields and slimestaffs can get armor
         if (tool.hasTag(TinkerTags.Items.ARMOR)) {
           UUID uuid = HELD_ARMOR_UUID[slot.getIndex()];
-          double value = statsNBT.get(ToolStats.ARMOR);
+          double value = stats.get(ToolStats.ARMOR);
           if (value != 0) {
             builder.put(Attributes.ARMOR, new AttributeModifier(uuid, "tconstruct.held.armor", value, AttributeModifier.Operation.ADDITION));
           }
-          value = statsNBT.get(ToolStats.ARMOR_TOUGHNESS);
+          value = stats.get(ToolStats.ARMOR_TOUGHNESS);
           if (value != 0) {
             builder.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(uuid, "tconstruct.held.toughness", value, AttributeModifier.Operation.ADDITION));
           }
-          value = statsNBT.get(ToolStats.KNOCKBACK_RESISTANCE);
+          value = stats.get(ToolStats.KNOCKBACK_RESISTANCE);
           if (value != 0) {
             builder.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(uuid, "tconstruct.held.knockback_resistance", value, AttributeModifier.Operation.ADDITION));
           }
@@ -91,7 +91,7 @@ public interface AttributesModifierHook {
   /** Merger that runs all hooks */
   record AllMerger(Collection<AttributesModifierHook> modules) implements AttributesModifierHook {
     @Override
-    public void addAttributes(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer) {
+    public void addAttributes(ToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer) {
       for (AttributesModifierHook module : modules) {
         module.addAttributes(tool, modifier, slot, consumer);
       }

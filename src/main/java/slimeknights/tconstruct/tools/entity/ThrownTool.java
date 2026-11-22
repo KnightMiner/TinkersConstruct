@@ -36,6 +36,7 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteract
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ScheduledProjectileTaskModifierHook;
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
@@ -45,10 +46,9 @@ import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Schedule;
 import slimeknights.tconstruct.shared.effect.MagneticEffect;
@@ -69,7 +69,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
   public static final ResourceLocation MAGNET = TConstruct.getResource("magnet");
 
   @Nullable
-  private IToolStackView tool = null;
+  private ToolStackView tool = null;
   private float charge = 1;
   private float multiplier = 1;
   private boolean noDespawn = false;
@@ -114,7 +114,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
 
   /** Called after {@link #shoot(double, double, double, float, float)} but before the first tick of hte projectile to do final setup. */
   public void onRelease(LivingEntity entity, ModDataNBT arrowData) {
-    IToolStackView tool = getTool();
+    ToolStackView tool = getTool();
     for (ModifierEntry entry : tool.getModifierList()) {
       entry.getHook(ModifierHooks.PROJECTILE_THROWN).onProjectileShoot(tool, entry, entity, tridentItem, this, null, arrowData, true);
     }
@@ -136,7 +136,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
     if (tridentItem.isEmpty()) {
       return super.getDisplayName();
     }
-    IToolStackView tool = getTool();
+    ToolStackView tool = getTool();
     return ToolNameHook.getName(tool.getDefinition(), tridentItem, tool);
   }
 
@@ -180,7 +180,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
   /* Combat */
 
   /** Gets the tool instance, ensuring its created */
-  private IToolStackView getTool() {
+  private ToolStackView getTool() {
     if (tool == null) {
       tool = ToolStack.from(tridentItem);
     }
@@ -221,7 +221,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
     if (!tridentItem.isEmpty() && this.getOwner() instanceof LivingEntity owner) {
       Entity target = pResult.getEntity();
 
-      IToolStackView tool = getTool();
+      ToolStackView tool = getTool();
       if (ToolAttackUtil.canPerformAttack(tool) && ToolAttackUtil.isAttackable(owner, target)) {
         // if the tool is blunted, don't deal damage and instead go squeak
         if (EntityInteractionModifierHook.meleeDisabled(tool)) {
@@ -281,7 +281,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
       // skip if we hit a monster, also need a player as a lot of block breaking logic relies on players
       if (!dealtDamage && !tridentItem.isEmpty() && tridentItem.is(TinkerTags.Items.HARVEST) && this.getOwner() instanceof ServerPlayer owner) {
         // tool can't be broken; no running vanilla logic
-        IToolStackView tool = getTool();
+        ToolStackView tool = getTool();
         if (!tool.isBroken()) {
           // must be effective and not unbreakable
           BlockPos pos = result.getBlockPos();
@@ -301,7 +301,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
               miningSpeed *= multiplier;
 
               // apply mining speed modifiers
-              ModifierNBT modifiers = tool.getModifiers();
+              ModifierEntries modifiers = tool.getModifiers();
               Direction sideHit = result.getDirection();
               if (!modifiers.isEmpty()) {
                 BreakSpeedContext context = new BreakSpeedContext.Direct(owner, state, pos, sideHit, true, miningSpeed, multiplier);

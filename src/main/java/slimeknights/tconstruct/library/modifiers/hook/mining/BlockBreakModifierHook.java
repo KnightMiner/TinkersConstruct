@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.mining;
 
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -20,12 +20,12 @@ public interface BlockBreakModifierHook {
    * @param modifier  Modifier level
    * @param context   Harvest context
    */
-  void afterBlockBreak(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context);
+  void afterBlockBreak(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context);
 
   /** Merger that runs all nested hooks */
   record AllMerger(Collection<BlockBreakModifierHook> modules) implements BlockBreakModifierHook {
     @Override
-    public void afterBlockBreak(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+    public void afterBlockBreak(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
       for (BlockBreakModifierHook module : modules) {
         module.afterBlockBreak(tool, modifier, context);
       }

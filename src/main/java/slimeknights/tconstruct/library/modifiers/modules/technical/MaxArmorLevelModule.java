@@ -16,13 +16,13 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.ComputableDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Shared logic for modules that run an effect based on the max level of the modifier across equipment slots */
-public interface MaxArmorLevelModule extends HookProvider, EquipmentChangeModifierHook, ModifierCondition.ConditionalModule<IToolStackView> {
+public interface MaxArmorLevelModule extends HookProvider, EquipmentChangeModifierHook, ModifierCondition.ConditionalModule<ToolStackView> {
   List<ModuleHook<?>> NO_TOOLTIP_HOOKS = HookProvider.<MaxArmorLevelModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   List<ModuleHook<?>> TOOLTIP_HOOKS = HookProvider.defaultHooks(ModifierHooks.EQUIPMENT_CHANGE, ModifierHooks.TOOLTIP);
 
@@ -40,17 +40,17 @@ public interface MaxArmorLevelModule extends HookProvider, EquipmentChangeModifi
   TagKey<Item> heldTag();
 
   @Override
-  default void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  default void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     updateLevel(tool, modifier, modifier.getEffectiveLevel(), context);
   }
 
   @Override
-  default void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  default void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     updateLevel(tool, modifier, 0, context);
   }
 
   /** Updates the level of this module, properly evaluating the condition and setting the max level */
-  default void updateLevel(IToolStackView tool, ModifierEntry modifier, float effectiveLevel, EquipmentChangeContext context) {
+  default void updateLevel(ToolStackView tool, ModifierEntry modifier, float effectiveLevel, EquipmentChangeContext context) {
     if (condition().matches(tool, modifier) && ArmorLevelModule.validSlot(tool, context.getChangedSlot(), heldTag()) && (!tool.isBroken() || allowBroken())) {
       TinkerDataCapability.Holder data = LogicHelper.orElseNull(context.getTinkerData());
       if (data != null) {
@@ -74,10 +74,10 @@ public interface MaxArmorLevelModule extends HookProvider, EquipmentChangeModifi
    * @param newLevel  New max level
    * @param oldLevel  Old max level
    */
-  void updateValue(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, TinkerDataCapability.Holder data, float newLevel, float oldLevel);
+  void updateValue(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, TinkerDataCapability.Holder data, float newLevel, float oldLevel);
 
   /** Checks if the tooltip can be madded for this module */
-  static boolean shouldAddTooltip(MaxArmorLevelModule module, IToolStackView tool, ModifierEntry modifier, @Nullable Player player) {
+  static boolean shouldAddTooltip(MaxArmorLevelModule module, ToolStackView tool, ModifierEntry modifier, @Nullable Player player) {
     TagKey<Item> heldTag = module.heldTag();
     if (module.condition().matches(tool, modifier) && (tool.hasTag(TinkerTags.Items.WORN_ARMOR) || heldTag != null && tool.hasTag(heldTag)) && (!tool.isBroken() || module.allowBroken())) {
       // FIXME: this does not handle the case of multiple slots being equally max, would require slot/stack access to figure that out

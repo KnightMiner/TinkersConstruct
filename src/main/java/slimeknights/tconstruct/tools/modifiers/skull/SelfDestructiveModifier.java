@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.KeybindInterac
 import slimeknights.tconstruct.library.modifiers.impl.SingleLevelModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.effect.NoMilkEffect;
 
 // TODO: migrate to JSON
@@ -32,7 +32,7 @@ public class SelfDestructiveModifier extends SingleLevelModifier implements Keyb
   }
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (player.isShiftKeyDown()) {
       player.addEffect(new MobEffectInstance(TinkerEffects.selfDestructing, 30, 2 * modifier.intEffectiveLevel()));
       player.playSound(SoundEvents.CREEPER_PRIMED, 1.0F, 0.5F);
@@ -42,12 +42,12 @@ public class SelfDestructiveModifier extends SingleLevelModifier implements Keyb
   }
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
+  public void stopInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     player.removeEffect(TinkerEffects.selfDestructing);
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     context.getEntity().removeEffect(TinkerEffects.selfDestructing);
   }
 

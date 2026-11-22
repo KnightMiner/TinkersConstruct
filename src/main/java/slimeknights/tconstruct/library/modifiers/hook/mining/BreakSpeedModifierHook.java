@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.mining;
 
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -24,13 +24,13 @@ public interface BreakSpeedModifierHook {
    * @param speed     Speed as modified by other modifiers.
    * @return new speed as modified by this hook.
    */
-  float modifyBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed);
+  float modifyBreakSpeed(ToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed);
 
 
   /** Merger that runs each hook in succession */
   record AllMerger(Collection<BreakSpeedModifierHook> modules) implements BreakSpeedModifierHook {
     @Override
-    public float modifyBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
+    public float modifyBreakSpeed(ToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
       for (BreakSpeedModifierHook module : modules) {
         speed = module.modifyBreakSpeed(tool, modifier, context, speed);
       }

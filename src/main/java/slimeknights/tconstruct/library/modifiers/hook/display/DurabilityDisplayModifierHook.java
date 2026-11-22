@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public interface DurabilityDisplayModifierHook {
    * @return  True forces the bar to show, false forces it to hide. Return null defer to later modifiers.
    */
   @Nullable
-  Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier);
+  Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier);
 
   /**
    * Gets the damage percentage for display.  First tool returning something other than NaN will determine display durability
@@ -29,7 +29,7 @@ public interface DurabilityDisplayModifierHook {
    * @param modifier  Modifier running the hook
    * @return  Width of the durability bar between 1 and 13 with 13 being full. Return 0 to indicate you have nothing to display (falling back to the next hook).
    */
-  int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier);
+  int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier);
 
   /**
    * Gets the RGB for the durability bar
@@ -37,7 +37,7 @@ public interface DurabilityDisplayModifierHook {
    * @param modifier  Modifier running the hook
    * @return  Color integer in the format of 0xRRGGBB, or -1 to not handle it
    */
-  int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier);
+  int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier);
 
 
   /* Helpers */
@@ -137,7 +137,7 @@ public interface DurabilityDisplayModifierHook {
   record FirstMerger(Collection<DurabilityDisplayModifierHook> modules) implements DurabilityDisplayModifierHook {
     @Nullable
     @Override
-    public Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier) {
+    public Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier) {
       for (DurabilityDisplayModifierHook module : modules) {
         Boolean result = module.showDurabilityBar(tool, modifier);
         if (result != null) {
@@ -148,7 +148,7 @@ public interface DurabilityDisplayModifierHook {
     }
 
     @Override
-    public int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier) {
+    public int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier) {
       for (DurabilityDisplayModifierHook module : modules) {
         int damage = module.getDurabilityWidth(tool, modifier);
         if (damage > 0) {
@@ -159,7 +159,7 @@ public interface DurabilityDisplayModifierHook {
     }
 
     @Override
-    public int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier) {
+    public int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier) {
       for (DurabilityDisplayModifierHook module : modules) {
         int color = module.getDurabilityRGB(tool, modifier);
         if (color != -1) {

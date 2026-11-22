@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -42,20 +42,20 @@ public record FluidAsCapacityModule(ToolTankHelper helper, Fluid fluid) implemen
   }
 
   @Override
-  public int getAmount(IToolStackView tool) {
+  public int getAmount(ToolStackView tool) {
     FluidStack fluid = helper.getFluid(tool);
     return !fluid.isEmpty() && fluid.getFluid() == this.fluid ? fluid.getAmount() : 0;
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     // if another fluid is present, act like the tank is full
     FluidStack fluid = helper.getFluid(tool);
     return fluid.isEmpty() || fluid.getFluid() == this.fluid ? helper.getCapacity(tool) : 0;
   }
 
   @Override
-  public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+  public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
     // don't allow setting amount if another fluid is present
     FluidStack fluid = helper.getFluid(tool);
     if (fluid.isEmpty() || fluid.getFluid() == this.fluid) {
@@ -64,7 +64,7 @@ public record FluidAsCapacityModule(ToolTankHelper helper, Fluid fluid) implemen
   }
 
   @Override
-  public void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void addAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     if (amount == 0) return;
     // don't allow setting amount if another fluid is present
     FluidStack fluid = helper.getFluid(tool);
@@ -74,7 +74,7 @@ public record FluidAsCapacityModule(ToolTankHelper helper, Fluid fluid) implemen
   }
 
   @Override
-  public void removeAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void removeAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     if (amount == 0) return;
     // don't allow setting amount if another fluid is present
     FluidStack fluid = helper.getFluid(tool);

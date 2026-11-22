@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.mining;
 
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -22,13 +22,13 @@ public interface RemoveBlockModifierHook {
    * @return  True to override the default block removing logic and stop all later modifiers from running. False to override default without breaking the block. Null to let default logic run
    */
   @Nullable
-  Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context);
+  Boolean removeBlock(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context);
 
   /** Merger that returns when the first hook finishes the action */
   record FirstMerger(Collection<RemoveBlockModifierHook> modules) implements RemoveBlockModifierHook {
     @Nullable
     @Override
-    public Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+    public Boolean removeBlock(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
       for (RemoveBlockModifierHook module : modules) {
         Boolean handled = module.removeBlock(tool, modifier, context);
         if (handled != null) {

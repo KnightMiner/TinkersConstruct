@@ -20,9 +20,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
-import net.neoforged.neoforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
@@ -30,7 +30,6 @@ import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 import org.joml.Matrix4f;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -47,7 +46,7 @@ import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Orientation2D;
 import slimeknights.tconstruct.library.utils.Orientation2D.Orientation1D;
 import slimeknights.tconstruct.library.utils.Util;
@@ -60,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Modifier event hooks that run client side */
-@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT, bus = Bus.FORGE)
+@EventBusSubscriber(modid = TConstruct.MOD_ID, value = Dist.CLIENT)
 public class ModifierClientEvents {
   @SubscribeEvent
   static void onTooltipEvent(ItemTooltipEvent event) {
@@ -185,7 +184,7 @@ public class ModifierClientEvents {
     EquipmentChangeContext context = event.getContext();
     if (Config.CLIENT.renderShieldSlotItem.get()) {
       if (context.getChangedSlot() == EquipmentSlot.LEGS) {
-        IToolStackView tool = context.getToolInSlot(EquipmentSlot.LEGS);
+        ToolStackView tool = context.getToolInSlot(EquipmentSlot.LEGS);
         if (tool != null) {
           ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.shieldStrap.id());
           if (entry != ModifierEntry.EMPTY) {
@@ -198,7 +197,7 @@ public class ModifierClientEvents {
     }
     if (Config.CLIENT.renderSleevesItem.get()) {
       if (context.getChangedSlot() == EquipmentSlot.CHEST) {
-        IToolStackView tool = context.getToolInSlot(EquipmentSlot.CHEST);
+        ToolStackView tool = context.getToolInSlot(EquipmentSlot.CHEST);
         if (tool != null) {
           ModifierEntry entry = tool.getModifiers().getEntry(TinkerModifiers.sleeves.id());
           if (entry != ModifierEntry.EMPTY) {
@@ -213,7 +212,7 @@ public class ModifierClientEvents {
     if (Config.CLIENT.renderItemFrame.get()) {
       if (context.getChangedSlot() == EquipmentSlot.HEAD) {
         itemFrames.clear();
-        IToolStackView tool = context.getToolInSlot(EquipmentSlot.HEAD);
+        ToolStackView tool = context.getToolInSlot(EquipmentSlot.HEAD);
         if (tool != null) {
           ModifierEntry entry = tool.getModifier(TinkerModifiers.itemFrame.id());
           if (entry.intEffectiveLevel() > 0) {
@@ -229,7 +228,7 @@ public class ModifierClientEvents {
     boolean hasBeneficial = false;
     for (MobEffectInstance instance : player.getActiveEffects()) {
       if (instance.showIcon() && IClientMobEffectExtensions.of(instance).isVisibleInGui(instance)) {
-        if (instance.getEffect().isBeneficial()) {
+        if (instance.getEffect().value().isBeneficial()) {
           hasBeneficial = true;
         } else {
           // negative effects means offset two rows

@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.json.variable.tool;
 
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -12,7 +12,7 @@ public record StatMultiplierVariable(INumericToolStat<?> stat) implements ToolVa
   public static final RecordLoadable<StatMultiplierVariable> LOADER = RecordLoadable.create(ToolStats.NUMERIC_LOADER.requiredField("stat", StatMultiplierVariable::stat), StatMultiplierVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool) {
+  public float getValue(ToolStackView tool) {
     return tool.getMultiplier(stat);
   }
 

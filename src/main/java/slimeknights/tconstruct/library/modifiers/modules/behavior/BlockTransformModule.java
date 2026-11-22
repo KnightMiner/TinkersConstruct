@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator.AOEMatchType;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.MutableUseOnContext;
 
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public interface BlockTransformModule extends ModifierModule, BlockInteractionMo
   }
 
   @Override
-  default InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  default InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     // tool must not be broken
     if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
@@ -129,5 +129,5 @@ public interface BlockTransformModule extends ModifierModule, BlockInteractionMo
   }
 
   /** Applies this transformation */
-  boolean transform(IToolStackView tool, UseOnContext context, BlockState original, boolean playSound);
+  boolean transform(ToolStackView tool, UseOnContext context, BlockState original, boolean playSound);
 }

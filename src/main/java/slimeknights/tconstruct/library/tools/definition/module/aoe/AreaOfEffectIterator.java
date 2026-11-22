@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -44,7 +44,7 @@ public interface AreaOfEffectIterator {
     }
 
     @Override
-    public Iterable<BlockPos> getBlocks(IToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
+    public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
       return List.of();
     }
   });
@@ -66,10 +66,10 @@ public interface AreaOfEffectIterator {
    * @param matchType   Type of match
    * @return A list of BlockPos's that the AOE tool can affect. Note these positions will likely be mutable
    */
-  Iterable<BlockPos> getBlocks(IToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType);
+  Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType);
 
   /** Checks if the tool is effective on the given block */
-  private static boolean isEffective(IToolStackView tool, Level world, BlockPos pos, float refHardness) {
+  private static boolean isEffective(ToolStackView tool, Level world, BlockPos pos, float refHardness) {
     BlockState state = world.getBlockState(pos);
     if (state.isAir()) {
       return false;
@@ -87,7 +87,7 @@ public interface AreaOfEffectIterator {
   }
 
   /** Gets the predicate for whether a given position can be broken in AOE */
-  static Predicate<BlockPos> defaultBlockPredicate(IToolStackView tool, UseOnContext context, AOEMatchType matchType) {
+  static Predicate<BlockPos> defaultBlockPredicate(ToolStackView tool, UseOnContext context, AOEMatchType matchType) {
     // requires effectiveness
     Level world = context.getLevel();
     if (matchType == AOEMatchType.TRANSFORM) {

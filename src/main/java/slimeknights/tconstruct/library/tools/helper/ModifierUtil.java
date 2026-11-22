@@ -28,8 +28,8 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -86,7 +86,7 @@ public final class ModifierUtil {
 
   /**
    * Checks if the given entity pays the resource costs of using a tool, such as draining the tank or consuming ammo.
-   * Creative players get their resources for free, matching {@link ToolDamageUtil#directDamage(IToolStackView, int, LivingEntity, ItemStack)} skipping durability for them.
+   * Creative players get their resources for free, matching {@link ToolDamageUtil#directDamage(ToolStackView, int, LivingEntity, ItemStack)} skipping durability for them.
    * @param entity  Entity using the tool. Anything that is not a creative player consumes, including mobs and null.
    * @return  True if resources should be consumed.
    */
@@ -96,7 +96,7 @@ public final class ModifierUtil {
 
   /**
    * Checks if the given player pays the resource costs of using a tool, such as draining the tank or consuming ammo.
-   * Creative players get their resources for free, matching {@link ToolDamageUtil#directDamage(IToolStackView, int, LivingEntity, ItemStack)} skipping durability for them.
+   * Creative players get their resources for free, matching {@link ToolDamageUtil#directDamage(ToolStackView, int, LivingEntity, ItemStack)} skipping durability for them.
    * @param player  Player using the tool. Null consumes, as only creative players get their resources for free.
    * @return  True if resources should be consumed.
    */
@@ -110,7 +110,7 @@ public final class ModifierUtil {
   }
 
   /** Checks if the given slot may contain armor */
-  public static boolean validArmorSlot(IToolStackView tool, EquipmentSlot slot) {
+  public static boolean validArmorSlot(ToolStackView tool, EquipmentSlot slot) {
     return slot.isArmor() || tool.hasTag(TinkerTags.Items.HELD);
   }
 
@@ -164,7 +164,7 @@ public final class ModifierUtil {
   }
 
   /** Checks if a tool can perform the given action */
-  public static boolean canPerformAction(IToolStackView tool, ItemAbility ability) {
+  public static boolean canPerformAction(ToolStackView tool, ItemAbility ability) {
     if (!tool.isBroken()) {
       // can the tool do this action inherently?
       if (tool.getHook(ToolHooks.ITEM_ABILITY).canPerformAction(tool, ability)) {
@@ -183,17 +183,17 @@ public final class ModifierUtil {
    * Makes the tool use the blocking animation if the blocking modifier is installed, falling back to the given animation.
    * Allows your tool to block while charging up.
    */
-  public static UseAnim blockWhileCharging(IToolStackView tool, UseAnim fallback) {
+  public static UseAnim blockWhileCharging(ToolStackView tool, UseAnim fallback) {
     return canPerformAction(tool, ItemAbilities.SHIELD_BLOCK) ? UseAnim.BLOCK : fallback;
   }
 
   /** Calculates inaccuracy from the conditional tool stat. */
-  public static float getInaccuracy(IToolStackView tool, @Nullable LivingEntity living) {
+  public static float getInaccuracy(ToolStackView tool, @Nullable LivingEntity living) {
     return 3 * (1 / ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.ACCURACY) - 1);
   }
 
   /** Checks if this modifier is the one actively being used. Used for failure sound effects. */
-  public static boolean isActiveModifier(IToolStackView tool, ModifierEntry modifier, ModifierEntry activeModifier) {
+  public static boolean isActiveModifier(ToolStackView tool, ModifierEntry modifier, ModifierEntry activeModifier) {
     // active modifier being us, or a bow is firing and no drawback ammo
     return modifier == activeModifier || (activeModifier.getLevel() == 0 && !tool.getPersistentData().contains(ModifiableLauncherItem.KEY_DRAWBACK_AMMO));
   }
@@ -238,7 +238,7 @@ public final class ModifierUtil {
       if (stack.is(TinkerTags.Items.MODIFIABLE)) {
         // skip making the tool stack object if not needed, might be asking just for the hand.
         if (applyCooldown || damage > 0) {
-          IToolStackView tool = ToolStack.from(stack);
+          ToolStackView tool = ToolStack.from(stack);
           // trigger cooldown on the item
           if (applyCooldown && living instanceof Player player) {
             GeneralInteractionModifierHook.addCooldown(tool, player, 1);

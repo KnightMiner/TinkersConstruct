@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public record SweepWeaponAttack(LevelingValue ranges) implements MeleeHitToolHoo
   }
 
   /** Gets the damage dealt by this tool, boosted properly by sweeping */
-  public static float getSweepingDamage(IToolStackView tool, float baseDamage) {
+  public static float getSweepingDamage(ToolStackView tool, float baseDamage) {
     float percent = tool.getVolatileData().getFloat(SWEEP_PERCENT);
     float sweepingDamage = 1;
     if (percent > 1) {
@@ -57,7 +57,7 @@ public record SweepWeaponAttack(LevelingValue ranges) implements MeleeHitToolHoo
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ToolAttackContext context, float damage) {
+  public void afterMeleeHit(ToolStackView tool, ToolAttackContext context, float damage) {
     // sweep code from Player#attack(Entity)
     // basically: no crit, no sprinting and has to stand on the ground for sweep. Also has to move regularly slowly
     LivingEntity attacker = context.getAttacker();

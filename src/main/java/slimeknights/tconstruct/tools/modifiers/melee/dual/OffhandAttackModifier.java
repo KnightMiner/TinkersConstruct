@@ -21,8 +21,8 @@ import slimeknights.tconstruct.library.modifiers.modules.behavior.ShowOffhandMod
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 public class OffhandAttackModifier extends NoLevelsModifier implements EntityInteractionModifierHook, GeneralInteractionModifierHook, VolatileDataModifierHook {
@@ -36,17 +36,17 @@ public class OffhandAttackModifier extends NoLevelsModifier implements EntityInt
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     volatileData.putBoolean(DUEL_WIELDING, true);
   }
 
   /** If true, we can use the attack */
-  protected boolean canAttack(IToolStackView tool, Player player, InteractionHand hand) {
+  protected boolean canAttack(ToolStackView tool, Player player, InteractionHand hand) {
     return ToolAttackUtil.canPerformAttack(tool) && hand == InteractionHand.OFF_HAND && OffhandCooldownTracker.isAttackReady(player);
   }
 
   /** Applies offhand cooldown based on the tool attack speed */
-  private static void applyCooldown(IToolStackView tool, Player player, InteractionSource source) {
+  private static void applyCooldown(ToolStackView tool, Player player, InteractionSource source) {
     float attackSpeed;
     if (source == InteractionSource.ARMOR) {
       // for armor, always assume attack speed is 4.0, we cannot change the attack speed of the main hand and we want them to match
@@ -60,7 +60,7 @@ public class OffhandAttackModifier extends NoLevelsModifier implements EntityInt
   }
 
   @Override
-  public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+  public InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     if (canAttack(tool, player, hand)) {
       if (ToolAttackUtil.isAttackable(player, target)) {
         // if melee is disabled, squeak harmlessly
@@ -80,7 +80,7 @@ public class OffhandAttackModifier extends NoLevelsModifier implements EntityInt
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (canAttack(tool, player, hand)) {
       // target done in onEntityInteract, this is just for cooldown cause you missed
       applyCooldown(tool, player, source);

@@ -180,8 +180,8 @@ import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.block.SlimeType;
@@ -306,7 +306,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.gilded     ).showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(ModifierSlotModule.slot(SlotType.UPGRADE).eachLevel(2));
     buildModifier(ModifierIds.draconic   ).showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(ModifierSlotModule.slot(SlotType.ABILITY).eachLevel(1));
     buildModifier(ModifierIds.embossed, new TagFilledCondition<>(TinkerTags.Items.BOSS_TROPHIES)).showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(UPGRADE);
-    IJsonPredicate<IToolContext> ancientTool = ToolContextPredicate.tag(TinkerTags.Items.ANCIENT_TOOLS);
+    IJsonPredicate<ToolContext> ancientTool = ToolContextPredicate.tag(TinkerTags.Items.ANCIENT_TOOLS);
     buildModifier(ModifierIds.rebalanced)
       .showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new SwappableSlotModule(1))
@@ -414,7 +414,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       // give a bonus 500 degrees and a bonus 3 nuggets and 50% of a gem at level 2
       .addModule(MeltingModule.builder().temperature(new LevelingInt(500, 500)).nuggetsPerMetal(new LevelingInt(9, 3)).shardsPerGem(new LevelingInt(6, 2)).build());
     buildModifier(ModifierIds.autosmelt).levelDisplay(ModifierLevelDisplay.PLUSES).addModule(new AutosmeltModule(0.2f, RecipeType.SMELTING));
-    IJsonPredicate<IToolContext> noUnbreakable = HasModifierPredicate.hasModifier(ModifierIds.unbreakable, 1).inverted();
+    IJsonPredicate<ToolContext> noUnbreakable = HasModifierPredicate.hasModifier(ModifierIds.unbreakable, 1).inverted();
     IJsonPredicate<ModifierId> allowReinforced = ModifierPredicate.tag(TinkerTags.Modifiers.BYPASS_REINFORCED).inverted();
     buildModifier(ModifierIds.reinforced)
       // level 0 to 5: 0.025 * LEVEL * (11 - LEVEL)
@@ -874,7 +874,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(ShowOffhandModule.DISALLOW_BROKEN)
       .addModule(new ShearsModule(0, 1, 1))
       .addModule(ShowInteractionSourceModule.INSTANCE);
-    ModifierCondition<IToolStackView> silky = ModifierCondition.ANY_TOOL.with(ToolStackPredicate.context(new HasModifierPredicate(ModifierIds.silky, ModifierEntry.VALID_LEVEL, ModifierCheck.ALL)));
+    ModifierCondition<ToolStackView> silky = ModifierCondition.ANY_TOOL.with(ToolStackPredicate.context(new HasModifierPredicate(ModifierIds.silky, ModifierEntry.VALID_LEVEL, ModifierCheck.ALL)));
     buildModifier(ModifierIds.silkyShears).priority(70).levelDisplay(ModifierLevelDisplay.PLUSES)
       .addModule(new ShearsModule(0, 1, 1, silky))
       .addModule(ShowInteractionSourceModule.INSTANCE);
@@ -1650,7 +1650,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
 
 
     // internal modifier to restore older slots to slimesuit
-    IJsonPredicate<IToolContext> notSlimelytra = ToolContextPredicate.set(TinkerTools.slimeWings.get()).inverted();
+    IJsonPredicate<ToolContext> notSlimelytra = ToolContextPredicate.set(TinkerTools.slimeWings.get()).inverted();
     buildModifier(ModifierIds.reverted)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       // slimelytra just lost an upgrade slot

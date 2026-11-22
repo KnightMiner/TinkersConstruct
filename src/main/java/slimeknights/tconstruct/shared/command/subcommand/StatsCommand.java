@@ -21,8 +21,8 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.utils.TagUtil;
@@ -84,7 +84,7 @@ public class StatsCommand {
   }
 
   /** Updates entities using the given operation */
-  private static List<LivingEntity> updateEntities(CommandContext<CommandSourceStack> context, Predicate<IToolStackView> updateAction) throws CommandSyntaxException {
+  private static List<LivingEntity> updateEntities(CommandContext<CommandSourceStack> context, Predicate<ToolStackView> updateAction) throws CommandSyntaxException {
     return HeldModifiableItemIterator.apply(context, (living, stack) -> {
       ToolStack tool = ToolStack.copyFrom(stack);
 

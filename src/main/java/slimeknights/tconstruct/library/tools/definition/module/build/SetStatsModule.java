@@ -4,10 +4,10 @@ import net.minecraft.world.item.ArmorItem;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -16,8 +16,8 @@ import slimeknights.tconstruct.tools.modules.ArmorModuleBuilder;
 import java.util.List;
 
 /** Module to set stats on the tool */
-public record SetStatsModule(StatsNBT stats) implements ToolStatsHook, ToolModule {
-  public static final RecordLoadable<SetStatsModule> LOADER = RecordLoadable.create(StatsNBT.LOADABLE.requiredField("stats", SetStatsModule::stats), SetStatsModule::new);
+public record SetStatsModule(StatValues stats) implements ToolStatsHook, ToolModule {
+  public static final RecordLoadable<SetStatsModule> LOADER = RecordLoadable.create(StatValues.LOADABLE.requiredField("stats", SetStatsModule::stats), SetStatsModule::new);
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SetStatsModule>defaultHooks(ToolHooks.TOOL_STATS);
 
   @Override
@@ -36,7 +36,7 @@ public record SetStatsModule(StatsNBT stats) implements ToolStatsHook, ToolModul
   }
 
   @Override
-  public void addToolStats(IToolContext context, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierStatsBuilder builder) {
     for (IToolStat<?> stat : stats.getContainedStats()) {
       setStat(stat, builder);
     }
@@ -51,18 +51,18 @@ public record SetStatsModule(StatsNBT stats) implements ToolStatsHook, ToolModul
   public static class ArmorBuilder implements ArmorModuleBuilder<SetStatsModule> {
 
     private final List<ArmorItem.Type> slotTypes;
-    private final StatsNBT.Builder[] builders = new StatsNBT.Builder[4];
+    private final StatValues.Builder[] builders = new StatValues.Builder[4];
 
     private ArmorBuilder(List<ArmorItem.Type> slotTypes) {
       this.slotTypes = slotTypes;
       for (ArmorItem.Type slotType : slotTypes) {
-        builders[slotType.ordinal()] = StatsNBT.builder();
+        builders[slotType.ordinal()] = StatValues.builder();
       }
     }
 
     /** Gets the builder for the given slot */
-    protected StatsNBT.Builder getBuilder(ArmorItem.Type slotType) {
-      StatsNBT.Builder builder = builders[slotType.ordinal()];
+    protected StatValues.Builder getBuilder(ArmorItem.Type slotType) {
+      StatValues.Builder builder = builders[slotType.ordinal()];
       if (builder == null) {
         throw new IllegalArgumentException("Unsupported slot type " + slotType);
       }

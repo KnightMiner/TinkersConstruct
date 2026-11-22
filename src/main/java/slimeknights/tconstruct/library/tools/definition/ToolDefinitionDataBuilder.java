@@ -8,9 +8,9 @@ import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.WithHooks;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor(staticName = "builder")
 @Accessors(fluent = true)
 public class ToolDefinitionDataBuilder {
-  private final StatsNBT.Builder bonuses = StatsNBT.builder();
+  private final StatValues.Builder bonuses = StatValues.builder();
   private final ImmutableList.Builder<WithHooks<ToolModule>> modules = ImmutableList.builder();
 
 

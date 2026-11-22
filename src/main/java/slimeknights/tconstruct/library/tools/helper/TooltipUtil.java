@@ -42,9 +42,9 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolPart
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.item.ITinkerStationDisplay;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
@@ -173,7 +173,7 @@ public class TooltipUtil {
    * @param tooltips   Tooltip list
    * @param flag       Tooltip flag
    */
-  public static void addModifierNames(ItemStack stack, IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipFlag flag) {
+  public static void addModifierNames(ItemStack stack, ToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipFlag flag) {
     RegistryAccess access = player == null ? null : player.level().registryAccess();
     for (ModifierEntry entry : tool.getModifierList()) {
       if (entry.getModifier().shouldDisplay(ModifierTooltip.TOOL)) {
@@ -206,7 +206,7 @@ public class TooltipUtil {
    * @param tooltips  Tooltip list
    * @param flag      Tooltip flag
    */
-  public static void getDefaultInfo(ItemStack stack, IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipFlag flag) {
+  public static void getDefaultInfo(ItemStack stack, ToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipFlag flag) {
     // shows as broken when broken, hold shift for proper durability
     if (tool.getItem().canBeDepleted() && !tool.isUnbreakable() && tool.hasTag(TinkerTags.Items.DURABILITY)) {
       tooltips.add(TooltipBuilder.formatDurability(tool.getCurrentDurability(), tool.getStats().getInt(ToolStats.DURABILITY), true));
@@ -228,7 +228,7 @@ public class TooltipUtil {
    * @param flag      Tooltip flag
    * @return List from the parameter after filling
    */
-  public static List<Component> getDefaultStats(IToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
+  public static List<Component> getDefaultStats(ToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
     TooltipBuilder builder = new TooltipBuilder(tool, tooltip);
     if (tool.hasTag(TinkerTags.Items.DURABILITY)) {
       builder.addDurability();
@@ -283,7 +283,7 @@ public class TooltipUtil {
    * @param flag      Tooltip flag
    * @return List from the parameter after filling
    */
-  public static List<Component> getArmorStats(IToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
+  public static List<Component> getArmorStats(ToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
     TooltipBuilder builder = new TooltipBuilder(tool, tooltip);
     if (tool.hasTag(TinkerTags.Items.DURABILITY)) {
       builder.addDurability();
@@ -313,7 +313,7 @@ public class TooltipUtil {
    * @param flag      Tooltip flag
    * @return List from the parameter after filling
    */
-  public static List<Component> getAmmoStats(IToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
+  public static List<Component> getAmmoStats(ToolStackView tool, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag flag) {
     TooltipBuilder builder = new TooltipBuilder(tool, tooltip);
     builder.add(ToolStats.PROJECTILE_DAMAGE);
     builder.add(ToolStats.VELOCITY);
@@ -342,7 +342,7 @@ public class TooltipUtil {
       return;
     }
     // no materials is bad
-    MaterialNBT materials = ToolStack.from(stack).getMaterials();
+    ToolMaterials materials = ToolStack.from(stack).getMaterials();
     if (materials.isEmpty()) {
       tooltips.add(NO_DATA);
       return;
@@ -391,7 +391,7 @@ public class TooltipUtil {
    * @param showAttribute  Predicate to determine whether an attribute should show
    * @param slots          List of slots to display
    */
-  public static void addAttributes(ITinkerStationDisplay item, IToolStackView tool, @Nullable Player player, List<Component> tooltip, BiPredicate<Attribute, Operation> showAttribute, EquipmentSlot... slots) {
+  public static void addAttributes(ITinkerStationDisplay item, ToolStackView tool, @Nullable Player player, List<Component> tooltip, BiPredicate<Attribute, Operation> showAttribute, EquipmentSlot... slots) {
     for (EquipmentSlot slot : slots) {
       Multimap<Attribute,AttributeModifier> modifiers = item.getAttributeModifiers(tool, slot);
       if (!modifiers.isEmpty()) {

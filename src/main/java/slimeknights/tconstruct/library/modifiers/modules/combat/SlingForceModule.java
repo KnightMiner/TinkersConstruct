@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @param target     Filter on entities to receive knockback
  * @param formula    Formula to compute the force multiplier
  */
-public record SlingForceModule(IJsonPredicate<LivingEntity> target, IJsonPredicate<LivingEntity> holder, IJsonPredicate<ModifierId> sling, ConditionalStatFormula formula, ModifierCondition<IToolStackView> condition) implements ModifierModule, SlingForceModifierHook, ConditionalModule<IToolStackView> {
+public record SlingForceModule(IJsonPredicate<LivingEntity> target, IJsonPredicate<LivingEntity> holder, IJsonPredicate<ModifierId> sling, ConditionalStatFormula formula, ModifierCondition<ToolStackView> condition) implements ModifierModule, SlingForceModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SlingForceModule>defaultHooks(ModifierHooks.SLING_FORCE);
   /** Loader instance */
   public static final RecordLoadable<SlingForceModule> LOADER = RecordLoadable.create(
@@ -52,7 +52,7 @@ public record SlingForceModule(IJsonPredicate<LivingEntity> target, IJsonPredica
   }
 
   @Override
-  public float modifySlingForce(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
+  public float modifySlingForce(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
   if (this.condition.matches(tool, modifier) && this.target.matches(target) && this.holder.matches(holder) && this.sling.matches(slingSource.id())) {
       return formula.apply(tool, modifier, holder, force, multiplier);
     }

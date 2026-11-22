@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeI
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,7 +158,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
     @Override
     public List<ItemStack> getDisplayItems(int slot, ItemStack focus, boolean focusOutput) {
       if (slot == index && !focus.isEmpty() && (focusOutput || isTool(focus))) {
-        MaterialVariant material = MaterialNBT.get(focus, index);
+        MaterialVariant material = ToolMaterials.get(focus, index);
         IntStream indices;
         if (focusOutput) {
           // if focusing on the output, filter to just materials that produce the output
@@ -179,7 +179,7 @@ public class MaterialValueSwappingRecipe extends MaterialIndexSwappingRecipe imp
       if (!focus.isEmpty()) {
         if (focusOutput) {
           // find all matching materials to display. This may include material variants hence mapping instead of a single item
-          MaterialNBT materials = MaterialNBT.get(focus);
+          ToolMaterials materials = ToolMaterials.get(focus);
           MaterialVariant material = materials.get(index);
           Function<MaterialVariant,ItemStack> applyMaterial = newMaterial -> replaceMaterial(materials, newMaterial, focus);
           List<ItemStack> results = this.materials.stream().filter(material::matchesVariant).map(applyMaterial).toList();

@@ -9,7 +9,7 @@ import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -32,12 +32,12 @@ public interface TooltipModifierHook {
    * @param tooltipKey   Shows if the player is holding shift, control, or neither
    * @param tooltipFlag  Flag determining tooltip type
    */
-  void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag);
+  void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<TooltipModifierHook> modules) implements TooltipModifierHook {
     @Override
-    public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+    public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
       for (TooltipModifierHook module : modules) {
         module.addTooltip(tool, modifier, player, tooltip, tooltipKey, tooltipFlag);
       }
@@ -71,7 +71,7 @@ public interface TooltipModifierHook {
    * @param amount     Amount to show, before scaling by the tool's modifier
    * @param tooltip    Tooltip list
    */
-  static void addStatBoost(IToolStackView tool, Modifier modifier, FloatToolStat stat, TagKey<Item> condition, float amount, List<Component> tooltip) {
+  static void addStatBoost(ToolStackView tool, Modifier modifier, FloatToolStat stat, TagKey<Item> condition, float amount, List<Component> tooltip) {
     if (tool.hasTag(condition)) {
       addFlatBoost(modifier, statName(modifier, stat), amount * tool.getMultiplier(stat), tooltip);
     }
@@ -84,7 +84,7 @@ public interface TooltipModifierHook {
    * @param amount   Damage amount
    * @param tooltip  Tooltip
    */
-  static void addDamageBoost(IToolStackView tool, Modifier modifier, float amount, List<Component> tooltip) {
+  static void addDamageBoost(ToolStackView tool, Modifier modifier, float amount, List<Component> tooltip) {
     addStatBoost(tool, modifier, ToolStats.ATTACK_DAMAGE, TinkerTags.Items.MELEE, amount, tooltip);
   }
 
@@ -95,7 +95,7 @@ public interface TooltipModifierHook {
    * @param levelAmount  Bonus per level
    * @param tooltip      Tooltip
    */
-  static void addDamageBoost(IToolStackView tool, ModifierEntry modifier, float levelAmount, List<Component> tooltip) {
+  static void addDamageBoost(ToolStackView tool, ModifierEntry modifier, float levelAmount, List<Component> tooltip) {
     addDamageBoost(tool, modifier.getModifier(), modifier.getEffectiveLevel() * levelAmount, tooltip);
   }
 }

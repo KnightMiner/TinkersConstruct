@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -37,17 +37,17 @@ import java.util.function.Function;
 @EqualsAndHashCode
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class MaterialNBT implements Iterable<MaterialVariant>, CollectionComponent {
+public class ToolMaterials implements Iterable<MaterialVariant>, CollectionComponent {
   /** Instance containing no materials, for errors with parsing NBT */
-  public final static MaterialNBT EMPTY = new MaterialNBT(List.of());
+  public final static ToolMaterials EMPTY = new ToolMaterials(List.of());
 
   /** Codec instance for NBT */
-  public static final Codec<MaterialNBT> CODEC;
+  public static final Codec<ToolMaterials> CODEC;
   /** Stream codec instance for network */
-  public static final StreamCodec<ByteBuf,MaterialNBT> STREAM_CODEC;
+  public static final StreamCodec<ByteBuf, ToolMaterials> STREAM_CODEC;
   static {
-    Function<List<MaterialVariant>,MaterialNBT> constuctor = MaterialNBT::of;
-    Function<MaterialNBT,List<MaterialVariant>> getter = m -> m.list;
+    Function<List<MaterialVariant>, ToolMaterials> constuctor = ToolMaterials::of;
+    Function<ToolMaterials,List<MaterialVariant>> getter = m -> m.list;
     CODEC = MaterialVariant.CODEC.listOf().xmap(constuctor, getter);
     STREAM_CODEC = MaterialVariant.STREAM_CODEC.apply(ByteBufCodecs.list()).map(constuctor, getter);
   }
@@ -57,26 +57,26 @@ public class MaterialNBT implements Iterable<MaterialVariant>, CollectionCompone
   private final List<MaterialVariant> list;
 
   /** Creates a new instance, returning {@link #EMPTY} if no materials are passed. */
-  public static MaterialNBT of(List<MaterialVariant> list) {
+  public static ToolMaterials of(List<MaterialVariant> list) {
     if (list.isEmpty()) {
       return EMPTY;
     }
-    return new MaterialNBT(List.copyOf(list));
+    return new ToolMaterials(List.copyOf(list));
   }
 
   /** Creates a new material NBT */
   @VisibleForTesting
-  public static MaterialNBT of(IMaterial... materials) {
+  public static ToolMaterials of(IMaterial... materials) {
     return of(Arrays.stream(materials).map(MaterialVariant::create).toList());
   }
 
   /** Creates a new material NBT */
-  public static MaterialNBT of(MaterialVariant... materials) {
+  public static ToolMaterials of(MaterialVariant... materials) {
     return of(List.of(materials));
   }
 
   /** Creates a new material NBT */
-  public static MaterialNBT of(MaterialVariantId... materials) {
+  public static ToolMaterials of(MaterialVariantId... materials) {
     return of(Arrays.stream(materials).map(MaterialVariant::create).toList());
   }
 
@@ -114,7 +114,7 @@ public class MaterialNBT implements Iterable<MaterialVariant>, CollectionCompone
    * @return  Copy of NBt with the new material
    * @throws IndexOutOfBoundsException  If the index is invalid
    */
-  public MaterialNBT replaceMaterial(int index, MaterialVariant replacement) {
+  public ToolMaterials replaceMaterial(int index, MaterialVariant replacement) {
     if (index < 0) {
       throw new IndexOutOfBoundsException("Material index is out of bounds");
     }
@@ -147,13 +147,13 @@ public class MaterialNBT implements Iterable<MaterialVariant>, CollectionCompone
    * @return  Copy of NBt with the new material
    * @throws IndexOutOfBoundsException  If the index is invalid
    */
-  public MaterialNBT replaceMaterial(int index, MaterialVariantId replacement) {
+  public ToolMaterials replaceMaterial(int index, MaterialVariantId replacement) {
     return replaceMaterial(index, MaterialVariant.create(replacement));
   }
 
   /** @deprecated use {@link #CODEC} */
   @Deprecated
-  public static MaterialNBT readFromNBT(@Nullable Tag tag) {
+  public static ToolMaterials readFromNBT(@Nullable Tag tag) {
     if (tag == null || tag.getId() != Tag.TAG_LIST) {
       return EMPTY;
     }
@@ -193,7 +193,7 @@ public class MaterialNBT implements Iterable<MaterialVariant>, CollectionCompone
   /* Helpers */
 
   /** Gets the materials from a stack */
-  public static MaterialNBT get(ItemStack stack) {
+  public static ToolMaterials get(ItemStack stack) {
     return stack.getOrDefault(TinkerData.MATERIALS, EMPTY);
   }
 
@@ -244,12 +244,12 @@ public class MaterialNBT implements Iterable<MaterialVariant>, CollectionCompone
     }
 
     /** Adds all materials from the given NBT */
-    public Builder addAll(MaterialNBT existing) {
+    public Builder addAll(ToolMaterials existing) {
       return addAll(existing.list);
     }
 
     /** Builds the final list */
-    public MaterialNBT build() {
+    public ToolMaterials build() {
       return of(builder.build());
     }
   }

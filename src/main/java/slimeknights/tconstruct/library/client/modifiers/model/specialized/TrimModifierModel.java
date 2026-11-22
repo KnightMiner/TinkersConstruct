@@ -25,7 +25,7 @@ import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.cosmetic.TrimModule;
 
 import javax.annotation.Nonnull;
@@ -46,7 +46,7 @@ public interface TrimModifierModel extends ModifierModel {
 
   @Nullable
   @Override
-  default Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  default Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     String key = tool.getPersistentData().getString(TrimModule.materialKey(modifier.id()));
     if (key.isEmpty()) {
       return null;
@@ -65,7 +65,7 @@ public interface TrimModifierModel extends ModifierModel {
   boolean warnOnMissingTexture();
 
   @Override
-  default void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  default void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     // material must be set
     String materialId = tool.getPersistentData().getString(TrimModule.materialKey(modifier.id()));
     if (!materialId.isEmpty()) {

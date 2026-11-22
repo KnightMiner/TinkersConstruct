@@ -10,7 +10,7 @@ import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -60,7 +60,7 @@ public record CompoundModifierModel(List<ModifierModel> models) implements Modif
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     Object[] cacheKey = new Object[this.models.size()];
     boolean nonNull = false;
     for (int i = 0; i < this.models.size(); i++) {
@@ -74,7 +74,7 @@ public record CompoundModifierModel(List<ModifierModel> models) implements Modif
   }
 
   @Override
-  public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     for (ModifierModel model : this.models) {
       model.addQuads(tool, modifier, spriteGetter, transforms, isLarge, startTintIndex, quadConsumer, pixels);
       startTintIndex += model.getTintIndexes();
@@ -91,7 +91,7 @@ public record CompoundModifierModel(List<ModifierModel> models) implements Modif
   }
 
   @Override
-  public int getTint(IToolStackView tool, ModifierEntry entry, int index) {
+  public int getTint(ToolStackView tool, ModifierEntry entry, int index) {
     for (ModifierModel model : this.models) {
       int count = model.getTintIndexes();
       if (index < count) {

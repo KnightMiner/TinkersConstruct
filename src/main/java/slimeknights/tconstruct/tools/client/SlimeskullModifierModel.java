@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.client.modifiers.model.material.MaterialM
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
@@ -39,12 +39,12 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
   }
 
   @Override
-  public MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry) {
+  public MaterialVariantId getMaterial(ToolStackView tool, ModifierEntry entry) {
     return tool.getMaterial(skullIndex).id();
   }
 
   @Override
-  public int getColor(IToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
+  public int getColor(ToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
     IModDataView data = tool.getPersistentData();
     ResourceLocation dyed = TinkerModifiers.dyed.id().id();
     if (data.contains(dyed, Tag.TAG_INT)) {
@@ -56,7 +56,7 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     IModDataView data = tool.getPersistentData();
     // only need to cache colors from dyed, if its from the slime we will get it from the material in cache
     ResourceLocation dyed = TinkerModifiers.dyed.id().id();

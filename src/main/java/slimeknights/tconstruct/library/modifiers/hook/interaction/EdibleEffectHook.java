@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,12 +24,12 @@ public interface EdibleEffectHook {
    * @param saturation            Saturation restored.
    * @param representativeItems   List of representative items to fill with item stacks for the Diet mod.
    */
-  void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems);
+  void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems);
 
   /** Merger running all nested modules */
   record AllMerger(Collection<EdibleEffectHook> modules) implements EdibleEffectHook {
     @Override
-    public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+    public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
       for (EdibleEffectHook module : modules) {
         module.onToolEaten(tool, modifier, player, eatenSlot, hunger, saturation, representativeItems);
       }

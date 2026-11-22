@@ -20,7 +20,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -32,13 +32,13 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-public class OvergrowthModule implements ModifierModule, InventoryTickModifierHook, ConditionalModule<IToolStackView> {
+public class OvergrowthModule implements ModifierModule, InventoryTickModifierHook, ConditionalModule<ToolStackView> {
   public static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<OvergrowthModule>defaultHooks(ModifierHooks.INVENTORY_TICK);
   protected static final LoadableField<LevelingValue,OvergrowthModule> CHANCE_FIELD = LevelingValue.LOADABLE.requiredField("chance", OvergrowthModule::chance);
   public static final RecordLoadable<OvergrowthModule> LOADER = RecordLoadable.create(CHANCE_FIELD, ModifierCondition.TOOL_FIELD, OvergrowthModule::new);
 
   private final LevelingValue chance;
-  private final ModifierCondition<IToolStackView> condition;
+  private final ModifierCondition<ToolStackView> condition;
 
   public OvergrowthModule(LevelingValue chance) {
     this(chance, ModifierCondition.ANY_TOOL);
@@ -60,7 +60,7 @@ public class OvergrowthModule implements ModifierModule, InventoryTickModifierHo
   }
 
   @Override
-  public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+  public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     // update 1 times a second, but skip when active (messes with pulling bow back)
     if (!world.isClientSide && holder.tickCount % 20 == 0 && holder.getUseItem() != stack && condition.matches(tool, modifier)) {
       // has a chance of restoring each second per level

@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.json.variable.tool;
 import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 /**
@@ -15,7 +15,7 @@ import slimeknights.tconstruct.library.utils.Util;
 @SuppressWarnings("unused") // API
 public record LoadConditionToolVariable(ToolVariable ifTrue, ToolVariable ifFalse, ICondition... conditions) implements ToolVariable, ConditionalObject<ToolVariable> {
   @Override
-  public float getValue(IToolStackView tool) {
+  public float getValue(ToolStackView tool) {
     return (Util.testConditions(conditions) ? ifTrue : ifFalse).getValue(tool);
   }
 

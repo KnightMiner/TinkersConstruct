@@ -9,7 +9,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.ToolEnergyCapability;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -31,27 +31,27 @@ public enum EnergyAsCapacityModule implements ModifierModule, CapacityBarHook {
   }
 
   @Override
-  public int getAmount(IToolStackView tool) {
+  public int getAmount(ToolStackView tool) {
     return ToolEnergyCapability.getEnergy(tool);
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     return ToolEnergyCapability.getMaxEnergy(tool);
   }
 
   @Override
-  public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+  public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
     ToolEnergyCapability.setEnergy(tool, amount);
   }
 
   @Override
-  public void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void addAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     ToolEnergyCapability.addEnergy(tool, amount);
   }
 
   @Override
-  public void removeAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void removeAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     ToolEnergyCapability.addEnergy(tool, -amount);
   }
 }

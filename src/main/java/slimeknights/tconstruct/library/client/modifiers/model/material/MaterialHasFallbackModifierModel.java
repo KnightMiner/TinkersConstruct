@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -64,18 +64,18 @@ public final class MaterialHasFallbackModifierModel implements ModifierModel, Fu
   }
 
   /** Checks the cache for the given material having the fallback */
-  private boolean hasFallback(IToolStackView tool) {
+  private boolean hasFallback(ToolStackView tool) {
     return cache.computeIfAbsent(tool.getMaterials().get(index).id(), this);
   }
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     return (hasFallback(tool) ? ifTrue : ifFalse).getCacheKey(tool, modifier);
   }
 
   @Override
-  public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     (hasFallback(tool) ? ifTrue : ifFalse).addQuads(tool, modifier, spriteGetter, transforms, isLarge, startTintIndex, quadConsumer, pixels);
   }
 
@@ -85,7 +85,7 @@ public final class MaterialHasFallbackModifierModel implements ModifierModel, Fu
   }
 
   @Override
-  public int getTint(IToolStackView tool, ModifierEntry entry, int index) {
+  public int getTint(ToolStackView tool, ModifierEntry entry, int index) {
     return (hasFallback(tool) ? ifTrue : ifFalse).getTint(tool, entry, index);
   }
 }

@@ -8,8 +8,8 @@ import slimeknights.tconstruct.library.json.math.ModifierFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormulaLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,7 +27,7 @@ public record PowerFormula(ModifierFormula formula, List<PowerVariable> variable
   }
 
   /** Builds the arguments from the context */
-  private float[] getArguments(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, double damage, float multiplier) {
+  private float[] getArguments(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, double damage, float multiplier) {
     int size = variables.size();
     float[] arguments = new float[3 + size];
     arguments[ModifierFormula.LEVEL] = formula.processLevel(modifier);
@@ -40,7 +40,7 @@ public record PowerFormula(ModifierFormula formula, List<PowerVariable> variable
   }
 
   /** Runs this formula */
-  public float apply(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, double damage, float multiplier) {
+  public float apply(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, @Nullable Projectile projectile, @Nullable EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, double damage, float multiplier) {
     return formula.apply(getArguments(modifiers, persistentData, modifier, projectile, hit, attacker, target, damage, multiplier));
   }
 }

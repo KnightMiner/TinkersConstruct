@@ -79,13 +79,13 @@ import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.helper.ModifierLootingHandler;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
 import slimeknights.tconstruct.shared.effect.MagneticEffect;
@@ -181,7 +181,7 @@ public class ModifierEvents {
     // if a projectile kills the target, mark the projectile level
     DamageSource source = event.getSource();
     if (source != null && source.getDirectEntity() instanceof Projectile projectile) {
-      ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(projectile);
+      ModifierEntries modifiers = EntityModifierCapability.getOrEmpty(projectile);
       if (!modifiers.isEmpty()) {
         TinkerDataCapability.Holder data = TinkerDataCapability.getData(event.getEntity());
         if (data != null) {

@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /** Modifier model that only shows if the given condition passes */
-public record ConditionalModifierModel(ModifierCondition<IToolStackView> condition, ModifierModel nested) implements ModifierModel, ConditionalModule<IToolStackView> {
+public record ConditionalModifierModel(ModifierCondition<ToolStackView> condition, ModifierModel nested) implements ModifierModel, ConditionalModule<ToolStackView> {
   public static final RecordLoadable<ConditionalModifierModel> LOADER = RecordLoadable.create(
     ModifierCondition.TOOL_FIELD,
     ModifierModelLoadable.COMPACT.requiredField("model", ConditionalModifierModel::nested),
@@ -37,7 +37,7 @@ public record ConditionalModifierModel(ModifierCondition<IToolStackView> conditi
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     if (condition.matches(tool, modifier)) {
       return nested.getCacheKey(tool, modifier);
     }
@@ -45,7 +45,7 @@ public record ConditionalModifierModel(ModifierCondition<IToolStackView> conditi
   }
 
   @Override
-  public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     if (condition.matches(tool, modifier)) {
       nested.addQuads(tool, modifier, spriteGetter, transforms, isLarge, startTintIndex, quadConsumer, pixels);
     }
@@ -57,7 +57,7 @@ public record ConditionalModifierModel(ModifierCondition<IToolStackView> conditi
   }
 
   @Override
-  public int getTint(IToolStackView tool, ModifierEntry entry, int index) {
+  public int getTint(ToolStackView tool, ModifierEntry entry, int index) {
     // if we are even asking, means condition matches
     return nested.getTint(tool, entry, index);
   }

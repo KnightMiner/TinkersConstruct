@@ -4,7 +4,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,7 +25,7 @@ public record HasStatTypePredicate(MaterialStatsId statType, @Nullable MaterialV
   }
 
   @Override
-  public boolean matches(IToolContext tool) {
+  public boolean matches(ToolContext tool) {
     List<MaterialStatsId> parts = ToolMaterialHook.stats(tool.getDefinition());
     for (int i = 0; i < parts.size(); i++) {
       if (statType.equals(parts.get(i)) && (material == null || material.matchesVariant(tool.getMaterial(i)))) {

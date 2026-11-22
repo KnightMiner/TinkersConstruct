@@ -24,8 +24,8 @@ import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import static slimeknights.tconstruct.library.modifiers.ModifierEntry.VALID_LEVE
  * @param radius        Range to affect
  * @param tool          Tool condition
  */
-public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, LevelingValue radius, IJsonPredicate<IToolContext> tool) implements ArmorWalkRadiusModule<Void>, ModifierModule {
+public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, LevelingValue radius, IJsonPredicate<ToolContext> tool) implements ArmorWalkRadiusModule<Void>, ModifierModule {
   public static final RecordLoadable<ReplaceBlockWalkerModule> LOADER = RecordLoadable.create(
     BlockReplacement.LOADABLE.list().requiredField("replace", ReplaceBlockWalkerModule::replacements),
     LevelingValue.LOADABLE.requiredField("radius", ReplaceBlockWalkerModule::radius),
@@ -49,19 +49,19 @@ public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, Leve
   public ReplaceBlockWalkerModule {}
 
   @Override
-  public float getRadius(IToolStackView tool, ModifierEntry modifier) {
+  public float getRadius(ToolStackView tool, ModifierEntry modifier) {
     return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
   }
 
   @Override
-  public void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  public void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     if (this.tool.matches(tool)) {
       ArmorWalkRadiusModule.super.onWalk(tool, modifier, living, prevPos, newPos);
     }
   }
 
   @Override
-  public boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
+  public boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
     if (world.isEmptyBlock(target)) {
       mutable.set(target.getX(), target.getY() - 1, target.getZ());
       int level = entry.getLevel();
@@ -110,7 +110,7 @@ public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, Leve
     private final ImmutableList.Builder<BlockReplacement> replacements = ImmutableList.builder();
     @Setter
     @Accessors(fluent = true)
-    private IJsonPredicate<IToolContext> tool = ToolContextPredicate.ANY;
+    private IJsonPredicate<ToolContext> tool = ToolContextPredicate.ANY;
 
     private Builder() {}
 

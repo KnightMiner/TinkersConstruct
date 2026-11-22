@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.modifiers.hook.behavior.EnchantmentModifi
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public interface HarvestEnchantmentsModifierHook {
    * @see EnchantmentModifierHook#addEnchantment(Map, Enchantment, int)
    * @see EnchantmentModifierHook.SingleHarvestEnchantment
    */
-  void updateHarvestEnchantments(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, EquipmentContext equipment, EquipmentSlot slot, Map<Enchantment,Integer> map);
+  void updateHarvestEnchantments(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, EquipmentContext equipment, EquipmentSlot slot, Map<Enchantment,Integer> map);
 
 
   /* Helpers */
@@ -57,7 +57,7 @@ public interface HarvestEnchantmentsModifierHook {
    * @return  Old tag if enchants were applied
    */
   @Nullable
-  static ListTag updateHarvestEnchantments(IToolStackView tool, ItemStack stack, ToolHarvestContext context) {
+  static ListTag updateHarvestEnchantments(ToolStackView tool, ItemStack stack, ToolHarvestContext context) {
     Player player = context.getPlayer();
     if (player == null || !player.isCreative()) {
       // assuming we have a modifiable tool, we iterate all tools other than the main hand (since the main hand is in charge of harvesting the blocks)
@@ -70,7 +70,7 @@ public interface HarvestEnchantmentsModifierHook {
       for (EquipmentSlot slot : APPLICABLE_SLOTS) {
         // tool must be modifiable and must be in an appropriate slot, or we don't care
         // we also disallow harvest tools, this means no pickaxe in the offhand granting you pickaxe stuff in the main hand, but something like a shield fine
-        IToolStackView armor = equipmentContext.getValidTool(slot);
+        ToolStackView armor = equipmentContext.getValidTool(slot);
         if (armor != null) {
           for (ModifierEntry entry : armor.getModifierList()) {
             // skip processing if we lack the hook, saves us parsing if none of the modifiers use it
@@ -117,7 +117,7 @@ public interface HarvestEnchantmentsModifierHook {
   /** Merger that runs all submodules */
   record AllMerger(Collection<HarvestEnchantmentsModifierHook> modules) implements HarvestEnchantmentsModifierHook {
     @Override
-    public void updateHarvestEnchantments(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, EquipmentContext equipment, EquipmentSlot slot, Map<Enchantment,Integer> map) {
+    public void updateHarvestEnchantments(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, EquipmentContext equipment, EquipmentSlot slot, Map<Enchantment,Integer> map) {
       for (HarvestEnchantmentsModifierHook module : modules) {
         module.updateHarvestEnchantments(tool, modifier, context, equipment, slot, map);
       }

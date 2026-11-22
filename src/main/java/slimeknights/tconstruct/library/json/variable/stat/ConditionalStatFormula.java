@@ -7,7 +7,7 @@ import slimeknights.tconstruct.library.json.math.ModifierFormula.FallbackFormula
 import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormulaLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +30,7 @@ public record ConditionalStatFormula(ModifierFormula formula, List<ConditionalSt
   }
 
   /** Builds the arguments from the context */
-  private float[] getArguments(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity, float value, float multiplier) {
+  private float[] getArguments(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity, float value, float multiplier) {
     int size = variables.size();
     float[] arguments = new float[3 + size];
     arguments[LEVEL] = formula.processLevel(modifier);
@@ -43,7 +43,7 @@ public record ConditionalStatFormula(ModifierFormula formula, List<ConditionalSt
   }
 
   /** Runs this formula */
-  public float apply(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity, float value, float multiplier) {
+  public float apply(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity, float value, float multiplier) {
     return formula.apply(getArguments(tool, modifier, entity, value, multiplier));
   }
 }

@@ -34,8 +34,8 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolMate
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     FluidStack fluid = inv.getFluid();
     List<MaterialStatsId> requirements = ToolMaterialHook.stats(modifiable.getToolDefinition());
     int index = getIndex(requirements);
-    MaterialVariant currentMaterial = MaterialNBT.get(stack, index);
+    MaterialVariant currentMaterial = ToolMaterials.get(stack, index);
     if (cachedPartSwapping != null && cachedPartSwapping.matches(fluid.getFluid(), currentMaterial)) {
       return cachedPartSwapping;
     }
@@ -398,12 +398,12 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     protected abstract IntStream indicesFromInput(MaterialVariant material);
 
     /** Gets the list of fluids to display for the given material on the focused tool. */
-    protected abstract List<ItemStack> getCastItems(ItemStack focus, MaterialNBT materials, MaterialVariant material, boolean focusOutput);
+    protected abstract List<ItemStack> getCastItems(ItemStack focus, ToolMaterials materials, MaterialVariant material, boolean focusOutput);
 
     @Override
     public List<ItemStack> getCastItems(ItemStack focus, boolean focusOutput) {
       if (!focus.isEmpty()) {
-        MaterialNBT materials = MaterialNBT.get(focus);
+        ToolMaterials materials = ToolMaterials.get(focus);
         return getCastItems(focus, materials, materials.get(fluidIndex), focusOutput);
       }
       return castItems;
@@ -413,7 +413,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     public List<FluidStack> getFluids(ItemStack focus, boolean focusOutput) {
       if (!focus.isEmpty()) {
         // let the recipe filter the focus, but if it ends up with nothing use the full list
-        MaterialVariant material = MaterialNBT.get(focus, fluidIndex);
+        MaterialVariant material = ToolMaterials.get(focus, fluidIndex);
         List<FluidStack> filtered = (focusOutput ? indicesFromOutput(material) : indicesFromInput(material)).mapToObj(fluids::get).toList();
         if (!filtered.isEmpty()) return filtered;
       }
@@ -423,7 +423,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     @Override
     public List<ItemStack> getOutputs(ItemStack focus, boolean focusOutput) {
       if (!focus.isEmpty()) {
-        MaterialNBT materials = MaterialNBT.get(focus);
+        ToolMaterials materials = ToolMaterials.get(focus);
         MaterialVariant material = materials.get(fluidIndex);
         // if we cannot use the tool as a focus, just display most of its materials with all valid inputs
         List<MaterialVariantId> results = this.resultMaterials;
@@ -469,7 +469,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     }
 
     @Override
-    protected List<ItemStack> getCastItems(ItemStack focus, MaterialNBT materials, MaterialVariant material, boolean focusOutput) {
+    protected List<ItemStack> getCastItems(ItemStack focus, ToolMaterials materials, MaterialVariant material, boolean focusOutput) {
       // on input, the focus itself becomes our cast as long as we have at least 1 recipe that doesn't produce the material
       if (!focusOutput && indicesFromInput(material).findAny().isPresent()) {
         return List.of(focus);
@@ -495,7 +495,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     }
 
     @Override
-    protected List<ItemStack> getCastItems(ItemStack focus, MaterialNBT materials, MaterialVariant material, boolean focusOutput) {
+    protected List<ItemStack> getCastItems(ItemStack focus, ToolMaterials materials, MaterialVariant material, boolean focusOutput) {
       if (focusOutput) {
         // on output, display any input materials that could composite to the output. If there are none use full list
         List<ItemStack> results = indicesFromOutput(material).mapToObj(i -> materials.replaceMaterial(fluidIndex, inputMaterials.get(i)).updateStack(new ItemStack(focus.getItem()))).toList();

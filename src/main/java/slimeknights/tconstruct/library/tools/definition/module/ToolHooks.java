@@ -27,8 +27,8 @@ import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiv
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningSpeedToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningTierToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.weapon.MeleeHitToolHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -54,8 +54,8 @@ public class ToolHooks {
   /** Hook for filling materials on a tool with no materials set */
   public static final ModuleHook<MissingMaterialsToolHook> MISSING_MATERIALS = register("missing_materials", MissingMaterialsToolHook.class, new MissingMaterialsToolHook() {
     @Override
-    public MaterialNBT fillMaterials(ToolDefinition definition, RandomSource random) {
-      MaterialNBT.Builder builder = MaterialNBT.builder();
+    public ToolMaterials fillMaterials(ToolDefinition definition, RandomSource random) {
+      ToolMaterials.Builder builder = ToolMaterials.builder();
       for (MaterialStatsId statType : ToolMaterialHook.stats(definition)) {
         builder.add(MaterialRegistry.firstWithStatType(statType));
       }
@@ -63,10 +63,10 @@ public class ToolHooks {
     }
 
     @Override
-    public MaterialNBT fillMaterials(ToolDefinition definition, MaterialNBT existing, RandomSource random) {
+    public ToolMaterials fillMaterials(ToolDefinition definition, ToolMaterials existing, RandomSource random) {
       List<MaterialStatsId> stats = ToolMaterialHook.stats(definition);
       // add original materials
-      MaterialNBT.Builder builder = MaterialNBT.builder();
+      ToolMaterials.Builder builder = ToolMaterials.builder();
       builder.addAll(existing);
       // fill in missing materials from first with stat type
       for (int i = existing.size(); i < stats.size(); i++) {
@@ -79,12 +79,12 @@ public class ToolHooks {
   /** Hook for repairing a tool using a material. */
   public static final ModuleHook<MaterialRepairToolHook> MATERIAL_REPAIR = register("material_repair", MaterialRepairToolHook.class, MaxMerger::new, new MaterialRepairToolHook() {
     @Override
-    public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
+    public boolean isRepairMaterial(ToolStackView tool, MaterialId material) {
       return false;
     }
 
     @Override
-    public float getRepairAmount(IToolStackView tool, MaterialId material) {
+    public float getRepairAmount(ToolStackView tool, MaterialId material) {
       return 0;
     }
   });

@@ -43,8 +43,8 @@ import slimeknights.tconstruct.library.modifiers.entity.ProjectileWithKnockback;
 import slimeknights.tconstruct.library.modifiers.entity.ProjectileWithPower;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.tools.TinkerTools;
 
 import java.util.Objects;
@@ -261,7 +261,7 @@ public class CombatFishingHook extends FishingHook implements ProjectileWithKnoc
                   damageDealt = oldHealth - targetLiving.getHealth();
                 }
                 // actually run the hook
-                IToolStackView tool = ToolStack.from(stack);
+                ToolStackView tool = ToolStack.from(stack);
                 for (ModifierEntry modifier : tool.getModifiers()) {
                   modifier.getHook(ModifierHooks.LAUNCHER_HIT).onLauncherHitEntity(tool, modifier, this, ownerLiving, target, targetLiving, damageDealt);
                 }
@@ -314,7 +314,7 @@ public class CombatFishingHook extends FishingHook implements ProjectileWithKnoc
       }
       // run modifier hook
       if (owner instanceof LivingEntity living && stack.is(TinkerTags.Items.MODIFIABLE)) {
-        IToolStackView tool = ToolStack.from(stack);
+        ToolStackView tool = ToolStack.from(stack);
         BlockPos pos = blockPosition();
         for (ModifierEntry entry : tool.getModifiers()) {
           entry.getHook(ModifierHooks.LAUNCHER_HIT).onLauncherHitBlock(tool, entry, this, living, pos);

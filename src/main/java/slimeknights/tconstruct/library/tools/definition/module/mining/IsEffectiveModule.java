@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public record IsEffectiveModule(IJsonPredicate<BlockState> predicate, boolean ig
   }
 
   @Override
-  public boolean isToolEffective(IToolStackView tool, BlockState state) {
+  public boolean isToolEffective(ToolStackView tool, BlockState state) {
     return predicate.matches(state) && (ignoreTier || TierSortingRegistry.isCorrectTierForDrops(MiningTierToolHook.getTier(tool), state));
   }
 }

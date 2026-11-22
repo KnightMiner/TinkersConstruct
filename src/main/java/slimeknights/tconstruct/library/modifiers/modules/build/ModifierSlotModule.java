@@ -17,15 +17,15 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 import java.util.List;
 
 /**
  * Module that adds extra modifier slots to a tool.
  */
-public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondition<IToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ConditionalModule<IToolContext> {
+public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierSlotModule>defaultHooks(ModifierHooks.ADD_SLOTS);
   public static final RecordLoadable<ModifierSlotModule> LOADER = RecordLoadable.create(
     SlotType.LOADABLE.requiredField("name", ModifierSlotModule::type),
@@ -46,7 +46,7 @@ public record ModifierSlotModule(SlotType type, LevelingInt count, ModifierCondi
   }
 
   @Override
-  public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder slots) {
+  public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
     if (condition.matches(context, modifier)) {
       slots.add(type, count.computeForLevel(modifier.getEffectiveLevel()));
     }

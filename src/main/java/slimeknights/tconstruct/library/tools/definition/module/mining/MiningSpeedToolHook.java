@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.tools.definition.module.mining;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Collection;
 /** Hook for changing the mining speed beyond effectiveness and tier. */
 public interface MiningSpeedToolHook {
   /** Updates the mining speed for the tool against the given state */
-  float modifyDestroySpeed(IToolStackView tool, BlockState state, float speed);
+  float modifyDestroySpeed(ToolStackView tool, BlockState state, float speed);
 
   /** Gets the mining speed for the tool against the given state */
   static float getDestroySpeed(ItemStack tool, BlockState state) {
@@ -23,7 +23,7 @@ public interface MiningSpeedToolHook {
   }
 
   /** Gets the mining speed for the tool against the given state */
-  static float getDestroySpeed(IToolStackView tool, BlockState state) {
+  static float getDestroySpeed(ToolStackView tool, BlockState state) {
     if (tool.isBroken()) {
       return 0.3f;
     }
@@ -34,7 +34,7 @@ public interface MiningSpeedToolHook {
   /** Merger that runs each hook after the previous */
   record ComposeMerger(Collection<MiningSpeedToolHook> hooks) implements MiningSpeedToolHook {
     @Override
-    public float modifyDestroySpeed(IToolStackView tool, BlockState state, float speed) {
+    public float modifyDestroySpeed(ToolStackView tool, BlockState state, float speed) {
       for (MiningSpeedToolHook hook : hooks) {
         speed = hook.modifyDestroySpeed(tool, state, speed);
       }

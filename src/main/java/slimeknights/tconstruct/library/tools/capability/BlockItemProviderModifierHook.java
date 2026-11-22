@@ -10,7 +10,7 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -27,20 +27,20 @@ public interface BlockItemProviderModifierHook {
      * @param entity    The entity holding this tool. May be null if there is no entity
      * @return stack containing a {@link BlockItem} that this provides, or {@link ItemStack#EMPTY} if this cannot provide more block items (for example if the stack has been depleted)
      */
-    ItemStack getBlockItemStack(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity);
+    ItemStack getBlockItemStack(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity);
 
     /**
      * Consume a block from this provider. For example may decrease a contained stacks size or remove fluid from the stack's tank.
      *
      * @param tool         The tool that this hook is attached to, as a tool stack view
      * @param modifier     The modifier that provided this hook
-     * @param backingStack Stack that was returned by {@link #getBlockItemStack(IToolStackView, ModifierEntry, LivingEntity)}. Should be validated to be your stack before you consume.
+     * @param backingStack Stack that was returned by {@link #getBlockItemStack(ToolStackView, ModifierEntry, LivingEntity)}. Should be validated to be your stack before you consume.
      * @param entity       The entity holding this tool. May be null if there is no entity
      * @return {@code true} if this hook consumed, otherwise {@code false} indicating that another modifier needs to consume.
      */
-    boolean consumeBlockItem(IToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity);
+    boolean consumeBlockItem(ToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity);
 
-    record CapabilityImpl(IToolStackView tool) implements BlockItemProviderCapability {
+    record CapabilityImpl(ToolStackView tool) implements BlockItemProviderCapability {
         @Override
         public ItemStack getBlockItemStack(ItemStack capStack, @Nullable LivingEntity entity) {
             for (ModifierEntry entry : tool.getModifiers()) {
@@ -71,12 +71,12 @@ public interface BlockItemProviderModifierHook {
 
     class Provider implements ToolCapabilityProvider.IToolCapabilityProvider {
         private final LazyOptional<BlockItemProviderCapability> lazy;
-        public Provider(Supplier<? extends IToolStackView> tool) {
+        public Provider(Supplier<? extends ToolStackView> tool) {
             lazy = LazyOptional.of(() -> new CapabilityImpl(tool.get()));
         }
 
         @Override
-        public <T> LazyOptional<T> getCapability(IToolStackView tool, Capability<T> cap) {
+        public <T> LazyOptional<T> getCapability(ToolStackView tool, Capability<T> cap) {
             return BlockItemProviderCapability.CAPABILITY.orEmpty(cap, lazy);
         }
     }

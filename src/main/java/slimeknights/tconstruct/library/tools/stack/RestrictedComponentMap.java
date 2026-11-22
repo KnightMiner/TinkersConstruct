@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.component.DataComponentMap;

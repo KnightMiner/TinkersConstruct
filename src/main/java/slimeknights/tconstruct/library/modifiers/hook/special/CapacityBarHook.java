@@ -8,30 +8,30 @@ import slimeknights.tconstruct.library.modifiers.modules.capacity.CapacityBarVal
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Hook for a capacity bar on a tool, typically used for durability. */
 public interface CapacityBarHook {
   /** Gets the current amount. */
-  int getAmount(IToolStackView tool);
+  int getAmount(ToolStackView tool);
 
   /** Gets the capacity for the given tool and modifier entry. */
-  int getCapacity(IToolStackView tool, ModifierEntry entry);
+  int getCapacity(ToolStackView tool, ModifierEntry entry);
 
   /** Sets the amount on the tool. Note that {@code entry} may be {@link ModifierEntry#EMPTY} indicating removal. */
-  void setAmount(IToolStackView tool, ModifierEntry entry, int amount);
+  void setAmount(ToolStackView tool, ModifierEntry entry, int amount);
 
   /** Adds the given amount to the current shield. */
-  default void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  default void addAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     if (amount != 0) {
       setAmount(tool, modifier, getAmount(tool) + amount);
     }
   }
 
   /** Adds the given amount to the current shield. */
-  default void removeAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  default void removeAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     if (amount != 0) {
       setAmount(tool, modifier, getAmount(tool) - amount);
     }
@@ -54,12 +54,12 @@ public interface CapacityBarHook {
     }
 
     @Override
-    public int getAmount(IToolStackView tool) {
+    public int getAmount(ToolStackView tool) {
       return tool.getPersistentData().getInt(key);
     }
 
     @Override
-    public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+    public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
       if (amount <= 0) {
         tool.getPersistentData().remove(key);
       } else {

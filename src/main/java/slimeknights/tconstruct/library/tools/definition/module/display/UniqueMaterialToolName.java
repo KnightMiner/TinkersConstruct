@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public record UniqueMaterialToolName(int index) implements ToolNameHook, ToolMod
   }
 
   @Override
-  public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name) {
+  public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool, Component name) {
     MaterialVariantId material = ToolNameHook.getTool(stack, tool).getMaterials().get(index).id();
     if (!MaterialId.UNKNOWN.equals(material)) {
       String key = stack.getItem().getDescriptionId();

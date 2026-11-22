@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifie
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
@@ -42,7 +42,7 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     MaterialVariantId materialVariant = MaterialVariantId.tryParse(tool.getPersistentData().getString(entry.id()));
     if (materialVariant != null) {
       return Component.translatable(entry.getModifier().getTranslationKey() + ".formatted", MaterialTooltipCache.getDisplayName(materialVariant)).withStyle(style -> style.withColor(MaterialTooltipCache.getColor(materialVariant)));
@@ -51,7 +51,7 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
   }
 
   @Override
-  public void addRawData(IToolStackView tool, ModifierEntry modifier) {
+  public void addRawData(ToolStackView tool, ModifierEntry modifier) {
     // on build, migrate material redirects
     ModDataNBT data = tool.getPersistentData();
     ResourceLocation key = modifier.id();
@@ -67,11 +67,11 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
   }
 
   @Override
-  public void removeRawData(IToolStackView tool, Modifier modifier) {}
+  public void removeRawData(ToolStackView tool, Modifier modifier) {}
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(modifier.id());
     return null;
   }

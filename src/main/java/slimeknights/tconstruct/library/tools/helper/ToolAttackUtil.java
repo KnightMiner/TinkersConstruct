@@ -35,8 +35,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import javax.annotation.Nullable;
@@ -59,7 +59,7 @@ public class ToolAttackUtil {
    * @param attribute  Attribute to fetch
    * @return  Base value of the attribute
    */
-  public static float getToolAttribute(IToolStackView tool, LivingEntity holder, Attribute attribute, float toolValue) {
+  public static float getToolAttribute(ToolStackView tool, LivingEntity holder, Attribute attribute, float toolValue) {
     // fetch attribute instance
     AttributeInstance instance = holder.getAttribute(attribute);
     if (instance == null) {
@@ -127,7 +127,7 @@ public class ToolAttackUtil {
   }
 
   /** Core logic for attacking, meant to be called from {@link Item#onLeftClickEntity(ItemStack, Player, Entity)} when a tool stack is needed for other uses. */
-  public static boolean attackEntity(IToolStackView tool, Player attacker, Entity target) {
+  public static boolean attackEntity(ToolStackView tool, Player attacker, Entity target) {
     if (!canPerformAttack(tool)) {
       return false;
     }
@@ -138,7 +138,7 @@ public class ToolAttackUtil {
   }
 
   /** Checks if this tool can be used to attack */
-  public static boolean canPerformAttack(IToolStackView tool) {
+  public static boolean canPerformAttack(ToolStackView tool) {
     return !tool.isBroken() && tool.hasTag(TinkerTags.Items.MELEE);
   }
 
@@ -149,9 +149,9 @@ public class ToolAttackUtil {
 
   /**
    * Tool attack logic. Based on {@link Player#attack(Entity)}
-   * Preconditions: {@link #canPerformAttack(IToolStackView)} and {@link #isAttackable(LivingEntity, Entity)} are kept separate to reduce effort creating the context when not needed.
+   * Preconditions: {@link #canPerformAttack(ToolStackView)} and {@link #isAttackable(LivingEntity, Entity)} are kept separate to reduce effort creating the context when not needed.
    */
-  public static boolean performAttack(IToolStackView tool, ToolAttackContext context) {
+  public static boolean performAttack(ToolStackView tool, ToolAttackContext context) {
     // moved damage calculation, knockback, and cooldown to ToolAttackUtil.Builder
     // missing: enchantment modifiers, we handle modifiers instead
 

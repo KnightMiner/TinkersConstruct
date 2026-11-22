@@ -1,11 +1,13 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.Tiers;
 import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +20,7 @@ import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MaterialRegistryExtension.class)
-class StatsNBTTest extends BaseMcTest {
+class StatValuesTest extends BaseMcTest {
   @BeforeAll
   static void setupTiers() {
     setupTierSorting();
@@ -27,15 +29,15 @@ class StatsNBTTest extends BaseMcTest {
   @Test
   void empty_ensureEmpty() {
     // ensure no stats present
-    assertThat(StatsNBT.EMPTY.getContainedStats()).isEmpty();
+    assertThat(StatValues.EMPTY.getContainedStats()).isEmpty();
     // ensure defaults
-    assertThat(StatsNBT.EMPTY.get(ToolStats.DURABILITY)).isEqualTo(ToolStats.DURABILITY.getDefaultValue());
-    assertThat(StatsNBT.EMPTY.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(ToolStats.ATTACK_DAMAGE.getDefaultValue());
+    assertThat(StatValues.EMPTY.get(ToolStats.DURABILITY)).isEqualTo(ToolStats.DURABILITY.getDefaultValue());
+    assertThat(StatValues.EMPTY.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(ToolStats.ATTACK_DAMAGE.getDefaultValue());
   }
 
   @Test
   void builder_builds() {
-    StatsNBT stats = StatsNBT
+    StatValues stats = StatValues
       .builder()
       .set(ToolStats.DURABILITY, 6f)
       .set(ToolStats.HARVEST_TIER, Tiers.STONE)
@@ -56,7 +58,7 @@ class StatsNBTTest extends BaseMcTest {
 
   @Test
   void buffer_readsWrites() {
-    StatsNBT stats = StatsNBT
+    StatValues stats = StatValues
       .builder()
       .set(ToolStats.DURABILITY, 4f)
       .set(ToolStats.HARVEST_TIER, Tiers.IRON)
@@ -65,9 +67,9 @@ class StatsNBTTest extends BaseMcTest {
       .set(ToolStats.ATTACK_SPEED, 2f)
       .build();
 
-    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+    RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY, ConnectionType.OTHER);
     stats.toNetwork(buffer);
-    StatsNBT decoded = StatsNBT.fromNetwork(buffer);
+    StatValues decoded = StatValues.fromNetwork(buffer);
 
     assertThat(decoded.getContainedStats()).hasSize(5);
     assertThat(decoded.get(ToolStats.DURABILITY)).isEqualTo(4f);
@@ -79,7 +81,7 @@ class StatsNBTTest extends BaseMcTest {
 
   @Test
   void serialize() {
-    StatsNBT testStatsNBT = StatsNBT
+    StatValues testStatValues = StatValues
       .builder()
       .set(ToolStats.DURABILITY, 1f)
       .set(ToolStats.HARVEST_TIER, Tiers.NETHERITE)
@@ -87,7 +89,7 @@ class StatsNBTTest extends BaseMcTest {
       .set(ToolStats.MINING_SPEED, 4f)
       .set(ToolStats.ATTACK_SPEED, 5f)
       .build();
-    CompoundTag nbt = testStatsNBT.serializeToNBT();
+    CompoundTag nbt = testStatValues.serializeToNBT();
     
     assertThat(nbt.getInt(ToolStats.DURABILITY.getId().toString())).isEqualTo(1);
     assertThat(nbt.getString(ToolStats.HARVEST_TIER.getId().toString())).isEqualTo(Objects.requireNonNull(TierSortingRegistry.getName(Tiers.NETHERITE)).toString());
@@ -98,7 +100,7 @@ class StatsNBTTest extends BaseMcTest {
 
   @Test
   void serializeEmpty_emptyList() {
-    CompoundTag nbt = StatsNBT.EMPTY.serializeToNBT();
+    CompoundTag nbt = StatValues.EMPTY.serializeToNBT();
 
     assertThat(nbt.size()).isEqualTo(0);
   }
@@ -112,38 +114,38 @@ class StatsNBTTest extends BaseMcTest {
     nbt.putFloat(ToolStats.MINING_SPEED.getId().toString(), 3.5f);
     nbt.putFloat(ToolStats.ATTACK_SPEED.getId().toString(), 2);
 
-    StatsNBT statsNBT = StatsNBT.readFromNBT(nbt);
+    StatValues statValues = StatValues.readFromNBT(nbt);
 
-    assertThat(statsNBT.getContainedStats()).hasSize(5);
-    assertThat(statsNBT.getInt(ToolStats.DURABILITY)).isEqualTo(6);
-    assertThat(statsNBT.get(ToolStats.HARVEST_TIER)).isEqualTo(Tiers.GOLD);
-    assertThat(statsNBT.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(4);
-    assertThat(statsNBT.get(ToolStats.MINING_SPEED)).isEqualTo(3.5f);
-    assertThat(statsNBT.get(ToolStats.ATTACK_SPEED)).isEqualTo(2);
+    assertThat(statValues.getContainedStats()).hasSize(5);
+    assertThat(statValues.getInt(ToolStats.DURABILITY)).isEqualTo(6);
+    assertThat(statValues.get(ToolStats.HARVEST_TIER)).isEqualTo(Tiers.GOLD);
+    assertThat(statValues.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(4);
+    assertThat(statValues.get(ToolStats.MINING_SPEED)).isEqualTo(3.5f);
+    assertThat(statValues.get(ToolStats.ATTACK_SPEED)).isEqualTo(2);
   }
 
   @Test
   void deserializeNoData_empty() {
     CompoundTag nbt = new CompoundTag();
-    StatsNBT statsNBT = StatsNBT.readFromNBT(nbt);
-    assertThat(statsNBT).isEqualTo(StatsNBT.EMPTY);
+    StatValues statValues = StatValues.readFromNBT(nbt);
+    assertThat(statValues).isEqualTo(StatValues.EMPTY);
   }
 
   @Test
   void wrongNbtType_empty() {
     Tag wrongNbt = new CompoundTag();
-    StatsNBT statsNBT = StatsNBT.readFromNBT(wrongNbt);
-    assertThat(statsNBT).isEqualTo(StatsNBT.EMPTY);
+    StatValues statValues = StatValues.readFromNBT(wrongNbt);
+    assertThat(statValues).isEqualTo(StatValues.EMPTY);
   }
 
   @Test
   void missing_isDefault() {
-    StatsNBT partialStatsNBT = StatsNBT.builder()
+    StatValues partialStatValues = StatValues.builder()
                                        .set(ToolStats.DURABILITY, 1f)
                                        .set(ToolStats.ATTACK_DAMAGE, 3f)
                                        .build();
-    assertThat(partialStatsNBT.get(ToolStats.MINING_SPEED)).isEqualTo(ToolStats.MINING_SPEED.getDefaultValue());
-    assertThat(partialStatsNBT.get(ToolStats.ARMOR)).isEqualTo(ToolStats.ARMOR.getDefaultValue());
-    assertThat(partialStatsNBT.get(ToolStats.HARVEST_TIER)).isEqualTo(ToolStats.HARVEST_TIER.getDefaultValue());
+    assertThat(partialStatValues.get(ToolStats.MINING_SPEED)).isEqualTo(ToolStats.MINING_SPEED.getDefaultValue());
+    assertThat(partialStatValues.get(ToolStats.ARMOR)).isEqualTo(ToolStats.ARMOR.getDefaultValue());
+    assertThat(partialStatValues.get(ToolStats.HARVEST_TIER)).isEqualTo(ToolStats.HARVEST_TIER.getDefaultValue());
   }
 }

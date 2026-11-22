@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public record FovModule(LevelingValue value, FovAction action) implements Modifi
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (!tool.isBroken()) {
       TinkerDataCapability.Holder data = LogicHelper.orElseNull(context.getTinkerData());
       if (data != null) {
@@ -52,7 +52,7 @@ public record FovModule(LevelingValue value, FovAction action) implements Modifi
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (!tool.isBroken()) {
       TinkerDataCapability.Holder data = LogicHelper.orElseNull(context.getTinkerData());
       if (data != null) {

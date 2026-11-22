@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.List;
 
@@ -34,15 +34,15 @@ public record DefaultMaterialsModule(List<RandomMaterial> materials) implements 
   }
 
   @Override
-  public MaterialNBT fillMaterials(ToolDefinition definition, RandomSource random) {
+  public ToolMaterials fillMaterials(ToolDefinition definition, RandomSource random) {
     return RandomMaterial.build(ToolMaterialHook.stats(definition), materials, random);
   }
 
   @Override
-  public MaterialNBT fillMaterials(ToolDefinition definition, MaterialNBT existing, RandomSource random) {
+  public ToolMaterials fillMaterials(ToolDefinition definition, ToolMaterials existing, RandomSource random) {
     List<MaterialStatsId> stats = ToolMaterialHook.stats(definition);
     // start with all existing materials
-    MaterialNBT.Builder builder = MaterialNBT.builder();
+    ToolMaterials.Builder builder = ToolMaterials.builder();
     builder.addAll(existing);
     // next, add missing materials, but don't add more materials than the stats size
     int defaultSize = materials.size();

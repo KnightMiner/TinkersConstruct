@@ -18,13 +18,13 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module that adds capacity whenever the tool breaks any number of blocks. */
-public record MiningCapacityModule(LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, BlockHarvestModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
+public record MiningCapacityModule(LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<ToolStackView> condition) implements ModifierModule, BlockHarvestModifierHook, CapacitySourceModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MiningCapacityModule>defaultHooks(ModifierHooks.BLOCK_HARVEST);
   public static final RecordLoadable<MiningCapacityModule> LOADER = RecordLoadable.create(
     LevelingInt.LOADABLE.defaultField("grant", LevelingInt.ZERO, false, MiningCapacityModule::grant),
@@ -47,21 +47,21 @@ public record MiningCapacityModule(LevelingInt grant, boolean before, @Nullable 
   }
 
   /** Applies the capacity boost to the modifier. */
-  private void apply(IToolStackView tool, ModifierEntry modifier, int harvested) {
+  private void apply(ToolStackView tool, ModifierEntry modifier, int harvested) {
     if (condition.matches(tool, modifier)) {
       CapacitySourceModule.apply(tool, barModifier(tool, modifier), harvested, grant.compute(modifier.getEffectiveLevel()));
     }
   }
 
   @Override
-  public void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+  public void startHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     if (before) {
       apply(tool, modifier, 1);
     }
   }
 
   @Override
-  public void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
+  public void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
     if (!before) {
       apply(tool, modifier, harvested);
     }

@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import slimeknights.mantle.recipe.ICommonRecipe;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 
 /**
  * Main interface for all recipes in the Tinker Station

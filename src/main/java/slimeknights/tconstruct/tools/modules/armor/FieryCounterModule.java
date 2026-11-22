@@ -11,10 +11,10 @@ import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Module implementing the counterattack side of fiery */
-public record FieryCounterModule(LevelingValue chance, LevelingValue constant, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<IToolStackView> condition) implements CounterModule {
+public record FieryCounterModule(LevelingValue chance, LevelingValue constant, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<ToolStackView> condition) implements CounterModule {
   public static final RecordLoadable<FieryCounterModule> LOADER = CounterModule.makeLoader("seconds", FieryCounterModule::new);
 
   @Override
@@ -37,7 +37,7 @@ public record FieryCounterModule(LevelingValue chance, LevelingValue constant, L
   }
 
   @Override
-  public void applyEffect(IToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {
+  public void applyEffect(ToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {
     attacker.igniteForSeconds(value);
   }
 }

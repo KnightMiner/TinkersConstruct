@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.registration.object.IdAwareObject;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Variable that fetches a number from modifier data */
 public record ModDataVariable(ResourceLocation key, ModDataSource source) implements ToolVariable {
@@ -18,7 +18,7 @@ public record ModDataVariable(ResourceLocation key, ModDataSource source) implem
   }
 
   @Override
-  public float getValue(IToolStackView tool) {
+  public float getValue(ToolStackView tool) {
     return source.getData(tool).getFloat(key);
   }
 

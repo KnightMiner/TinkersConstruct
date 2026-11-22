@@ -13,8 +13,8 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHoo
 import slimeknights.tconstruct.library.modifiers.impl.DurabilityShieldModifier;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -45,7 +45,7 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
   /* Tool building */
 
   @Override
-  public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     // TODO 1.21: encode stat debuffs using JSON?
     OverslimeModule.OVERSLIME_STAT.add(builder, 50);
     if (!context.getModifiers().has(TinkerTags.Modifiers.OVERSLIME_FRIEND)) {
@@ -69,13 +69,13 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
 
   @Nullable
   @Override
-  public Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier) {
+  public Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier) {
     // only show as fully repaired if overslime is full
     return getAmount(tool) < getCapacity(tool, modifier) ? true : null;
   }
 
   @Override
-  public int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier) {
+  public int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier) {
     if (getAmount(tool) > 0) {
       // just always display light blue, not much point in color changing really
       return 0x00A0FF;
@@ -87,7 +87,7 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
   /* Shield implementation */
 
   @Override
-  public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+  public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
     // allow overslime bypass
     if (!ModifierManager.isInTag(cause, TinkerTags.Modifiers.BYPASS_OVERSLIME)) {
       return super.beforeDamageTool(tool, modifier, amount, holder, stack, cause);
@@ -95,15 +95,15 @@ public class OverslimeModifier extends DurabilityShieldModifier implements ToolS
     return amount;
   }
 
-  /** @deprecated use {@link OverslimeModule#getCapacity(IToolStackView)} */
+  /** @deprecated use {@link OverslimeModule#getCapacity(ToolStackView)} */
   @Deprecated
   @Override
-  public int getShieldCapacity(IToolStackView tool, ModifierEntry modifier) {
+  public int getShieldCapacity(ToolStackView tool, ModifierEntry modifier) {
     return OverslimeModule.getCapacity(tool);
   }
 
   @Override
-  public void addAmount(IToolStackView tool, ModifierEntry modifier, int amount) {
+  public void addAmount(ToolStackView tool, ModifierEntry modifier, int amount) {
     // yeah, I am hardcoding overworked. If you need something similar, put in an issue request on github
     // grants +100% restoring per level
     super.addAmount(tool, modifier, amount * OverslimeModule.getOverworkedBonus(tool));

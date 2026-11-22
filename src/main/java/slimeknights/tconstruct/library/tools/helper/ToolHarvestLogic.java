@@ -30,8 +30,8 @@ import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator.AOEMatchType;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -48,13 +48,13 @@ public class ToolHarvestLogic {
 
   /**
    * Gets the amount of damage this tool should take for the given block state.
-   * TODO 1.21: remove in favor of {@link #getDamage(IToolStackView, Level, BlockPos, BlockState)}
+   * TODO 1.21: remove in favor of {@link #getDamage(ToolStackView, Level, BlockPos, BlockState)}
    * @param tool   Tool to check
    * @param state  State to check
    * @return  Damage to deal
    */
   public static int getDamage(ToolStack tool, Level world, BlockPos pos, BlockState state) {
-    return getDamage((IToolStackView) tool, world, pos, state);
+    return getDamage((ToolStackView) tool, world, pos, state);
   }
 
   /**
@@ -63,7 +63,7 @@ public class ToolHarvestLogic {
    * @param state  State to check
    * @return  Damage to deal
    */
-  public static int getDamage(IToolStackView tool, Level world, BlockPos pos, BlockState state) {
+  public static int getDamage(ToolStackView tool, Level world, BlockPos pos, BlockState state) {
     if (state.getDestroySpeed(world, pos) == 0 || !tool.hasTag(TinkerTags.Items.HARVEST)) {
       // tools that can shear take damage from instant break for non-fire
       return (!state.is(BlockTags.FIRE) && ModifierUtil.canPerformAction(tool, ItemAbilities.SHEARS_DIG)) ? 1 : 0;
@@ -78,7 +78,7 @@ public class ToolHarvestLogic {
    * @param context  Harvest context
    * @return  True if the block was removed
    */
-  private static boolean removeBlock(IToolStackView tool, ToolHarvestContext context) {
+  private static boolean removeBlock(ToolStackView tool, ToolHarvestContext context) {
     Boolean removed = null;
     if (!tool.isBroken()) {
       for (ModifierEntry entry : tool.getModifierList()) {
@@ -110,7 +110,7 @@ public class ToolHarvestLogic {
    * @param useLastXP If true, fetches the XP from {@link BlockSideHitListener} instead of firing the event. Prevents firing {@link net.neoforged.neoforge.event.level.BlockEvent.BreakEvent} twice.
    * @return  True if broken
    */
-  protected static boolean breakBlock(IToolStackView tool, ItemStack stack, ToolHarvestContext context, boolean useLastXP) {
+  protected static boolean breakBlock(ToolStackView tool, ItemStack stack, ToolHarvestContext context, boolean useLastXP) {
     // have to rerun the event to get the EXP, also ensures extra blocks broken get EXP properly
     ServerPlayer player = Objects.requireNonNull(context.getPlayer());
     ServerLevel world = context.getWorld();
@@ -166,14 +166,14 @@ public class ToolHarvestLogic {
 
   /**
    * Breaks a secondary block.
-   * TODO 1.21: remove this header in favor of {@link #breakExtraBlock(IToolStackView, ItemStack, ToolHarvestContext)}
+   * TODO 1.21: remove this header in favor of {@link #breakExtraBlock(ToolStackView, ItemStack, ToolHarvestContext)}
    * @param tool      Tool instance
    * @param stack     Stack instance for vanilla functions
    * @param context   Tool harvest context
    * @return true if a block was broken.
    */
   public static boolean breakExtraBlock(ToolStack tool, ItemStack stack, ToolHarvestContext context) {
-    return breakExtraBlock((IToolStackView) tool, stack, context);
+    return breakExtraBlock((ToolStackView) tool, stack, context);
   }
 
   /**
@@ -183,7 +183,7 @@ public class ToolHarvestLogic {
    * @param context   Tool harvest context
    * @return true if a block was broken.
    */
-  public static boolean breakExtraBlock(IToolStackView tool, ItemStack stack, ToolHarvestContext context) {
+  public static boolean breakExtraBlock(ToolStackView tool, ItemStack stack, ToolHarvestContext context) {
     // break the actual block
     if (breakBlock(tool, stack, context, false)) {
       Level world = context.getWorld();
@@ -258,7 +258,7 @@ public class ToolHarvestLogic {
    * @param player   Player breaking the block
    * @return Number of blocks broken
    */
-  public static int runBlockBreak(ItemStack stack, IToolStackView tool, BlockState state, BlockPos pos, Direction sideHit, ServerPlayer player, @Nullable Projectile projectile) {
+  public static int runBlockBreak(ItemStack stack, ToolStackView tool, BlockState state, BlockPos pos, Direction sideHit, ServerPlayer player, @Nullable Projectile projectile) {
     // create contexts
     ServerLevel world = player.serverLevel();
 

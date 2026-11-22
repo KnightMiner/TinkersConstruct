@@ -22,7 +22,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuelLookup;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public enum OverburnModule implements ModifierModule, InventoryTickModifierHook,
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(modifier.id());
     return null;
   }
@@ -63,7 +63,7 @@ public enum OverburnModule implements ModifierModule, InventoryTickModifierHook,
 
     /** Reads the info from the tool */
     @Nullable
-    public static FuelInfo read(IToolStackView tool, ResourceLocation location) {
+    public static FuelInfo read(ToolStackView tool, ResourceLocation location) {
       ModDataNBT persistentData = tool.getPersistentData();
       if (persistentData.contains(location, Tag.TAG_COMPOUND)) {
         CompoundTag tag = persistentData.getCompound(location);
@@ -73,7 +73,7 @@ public enum OverburnModule implements ModifierModule, InventoryTickModifierHook,
     }
 
     /** Writes the info to the tool */
-    public void write(IToolStackView tool, ResourceLocation location) {
+    public void write(ToolStackView tool, ResourceLocation location) {
       CompoundTag tag = new CompoundTag();
       tag.putLong(EXPIRATION, expiration);
       tag.putInt(RATE, rate);
@@ -82,7 +82,7 @@ public enum OverburnModule implements ModifierModule, InventoryTickModifierHook,
   }
 
   @Override
-  public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+  public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     // overslime increases every 2^(4-level) seconds
     // that is 1 per second at 4 levels, 1 per 8 seconds at 1 level
     // we support max level 6, as that leaves us working with integers

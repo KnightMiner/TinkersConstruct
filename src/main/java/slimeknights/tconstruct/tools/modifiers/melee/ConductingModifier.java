@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeDamageModifier
 import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
@@ -59,7 +59,7 @@ public class ConductingModifier extends Modifier implements ConditionalStatModif
   }
 
   @Override
-  public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
+  public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
     float bonus = bonusScale(context.getAttacker()) * modifier.getEffectiveLevel() * PERCENT_PER_LEVEL;
     if (bonus > 0) {
       damage *= 1 + bonus;
@@ -68,7 +68,7 @@ public class ConductingModifier extends Modifier implements ConditionalStatModif
   }
 
   @Override
-  public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+  public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
     if (stat == ToolStats.PROJECTILE_DAMAGE) {
       float bonus = bonusScale(living) * modifier.getEffectiveLevel() * PERCENT_PER_LEVEL;
       if (bonus > 0) {
@@ -79,7 +79,7 @@ public class ConductingModifier extends Modifier implements ConditionalStatModif
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     if (tool.hasTag(TinkerTags.Items.RANGED) || tool.hasTag(TinkerTags.Items.MELEE)) {
       float bonus = (PERCENT_PER_LEVEL) * modifier.getLevel();
       // client only knows if the player is on fire or not, not the amount of fire, so just show full if on fire

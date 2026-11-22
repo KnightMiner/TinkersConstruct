@@ -15,12 +15,12 @@ import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 
 /** Handles registration of data components and data attachments added by Tinkers. */
 public class TinkerData {
@@ -55,25 +55,25 @@ public class TinkerData {
   /** If true, the tool is currently broken and should not perform any actions that require durability. */
   public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Unit.CODEC, TinkerStreamCodecs.UNIT);
   /** Holds a single material on an item. Used for tool parts and other material items */
-  public static final DeferredDataComponent<MaterialNBT> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", MaterialNBT.CODEC, MaterialNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ToolMaterials> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", ToolMaterials.CODEC, ToolMaterials.STREAM_CODEC);
 
   /** Holds the list of modifiers from recipes, such as upgrades or abilities */
-  public static final DeferredDataComponent<ModifierNBT> CRAFTED_MODIFIERS = DATA_COMPONENTS.registerPersistent("crafted_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ModifierEntries> CRAFTED_MODIFIERS = DATA_COMPONENTS.registerPersistent("crafted_modifiers", ModifierEntries.CODEC, ModifierEntries.STREAM_CODEC);
   /** Holds the combined list of modifiers, including {@link #CRAFTED_MODIFIERS} and traits, sorted by priority. */
-  public static final DeferredDataComponent<ModifierNBT> ALL_MODIFIERS = DATA_COMPONENTS.registerPersistent("all_modifiers", ModifierNBT.CODEC, ModifierNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ModifierEntries> ALL_MODIFIERS = DATA_COMPONENTS.registerPersistent("all_modifiers", ModifierEntries.CODEC, ModifierEntries.STREAM_CODEC);
 
   /** Holds a cache of the current stats for the tool */
-  public static final DeferredDataComponent<StatsNBT> TOOL_STATS = DATA_COMPONENTS.registerPersistent("tool_stats", StatsNBT.CODEC, StatsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<StatValues> TOOL_STATS = DATA_COMPONENTS.registerPersistent("tool_stats", StatValues.CODEC, StatValues.STREAM_CODEC);
   /** Holds a cache of stat multipliers on the tool */
-  public static final DeferredDataComponent<MultiplierNBT> STAT_MULTIPLIERS = DATA_COMPONENTS.registerPersistent("stats_multipliers", MultiplierNBT.CODEC, MultiplierNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<StatMultipliers> STAT_MULTIPLIERS = DATA_COMPONENTS.registerPersistent("stats_multipliers", StatMultipliers.CODEC, StatMultipliers.STREAM_CODEC);
 
   /** Modifier slots on a tool from the tool or modifier data. Will be refreshed whenever modifiers rebuild. Will typically be positive. */
-  public static final DeferredDataComponent<SlotsNBT> VOLATILE_SLOTS = DATA_COMPONENTS.registerPersistent("volatile_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ModifierSlots> VOLATILE_SLOTS = DATA_COMPONENTS.registerPersistent("volatile_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
   /** Modifier slots on the tool due to recipes or cheats. Will typically be negative. */
-  public static final DeferredDataComponent<SlotsNBT> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ModifierSlots> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
 
 
   /* Modifiers */
   /** Modifier slots added through the creative modifier. */
-  public static final DeferredDataComponent<SlotsNBT> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<ModifierSlots> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
 }

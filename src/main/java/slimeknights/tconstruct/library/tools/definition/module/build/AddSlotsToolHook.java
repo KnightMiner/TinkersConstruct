@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.tools.definition.module.build;
 
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 import java.util.Collection;
 
@@ -14,12 +14,12 @@ public interface AddSlotsToolHook {
    * @param context    Context about the tool being built. Will not yet contain
    * @param slots      Slot builder
    */
-  void addSlots(IToolContext context, SlotsNBT.Builder slots);
+  void addSlots(ToolContext context, ModifierSlots.Builder slots);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<AddSlotsToolHook> modules) implements AddSlotsToolHook {
     @Override
-    public void addSlots(IToolContext context, SlotsNBT.Builder slots) {
+    public void addSlots(ToolContext context, ModifierSlots.Builder slots) {
       for (AddSlotsToolHook module : modules) {
         module.addSlots(context, slots);
       }

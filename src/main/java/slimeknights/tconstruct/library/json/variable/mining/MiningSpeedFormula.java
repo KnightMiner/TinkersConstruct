@@ -7,7 +7,7 @@ import slimeknights.tconstruct.library.json.variable.VariableFormula;
 import slimeknights.tconstruct.library.json.variable.VariableFormulaLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import javax.annotation.Nullable;
@@ -26,7 +26,7 @@ public record MiningSpeedFormula(ModifierFormula formula, List<MiningSpeedVariab
   }
 
   /** Builds the arguments from the context */
-  private float[] getArguments(IToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeedContext context, @Nullable Player player, float baseSpeed, float newSpeed, float multiplier) {
+  private float[] getArguments(ToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeedContext context, @Nullable Player player, float baseSpeed, float newSpeed, float multiplier) {
     int size = variables.size();
     float[] arguments = VariableFormula.statModuleArguments(size, formula.processLevel(modifier), baseSpeed, newSpeed, multiplier * tool.getMultiplier(ToolStats.MINING_SPEED));
     for (int i = 0; i < size; i++) {
@@ -36,7 +36,7 @@ public record MiningSpeedFormula(ModifierFormula formula, List<MiningSpeedVariab
   }
 
   /** Runs this formula */
-  public float apply(IToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeedContext context, @Nullable Player player, float baseSpeed, float newSpeed, float multiplier) {
+  public float apply(ToolStackView tool, ModifierEntry modifier, @Nullable BreakSpeedContext context, @Nullable Player player, float baseSpeed, float newSpeed, float multiplier) {
     return formula.apply(getArguments(tool, modifier, context, player, baseSpeed, newSpeed, multiplier));
   }
 }

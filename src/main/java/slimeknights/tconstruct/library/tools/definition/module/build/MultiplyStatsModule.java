@@ -2,24 +2,21 @@ package slimeknights.tconstruct.library.tools.definition.module.build;
 
 import net.minecraft.world.item.ArmorItem;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.HookProvider;
+import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
-import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
-import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.modules.ArmorModuleBuilder;
 
 import java.util.List;
 
 /** Module to set global multipliers on the tool */
-public record MultiplyStatsModule(MultiplierNBT multipliers) implements ToolStatsHook, ToolModule {
-  public static final RecordLoadable<MultiplyStatsModule> LOADER = RecordLoadable.create(MultiplierNBT.LOADABLE.requiredField("multipliers", MultiplyStatsModule::multipliers), MultiplyStatsModule::new);
+public record MultiplyStatsModule(StatMultipliers multipliers) implements ToolStatsHook, ToolModule {
+  public static final RecordLoadable<MultiplyStatsModule> LOADER = RecordLoadable.create(StatMultipliers.LOADABLE.requiredField("multipliers", MultiplyStatsModule::multipliers), MultiplyStatsModule::new);
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MultiplyStatsModule>defaultHooks(ToolHooks.TOOL_STATS);
 
   @Override
@@ -33,7 +30,7 @@ public record MultiplyStatsModule(MultiplierNBT multipliers) implements ToolStat
   }
 
   @Override
-  public void addToolStats(IToolContext context, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierStatsBuilder builder) {
     for (INumericToolStat<?> stat : multipliers.getContainedStats()) {
       stat.multiplyAll(builder, multipliers.get(stat));
     }
@@ -47,18 +44,18 @@ public record MultiplyStatsModule(MultiplierNBT multipliers) implements ToolStat
 
   public static class ArmorBuilder implements ArmorModuleBuilder<MultiplyStatsModule> {
     private final List<ArmorItem.Type> slotTypes;
-    private final MultiplierNBT.Builder[] builders = new MultiplierNBT.Builder[4];
+    private final StatMultipliers.Builder[] builders = new StatMultipliers.Builder[4];
 
     private ArmorBuilder(List<ArmorItem.Type> slotTypes) {
       this.slotTypes = slotTypes;
       for (ArmorItem.Type slotType : slotTypes) {
-        builders[slotType.ordinal()] = MultiplierNBT.builder();
+        builders[slotType.ordinal()] = StatMultipliers.builder();
       }
     }
 
     /** Gets the builder for the given slot */
-    protected MultiplierNBT.Builder getBuilder(ArmorItem.Type slotType) {
-      MultiplierNBT.Builder builder = builders[slotType.ordinal()];
+    protected StatMultipliers.Builder getBuilder(ArmorItem.Type slotType) {
+      StatMultipliers.Builder builder = builders[slotType.ordinal()];
       if (builder == null) {
         throw new IllegalArgumentException("Unsupported slot type " + slotType);
       }

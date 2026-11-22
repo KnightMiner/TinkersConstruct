@@ -7,14 +7,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,8 +48,8 @@ public class ToolDefinitionLoader extends SimpleJsonResourceReloadListener {
 
   /** Initializes the tool definition loader */
   public static void init() {
-    MinecraftForge.EVENT_BUS.addListener(INSTANCE::addDataPackListeners);
-    MinecraftForge.EVENT_BUS.addListener(INSTANCE::onDatapackSync);
+    NeoForge.EVENT_BUS.addListener(INSTANCE::addDataPackListeners);
+    NeoForge.EVENT_BUS.addListener(INSTANCE::onDatapackSync);
   }
 
   /**
@@ -110,8 +110,7 @@ public class ToolDefinitionLoader extends SimpleJsonResourceReloadListener {
 
   /** Called on datapack sync to send the tool data to all players */
   private void onDatapackSync(OnDatapackSyncEvent event) {
-    UpdateToolDefinitionDataPacket packet = new UpdateToolDefinitionDataPacket(dataMap);
-    TinkerNetwork.getInstance().sendToPlayerList(event.getPlayer(), event.getPlayerList(), packet);
+    PacketHelper.syncPackets(event, new UpdateToolDefinitionDataPacket(dataMap));
   }
 
   /** Adds the managers as datapack listeners */
@@ -122,7 +121,7 @@ public class ToolDefinitionLoader extends SimpleJsonResourceReloadListener {
 
   /** Registers a tool definition with the loader */
   public synchronized void registerToolDefinition(ToolDefinition definition) {
-    ResourceLocation name = definition.getId();
+    ResourceLocation name = definition.id();
     if (definitions.containsKey(name)) {
       throw new IllegalArgumentException("Duplicate tool definition " + name);
     }

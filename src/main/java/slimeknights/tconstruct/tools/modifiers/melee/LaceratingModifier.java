@@ -23,20 +23,20 @@ import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeHitModifierHoo
 import slimeknights.tconstruct.library.modifiers.hook.combat.MonsterMeleeHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.armor.CounterModule;
 
 import javax.annotation.Nullable;
 
 public class LaceratingModifier extends Modifier implements ProjectileHitModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, OnAttackedModifierHook {
   /** Applies the effect to the target */
-  private static void applyEffect(IToolStackView tool, @Nullable LivingEntity holder, LivingEntity target, int level, @Nullable EquipmentSlot slot) {
+  private static void applyEffect(ToolStackView tool, @Nullable LivingEntity holder, LivingEntity target, int level, @Nullable EquipmentSlot slot) {
     // determine looting
     int looting = 0;
     DamageSource source = CombatHelper.damageSource(TinkerDamageTypes.BLEEDING, target);
@@ -73,7 +73,7 @@ public class LaceratingModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     // 50% chance of applying
     LivingEntity target = context.getLivingTarget();
     if (target != null && context.isFullyCharged() && target.isAlive()) {
@@ -84,7 +84,7 @@ public class LaceratingModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     if (target != null && (!(projectile instanceof AbstractArrow arrow) || arrow.isCritArrow()) && target.isAlive()) {
       Entity owner = projectile.getOwner();
       if (owner != null) {
@@ -101,7 +101,7 @@ public class LaceratingModifier extends Modifier implements ProjectileHitModifie
   }
 
   @Override
-  public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     // this works like vanilla, damage is capped due to the hurt immunity mechanics, so if multiple pieces apply thorns between us and vanilla, damage is capped at 4
     if (isDirectDamage && tool.hasTag(TinkerTags.Items.ARMOR) && source.getEntity() instanceof LivingEntity attacker) {
       // 25% chance of working, doubled chance on shields

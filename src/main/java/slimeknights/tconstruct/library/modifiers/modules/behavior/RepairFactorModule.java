@@ -13,12 +13,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module for multiplying tool repair */
-public record RepairFactorModule(ModifierFormula formula, ModifierCondition<IToolStackView> condition) implements RepairFactorModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record RepairFactorModule(ModifierFormula formula, ModifierCondition<ToolStackView> condition) implements RepairFactorModifierHook, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<RepairFactorModule>defaultHooks(ModifierHooks.REPAIR_FACTOR);
   public static final int FACTOR = 1;
   /** Formula instance for the loader */
@@ -36,7 +36,7 @@ public record RepairFactorModule(ModifierFormula formula, ModifierCondition<IToo
   public RepairFactorModule {}
 
   @Override
-  public float getRepairFactor(IToolStackView tool, ModifierEntry entry, float factor) {
+  public float getRepairFactor(ToolStackView tool, ModifierEntry entry, float factor) {
     if (condition.matches(tool, entry)) {
       return formula.apply(formula.processLevel(entry), factor);
     }

@@ -15,7 +15,7 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -71,7 +71,7 @@ public final class MaterialTraitsModule implements ToolTraitHook, ToolModule {
   }
 
   @Override
-  public void addTraits(ToolDefinition definition, MaterialNBT materials, ModifierBuilder builder) {
+  public void addTraits(ToolDefinition definition, ToolMaterials materials, ModifierBuilder builder) {
     MaterialVariant material = materials.get(materialIndex);
     if (material.isBound()) {
       MaterialStatsId statsId = getStatType(definition);

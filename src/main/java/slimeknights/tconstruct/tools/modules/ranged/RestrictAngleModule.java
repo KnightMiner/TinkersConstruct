@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingAngleMo
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public enum RestrictAngleModule implements ModifierModule, ProjectileShootModifi
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // store the level in persistent data, so we can have this module add from multiple sources
     int level = persistentData.getInt(TOTAL_LEVEL) + modifier.intEffectiveLevel();
     persistentData.putInt(TOTAL_LEVEL, level);
@@ -54,7 +54,7 @@ public enum RestrictAngleModule implements ModifierModule, ProjectileShootModifi
   }
 
   @Override
-  public Vec3 modifySlingAngle(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float power, float multiplier, Vec3 angle) {
+  public Vec3 modifySlingAngle(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float power, float multiplier, Vec3 angle) {
     // no good volatile place to store the total level, so just means the largest level wins out for this one
     // luckily not mixing arrows and bows here, so just multiple copies of this module to fight it out
     return clampDirection(angle, modifier.intEffectiveLevel(), null);

@@ -22,13 +22,13 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module that restores capacity when you take damage */
-public record DamageToCapacityModule(IJsonPredicate<DamageSource> source, LevelingValue multiplier, boolean reduceDamage, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
+public record DamageToCapacityModule(IJsonPredicate<DamageSource> source, LevelingValue multiplier, boolean reduceDamage, @Nullable ModifierId owner, ModifierCondition<ToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, CapacitySourceModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<DamageToCapacityModule>defaultHooks(ModifierHooks.MODIFY_DAMAGE);
   public static final RecordLoadable<DamageToCapacityModule> LOADER = RecordLoadable.create(
     DamageSourcePredicate.LOADER.requiredField("source", DamageToCapacityModule::source),
@@ -52,7 +52,7 @@ public record DamageToCapacityModule(IJsonPredicate<DamageSource> source, Leveli
   }
 
   @Override
-  public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     //  if it matches, absorb it
     if (condition.matches(tool, modifier) && this.source.matches(source)) {
       ModifierEntry barModifier = barModifier(tool, modifier);

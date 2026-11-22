@@ -5,7 +5,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.capability.CompoundIndexHookIterator;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability.FluidModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Iterator;
 
@@ -14,11 +14,11 @@ import java.util.Iterator;
  */
 @SuppressWarnings("deprecation")
 abstract class FluidModifierHookIterator<I> extends CompoundIndexHookIterator<FluidModifierHook,I> {
-  /** Entry from {@link #findHook(IToolStackView, int)}, will be set during or before iteration */
+  /** Entry from {@link #findHook(ToolStackView, int)}, will be set during or before iteration */
   protected ModifierEntry indexEntry = null;
 
   @Override
-  protected int getSize(IToolStackView tool, FluidModifierHook hook) {
+  protected int getSize(ToolStackView tool, FluidModifierHook hook) {
     return hook.getTanks(tool.getVolatileData(), indexEntry);
   }
 
@@ -29,7 +29,7 @@ abstract class FluidModifierHookIterator<I> extends CompoundIndexHookIterator<Fl
    * @param action   Whether to simulate or execute
    * @return Amount filled
    */
-  protected int fill(IToolStackView tool, FluidStack resource, FluidAction action) {
+  protected int fill(ToolStackView tool, FluidStack resource, FluidAction action) {
     int totalFilled = 0;
     Iterator<I> iterator = getIterator(tool);
     while(iterator.hasNext()) {
@@ -63,7 +63,7 @@ abstract class FluidModifierHookIterator<I> extends CompoundIndexHookIterator<Fl
    * @param action   Whether to simulate or execute
    * @return Drained resource
    */
-  public FluidStack drain(IToolStackView tool, FluidStack resource, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, FluidStack resource, FluidAction action) {
     if (resource.isEmpty()) {
       return FluidStack.EMPTY;
     }
@@ -104,7 +104,7 @@ abstract class FluidModifierHookIterator<I> extends CompoundIndexHookIterator<Fl
    * @param action   Whether to simulate or execute
    * @return Drained resource
    */
-  public FluidStack drain(IToolStackView tool, int maxDrain, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, int maxDrain, FluidAction action) {
     if (maxDrain <= 0) {
       return FluidStack.EMPTY;
     }

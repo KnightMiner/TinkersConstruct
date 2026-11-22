@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -42,7 +42,7 @@ public class CapacityBarModule extends CapacityBarHook.PersistentDataCapacityBar
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     int capacity = this.capacity.compute(entry.getEffectiveLevel());
     if (multiplier != null) {
       capacity *= tool.getMultiplier(multiplier);

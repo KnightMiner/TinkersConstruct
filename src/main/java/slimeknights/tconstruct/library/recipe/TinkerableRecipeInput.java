@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeInput;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 /** Container that contains a tinkerable stack and a number of inputs after */
 public interface TinkerableRecipeInput extends RecipeInput {

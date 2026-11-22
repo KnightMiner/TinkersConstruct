@@ -30,7 +30,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.MutableUseOnContext;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -43,7 +43,7 @@ import java.util.List;
  * @param radius     Radius to cover
  * @param condition  Standard module condition
  */
-public record ItemAbilityWalkerTransformModule(ItemAbility ability, SoundEvent sound, LevelingValue radius, ModifierCondition<IToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<MutableUseOnContext>, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+public record ItemAbilityWalkerTransformModule(ItemAbility ability, SoundEvent sound, LevelingValue radius, ModifierCondition<ToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<MutableUseOnContext>, ItemAbilityModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilityWalkerTransformModule>defaultHooks(ModifierHooks.BOOT_WALK, ModifierHooks.ITEM_ABILITY);
   public static final RecordLoadable<ItemAbilityWalkerTransformModule> LOADER = RecordLoadable.create(
     Loadables.ITEM_ABILITY.requiredField("ability", ItemAbilityWalkerTransformModule::ability),
@@ -62,29 +62,29 @@ public record ItemAbilityWalkerTransformModule(ItemAbility ability, SoundEvent s
   }
 
   @Override
-  public float getRadius(IToolStackView tool, ModifierEntry modifier) {
+  public float getRadius(ToolStackView tool, ModifierEntry modifier) {
     return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return condition.matches(tool, modifier) && ability == this.ability;
   }
 
   @Override
-  public void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  public void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     if (condition.matches(tool, modifier)) {
       ArmorWalkRadiusModule.super.onWalk(tool, modifier, living, prevPos, newPos);
     }
   }
 
   @Override
-  public MutableUseOnContext getContext(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  public MutableUseOnContext getContext(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     return new MutableUseOnContext(living.level(), living instanceof Player p ? p : null, InteractionHand.MAIN_HAND, living.getItemBySlot(EquipmentSlot.FEET), Util.createTraceResult(newPos, Direction.UP, false));
   }
 
   @Override
-  public boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, MutableUseOnContext context) {
+  public boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, MutableUseOnContext context) {
     BlockState state = world.getBlockState(target);
     if (state.canBeReplaced()) {
       mutable.set(target.getX(), target.getY() - 1, target.getZ());

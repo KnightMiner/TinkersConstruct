@@ -8,11 +8,11 @@ import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Generic builder for a modifier module */
-public abstract class ModuleBuilder<B extends ModuleBuilder<B,T>,T extends IToolContext> {
+public abstract class ModuleBuilder<B extends ModuleBuilder<B,T>,T extends ToolContext> {
   /** Level range for this module */
   protected ModifierCondition<T> condition;
 
@@ -26,7 +26,7 @@ public abstract class ModuleBuilder<B extends ModuleBuilder<B,T>,T extends ITool
   /* Tool predicate */
 
   /** Sets the tool condition for this module */
-  public abstract B toolContext(IJsonPredicate<IToolContext> tool);
+  public abstract B toolContext(IJsonPredicate<ToolContext> tool);
 
   /** Sets the tool condition for this module */
   public B toolItem(IJsonPredicate<Item> tool) {
@@ -69,32 +69,32 @@ public abstract class ModuleBuilder<B extends ModuleBuilder<B,T>,T extends ITool
 
 
   /** Builder for a module using tool context predicates */
-  public static abstract class Context<B extends Context<B>> extends ModuleBuilder<B,IToolContext> {
+  public static abstract class Context<B extends Context<B>> extends ModuleBuilder<B, ToolContext> {
     public Context() {
       this.condition = ModifierCondition.ANY_CONTEXT;
     }
 
     @Override
-    public B toolContext(IJsonPredicate<IToolContext> tool) {
+    public B toolContext(IJsonPredicate<ToolContext> tool) {
       this.condition = this.condition.with(tool);
       return self();
     }
   }
 
   /** Builder for a module using tool stack predicates */
-  public static abstract class Stack<B extends Stack<B>> extends ModuleBuilder<B,IToolStackView> {
+  public static abstract class Stack<B extends Stack<B>> extends ModuleBuilder<B, ToolStackView> {
     public Stack() {
       this.condition = ModifierCondition.ANY_TOOL;
     }
 
     /** Sets the tool condition for this module */
-    public B tool(IJsonPredicate<IToolStackView> tool) {
+    public B tool(IJsonPredicate<ToolStackView> tool) {
       this.condition = this.condition.with(tool);
       return self();
     }
 
     @Override
-    public B toolContext(IJsonPredicate<IToolContext> tool) {
+    public B toolContext(IJsonPredicate<ToolContext> tool) {
       return tool(ToolStackPredicate.context(tool));
     }
   }

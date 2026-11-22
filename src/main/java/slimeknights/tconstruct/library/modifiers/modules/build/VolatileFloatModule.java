@@ -18,9 +18,9 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * @see VolatileFlagModule
  * @see VolatileIntModule
  */
-public record VolatileFloatModule(ResourceLocation flag, LevelingValue value, ModifierCondition<IToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<IToolContext> {
+public record VolatileFloatModule(ResourceLocation flag, LevelingValue value, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFloatModule>defaultHooks(ModifierHooks.VOLATILE_DATA);
   public static final RecordLoadable<VolatileFloatModule> LOADER = RecordLoadable.create(
     Loadables.RESOURCE_LOCATION.requiredField("flag", VolatileFloatModule::flag),
@@ -42,14 +42,14 @@ public record VolatileFloatModule(ResourceLocation flag, LevelingValue value, Mo
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
       volatileData.putFloat(flag, volatileData.getFloat(flag) + value.compute(modifier.getEffectiveLevel()));
     }
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (condition.matches(tool, modifier)) {
       persistentData.putFloat(flag, persistentData.getFloat(flag) + value.compute(modifier.getEffectiveLevel()));
     }

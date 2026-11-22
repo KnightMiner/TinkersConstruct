@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchM
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
@@ -36,7 +36,7 @@ import slimeknights.tconstruct.tools.TinkerItemAbilities;
  * @param biasUpwards         If true, the look angle will be increased slightly upwards based on the force. Causes more of an arc instead of a straight line.
  * @param target              Conditions on the entity to use the sling
  */
-public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround, float drawtimeMultiplier, float heightReduction, boolean biasUpwards, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements SlingModule {
+public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround, float drawtimeMultiplier, float heightReduction, boolean biasUpwards, IJsonPredicate<LivingEntity> target, ModifierCondition<ToolStackView> condition) implements SlingModule {
   public static final RecordLoadable<SlingLeapModule> LOADER = RecordLoadable.create(
     FORCE_FIELD,
     BooleanLoadable.INSTANCE.requiredField("leave_ground", SlingLeapModule::leaveGround),
@@ -51,7 +51,7 @@ public record SlingLeapModule(LevelingValue forceMultiplier, boolean leaveGround
   }
 
   @Override
-  public void sling(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
+  public void sling(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
     Level level = entity.level();
     // must be sufficiently charged, not have too much knockback resistance, and not have any modifier zeroing its force
     float charge = GeneralInteractionModifierHook.getToolCharge(tool, chargeTime);

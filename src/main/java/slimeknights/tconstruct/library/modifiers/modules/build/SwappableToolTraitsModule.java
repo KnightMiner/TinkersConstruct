@@ -21,8 +21,8 @@ import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -70,7 +70,7 @@ public class SwappableToolTraitsModule implements ModifierModule, ModifierTraitH
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     if (!match.isEmpty() && match.equals(tool.getPersistentData().getString(getKey(entry.getModifier())))) {
       return Component.translatable(FORMAT, name.plainCopy(), component).withStyle(name.getStyle());
     }
@@ -79,7 +79,7 @@ public class SwappableToolTraitsModule implements ModifierModule, ModifierTraitH
 
 
   @Override
-  public void addTraits(IToolContext context, ModifierEntry modifier, TraitBuilder builder, boolean firstEncounter) {
+  public void addTraits(ToolContext context, ModifierEntry modifier, TraitBuilder builder, boolean firstEncounter) {
     // TODO: switch to using module conditions, move the match to a custom predicate
     if (match.isEmpty() || match.equals(context.getPersistentData().getString(getKey(modifier.getModifier())))) {
       ToolDefinition definition = context.getDefinition();
@@ -89,7 +89,7 @@ public class SwappableToolTraitsModule implements ModifierModule, ModifierTraitH
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     if (!match.isEmpty()) {
       tool.getPersistentData().remove(getKey(modifier));
     }

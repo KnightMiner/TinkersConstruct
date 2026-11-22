@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,15 +14,15 @@ import slimeknights.tconstruct.test.BaseMcTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MaterialRegistryExtension.class)
-class MaterialNBTTest extends BaseMcTest {
+class ToolMaterialsTest extends BaseMcTest {
 
   public static final IMaterial TEST_MATERIAL_1 = MaterialFixture.MATERIAL_1;
   public static final IMaterial TEST_MATERIAL_2 = MaterialFixture.MATERIAL_2;
-  private final MaterialNBT testMaterialNBT = MaterialNBT.of(TEST_MATERIAL_1, TEST_MATERIAL_2);
+  private final ToolMaterials testToolMaterials = ToolMaterials.of(TEST_MATERIAL_1, TEST_MATERIAL_2);
 
   @Test
   void serialize() {
-    ListTag nbtList = testMaterialNBT.serializeToNBT();
+    ListTag nbtList = testToolMaterials.serializeToNBT();
 
     assertThat(nbtList).hasSize(2);
     assertThat(nbtList).extracting(Tag::getAsString).containsExactly(
@@ -33,7 +33,7 @@ class MaterialNBTTest extends BaseMcTest {
 
   @Test
   void serializeEmpty_emptyList() {
-    ListTag nbtList = MaterialNBT.EMPTY.serializeToNBT();
+    ListTag nbtList = ToolMaterials.EMPTY.serializeToNBT();
 
     assertThat(nbtList).isEmpty();
   }
@@ -45,29 +45,29 @@ class MaterialNBTTest extends BaseMcTest {
     nbtList.add(StringTag.valueOf(TEST_MATERIAL_2.getId().toString()));
     nbtList.add(StringTag.valueOf(TEST_MATERIAL_1.getId().toString()));
 
-    MaterialNBT materialNBT = MaterialNBT.readFromNBT(nbtList);
+    ToolMaterials toolMaterials = ToolMaterials.readFromNBT(nbtList);
 
-    assertThat(materialNBT.getList()).hasSize(2);
-    assertThat(materialNBT.get(0).get()).isEqualTo(TEST_MATERIAL_2);
-    assertThat(materialNBT.get(1).get()).isEqualTo(TEST_MATERIAL_1);
+    assertThat(toolMaterials.getList()).hasSize(2);
+    assertThat(toolMaterials.get(0).get()).isEqualTo(TEST_MATERIAL_2);
+    assertThat(toolMaterials.get(1).get()).isEqualTo(TEST_MATERIAL_1);
   }
 
   @Test
   void deserialize_emptyList() {
     ListTag nbtList = new ListTag();
 
-    MaterialNBT materialNBT = MaterialNBT.readFromNBT(nbtList);
+    ToolMaterials toolMaterials = ToolMaterials.readFromNBT(nbtList);
 
-    assertThat(materialNBT.getList()).isEmpty();
+    assertThat(toolMaterials.getList()).isEmpty();
   }
 
   @Test
   void wrongNbtType_emptyList() {
     Tag wrongNbt = new CompoundTag();
 
-    MaterialNBT materialNBT = MaterialNBT.readFromNBT(wrongNbt);
+    ToolMaterials toolMaterials = ToolMaterials.readFromNBT(wrongNbt);
 
-    assertThat(materialNBT.getList()).isEmpty();
+    assertThat(toolMaterials.getList()).isEmpty();
   }
 
   @Test
@@ -75,20 +75,20 @@ class MaterialNBTTest extends BaseMcTest {
     ListTag wrongNbt = new ListTag();
     wrongNbt.add(new CompoundTag());
 
-    MaterialNBT materialNBT = MaterialNBT.readFromNBT(wrongNbt);
+    ToolMaterials toolMaterials = ToolMaterials.readFromNBT(wrongNbt);
 
-    assertThat(materialNBT.getList()).isEmpty();
+    assertThat(toolMaterials.getList()).isEmpty();
   }
 
   @Test
   void replaceMaterial() {
-    MaterialNBT nbt = MaterialNBT.EMPTY;
+    ToolMaterials nbt = ToolMaterials.EMPTY;
     assertThat(nbt.get(1).get()).isEqualTo(IMaterial.UNKNOWN);
 
     // note 1 is out of bounds of empty, but replace material needs to be able to extend the material list to deal with errors
     nbt = nbt.replaceMaterial(1, MaterialFixture.MATERIAL_1.getId());
 
-    assertThat(nbt).overridingErrorMessage("replaceMaterial should not modify the original").isNotSameAs(MaterialNBT.EMPTY);
+    assertThat(nbt).overridingErrorMessage("replaceMaterial should not modify the original").isNotSameAs(ToolMaterials.EMPTY);
     assertThat(nbt.get(1).get()).isEqualTo(MaterialFixture.MATERIAL_1);
   }
 }

@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.logic.HelmetChargingEffect;
@@ -64,17 +64,17 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 72000;
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return ModifierUtil.blockWhileCharging(tool, UseAnim.BOW);
   }
 
   /** Performs the actual spitting */
-  private void spit(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime) {
+  private void spit(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime) {
     // find the fluid to spit
     FluidStack fluid = TANK_HELPER.getFluid(tool);
     if (!fluid.isEmpty()) {
@@ -141,7 +141,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   // held
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (!tool.isBroken() && source == InteractionSource.RIGHT_CLICK) {
       // launch if the fluid has effects, cannot simulate as we don't know the target yet
       FluidStack fluid = TANK_HELPER.getFluid(tool);
@@ -154,7 +154,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   }
 
   @Override
-  public void onStoppedUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
+  public void onStoppedUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
     if (!entity.level().isClientSide) {
       int chargeTime = getUseDuration(tool, modifier) - timeLeft;
       if (chargeTime > 0) {
@@ -166,7 +166,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   // helmet
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (!tool.isBroken() && keyModifier == TooltipKey.NORMAL) {
       // launch if the fluid has effects, cannot simulate as we don't know the target yet
       FluidStack fluid = TANK_HELPER.getFluid(tool);
@@ -181,7 +181,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   }
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
+  public void stopInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     if (modifier == activeModifier) {
       if (chargeTime > 0 && !player.level().isClientSide) {
         spit(tool, modifier, player, chargeTime);
@@ -191,7 +191,7 @@ public record SpittingModule(LevelingInt shots) implements ModifierModule, Gener
   }
 
   @Override
-  public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+  public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     if (isCorrectSlot && tool.hasTag(TinkerTags.Items.WORN_ARMOR)) {
       ModDataNBT persistentData = tool.getPersistentData();
       int finishTime = persistentData.getInt(modifier.id());

@@ -16,8 +16,8 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +26,7 @@ public class QuiverInventoryModule extends InventoryModule {
   /** Loader instance */
   public static final RecordLoadable<QuiverInventoryModule> LOADER = RecordLoadable.create(KEY_FIELD, SLOTS_FIELD, LIMIT_FIELD, PATTERN_FIELD, ModifierCondition.CONTEXT_FIELD, VALIDATION_FIELD, QuiverInventoryModule::new);
 
-  private QuiverInventoryModule(@Nullable ResourceLocation key, LevelingInt slots, LevelingInt slotLimit, @Nullable Pattern pattern, ModifierCondition<IToolContext> condition, IntRange validationLevel) {
+  private QuiverInventoryModule(@Nullable ResourceLocation key, LevelingInt slots, LevelingInt slotLimit, @Nullable Pattern pattern, ModifierCondition<ToolContext> condition, IntRange validationLevel) {
     super(key, slots, slotLimit, ItemPredicate.ANY, pattern, condition, validationLevel);
   }
 
@@ -36,7 +36,7 @@ public class QuiverInventoryModule extends InventoryModule {
   }
 
   @Override
-  public boolean isItemValid(IToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
+  public boolean isItemValid(ToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
     if (condition().matches(tool, modifier)) {
       return stack.is(ItemTags.ARROWS)
         || tool.hasTag(TinkerTags.Items.CROSSBOWS) && stack.is(Items.FIREWORK_ROCKET)

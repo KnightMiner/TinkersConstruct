@@ -6,7 +6,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +20,7 @@ public interface CapacitySourceModule {
   ModifierId owner();
 
   /** Gets the bar for this module */
-  default ModifierEntry barModifier(IToolStackView tool, ModifierEntry entry) {
+  default ModifierEntry barModifier(ToolStackView tool, ModifierEntry entry) {
     ModifierId owner = owner();
     if (owner != null) {
       return tool.getModifier(owner);
@@ -35,7 +35,7 @@ public interface CapacitySourceModule {
    * @param amount     Amount from the source
    * @param grant      Multiplier for the amount. If positive, adds the amount. If negative, removes it. If 0, resets the bar to 0.
    */
-  static void apply(IToolStackView tool, ModifierEntry modifier, int amount, int grant) {
+  static void apply(ToolStackView tool, ModifierEntry modifier, int amount, int grant) {
     CapacityBarHook bar = modifier.getHook(ModifierHooks.CAPACITY_BAR);
     if (grant == 0) {
       bar.setAmount(tool, modifier, 0);

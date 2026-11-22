@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.client.model;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 /** Model data properties used in Tinker's Construct */
 public class ModelProperties {
@@ -14,5 +14,5 @@ public class ModelProperties {
   /** Model property for a single material on a tool part. */
   public static final ModelProperty<MaterialVariantId> MATERIAL = new ModelProperty<>();
   /** Model property for the materials list on a tool. */
-  public static final ModelProperty<MaterialNBT> MATERIALS = new ModelProperty<>();
+  public static final ModelProperty<ToolMaterials> MATERIALS = new ModelProperty<>();
 }

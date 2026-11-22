@@ -27,9 +27,9 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeI
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -186,7 +186,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
     public List<ItemStack> getToolWithoutModifier(ItemStack focus, boolean focusOutput) {
       if (!focus.isEmpty() && (focusOutput || isTool(focus))) {
         // if focusing on an input tool, it becomes our tool without modifier provided we can change it
-        MaterialNBT materials = MaterialNBT.get(focus);
+        ToolMaterials materials = ToolMaterials.get(focus);
         if (!focusOutput && !materials.get(index).sameVariant(material)) {
           return focusInput(focus);
         }
@@ -201,7 +201,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
       if (!focus.isEmpty() && (focusOutput || isTool(focus))) {
         if (focusOutput) {
           // for output focus, want to make the simplest output with the material
-          MaterialNBT materials = MaterialNBT.get(focus);
+          ToolMaterials materials = ToolMaterials.get(focus);
           // skip duplicating if the material is already there
           if (!materials.get(index).sameVariant(material)) {
             materials = materials.replaceMaterial(index, material.id());
@@ -228,7 +228,7 @@ public class FixedMaterialSwappingRecipe extends MaterialSwappingRecipe implemen
 
     @Override
     public boolean isVisibleFromItem(ItemStack focus, boolean output) {
-      return output == MaterialNBT.get(focus, index).is(material.holder());
+      return output == ToolMaterials.get(focus, index).is(material.holder());
     }
   }
 }

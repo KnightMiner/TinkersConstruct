@@ -14,12 +14,12 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.tools.TinkerTools;
 
 import java.util.List;
@@ -53,8 +53,8 @@ public abstract class TravelersPlateSlimeEntity extends ArmoredSlimeEntity {
       ToolDefinition definition = helmetItem.getToolDefinition();
       ToolStack tool = ToolStack.create(helmetItem, definition);
       tool.setMaterials(RandomMaterial.build(ToolMaterialHook.stats(definition), List.of(RandomMaterial.fixed(getPlating()), RandomMaterial.ancient()), random));
-      ModifierNBT modifiers = tool.getCraftedModifiers();
-      SlotsNBT.Builder slots = tool.getPersistentSlots().toBuilder();
+      ModifierEntries modifiers = tool.getCraftedModifiers();
+      ModifierSlots.Builder slots = tool.getPersistentSlots().toBuilder();
 
       // add some random defense modifiers
       int max = tool.getFreeSlots(SlotType.DEFENSE);

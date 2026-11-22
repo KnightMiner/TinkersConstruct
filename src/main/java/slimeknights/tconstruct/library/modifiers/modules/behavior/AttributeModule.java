@@ -38,7 +38,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -49,7 +49,7 @@ import java.util.function.BiConsumer;
 /**
  * Module to add an attribute to a tool.
  */
-public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, ToolFormula formula, ResourceLocation[] slotIDs, TooltipStyle tooltipStyle, ModifierCondition<IToolStackView> condition) implements AttributesModifierHook, ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribute, Operation operation, ToolFormula formula, ResourceLocation[] slotIDs, TooltipStyle tooltipStyle, ModifierCondition<ToolStackView> condition) implements AttributesModifierHook, ModifierModule, EquipmentChangeModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   /** Default variables */
   private static final String[] VARIABLES = { "level" };
   /** Loader for the variables */
@@ -106,7 +106,7 @@ public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribu
 
   /** Creates an attribute for the given slot */
   @Nullable
-  private AttributeModifier createModifier(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slot) {
+  private AttributeModifier createModifier(ToolStackView tool, ModifierEntry modifier, EquipmentSlot slot) {
     ResourceLocation id = getID(slot);
     if (id != null) {
       return new AttributeModifier(id, formula.apply(tool, modifier), operation);
@@ -115,7 +115,7 @@ public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribu
   }
 
   @Override
-  public void addAttributes(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer) {
+  public void addAttributes(ToolStackView tool, ModifierEntry modifier, EquipmentSlot slot, BiConsumer<Attribute,AttributeModifier> consumer) {
     if (condition.matches(tool, modifier)) {
       AttributeModifier attributeModifier = createModifier(tool, modifier, slot);
       if (attributeModifier != null) {
@@ -127,7 +127,7 @@ public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribu
 
   /* Equipment change approach, for when you wish to not show the attribute in the tooltip */
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier)) {
       AttributeInstance instance = context.getEntity().getAttribute(attribute);
       if (instance != null) {
@@ -142,7 +142,7 @@ public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribu
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier)) {
       ResourceLocation id = getID(context.getChangedSlot());
       if (id != null) {
@@ -164,7 +164,7 @@ public record AttributeModule(ResourceLocation unique, Holder<Attribute> attribu
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (condition.matches(tool, modifier)) {
       float value = formula.apply(tool, modifier);
       if (value != 0) {

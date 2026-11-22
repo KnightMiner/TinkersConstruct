@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator.AOEMatchType;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     // runs on block click
     return InteractionResult.PASS;
   }
@@ -70,7 +70,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
   }
 
   @Override
-  public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     Player player = context.getPlayer();
     // must have a player, and no entity in the way
     if (source == InteractionSource.RIGHT_CLICK && player != null && calculateHitResult(player).getType() == HitResult.Type.BLOCK) {
@@ -80,12 +80,12 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return ModifierUtil.blockWhileCharging(tool, UseAnim.BRUSH);
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 200;
   }
 
@@ -122,7 +122,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
   }
 
   @Override
-  public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
+  public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
     // must not be out of time
     if (timeLeft >= 0 && entity instanceof Player player) {
       // find the block we hit
@@ -167,7 +167,7 @@ public enum BrushModule implements ModifierModule, GeneralInteractionModifierHoo
   }
 
   @Override
-  public boolean shouldHighlight(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
+  public boolean shouldHighlight(ToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
     return context.getLevel().getBlockEntity(offset) instanceof BrushableBlockEntity;
   }
 }

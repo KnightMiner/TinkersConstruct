@@ -24,8 +24,8 @@ import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCrafting
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe.ToolFound;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTinkering;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -60,7 +60,7 @@ public class ModifierRepairCraftingRecipe extends CustomRecipe implements IModif
       return false;
     }
     // tool must have the modifier and be damaged
-    IToolStackView tool = ToolStack.from(inputs.tool());
+    ToolStackView tool = ToolStack.from(inputs.tool());
     return (tool.isBroken() || tool.getDamage() > 0) && tool.getModifierLevel(modifier) > 0;
   }
 

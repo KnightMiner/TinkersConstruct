@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.InventoryModifierHook;
 import slimeknights.tconstruct.library.tools.layout.Patterns;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.smeltery.client.screen.IScreenWithFluidTank;
 import slimeknights.tconstruct.smeltery.client.screen.module.GuiTankModule;
 import slimeknights.tconstruct.tools.menu.ToolContainerMenu;
@@ -194,7 +194,7 @@ public class ToolContainerScreen extends AbstractContainerScreen<ToolContainerMe
     int start = menu.getToolInventoryStart();
     int maxSlots = menu.slots.size();
 
-    IToolStackView tool = menu.getTool();
+    ToolStackView tool = menu.getTool();
     List<ModifierEntry> modifiers = tool.getModifierList();
     modifiers:
     for (int modIndex = modifiers.size() - 1; modIndex >= 0; modIndex--) {

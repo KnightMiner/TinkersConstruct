@@ -6,7 +6,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -22,7 +22,7 @@ public interface ArmorLootingModifierHook {
    * @param looting       Looting value set from previous modifiers
    * @return New looting value
    */
-  int updateArmorLooting(IToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting);
+  int updateArmorLooting(ToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting);
 
 
   /**
@@ -32,7 +32,7 @@ public interface ArmorLootingModifierHook {
    * @param looting   Looting from before this hook, may be negative
    * @return  Updated looting value, may be negative
    */
-  static int getLooting(@Nullable IToolStackView tool, LootingContext context, int looting) {
+  static int getLooting(@Nullable ToolStackView tool, LootingContext context, int looting) {
     // first, build the context
     EquipmentContext equipment;
     EquipmentSlot lootingSlot = context.getLootingSlot();
@@ -54,7 +54,7 @@ public interface ArmorLootingModifierHook {
   /** Merger that runs each hook after the previous */
   record ComposeMerger(Collection<ArmorLootingModifierHook> modules) implements ArmorLootingModifierHook {
     @Override
-    public int updateArmorLooting(IToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting) {
+    public int updateArmorLooting(ToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting) {
       for (ArmorLootingModifierHook module : modules) {
         looting = module.updateArmorLooting(tool, modifier, context, equipment, slot, looting);
       }

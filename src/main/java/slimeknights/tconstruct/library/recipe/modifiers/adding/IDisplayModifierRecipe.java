@@ -19,15 +19,15 @@ import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayTinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.context.ToolRebuildContext;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.RestrictedComponentMap;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.RestrictedComponentMap;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -53,7 +53,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     return ModifierEntry.VALID_LEVEL;
   }
 
-  /** If true, this recipe checks the level from {@link IToolStackView#getModifiers()}. If false, it uses the level from {@link IToolStackView#getCraftedModifiers()} */
+  /** If true, this recipe checks the level from {@link ToolStackView#getModifiers()}. If false, it uses the level from {@link ToolStackView#getCraftedModifiers()} */
   default boolean checkTraitLevel() {
     return false;
   }
@@ -88,7 +88,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
   /* Focus updates */
 
   /** Gets the matching entry on the tool */
-  private ModifierEntry getEntry(IToolStackView tool) {
+  private ModifierEntry getEntry(ToolStackView tool) {
     return (checkTraitLevel() ? tool.getModifiers() : tool.getCraftedModifiers()).getEntry(getDisplayResult().id());
   }
 
@@ -126,7 +126,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
 
   /** Checks if the given tool can receive this modifier. Called when a tool is focused on the modifier recipe. */
   @Nullable
-  default Component canApply(IToolStackView tool) {
+  default Component canApply(ToolStackView tool) {
     // ensure this recipe applies at the given level range
     ModifierEntry entry = getEntry(tool);
     int checkLevel = entry.getLevel();
@@ -212,7 +212,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     // build modifiers list
     // go through the builder to ensure they are merged properly
     // TODO 1.21: this should maybe just take a modifier NBT argument?
-    ModifierNBT modifiers = ModifierNBT.builder().add(modifierList).build();
+    ModifierEntries modifiers = ModifierEntries.builder().add(modifierList).build();
     stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
     stack.set(TinkerData.ALL_MODIFIERS, modifiers);
 
@@ -222,7 +222,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     CompoundTag volatileNBT = new CompoundTag();
     MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
     persistentDataConsumer.accept(persistentData);
-    ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, MaterialNBT.EMPTY, modifiers, modifiers, persistentData);
+    ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, ToolMaterials.EMPTY, modifiers, modifiers, persistentData);
     for (ModifierEntry entry : modifiers.modifiers()) {
       entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
     }
@@ -274,7 +274,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
    * @return  Error message, or null if no error.
    */
   @Nullable
-  static Component checkSlots(IToolStackView tool, @Nullable SlotCount slots) {
+  static Component checkSlots(ToolStackView tool, @Nullable SlotCount slots) {
     if (slots != null) {
       int count = slots.count();
       if (tool.getFreeSlots(slots.type()) < count) {

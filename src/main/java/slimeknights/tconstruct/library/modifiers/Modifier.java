@@ -20,8 +20,8 @@ import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -201,7 +201,7 @@ public class Modifier {
    * @param access Registry access intance
    * @return  Stack sensitive display name
    */
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
     return entry.getDisplayName();
   }
 
@@ -234,7 +234,7 @@ public class Modifier {
    * @param entry Modifier level
    * @return  Description for this modifier
    */
-  public List<Component> getDescriptionList(IToolStackView tool, ModifierEntry entry) {
+  public List<Component> getDescriptionList(ToolStackView tool, ModifierEntry entry) {
     return getDescriptionList(entry.getLevel());
   }
 
@@ -281,7 +281,7 @@ public class Modifier {
    * Gets the description for this modifier
    * @return  Description for this modifier
    */
-  public final Component getDescription(IToolStackView tool, ModifierEntry entry) {
+  public final Component getDescription(ToolStackView tool, ModifierEntry entry) {
     // if the method is not overridden, use the cached description component
     List<Component> extendedDescription = getDescriptionList(tool, entry);
     if (extendedDescription == getDescriptionList()) {

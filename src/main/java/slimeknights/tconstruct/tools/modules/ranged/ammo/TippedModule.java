@@ -33,10 +33,10 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModi
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.RomanNumeralHelper;
 
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public enum TippedModule implements ModifierModule, ProjectileShootModifierHook,
   /* Data */
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     ResourceLocation key = modifier.id();
     IModDataView toolData = tool.getPersistentData();
     if (toolData.contains(key, Tag.TAG_STRING)) {
@@ -74,7 +74,7 @@ public enum TippedModule implements ModifierModule, ProjectileShootModifierHook,
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(modifier.id());
     return null;
   }
@@ -88,7 +88,7 @@ public enum TippedModule implements ModifierModule, ProjectileShootModifierHook,
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     ResourceLocation key = modifier.id();
     if (target != null && persistentData.contains(key, Tag.TAG_STRING)) {
       ResourceLocation id = ResourceLocation.tryParse(persistentData.getString(key));
@@ -116,7 +116,7 @@ public enum TippedModule implements ModifierModule, ProjectileShootModifierHook,
   /* Display */
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     ResourceLocation key = modifier.id();
     IModDataView toolData = tool.getPersistentData();
     if (toolData.contains(key, Tag.TAG_STRING)) {
@@ -132,7 +132,7 @@ public enum TippedModule implements ModifierModule, ProjectileShootModifierHook,
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     ResourceLocation key = entry.id();
     IModDataView toolData = tool.getPersistentData();
     if (toolData.contains(key, Tag.TAG_STRING)) {

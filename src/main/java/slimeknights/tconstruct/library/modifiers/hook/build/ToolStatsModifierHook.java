@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.modifiers.hook.build;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.AttributesModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 
 import java.util.Collection;
@@ -22,16 +22,16 @@ public interface ToolStatsModifierHook {
    *   <li>{@link AttributesModifierHook}: Allows dynamic stats based on any tool stat, but does not support mining speed, mining level, or durability.</li>
    *   <li>{@link BreakSpeedModifierHook}: Allows dynamic mining speed based on the block mined and the entity mining. Will not show in tooltips.</li>
    * </ul>
-   * @param context         Context about the tool beilt. Partial view of {@link IToolStackView} as the tool is not fully built. Note this hook runs after volatile data builds
+   * @param context         Context about the tool beilt. Partial view of {@link ToolStackView} as the tool is not fully built. Note this hook runs after volatile data builds
    * @param modifier        Modifier level
    * @param builder         Tool stat builder
    */
-  void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder);
+  void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<ToolStatsModifierHook> modules) implements ToolStatsModifierHook {
     @Override
-    public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+    public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
       for (ToolStatsModifierHook module : modules) {
         module.addToolStats(context, modifier, builder);
       }

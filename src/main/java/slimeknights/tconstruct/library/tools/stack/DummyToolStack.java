@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.stack;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,15 +7,20 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.Item;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 
 import javax.annotation.Nullable;
 
 /** Tool stack instance in a context that does not have a proper tool, used for projectils */
 @RequiredArgsConstructor @Getter
-public class DummyToolStack implements IToolStackView {
+public class DummyToolStack implements ToolStackView {
   private final Item item;
-  private final ModifierNBT modifiers;
+  private final ModifierEntries modifiers;
   private final PatchedDataComponentMap components;
 
   @Override
@@ -24,23 +29,23 @@ public class DummyToolStack implements IToolStackView {
   }
 
   @Override
-  public MaterialNBT getMaterials() {
-    return MaterialNBT.EMPTY;
+  public ToolMaterials getMaterials() {
+    return ToolMaterials.EMPTY;
   }
 
   @Override
-  public ModifierNBT getCraftedModifiers() {
-    return ModifierNBT.EMPTY;
+  public ModifierEntries getCraftedModifiers() {
+    return ModifierEntries.EMPTY;
   }
 
   @Override
-  public SlotsNBT getPersistentSlots() {
-    return SlotsNBT.EMPTY;
+  public ModifierSlots getPersistentSlots() {
+    return ModifierSlots.EMPTY;
   }
 
   @Override
-  public SlotsNBT getVolatileSlots() {
-    return SlotsNBT.EMPTY;
+  public ModifierSlots getVolatileSlots() {
+    return ModifierSlots.EMPTY;
   }
 
   @Override
@@ -67,13 +72,13 @@ public class DummyToolStack implements IToolStackView {
   public void setDamage(int damage) {}
 
   @Override
-  public StatsNBT getStats() {
-    return StatsNBT.EMPTY;
+  public StatValues getStats() {
+    return StatValues.EMPTY;
   }
 
   @Override
-  public MultiplierNBT getMultipliers() {
-    return MultiplierNBT.EMPTY;
+  public StatMultipliers getMultipliers() {
+    return StatMultipliers.EMPTY;
   }
 
 

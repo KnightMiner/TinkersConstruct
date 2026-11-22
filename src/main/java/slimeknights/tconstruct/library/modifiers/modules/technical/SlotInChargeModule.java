@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
 
 import javax.annotation.Nullable;
@@ -34,12 +34,12 @@ public record SlotInChargeModule(TinkerDataKey<SlotInCharge> key, @Nullable TagK
   }
 
   /** Checks if the given tool cares about this modifier */
-  private boolean toolValid(IToolStackView tool, EquipmentSlot slot, EquipmentChangeContext context) {
+  private boolean toolValid(ToolStackView tool, EquipmentSlot slot, EquipmentChangeContext context) {
     return !tool.isBroken() && !context.getEntity().level().isClientSide && ArmorLevelModule.validSlot(tool, slot, heldTag);
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     // remove slot in charge if that is us
     EquipmentSlot slot = context.getChangedSlot();
     if (toolValid(tool, slot, context)) {
@@ -53,7 +53,7 @@ public record SlotInChargeModule(TinkerDataKey<SlotInCharge> key, @Nullable TagK
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     EquipmentSlot slot = context.getChangedSlot();
     if (toolValid(tool, slot, context)) {
       context.getTinkerData().ifPresent(data -> data.computeIfAbsent(key, CONSTRUCTOR).addSlot(slot, modifier.getLevel()));

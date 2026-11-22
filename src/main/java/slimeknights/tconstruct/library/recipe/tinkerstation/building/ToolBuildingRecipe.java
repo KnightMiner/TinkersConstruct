@@ -36,9 +36,9 @@ import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.layout.LayoutSlot;
 import slimeknights.tconstruct.library.tools.layout.StationSlotLayoutLoader;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.library.tools.part.MaterialItemCache;
@@ -190,7 +190,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
     }
     // create tool
     ToolStack tool = ToolStack.create(output);
-    tool.setMaterials(MaterialNBT.of(materials));
+    tool.setMaterials(ToolMaterials.of(materials));
     int count;
     // if we have any parts set, run the count hook
     // no point running it if all materials are set through override/no materials, just set the recipe count in that case
@@ -287,7 +287,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
         int offset = getToolParts().size();
         int materialCount = ToolMaterialHook.stats(output.getToolDefinition()).size();
         if (offset < materialCount) {
-          MaterialNBT.Builder builder = MaterialNBT.builder();
+          ToolMaterials.Builder builder = ToolMaterials.builder();
           // fill in all provided parts with render materials
           for (int i = 0; i < offset; i++) {
             builder.add(ToolBuildHandler.getRenderMaterial(i));

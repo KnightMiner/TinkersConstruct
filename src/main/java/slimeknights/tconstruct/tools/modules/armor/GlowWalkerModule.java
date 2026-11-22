@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.ArmorWalkRadiusModule;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.TinkerCommons;
 
 /** Module that places glow blocks at low light levels */
@@ -33,12 +33,12 @@ public record GlowWalkerModule(LevelingValue radius, int minLight, int damage) i
   }
 
   @Override
-  public float getRadius(IToolStackView tool, ModifierEntry modifier) {
+  public float getRadius(ToolStackView tool, ModifierEntry modifier) {
     return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
   }
 
   @Override
-  public boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
+  public boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
     if (world.isEmptyBlock(target) && world.getBrightness(LightLayer.BLOCK, target) < minLight) {
       if (TinkerCommons.glow.get().addGlow(world, target, Direction.DOWN)) {
         world.playSound(null, target, world.getBlockState(target).getSoundType(world, target, living).getPlaceSound(), SoundSource.BLOCKS, 1.0f, 1.0f);

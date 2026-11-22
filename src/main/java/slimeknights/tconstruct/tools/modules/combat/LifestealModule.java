@@ -35,12 +35,12 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModi
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -79,7 +79,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
   }
 
   @Override
-  public void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
+  public void onMonsterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
     LivingEntity attacker = context.getAttacker();
     Entity target = context.getTarget();
     if (damage > 0 && this.modifierLevel.test(modifier.getLevel()) && !context.getTarget().getType().is(TinkerTags.EntityTypes.NECROTIC_BLACKLIST) && this.attacker.matches(attacker) && TinkerPredicate.matches(this.target, target)) {
@@ -99,14 +99,14 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (context.isFullyCharged() && context.isCritical()) {
       onMonsterMeleeHit(tool, modifier, context, damageDealt);
     }
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (primary && TinkerPredicate.matches(this.attacker, shooter)) {
       int durabilityUsage = this.durabilityUsage.compute(modifier.getEffectiveLevel());
       if (durabilityUsage > 0) {
@@ -116,7 +116,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     if (target != null && attacker != null && !target.getType().is(TinkerTags.EntityTypes.NECROTIC_BLACKLIST) && this.attacker.matches(attacker) && this.target.matches(target)) {
       float level = modifier.getEffectiveLevel();
       float percent = this.percent.compute(modifier.getEffectiveLevel());
@@ -140,7 +140,7 @@ public record LifestealModule(LevelingValue percent, LevelingInt durabilityUsage
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (TinkerPredicate.matchesInTooltip(this.attacker, player, tooltipKey)) {
       float percent = this.percent.compute(entry.getEffectiveLevel());
       if (percent > 0) {

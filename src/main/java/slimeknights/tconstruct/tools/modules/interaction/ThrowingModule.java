@@ -26,7 +26,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
@@ -56,17 +56,17 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 72000;
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return ModifierUtil.blockWhileCharging(tool, UseAnim.SPEAR);
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     // can't throw something with no melee stats, will do nothing
     if (!tool.isBroken() && source == InteractionSource.RIGHT_CLICK) {
       float speed = ConditionalStatModifierHook.getModifiedStat(tool, player, ToolStats.DRAW_SPEED);
@@ -82,7 +82,7 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public void onStoppedUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
+  public void onStoppedUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
     if (entity instanceof Player player) {
       int chargeTime = getUseDuration(tool, modifier) - timeLeft;
       if (chargeTime > 10) {
@@ -118,7 +118,7 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     // when using a tool that doesn't fire right click hooks, allow throwing here provided its out of ammo
     if (activeModifier == ModifierEntry.EMPTY && !tool.getPersistentData().contains(ModifiableLauncherItem.KEY_DRAWBACK_AMMO)) {
       onStoppedUsing(tool, modifier, entity, timeLeft);

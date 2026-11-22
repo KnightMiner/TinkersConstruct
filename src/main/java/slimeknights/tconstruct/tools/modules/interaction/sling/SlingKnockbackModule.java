@@ -43,7 +43,7 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
@@ -56,7 +56,7 @@ import java.util.List;
  * @param drawtimeMultiplier  Multiplier on the drawspeed to apply.
  * @param damageMultiplier    Multiplier on damage dealt to entities if the tool is melee capable. If 0, melee is skipped.
  */
-public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtimeMultiplier, float damageMultiplier, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements SlingModule, MeleeHitModifierHook, MeleeDamageModifierHook {
+public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtimeMultiplier, float damageMultiplier, IJsonPredicate<LivingEntity> target, ModifierCondition<ToolStackView> condition) implements SlingModule, MeleeHitModifierHook, MeleeDamageModifierHook {
   private static final float RANGE = 5F;
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SlingKnockbackModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.TOOL_USING, ModifierHooks.ARMOR_INTERACT, ModifierHooks.MELEE_HIT, ModifierHooks.MELEE_DAMAGE);
   public static final RecordLoadable<SlingKnockbackModule> LOADER = RecordLoadable.create(
@@ -78,7 +78,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
   }
 
   @Override
-  public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+  public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
     if (tool.getPersistentData().getBoolean(IS_BONKING)) {
       return 0;
     }
@@ -86,7 +86,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
   }
 
   @Override
-  public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
+  public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
     if (damageMultiplier != 1 && tool.getPersistentData().getBoolean(IS_BONKING)) {
       damage *= damageMultiplier;
     }
@@ -94,7 +94,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     // override to add in attack speed consideration
     if (!tool.isBroken() && source == InteractionSource.RIGHT_CLICK && condition.matches(tool, modifier)) {
       // apply use item speed always
@@ -111,7 +111,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
   }
 
   @Override
-  public void sling(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
+  public void sling(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
     Level level = entity.level();
     if (!level.isClientSide && entity instanceof Player player) {
       float charge = GeneralInteractionModifierHook.getToolCharge(tool, chargeTime);

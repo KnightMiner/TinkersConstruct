@@ -53,7 +53,7 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader
 import slimeknights.tconstruct.library.client.model.ModelProperties;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 import javax.annotation.Nonnull;
@@ -263,8 +263,8 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
 
   /** Custom overrides logic to sub in materials from NBT. */
   private static class MaterialsOverrides extends NestedOverrides {
-    private final AbstractBaked<?, MaterialNBT> baked;
-    public MaterialsOverrides(AbstractBaked<?,MaterialNBT> baked, ItemOverrides nested) {
+    private final AbstractBaked<?, ToolMaterials> baked;
+    public MaterialsOverrides(AbstractBaked<?, ToolMaterials> baked, ItemOverrides nested) {
       super(nested);
       this.baked = baked;
     }
@@ -279,14 +279,14 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
       if (stack.isEmpty()) {
         return originalModel;
       }
-      return baked.getCachedModel(MaterialNBT.get(stack));
+      return baked.getCachedModel(ToolMaterials.get(stack));
     }
   }
 
   /** Baked model for tools with multiple materials. */
-  private static class BakedTool extends AbstractBaked<MaterialNBT,MaterialNBT> {
+  private static class BakedTool extends AbstractBaked<ToolMaterials, ToolMaterials> {
     /** Cache of texture name to baked model */
-    private final Cache<MaterialNBT, BakedModel> cache = CacheBuilder
+    private final Cache<ToolMaterials, BakedModel> cache = CacheBuilder
       .newBuilder()
       // ensure we can display every single tool that shows in JEI, plus a couple extra
       .maximumSize(MaterialRenderInfoLoader.INSTANCE.getAllRenderInfos().size() * 3L / 2)
@@ -302,14 +302,14 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
     }
 
     @Override
-    protected void fetchMaterials(MaterialNBT materials, Function<Material, TextureAtlasSprite> spriteGetter, Map<String, Material> replacements, Map<String, TintedSprite> tints) {
+    protected void fetchMaterials(ToolMaterials materials, Function<Material, TextureAtlasSprite> spriteGetter, Map<String, Material> replacements, Map<String, TintedSprite> tints) {
       for (int i = 0; i < parts.size(); i++) {
         fetchMaterial(materials.get(i).id(), parts.get(i), spriteGetter, replacements, tints);
       }
     }
 
     @Override
-    protected BakedModel getCachedModel(MaterialNBT materials) {
+    protected BakedModel getCachedModel(ToolMaterials materials) {
       if (!materials.isEmpty()) {
         try {
           return cache.get(materials, () -> bakeWith(materials));
@@ -349,7 +349,7 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
   }
 
   /** Baked model for tools with just 1 material. */
-  private static class SimpleBakedTool extends BakedSingleMaterial<MaterialNBT> {
+  private static class SimpleBakedTool extends BakedSingleMaterial<ToolMaterials> {
     @Getter
     private final ItemOverrides overrides;
     private SimpleBakedTool(BakedModel original, IGeometryBakingContext owner, SimpleBlockModel model, ModelState transform, Set<String> retexture) {
@@ -358,7 +358,7 @@ public class MaterialBlockModel implements IUnbakedGeometry<MaterialBlockModel> 
     }
 
     @Override
-    protected BakedModel getCachedModel(MaterialNBT materials) {
+    protected BakedModel getCachedModel(ToolMaterials materials) {
       return getCachedModel(materials.get(0).id());
     }
   }

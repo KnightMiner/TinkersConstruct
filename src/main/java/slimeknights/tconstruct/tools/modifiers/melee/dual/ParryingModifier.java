@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.modifiers.hook.behavior.ItemAbilityModifi
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 public class ParryingModifier extends OffhandAttackModifier implements ItemAbilityModifierHook {
@@ -25,7 +25,7 @@ public class ParryingModifier extends OffhandAttackModifier implements ItemAbili
   }
 
   @Override
-  public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+  public InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK) {
       InteractionResult result = super.beforeEntityUse(tool, modifier, player, target, hand, source);
       if (result.consumesAction()) {
@@ -37,7 +37,7 @@ public class ParryingModifier extends OffhandAttackModifier implements ItemAbili
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK && hand == InteractionHand.OFF_HAND) {
       InteractionResult result = super.onToolUse(tool, modifier, player, hand, source);
       // also allow just blocking when used in main hand
@@ -50,24 +50,24 @@ public class ParryingModifier extends OffhandAttackModifier implements ItemAbili
   }
 
   @Override
-  public void onFinishUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity) {
+  public void onFinishUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity) {
     if (entity instanceof Player player) {
       player.getCooldowns().addCooldown(tool.getItem(), (int)(20 / tool.getStats().get(ToolStats.ATTACK_SPEED)));
     }
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return UseAnim.BLOCK;
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 20;
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return ability == ItemAbilities.SHIELD_BLOCK;
   }
 }

@@ -17,9 +17,9 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Schedule.Scheduler;
 
 import javax.annotation.Nullable;
@@ -48,16 +48,16 @@ public record ProjectileFuseModule(SimpleParticleType particle, LevelingInt time
   }
 
   @Override
-  public void scheduleProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {
+  public void scheduleProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {
     scheduler.add(0, time.computeForLevel(modifier.getEffectiveLevel()));
   }
 
   @Override
-  public void onScheduledProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {
+  public void onScheduledProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {
     if (task == 0 && !projectile.isRemoved()) {
       // alert other modifiers that the projectile is gone, lets some of them perform an early action
       // include bow modifiers here, as it adds a bit more flexibility
-      ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(projectile);
+      ModifierEntries modifiers = EntityModifierCapability.getOrEmpty(projectile);
       for (ModifierEntry entry : modifiers) {
         entry.getHook(ModifierHooks.PROJECTILE_FUSE).onProjectileFuseFinish(modifiers, persistentData, entry, ammo, projectile, arrow);
       }

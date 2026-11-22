@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -24,12 +24,12 @@ public interface DamageDealtModifierHook {
    * @param amount           Amount of damage caused
    * @param isDirectDamage   If true, this attack is direct damage from an entity
    */
-  void onDamageDealt(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage);
+  void onDamageDealt(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage);
 
   /** Merger that runs all nested modules */
   record AllMerger(Collection<DamageDealtModifierHook> modules) implements DamageDealtModifierHook {
     @Override
-    public void onDamageDealt(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
+    public void onDamageDealt(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
       for (DamageDealtModifierHook module : modules) {
         module.onDamageDealt(tool, modifier, context, slotType, target, source, amount, isDirectDamage);
       }

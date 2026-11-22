@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.build;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 
 import javax.annotation.Nullable;
@@ -21,10 +21,10 @@ public interface ConditionalStatModifierHook {
    * @param multiplier   Global multiplier, same value contained in the tool, but fetched for convenience as it's commonly needed for stat bonuses
    * @return  New value of the stat, or baseValue if you choose not to modify this stat
    */
-  float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier);
+  float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier);
 
   /** Gets the given stat from the tool, as modified by this hook */
-  static float getModifiedStat(IToolStackView tool, @Nullable LivingEntity living, FloatToolStat stat, float value) {
+  static float getModifiedStat(ToolStackView tool, @Nullable LivingEntity living, FloatToolStat stat, float value) {
     if (living != null && stat.supports(tool.getItem())) {
       float multiplier = tool.getMultiplier(stat);
       for (ModifierEntry entry : tool.getModifierList()) {
@@ -35,14 +35,14 @@ public interface ConditionalStatModifierHook {
   }
 
   /** Gets the given stat from the tool, as modified by this hook */
-  static float getModifiedStat(IToolStackView tool, @Nullable LivingEntity living, FloatToolStat stat) {
+  static float getModifiedStat(ToolStackView tool, @Nullable LivingEntity living, FloatToolStat stat) {
     return getModifiedStat(tool, living, stat, tool.getStats().get(stat));
   }
 
   /** All hook merger: runs hooks of all children */
   record AllMerger(Collection<ConditionalStatModifierHook> modules) implements ConditionalStatModifierHook {
     @Override
-    public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+    public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
       for (ConditionalStatModifierHook hook : modules) {
         baseValue = hook.modifyStat(tool, modifier, living, stat, baseValue, multiplier);
       }

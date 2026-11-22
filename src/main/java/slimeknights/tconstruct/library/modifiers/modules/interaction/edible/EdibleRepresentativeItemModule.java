@@ -18,8 +18,8 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import java.util.List;
  * Module adding a representative item to tool eating. Affects the particles shown and the foods reported to Diet.
  * @param representativeItem  Stack used for mods like Diet to know what we ate.
  */
-public record EdibleRepresentativeItemModule(ItemStack representativeItem, ModifierCondition<IToolStackView> condition) implements ModifierModule, UsingToolModifierHook, EdibleEffectHook, ConditionalModule<IToolStackView> {
+public record EdibleRepresentativeItemModule(ItemStack representativeItem, ModifierCondition<ToolStackView> condition) implements ModifierModule, UsingToolModifierHook, EdibleEffectHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<EdibleRepresentativeItemModule>defaultHooks(ModifierHooks.TOOL_USING, ModifierHooks.EDIBLE_EFFECT);
   public static final RecordLoadable<EdibleRepresentativeItemModule> LOADER = RecordLoadable.create(
     ItemStackLoadable.REQUIRED_ITEM_NBT.requiredField("representative_item", EdibleRepresentativeItemModule::representativeItem),
@@ -48,7 +48,7 @@ public record EdibleRepresentativeItemModule(ItemStack representativeItem, Modif
   }
 
   @Override
-  public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+  public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
     if (!tool.isBroken() && condition.matches(tool, modifier)) {
       representativeItems.add(representativeItem);
     }
@@ -62,9 +62,9 @@ public record EdibleRepresentativeItemModule(ItemStack representativeItem, Modif
   }
 
   @Override
-  public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (!tool.isBroken() && condition.matches(tool, modifier)) {
-      StatsNBT stats = tool.getStats();
+      StatValues stats = tool.getStats();
       if (stats.getInt(EdibleModule.HUNGER) > 0) {
         int useTime = useDuration - timeLeft;
 
@@ -84,9 +84,9 @@ public record EdibleRepresentativeItemModule(ItemStack representativeItem, Modif
   }
 
   @Override
-  public void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (!tool.isBroken() && condition.matches(tool, modifier) && entity instanceof Player player && player.canEat(false)) {
-      StatsNBT stats = tool.getStats();
+      StatValues stats = tool.getStats();
       if (stats.getInt(EdibleModule.HUNGER) > 0 && useDuration - timeLeft == stats.getInt(EdibleModule.EAT_DURATION)) {
         eatEffects(entity, representativeItem, 5);
       }

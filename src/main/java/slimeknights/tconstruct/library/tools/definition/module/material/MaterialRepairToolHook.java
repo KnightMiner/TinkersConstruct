@@ -4,7 +4,7 @@ import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ public interface MaterialRepairToolHook {
    * @param material  Material to check
    * @return  True if it can be used to repair this tool
    */
-  boolean isRepairMaterial(IToolStackView tool, MaterialId material);
+  boolean isRepairMaterial(ToolStackView tool, MaterialId material);
 
   /**
    * Gets the amount of durability restored by this material for repair.
@@ -27,7 +27,7 @@ public interface MaterialRepairToolHook {
    * @param material  Material used for repair
    * @return  Repair amount
    */
-  float getRepairAmount(IToolStackView tool, MaterialId material);
+  float getRepairAmount(ToolStackView tool, MaterialId material);
 
   /**
    * Adds all repair materials from the given tool to the material list for display in recipe viewers.
@@ -36,11 +36,11 @@ public interface MaterialRepairToolHook {
    * @param tool       Tool instance
    * @param materials  List of materials being built;
    */
-  default void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {}
+  default void addRepairMaterials(ToolStackView tool, Set<MaterialId> materials) {}
 
 
   /** Gets the repair stat for the given tool */
-  static boolean canRepairWith(IToolStackView tool, MaterialId material) {
+  static boolean canRepairWith(ToolStackView tool, MaterialId material) {
     // if material repair can do it, stop here as that's the fastest check
     if (tool.getHook(ToolHooks.MATERIAL_REPAIR).isRepairMaterial(tool, material)) {
       return true;
@@ -54,7 +54,7 @@ public interface MaterialRepairToolHook {
   }
 
   /** Gets the repair stat for the given tool */
-  static float repairAmount(IToolStackView tool, MaterialId material) {
+  static float repairAmount(ToolStackView tool, MaterialId material) {
     float maxRepair = tool.getHook(ToolHooks.MATERIAL_REPAIR).getRepairAmount(tool, material);
     for (ModifierEntry entry : tool.getModifiers()) {
       float repair = entry.getHook(ModifierHooks.MATERIAL_REPAIR).getRepairAmount(tool, entry, material);
@@ -66,7 +66,7 @@ public interface MaterialRepairToolHook {
   }
 
   /** Gets all repair materials for the tool instance */
-  static Set<MaterialId> getRepairMaterials(IToolStackView tool) {
+  static Set<MaterialId> getRepairMaterials(ToolStackView tool) {
     Set<MaterialId> materials = new HashSet<>();
     tool.getHook(ToolHooks.MATERIAL_REPAIR).addRepairMaterials(tool, materials);
     for (ModifierEntry entry : tool.getModifiers()) {
@@ -78,7 +78,7 @@ public interface MaterialRepairToolHook {
   /** Merger that takes the largest option from all nested modules */
   record MaxMerger(Collection<MaterialRepairToolHook> hooks) implements MaterialRepairToolHook {
     @Override
-    public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
+    public boolean isRepairMaterial(ToolStackView tool, MaterialId material) {
       for (MaterialRepairToolHook hook : hooks) {
         if (hook.isRepairMaterial(tool, material)) {
           return true;
@@ -88,7 +88,7 @@ public interface MaterialRepairToolHook {
     }
 
     @Override
-    public float getRepairAmount(IToolStackView tool, MaterialId material) {
+    public float getRepairAmount(ToolStackView tool, MaterialId material) {
       float maxRepair = 0;
       for (MaterialRepairToolHook hook : hooks) {
         float repair = hook.getRepairAmount(tool, material);
@@ -100,7 +100,7 @@ public interface MaterialRepairToolHook {
     }
 
     @Override
-    public void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {
+    public void addRepairMaterials(ToolStackView tool, Set<MaterialId> materials) {
       for (MaterialRepairToolHook hook : hooks) {
         hook.addRepairMaterials(tool, materials);
       }

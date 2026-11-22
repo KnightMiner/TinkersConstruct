@@ -1,13 +1,13 @@
 package slimeknights.tconstruct.tools.logic;
 
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownShuriken;
 
@@ -19,11 +19,11 @@ public class ModifiableShurikenDispenserBehavior extends DefaultDispenseItemBeha
 
   @Override
   public ItemStack execute(BlockSource source, ItemStack stack) {
-    Level level = source.getLevel();
+    Level level = source.level();
     Position position = DispenserBlock.getDispensePosition(source);
-    Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+    Direction direction = source.state().getValue(DispenserBlock.FACING);
     ThrownShuriken shuriken = new ThrownShuriken(level, position.x(), position.y(), position.z());
-    IToolStackView tool = shuriken.onCreate(stack, null);
+    ToolStackView tool = shuriken.onCreate(stack, null);
     shuriken.shoot(direction.getStepX(), direction.getStepY() + 0.1F, direction.getStepZ(), tool.getStats().get(ToolStats.VELOCITY), 6);
     level.addFreshEntity(shuriken);
     stack.shrink(1);

@@ -32,8 +32,8 @@ import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.CraftingType;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.network.ToolContainerFluidUpdatePacket;
 
@@ -56,7 +56,7 @@ public class ToolContainerMenu extends AbstractContainerMenu {
   private final ItemStack stack;
   /** Tool hosting this tank */
   @Getter
-  private final IToolStackView tool;
+  private final ToolStackView tool;
   /** Item handler being rendered */
   @Getter
   private final IItemHandler itemHandler;
@@ -327,7 +327,7 @@ public class ToolContainerMenu extends AbstractContainerMenu {
   }
 
   /** Logic handling the fluid tank in the UI */
-  private record ToolFluidHandler(IToolStackView tool, @Nullable Player player) implements SimpleFluidTank {
+  private record ToolFluidHandler(ToolStackView tool, @Nullable Player player) implements SimpleFluidTank {
     @Nonnull
     @Override
     public FluidStack getFluid() {

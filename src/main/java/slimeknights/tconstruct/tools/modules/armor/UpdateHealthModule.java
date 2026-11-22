@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.DamageOnUnequipModule;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.Set;
  * @param slots      Slots that apply this module
  * @param condition  Common modifier conditions
  */
-public record UpdateHealthModule(LevelingValue bonus, Set<EquipmentSlot> slots, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record UpdateHealthModule(LevelingValue bonus, Set<EquipmentSlot> slots, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<DamageOnUnequipModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final RecordLoadable<UpdateHealthModule> LOADER = RecordLoadable.create(
     LevelingValue.LOADABLE.defaultField("bonus", LevelingValue.ZERO, false, UpdateHealthModule::bonus),
@@ -69,7 +69,7 @@ public record UpdateHealthModule(LevelingValue bonus, Set<EquipmentSlot> slots, 
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier) && slots.contains(context.getChangedSlot())) {
       Level level = context.getLevel();
       if (!level.isClientSide && EquipmentChangeModifierHook.didEquip(tool, context)) {
@@ -79,7 +79,7 @@ public record UpdateHealthModule(LevelingValue bonus, Set<EquipmentSlot> slots, 
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier) && slots.contains(context.getChangedSlot())) {
       Level level = context.getLevel();
       if (!level.isClientSide && EquipmentChangeModifierHook.didUnequip(tool, context)) {

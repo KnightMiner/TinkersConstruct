@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipeCache;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public enum SeveringModule implements ModifierModule, ProcessLootModifierHook {
 
   @SuppressWarnings("removal")
   @Override
-  public void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
+  public void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
     // if no damage source, probably not a mob
     // otherwise blocks breaking (where THIS_ENTITY is the player) start dropping player heads
     if (!context.hasParam(LootContextParams.DAMAGE_SOURCE)) {

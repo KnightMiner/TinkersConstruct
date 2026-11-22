@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.armor.ArmorWalkModifierHook;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public interface ArmorWalkRadiusModule<T> extends ArmorWalkModifierHook, HookPro
   /**
    * Gets the radius for this modifier
    */
-  float getRadius(IToolStackView tool, ModifierEntry modifier);
+  float getRadius(ToolStackView tool, ModifierEntry modifier);
 
   /**
    * Called to modify a position
@@ -43,18 +43,18 @@ public interface ArmorWalkRadiusModule<T> extends ArmorWalkModifierHook, HookPro
    * @param context Extra data context used by the modifier
    * @return True to stop iteration, false to let iteration continue
    */
-  boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, T context);
+  boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, T context);
 
   /**
    * Creates additional context to pass into the on walk method
    */
   @SuppressWarnings("ConstantConditions") // it won't be null if you actually intend to use it
-  default T getContext(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  default T getContext(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     return null;
   }
 
   @Override
-  default void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  default void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     Level world = living.level();
     if (living.onGround() && !tool.isBroken() && !world.isClientSide) {
       T context = getContext(tool, modifier, living, prevPos, newPos);

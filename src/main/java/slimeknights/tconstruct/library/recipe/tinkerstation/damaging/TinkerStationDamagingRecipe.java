@@ -21,11 +21,11 @@ import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifi
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.List;
@@ -136,7 +136,7 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   public List<ItemStack> getToolWithoutModifier() {
     if (toolWithoutModifier == null) {
       // set durability on each tool to 1000, covers most instances
-      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build();
+      StatValues stats = StatValues.builder().set(ToolStats.DURABILITY, 1000).build();
       toolWithoutModifier = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DURABILITY)
         .map(item -> {
           if (item instanceof IModifiableDisplay modifiable) {

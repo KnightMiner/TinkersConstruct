@@ -19,7 +19,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,12 +49,12 @@ public record ArmorLevelModule(TinkerDataKey<Integer> key, boolean allowBroken, 
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     addLevelsIfArmor(tool, context, key, modifier.intEffectiveLevel(), allowBroken, heldTag);
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     addLevelsIfArmor(tool, context, key, -modifier.intEffectiveLevel(), allowBroken, heldTag);
   }
 
@@ -80,7 +80,7 @@ public record ArmorLevelModule(TinkerDataKey<Integer> key, boolean allowBroken, 
   }
 
   /** Checks if the given slot is valid */
-  public static boolean validSlot(IToolStackView tool, EquipmentSlot slot, @Nullable TagKey<Item> heldTag) {
+  public static boolean validSlot(ToolStackView tool, EquipmentSlot slot, @Nullable TagKey<Item> heldTag) {
     return slot.isArmor() || heldTag != null && tool.hasTag(heldTag);
   }
 
@@ -92,7 +92,7 @@ public record ArmorLevelModule(TinkerDataKey<Integer> key, boolean allowBroken, 
    * @param amount   Amount to add
    * @param heldTag  Tag to check to validate held items, if null held items are considered to never be valid
    */
-  public static void addLevelsIfArmor(IToolStackView tool, EquipmentChangeContext context, TinkerDataKey<Integer> key, int amount, boolean allowBroken, @Nullable TagKey<Item> heldTag) {
+  public static void addLevelsIfArmor(ToolStackView tool, EquipmentChangeContext context, TinkerDataKey<Integer> key, int amount, boolean allowBroken, @Nullable TagKey<Item> heldTag) {
     if (validSlot(tool, context.getChangedSlot(), heldTag) && (allowBroken || !tool.isBroken())) {
       addLevels(context, key, amount);
     }

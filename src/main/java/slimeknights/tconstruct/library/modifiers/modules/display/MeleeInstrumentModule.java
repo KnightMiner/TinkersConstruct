@@ -37,7 +37,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * Plays an instrument on successful melee hits.
  */
-public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instrument> tag, IJsonPredicate<LivingEntity> attacker, EntityTargetPredicate target, ModifierCondition<IToolStackView> condition) implements ModifierModule, ConditionalModule<IToolStackView>, MonsterMeleeHitModifierHook.RedirectBefore, DamageDealtModifierHook {
+public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instrument> tag, IJsonPredicate<LivingEntity> attacker, EntityTargetPredicate target, ModifierCondition<ToolStackView> condition) implements ModifierModule, ConditionalModule<ToolStackView>, MonsterMeleeHitModifierHook.RedirectBefore, DamageDealtModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeInstrumentModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.DAMAGE_DEALT);
   public static final RecordLoadable<MeleeInstrumentModule> LOADER = RecordLoadable.create(
     MaterialId.LOADABLE.nullableField("instrument_material", MeleeInstrumentModule::material),
@@ -66,7 +66,7 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
   }
 
   /** Plays the sound for this attack */
-  private void playSound(IToolStackView tool, LivingEntity attacker, @Nullable Player player, Entity target) {
+  private void playSound(ToolStackView tool, LivingEntity attacker, @Nullable Player player, Entity target) {
     if (this.attacker.matches(attacker)) {
       // find the instrument to play
       Instrument instrument = null;
@@ -105,14 +105,14 @@ public record MeleeInstrumentModule(@Nullable MaterialId material, TagKey<Instru
   }
 
   @Override
-  public void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
+  public void onMonsterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
     if (this.target.matches(context)) {
       playSound(tool, context.getAttacker(), context.getPlayerAttacker(), context.getTarget());
     }
   }
 
   @Override
-  public void onDamageDealt(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
+  public void onDamageDealt(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
     if (this.target.matches(target)) {
       LivingEntity attacker = context.getEntity();
       playSound(tool, attacker, ModifierUtil.asPlayer(attacker), target);

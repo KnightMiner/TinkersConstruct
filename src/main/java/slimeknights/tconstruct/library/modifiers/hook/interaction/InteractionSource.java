@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Enum representing different sources of interaction
@@ -67,7 +67,7 @@ public enum InteractionSource {
   }
 
   /** Adds the format string to the modifier name */
-  public static Component formatModifierName(IToolStackView tool, Modifier modifier, Component originalName) {
+  public static Component formatModifierName(ToolStackView tool, Modifier modifier, Component originalName) {
     if (ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.LEFT_CLICK.getKey(), modifier.id())) {
       return modifier.applyStyle(Component.translatable(ATTACK_FORMAT, originalName));
     }

@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public enum ToolSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
   @Override
   public Object getSubtypeData(ItemStack stack, UidContext context) {
     if (context == UidContext.Ingredient || this != INGREDIENT) {
-      MaterialNBT materials = MaterialNBT.get(stack);
+      ToolMaterials materials = ToolMaterials.get(stack);
       if (!materials.isEmpty()) {
         // if in first mode and looking at a recipe, only use the first material
         if (context == UidContext.Recipe && this == FIRST) {
@@ -41,7 +41,7 @@ public enum ToolSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
   public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
     boolean isIngredient = context == UidContext.Ingredient;
     if (isIngredient || this != INGREDIENT) {
-      List<MaterialVariant> materialList = MaterialNBT.get(stack).getList();
+      List<MaterialVariant> materialList = ToolMaterials.get(stack).getList();
       if (!materialList.isEmpty()) {
         // if in first mode and looking at a recipe, only use the first material
         MaterialId first = materialList.get(0).material();

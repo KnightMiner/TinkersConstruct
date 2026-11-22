@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
 import net.neoforged.neoforge.eventbus.api.EventPriority;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,15 +30,15 @@ public class EntityModifierCapability {
   /** Default instance to use with orElse */
   public static final EntityModifiers EMPTY = new EntityModifiers() {
     @Override
-    public ModifierNBT getModifiers() {
-      return ModifierNBT.EMPTY;
+    public ModifierEntries getModifiers() {
+      return ModifierEntries.EMPTY;
     }
 
     @Override
-    public void setModifiers(ModifierNBT nbt) {}
+    public void setModifiers(ModifierEntries nbt) {}
 
     @Override
-    public void addModifiers(ModifierNBT nbt) {}
+    public void addModifiers(ModifierEntries nbt) {}
   };
 
   private EntityModifierCapability() {}
@@ -59,7 +59,7 @@ public class EntityModifierCapability {
   }
 
   /** Gets the data or an empty instance if missing */
-  public static ModifierNBT getOrEmpty(Entity entity) {
+  public static ModifierEntries getOrEmpty(Entity entity) {
     return entity.getCapability(CAPABILITY).orElse(EMPTY).getModifiers();
   }
 
@@ -80,7 +80,7 @@ public class EntityModifierCapability {
 
   /** Registers this capability with relevant busses*/
   public static void register() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, event -> event.register(ModifierNBT.class));
+    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, event -> event.register(ModifierEntries.class));
     MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, EntityModifierCapability::attachCapability);
   }
 
@@ -96,7 +96,7 @@ public class EntityModifierCapability {
   /** Capability provider instance */
   private static class Provider implements ICapabilitySerializable<ListTag>, Runnable, EntityModifiers {
     @Getter @Setter
-    private ModifierNBT modifiers = ModifierNBT.EMPTY;
+    private ModifierEntries modifiers = ModifierEntries.EMPTY;
     private LazyOptional<EntityModifiers> capability;
     private Provider() {
       this.capability = LazyOptional.of(() -> this);
@@ -122,7 +122,7 @@ public class EntityModifierCapability {
 
     @Override
     public void deserializeNBT(ListTag nbt) {
-      modifiers = ModifierNBT.readFromNBT(nbt);
+      modifiers = ModifierEntries.readFromNBT(nbt);
       run();
     }
   }
@@ -130,18 +130,18 @@ public class EntityModifierCapability {
   /** Interface for callers to use */
   public interface EntityModifiers {
     /** Gets the stored modifiers */
-    ModifierNBT getModifiers();
+    ModifierEntries getModifiers();
 
     /** Sets the stored modifiers */
-    void setModifiers(ModifierNBT nbt);
+    void setModifiers(ModifierEntries nbt);
 
     /** Adds additional modifiers to the stored modifiers */
-    default void addModifiers(ModifierNBT nbt) {
-      ModifierNBT existing = getModifiers();
+    default void addModifiers(ModifierEntries nbt) {
+      ModifierEntries existing = getModifiers();
       if (existing.isEmpty()) {
         setModifiers(nbt);
       } else {
-        setModifiers(ModifierNBT.builder().add(existing).add(nbt).build());
+        setModifiers(ModifierEntries.builder().add(existing).add(nbt).build());
       }
     }
   }

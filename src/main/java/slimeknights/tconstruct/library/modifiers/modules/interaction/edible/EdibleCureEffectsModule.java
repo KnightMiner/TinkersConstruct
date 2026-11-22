@@ -17,12 +17,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module for making eating a tool remove all effects using an item. */
-public record EdibleCureEffectsModule(ItemStack curativeItem, IJsonPredicate<LivingEntity> holder, ModifierCondition<IToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<IToolStackView> {
+public record EdibleCureEffectsModule(ItemStack curativeItem, IJsonPredicate<LivingEntity> holder, ModifierCondition<ToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<EdibleCureEffectsModule>defaultHooks(ModifierHooks.EDIBLE_EFFECT);
   public static final RecordLoadable<EdibleCureEffectsModule> LOADER = RecordLoadable.create(
     ItemStackLoadable.REQUIRED_ITEM_NBT.requiredField("curative_item", EdibleCureEffectsModule::curativeItem),
@@ -44,7 +44,7 @@ public record EdibleCureEffectsModule(ItemStack curativeItem, IJsonPredicate<Liv
   }
 
   @Override
-  public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+  public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
     if (condition.matches(tool, modifier) && holder.matches(player)) {
       player.curePotionEffects(curativeItem);
     }

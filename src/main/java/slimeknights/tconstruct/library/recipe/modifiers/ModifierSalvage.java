@@ -17,8 +17,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 /**
  * Shared logic for main types of salvage recipes
@@ -63,7 +63,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<NoItemInput> {
    * @return True if this salvage is applicable
    */
   @SuppressWarnings("unused")
-  public boolean matches(ItemStack stack, IToolStackView tool, int originalLevel) {
+  public boolean matches(ItemStack stack, ToolStackView tool, int originalLevel) {
     return this.level.test(originalLevel) && toolIngredient.test(stack);
   }
 
@@ -80,7 +80,7 @@ public class ModifierSalvage implements ICustomOutputRecipe<NoItemInput> {
     return TinkerRecipes.dataType.get();
   }
 
-  /** @deprecated Use {@link #matches(ItemStack, IToolStackView, int)} */
+  /** @deprecated Use {@link #matches(ItemStack, ToolStackView, int)} */
   @Deprecated
   @Override
   public boolean matches(NoItemInput inv, Level level) {

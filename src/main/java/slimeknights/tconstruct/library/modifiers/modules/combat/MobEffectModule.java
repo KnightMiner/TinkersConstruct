@@ -56,13 +56,13 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.armor.CounterModule;
 
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ import static java.util.Objects.requireNonNullElse;
 import static slimeknights.tconstruct.TConstruct.RANDOM;
 
 /** Module that applies a mob effect on various causes. */
-public interface MobEffectModule extends ModifierModule, ConditionalModule<IToolStackView> {
+public interface MobEffectModule extends ModifierModule, ConditionalModule<ToolStackView> {
   /** Shared effect field instance */
   RecordField<ModifierMobEffect, MobEffectModule> EFFECT_FIELD = ModifierMobEffect.LOADER.directField(MobEffectModule::effect);
   /** Shared chance field */
@@ -251,7 +251,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
 
   /** Implementation for melee and ranged weapons, applying the effect to the target. */
   @Internal
-  record Weapon(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, boolean applyBeforeMelee, ModifierCondition<IToolStackView> condition) implements Combat, MeleeHitModifierHook, MonsterMeleeHitModifierHook, ProjectileHitModifierHook {
+  record Weapon(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, boolean applyBeforeMelee, ModifierCondition<ToolStackView> condition) implements Combat, MeleeHitModifierHook, MonsterMeleeHitModifierHook, ProjectileHitModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Weapon>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_HIT);
     /** Loader for a weapon effect. */
     public static final RecordLoadable<Weapon> LOADER = RecordLoadable.create(EFFECT_FIELD, CHANCE_FIELD, HOLDER_FIELD,
@@ -273,7 +273,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void onMonsterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
+    public void onMonsterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage) {
       if (context.isFullyCharged() && condition.matches(tool, modifier) && checkChance(modifier)) {
         LivingEntity attacker = context.getAttacker();
         if (holder.matches(attacker)) {
@@ -283,7 +283,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+    public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
       if (applyBeforeMelee) {
         onMonsterMeleeHit(tool, modifier, context, damage);
       }
@@ -291,14 +291,14 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+    public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
       if (!applyBeforeMelee) {
         onMonsterMeleeHit(tool, modifier, context, damageDealt);
       }
     }
 
     @Override
-    public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+    public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
       if (condition.modifierLevel().test(modifier.getLevel()) && TinkerPredicate.matches(holder, attacker) && checkChance(modifier)) {
         effect.applyEffect(target, modifier, projectile.getEffectSource());
       }
@@ -307,7 +307,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Implementation for counter-attacks from armor */
-  record ArmorCounter(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, int durabilityUsage, boolean targetSelf, ModifierCondition<IToolStackView> condition) implements Combat, OnAttackedModifierHook {
+  record ArmorCounter(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, int durabilityUsage, boolean targetSelf, ModifierCondition<ToolStackView> condition) implements Combat, OnAttackedModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ArmorCounter>defaultHooks(ModifierHooks.ON_ATTACKED);
     public static final RecordLoadable<ArmorCounter> LOADER = RecordLoadable.create(
       EFFECT_FIELD,
@@ -334,7 +334,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+    public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
       if (directDamage.test(isDirectDamage) && condition.matches(tool, modifier) && damageSource.matches(source)) {
         LivingEntity defender = context.getEntity();
         Entity sourceEntity = source.getEntity();
@@ -362,7 +362,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Module for dealing damage with any weapon while wearing this as armor. */
-  record ArmorAttack(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition) implements Combat, DamageDealtModifierHook {
+  record ArmorAttack(ModifierMobEffect effect, LevelingValue chance, IJsonPredicate<LivingEntity> holder, BooleanPredicate directDamage, IJsonPredicate<DamageSource> damageSource, ModifierCondition<ToolStackView> condition) implements Combat, DamageDealtModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ArmorAttack>defaultHooks(ModifierHooks.DAMAGE_DEALT);
     public static final RecordLoadable<ArmorAttack> LOADER = RecordLoadable.create(
       EFFECT_FIELD, CHANCE_FIELD, HOLDER_FIELD,
@@ -385,7 +385,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void onDamageDealt(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
+    public void onDamageDealt(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
       if (this.directDamage.test(isDirectDamage) && condition.matches(tool, modifier) && this.damageSource.matches(source) && checkChance(modifier)) {
         LivingEntity holder = context.getEntity();
         if (holder != target && this.holder.matches(holder)) {
@@ -396,7 +396,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Grants a mob effect when a tool is used to perform its standard tasks. */
-  record ToolUsage(ModifierMobEffect effect, LevelingValue chance, BooleanPredicate isAoe, BooleanPredicate isProjectile, ModifierCondition<IToolStackView> condition) implements MobEffectModule, BlockBreakModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, ProjectileShootModifierHook, ProjectileHitModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
+  record ToolUsage(ModifierMobEffect effect, LevelingValue chance, BooleanPredicate isAoe, BooleanPredicate isProjectile, ModifierCondition<ToolStackView> condition) implements MobEffectModule, BlockBreakModifierHook, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, ProjectileShootModifierHook, ProjectileHitModifierHook, PlantHarvestModifierHook, ShearsModifierHook, SlingLaunchModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ToolUsage>defaultHooks(ModifierHooks.BLOCK_BREAK, ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.PROJECTILE_THROWN, ModifierHooks.PROJECTILE_HIT, ModifierHooks.PLANT_HARVEST, ModifierHooks.SHEAR_ENTITY, ModifierHooks.SLING_LAUNCH);
     public static final RecordLoadable<ToolUsage> LOADER = RecordLoadable.create(
       EFFECT_FIELD, CHANCE_FIELD,
@@ -415,21 +415,21 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void afterBlockBreak(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+    public void afterBlockBreak(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
       if (isAoe.test(context.isAOE()) && isProjectile.test(context.isProjectile()) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(context.getLiving(), modifier, null);
       }
     }
 
     @Override
-    public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+    public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
       if (context.isFullyCharged() && isAoe.test(context.isExtraAttack()) && isProjectile.test(context.isProjectile()) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(context.getAttacker(), modifier, null);
       }
     }
 
     @Override
-    public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+    public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
       // yes, we are launching a projectile, but the intention of that condition is are we a projectile that just hit
       if (shooter != null && isAoe.test(!primary) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(shooter, modifier, null);
@@ -437,7 +437,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+    public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
       if (isAoe.test(false) && isProjectile.test(true) && condition.modifierLevel().test(modifier.getLevel()) && checkChance(modifier)) {
         effect.applyEffect(attacker, modifier, null);
       }
@@ -445,7 +445,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
+    public boolean onProjectileHitBlock(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
       // calling a miss an AOE
       if (isAoe.test(true) && isProjectile.test(true) && condition.modifierLevel().test(modifier.getLevel()) && checkChance(modifier)) {
         effect.applyEffect(owner, modifier, null);
@@ -454,21 +454,21 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void afterHarvest(IToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
+    public void afterHarvest(ToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
       if (isAoe.test(false) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(context.getPlayer(), modifier, null);
       }
     }
 
     @Override
-    public void afterShearEntity(IToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
+    public void afterShearEntity(ToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
       if (isAoe.test(!isTarget) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(player, modifier, null);
       }
     }
 
     @Override
-    public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+    public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
       if (isAoe.test(false) && isProjectile.test(false) && condition.matches(tool, modifier) && checkChance(modifier)) {
         effect.applyEffect(holder, modifier, null);
       }
@@ -476,7 +476,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
   }
 
   /** Module for dealing damage with any weapon while wearing this as armor. */
-  record Edible(ModifierMobEffect effect, IJsonPredicate<LivingEntity> holder, ModifierCondition<IToolStackView> condition) implements Combat, EdibleEffectHook {
+  record Edible(ModifierMobEffect effect, IJsonPredicate<LivingEntity> holder, ModifierCondition<ToolStackView> condition) implements Combat, EdibleEffectHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ArmorAttack>defaultHooks(ModifierHooks.DAMAGE_DEALT);
     public static final RecordLoadable<Edible> LOADER = RecordLoadable.create(EFFECT_FIELD, HOLDER_FIELD, ModifierCondition.TOOL_FIELD, Edible::new);
 
@@ -495,7 +495,7 @@ public interface MobEffectModule extends ModifierModule, ConditionalModule<ITool
     }
 
     @Override
-    public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+    public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
       if (condition.matches(tool, modifier) && this.holder.matches(player)) {
         effect.applyEffect(player, modifier, null);
       }

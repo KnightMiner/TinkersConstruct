@@ -27,13 +27,13 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Tin
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
 
 /** Module implementing springy */
-public record KnockbackCounterModule(TinkerDataKey<SlotInCharge> slotInCharge, LevelingValue chance, LevelingValue flat, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<IToolStackView> condition) implements CounterModule, ConditionalModule<IToolStackView> {
+public record KnockbackCounterModule(TinkerDataKey<SlotInCharge> slotInCharge, LevelingValue chance, LevelingValue flat, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<ToolStackView> condition) implements CounterModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<KnockbackCounterModule>defaultHooks(ModifierHooks.ON_ATTACKED);
   public static final RecordLoadable<KnockbackCounterModule> LOADER = RecordLoadable.create(
     ContextKey.ID.mappedField((id, error) -> TinkerDataKey.of(id)),
@@ -77,11 +77,11 @@ public record KnockbackCounterModule(TinkerDataKey<SlotInCharge> slotInCharge, L
 
   @Deprecated
   @Override
-  public void applyEffect(IToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {}
+  public void applyEffect(ToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {}
 
   @SuppressWarnings("PatternVariableHidesField")
   @Override
-  public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float damageDealt, boolean isDirectDamage) {
+  public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float damageDealt, boolean isDirectDamage) {
     // direct damage on the server against a living entity
     // only run once across all pieces, as we want a max effect and knockback doesn't naturally max
     LivingEntity defender = context.getEntity();
@@ -90,7 +90,7 @@ public record KnockbackCounterModule(TinkerDataKey<SlotInCharge> slotInCharge, L
       EquipmentSlot blockingSlot = null;
       if (defender.isUsingItem()) {
         EquipmentSlot checkSlot = Util.getSlotType(defender.getUsedItemHand());
-        IToolStackView blockingTool = context.getValidTool(checkSlot);
+        ToolStackView blockingTool = context.getValidTool(checkSlot);
         // TODO: CounterModule.isBlocking?
         if (blockingTool != null && ModifierUtil.canPerformAction(blockingTool, ItemAbilities.SHIELD_BLOCK) && defender.getItemBySlot(checkSlot).getUseDuration(defender) - defender.getUseItemRemainingTicks() >= 5) {
           blockingSlot = checkSlot;
@@ -100,7 +100,7 @@ public record KnockbackCounterModule(TinkerDataKey<SlotInCharge> slotInCharge, L
       // each slot attempts to apply, we keep the largest one, consistent with other counterattack modifiers
       float bestBonus = 0;
       for (EquipmentSlot bouncingSlot : EquipmentSlot.values()) {
-        IToolStackView bouncingTool = context.getToolInSlot(bouncingSlot);
+        ToolStackView bouncingTool = context.getToolInSlot(bouncingSlot);
         if (bouncingTool != null && !bouncingTool.isBroken() && bouncingTool.hasTag(TinkerTags.Items.ARMOR)) {
           float level = modifier.getEffectiveLevel();
           if (bouncingSlot == blockingSlot) {

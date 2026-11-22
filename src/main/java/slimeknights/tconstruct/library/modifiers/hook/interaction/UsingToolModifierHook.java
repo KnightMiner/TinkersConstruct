@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.interaction;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -18,9 +18,9 @@ public interface UsingToolModifierHook {
    * @param entity          Interacting entity
    * @param timeLeft        How many ticks of use duration was left
    * @param activeModifier  Currently active modifier.
-   * @see GeneralInteractionModifierHook#onUsingTick(IToolStackView, ModifierEntry, LivingEntity, int) 
+   * @see GeneralInteractionModifierHook#onUsingTick(ToolStackView, ModifierEntry, LivingEntity, int)
    */
-  default void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
+  default void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
 
   /**
    * Called when the player releases right click or finishes using the tool, but before any finish using logic runs.
@@ -30,10 +30,10 @@ public interface UsingToolModifierHook {
    * @param useDuration     Use duration for this tool.
    * @param timeLeft        How many ticks of use duration was left. Will be non-positive if finished being used.
    * @param activeModifier  Modifier that is currently active. Will be {@link ModifierEntry#EMPTY} for bows and other non-modifier usage.
-   * @see GeneralInteractionModifierHook#onFinishUsing(IToolStackView, ModifierEntry, LivingEntity) 
-   * @see GeneralInteractionModifierHook#onStoppedUsing(IToolStackView, ModifierEntry, LivingEntity, int) 
+   * @see GeneralInteractionModifierHook#onFinishUsing(ToolStackView, ModifierEntry, LivingEntity)
+   * @see GeneralInteractionModifierHook#onStoppedUsing(ToolStackView, ModifierEntry, LivingEntity, int)
    */
-  default void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
+  default void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
 
   /**
    * Called when the player stops using the tool for any reason. Called after all other using hooks.
@@ -44,11 +44,11 @@ public interface UsingToolModifierHook {
    * @param timeLeft     How many ticks of use duration was left. Will be non-positive if finished being used.
    * @param activeModifier  Modifier that is currently active. Will be {@link ModifierEntry#EMPTY} for bows and other non-modifier usage.
    */
-  default void afterStopUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
+  default void afterStopUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {}
 
 
   /** Helper to call when the tool is done being used */
-  static void afterStopUsing(IToolStackView tool, LivingEntity living, int timeLeft) {
+  static void afterStopUsing(ToolStackView tool, LivingEntity living, int timeLeft) {
     ModifierEntry activeModifier = GeneralInteractionModifierHook.getActiveModifier(tool);
     int duration = activeModifier.getHook(ModifierHooks.GENERAL_INTERACT).getUseDuration(tool, activeModifier);
     for (ModifierEntry entry : tool.getModifiers()) {
@@ -59,21 +59,21 @@ public interface UsingToolModifierHook {
   /** Logic to run all nested hooks */
   record AllMerger(Collection<UsingToolModifierHook> modules) implements UsingToolModifierHook {
     @Override
-    public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+    public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
       for (UsingToolModifierHook module : modules) {
         module.onUsingTick(tool, modifier, entity, useDuration, timeLeft, activeModifier);
       }
     }
 
     @Override
-    public void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+    public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
       for (UsingToolModifierHook module : modules) {
         module.beforeReleaseUsing(tool, modifier, entity, useDuration, timeLeft, activeModifier);
       }
     }
 
     @Override
-    public void afterStopUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+    public void afterStopUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
       for (UsingToolModifierHook module : modules) {
         module.afterStopUsing(tool, modifier, entity, useDuration, timeLeft, activeModifier);
       }

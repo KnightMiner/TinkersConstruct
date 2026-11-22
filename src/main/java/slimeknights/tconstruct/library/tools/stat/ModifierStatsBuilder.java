@@ -1,8 +1,8 @@
 package slimeknights.tconstruct.library.tools.stat;
 
 import lombok.NoArgsConstructor;
-import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class ModifierStatsBuilder {
   }
 
   /** Builds the given stat, method exists to make generic easier */
-  private <T> void buildStat(StatsNBT.Builder builder, IToolStat<T> stat) {
+  private <T> void buildStat(StatValues.Builder builder, IToolStat<T> stat) {
     T value = stat.build(this, map.get(stat));
     if (!value.equals(stat.getDefaultValue())) {
       builder.set(stat, value);
@@ -69,13 +69,13 @@ public class ModifierStatsBuilder {
    * Builds the final stats
    * @return  Built stats
    */
-  public StatsNBT build() {
+  public StatValues build() {
     if (map.isEmpty()) {
-      return StatsNBT.EMPTY;
+      return StatValues.EMPTY;
     }
 
     // next, iterate any stats we have that are not in base
-    StatsNBT.Builder builder = StatsNBT.builder();
+    StatValues.Builder builder = StatValues.builder();
     for (IToolStat<?> stat : map.keySet()) {
       buildStat(builder, stat);
     }
@@ -87,8 +87,8 @@ public class ModifierStatsBuilder {
    * Builds the stat multiplier object for global stat multipliers
    * @return  Multipliers stats
    */
-  public MultiplierNBT buildMultipliers() {
-    MultiplierNBT.Builder builder = MultiplierNBT.builder();
+  public StatMultipliers buildMultipliers() {
+    StatMultipliers.Builder builder = StatMultipliers.builder();
     for (Entry<INumericToolStat<?>,Float> entry : multipliers.entrySet()) {
       INumericToolStat<?> stat = entry.getKey();
       builder.set(stat, entry.getValue());

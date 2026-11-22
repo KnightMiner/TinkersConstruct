@@ -8,7 +8,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.variable.entity.EntityLightVariable;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ public record BlockLightVariable(@Nullable LightLayer lightLayer, float fallback
     BlockLightVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     if (player != null) {
       // use block position if possible, player position otherwise
       BlockPos pos = player.blockPosition();

@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.behavior;
 
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -16,11 +16,11 @@ public interface RepairFactorModifierHook {
    * @param factor     Original factor
    * @return  Replacement factor. Returning 0 prevents repair
    */
-  float getRepairFactor(IToolStackView tool, ModifierEntry entry, float factor);
+  float getRepairFactor(ToolStackView tool, ModifierEntry entry, float factor);
 
 
   /** Gets the repair factor for teh given tool, checking all modifiers. */
-  static float getRepairFactor(IToolStackView tool, float factor) {
+  static float getRepairFactor(ToolStackView tool, float factor) {
     for (ModifierEntry entry : tool.getModifiers()) {
       factor = entry.getHook(ModifierHooks.REPAIR_FACTOR).getRepairFactor(tool, entry, factor);
       if (factor <= 0) {
@@ -33,7 +33,7 @@ public interface RepairFactorModifierHook {
   /** Merger that composes all submodules */
   record ComposeMerger(Collection<RepairFactorModifierHook> modules) implements RepairFactorModifierHook {
     @Override
-    public float getRepairFactor(IToolStackView tool, ModifierEntry entry, float factor) {
+    public float getRepairFactor(ToolStackView tool, ModifierEntry entry, float factor) {
       for (RepairFactorModifierHook module : modules) {
         factor = module.getRepairFactor(tool, entry, factor);
       }

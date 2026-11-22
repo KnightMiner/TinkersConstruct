@@ -10,9 +10,9 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,14 +28,14 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.remove(TinkerData.CREATIVE_SLOTS);
     return null;
   }
 
   @Override
-  public void addSlots(IToolContext context, ModifierEntry modifier, SlotsNBT.Builder builder) {
-    builder.add(context.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY));
+  public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder builder) {
+    builder.add(context.getOrDefault(TinkerData.CREATIVE_SLOTS, ModifierSlots.EMPTY));
   }
 
   /** Formats the given slot type as a count */
@@ -46,9 +46,9 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
   }
 
   @Override
-  public List<Component> getDescriptionList(IToolStackView tool, ModifierEntry entry) {
+  public List<Component> getDescriptionList(ToolStackView tool, ModifierEntry entry) {
     List<Component> tooltip = getDescriptionList(entry.getLevel());
-    SlotsNBT slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY);
+    ModifierSlots slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, ModifierSlots.EMPTY);
     if (!slots.isEmpty() ) {
       // first one found has special behavior
       boolean first = true;

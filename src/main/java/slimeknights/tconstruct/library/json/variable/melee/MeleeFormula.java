@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.json.variable.VariableFormulaLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.combat.ConditionalMeleeDamageModule;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public record MeleeFormula(ModifierFormula formula, List<MeleeVariable> variable
   }
 
   /** Builds the arguments from the context */
-  private float[] getArguments(IToolStackView tool, ModifierEntry modifier, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker, float baseDamage, float damage) {
+  private float[] getArguments(ToolStackView tool, ModifierEntry modifier, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker, float baseDamage, float damage) {
     int size = variables.size();
     float[] arguments = VariableFormula.statModuleArguments(size, formula.processLevel(modifier), baseDamage, damage, tool.getMultiplier(ToolStats.ATTACK_DAMAGE));
     for (int i = 0; i < size; i++) {
@@ -37,7 +37,7 @@ public record MeleeFormula(ModifierFormula formula, List<MeleeVariable> variable
   }
 
   /** Runs this formula */
-  public float apply(IToolStackView tool, ModifierEntry modifier, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker, float baseDamage, float damage) {
+  public float apply(ToolStackView tool, ModifierEntry modifier, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker, float baseDamage, float damage) {
     return formula.apply(getArguments(tool, modifier, context, attacker, baseDamage, damage));
   }
 }

@@ -11,7 +11,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +57,7 @@ public class MaterialHasFallbackTextureSupplier implements ArmorTextureSupplier,
 
   @Override
   public ArmorTexture getArmorTexture(ItemStack stack, TextureType type, RegistryAccess access) {
-    if (cache.computeIfAbsent(MaterialNBT.get(stack, index).id(), this)) {
+    if (cache.computeIfAbsent(ToolMaterials.get(stack, index).id(), this)) {
       return apply.getArmorTexture(stack, type, access);
     }
     return ArmorTexture.EMPTY;

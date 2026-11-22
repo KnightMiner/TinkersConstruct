@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSou
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -44,12 +44,12 @@ public enum BlockingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry entry, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry entry, ItemAbility ability) {
     return ability == ItemAbilities.SHIELD_BLOCK;
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK && !tool.isBroken()) {
       GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
@@ -58,12 +58,12 @@ public enum BlockingModule implements ModifierModule, GeneralInteractionModifier
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 72000;
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return UseAnim.BLOCK;
   }
 }

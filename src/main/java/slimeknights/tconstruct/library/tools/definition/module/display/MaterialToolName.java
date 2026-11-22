@@ -11,8 +11,8 @@ import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -30,14 +30,14 @@ public interface MaterialToolName extends ToolNameHook {
   boolean shouldDisplayMaterial(int index, MaterialStatsId statType, MaterialVariantId material);
 
   @Override
-  default Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component itemName) {
+  default Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool, Component itemName) {
     List<MaterialStatsId> components = ToolMaterialHook.stats(definition);
     // if no materials, direct name
     if (components.isEmpty()) {
       return itemName;
     }
     // if not enough materials, also skip processing
-    MaterialNBT materials = ToolNameHook.getTool(stack, tool).getMaterials();
+    ToolMaterials materials = ToolNameHook.getTool(stack, tool).getMaterials();
     if (materials.isEmpty()) {
       return itemName;
     }

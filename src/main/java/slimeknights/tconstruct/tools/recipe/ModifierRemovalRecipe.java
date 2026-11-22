@@ -27,9 +27,9 @@ import slimeknights.tconstruct.library.recipe.modifiers.ModifierSalvage;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.AbstractWorktableRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -90,7 +90,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
   }
 
   /** Filters the given modifier list */
-  protected List<ModifierEntry> filter(@Nullable IToolStackView tool, List<ModifierEntry> modifiers) {
+  protected List<ModifierEntry> filter(@Nullable ToolStackView tool, List<ModifierEntry> modifiers) {
     if (modifierPredicate != ModifierPredicate.ANY) {
       return modifiers.stream().filter(entryPredicate).toList();
     }

@@ -6,14 +6,14 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.special.CapacityBarHook;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.OvergrowthModule;
 
 /** Module with a chance to fill the capacity bar each second */
 public class TimeToCapacityModule extends OvergrowthModule {
   public static final RecordLoadable<TimeToCapacityModule> LOADER = RecordLoadable.create(CHANCE_FIELD, ModifierCondition.TOOL_FIELD, TimeToCapacityModule::new);
 
-  public TimeToCapacityModule(LevelingValue chance, ModifierCondition<IToolStackView> condition) {
+  public TimeToCapacityModule(LevelingValue chance, ModifierCondition<ToolStackView> condition) {
     super(chance, condition);
   }
 

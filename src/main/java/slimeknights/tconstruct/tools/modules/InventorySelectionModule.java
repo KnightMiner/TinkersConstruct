@@ -10,22 +10,22 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.InventoryModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 /** Common logic between {@link slimeknights.tconstruct.tools.modules.ranged.TrickQuiverModule} and {@link slimeknights.tconstruct.tools.modules.armor.MinimapModule} */
 public interface InventorySelectionModule {
   /** Displays a message when the disabled slot is selected */
-  void onDisableSelection(IToolStackView tool, ModifierEntry modifier, Player player);
+  void onDisableSelection(ToolStackView tool, ModifierEntry modifier, Player player);
 
   /** Displays a message when a stack is selected */
-  void onInventorySelect(IToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack);
+  void onInventorySelect(ToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack);
 
   /**
-   * Helper to call in {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}
-   * or {@link slimeknights.tconstruct.library.modifiers.hook.interaction.KeybindInteractModifierHook#startInteract(IToolStackView, ModifierEntry, Player, EquipmentSlot, TooltipKey)}
+   * Helper to call in {@link slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook#onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}
+   * or {@link slimeknights.tconstruct.library.modifiers.hook.interaction.KeybindInteractModifierHook#startInteract(ToolStackView, ModifierEntry, Player, EquipmentSlot, TooltipKey)}
    */
-  default boolean selectNext(IToolStackView tool, ModifierEntry modifier, Player player, ResourceLocation selectedSlot) {
+  default boolean selectNext(ToolStackView tool, ModifierEntry modifier, Player player, ResourceLocation selectedSlot) {
     // first, find the new number
     ModDataNBT data = tool.getPersistentData();
     InventoryModifierHook inventory = modifier.getHook(ToolInventoryCapability.HOOK);

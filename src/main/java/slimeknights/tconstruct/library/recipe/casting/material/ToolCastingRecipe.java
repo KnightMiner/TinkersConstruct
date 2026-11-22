@@ -33,8 +33,8 @@ import slimeknights.tconstruct.library.tools.definition.module.material.ToolMate
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
   /** Creates the tool for the given cast and fluid material */
   private ItemStack assemble(ItemStack cast, MaterialVariant fluidMaterial) {
     // figure out how to apply our materials
-    MaterialNBT.Builder materials = MaterialNBT.builder();
+    ToolMaterials.Builder materials = ToolMaterials.builder();
     // in offset mode, the first extra material goes before the fluid material
     boolean offset = castPurpose == CastPurpose.CONSUMED_OFFSET && !extraMaterials.isEmpty();
     if (offset) {
@@ -167,7 +167,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
 
   /** Checks if the given stack matches the extra materials */
   private boolean matchesExtraMaterials(ItemStack stack) {
-    MaterialNBT materials = MaterialNBT.get(stack);
+    ToolMaterials materials = ToolMaterials.get(stack);
     int index = 0;
     // if consumed offset, the first extra material is at index 0
     if (castPurpose == CastPurpose.CONSUMED_OFFSET) {
@@ -343,7 +343,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     @Override
     public List<ItemStack> getCastItems(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
-        MaterialVariant castMaterial = MaterialNBT.get(focus, castIndex);
+        MaterialVariant castMaterial = ToolMaterials.get(focus, castIndex);
         if (castItem.canUseMaterial(castMaterial.holder())) {
           return List.of(castItem.withMaterialForDisplay(castMaterial));
         }
@@ -354,7 +354,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
     @Override
     public List<FluidStack> getFluids(ItemStack focus, boolean focusOutput) {
       if (focusOutput && !focus.isEmpty()) {
-        MaterialVariant material = MaterialNBT.get(focus, fluidIndex);
+        MaterialVariant material = ToolMaterials.get(focus, fluidIndex);
         if (materials.matches(material) && castItem.canUseMaterial(material.holder())) {
           List<FluidStack> fluids = MaterialCastingLookup.getCastingFluids(material.id()).stream()
             .flatMap(recipe -> recipe.getFluids().stream().map(ToolCastingRecipe.this::resizeFluid))
@@ -391,7 +391,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
       if (!output) {
         return false;
       }
-      MaterialNBT materials = MaterialNBT.get(focus);
+      ToolMaterials materials = ToolMaterials.get(focus);
       for (int i = 0; i < extraMaterials.size(); i++) {
         // we always have 2 materials before extra materials in this recipe
         if (!extraMaterials.get(i).sameId(materials.get(i + 2))) {

@@ -22,13 +22,13 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module that adds capacity whenever the tool deals melee damage. */
-public record MeleeCapacityModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, CapacitySourceModule, ConditionalModule<IToolStackView> {
+public record MeleeCapacityModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, LevelingInt grant, boolean before, @Nullable ModifierId owner, ModifierCondition<ToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, CapacitySourceModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeleeCapacityModule>defaultHooks(ModifierHooks.MELEE_HIT);
   public static final RecordLoadable<MeleeCapacityModule> LOADER = RecordLoadable.create(
     EntityTargetPredicate.defaultField(MeleeCapacityModule::target),
@@ -53,14 +53,14 @@ public record MeleeCapacityModule(EntityTargetPredicate target, IJsonPredicate<L
   }
 
   /** Applies the capacity boost to the modifier. */
-  private void apply(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context) {
+  private void apply(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context) {
     if (condition.matches(tool, modifier) && this.attacker.matches(context.getAttacker()) && target.matches(context)) {
       CapacitySourceModule.apply(tool, barModifier(tool, modifier), 1, grant.compute(modifier.getEffectiveLevel()));
     }
   }
 
   @Override
-  public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+  public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
     if (before) {
       apply(tool, modifier, context);
     }
@@ -68,7 +68,7 @@ public record MeleeCapacityModule(EntityTargetPredicate target, IJsonPredicate<L
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (!before) {
       apply(tool, modifier, context);
     };

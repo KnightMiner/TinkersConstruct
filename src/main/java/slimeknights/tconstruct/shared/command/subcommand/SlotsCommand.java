@@ -15,8 +15,8 @@ import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.shared.command.HeldModifiableItemIterator;
 import slimeknights.tconstruct.shared.command.argument.SlotTypeArgument;
 
@@ -66,7 +66,7 @@ public class SlotsCommand {
     List<LivingEntity> successes = HeldModifiableItemIterator.apply(context, (living, stack) -> {
       // add slots
       ToolStack tool = ToolStack.copyFrom(stack);
-      SlotsNBT.Builder slots = tool.getPersistentSlots().toBuilder();
+      ModifierSlots.Builder slots = tool.getPersistentSlots().toBuilder();
       if (op == Operation.ADD) {
         slots.add(slotType, count);
       } else {

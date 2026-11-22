@@ -17,8 +17,8 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.material.MaterialRepairToolHook;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IRepairKitItem;
 
@@ -98,12 +98,12 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
       return false;
     }
     // tool must be damaged and be repairable with this material
-    IToolStackView tool = ToolStack.from(inputs.tool);
+    ToolStackView tool = ToolStack.from(inputs.tool);
     return (tool.isBroken() || tool.getDamage() > 0) && MaterialRepairToolHook.canRepairWith(tool, inputMaterial);
   }
 
   /** Gets the amount to repair for the given material */
-  protected float getRepairAmount(IToolStackView tool, ItemStack repairStack) {
+  protected float getRepairAmount(ToolStackView tool, ItemStack repairStack) {
     return MaterialRepairToolHook.repairAmount(tool, IMaterialItem.getMaterialFromStack(repairStack).material());
   }
 

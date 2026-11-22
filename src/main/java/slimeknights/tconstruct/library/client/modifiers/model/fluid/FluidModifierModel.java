@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -53,12 +53,12 @@ public record FluidModifierModel(@Nullable Material small, @Nullable Material la
     this(small, large, ToolTankHelper.TANK_HELPER);
   }
 
-  /** Cache key for {@link #getCacheKey(IToolStackView, ModifierEntry)} */
+  /** Cache key for {@link #getCacheKey(ToolStackView, ModifierEntry)} */
   private record CacheKey(Fluid fluid, @Nullable CompoundTag tag) {}
 
   @Nullable
   @Override
-  public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     FluidStack fluid = tankHelper().getFluid(tool);
     if (!fluid.isEmpty()) {
       return new CacheKey(fluid.getFluid(), fluid.getTag());
@@ -72,7 +72,7 @@ public record FluidModifierModel(@Nullable Material small, @Nullable Material la
   }
 
   @Override
-  public void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     // ensure template exists
     Material template = isLarge ? large() : small();
     if (template != null) {

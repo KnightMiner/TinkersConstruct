@@ -19,9 +19,9 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public class TippedToolTransformRecipe extends ToolBuildingRecipe {
     RecipeResult<LazyToolStack> result = super.getValidatedResult(inv, registries);
     if (result.isSuccess()) {
       // tool must have modifier, else we are adding bad data
-      IToolStackView tool = result.getResult().getTool();
+      ToolStackView tool = result.getResult().getTool();
       if (tool.getModifierLevel(modifier) > 0) {
         // find the potion, should be first non-empty stack
         ItemStack stack = ItemStack.EMPTY;

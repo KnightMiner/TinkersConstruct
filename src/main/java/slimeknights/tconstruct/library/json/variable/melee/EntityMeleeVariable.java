@@ -6,7 +6,7 @@ import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.variable.entity.EntityVariable;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ public record EntityMeleeVariable(EntityVariable entity, WhichEntity which, floa
     EntityMeleeVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
+  public float getValue(ToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
     LivingEntity entity = null;
     if (which == WhichEntity.ATTACKER) {
       entity = attacker;

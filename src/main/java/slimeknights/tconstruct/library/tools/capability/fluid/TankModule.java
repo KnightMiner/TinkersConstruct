@@ -25,8 +25,8 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.SlotStackModif
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability.FluidModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.smeltery.item.TankItem;
 
 import javax.annotation.Nullable;
@@ -55,12 +55,12 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     ToolFluidCapability.addTanks(modifier, volatileData, this);
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     FluidStack fluid = helper.getFluid(tool);
     int capacity = helper.getCapacity(tool);
     if (fluid.isEmpty()) {
@@ -75,12 +75,12 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public int getTankCapacity(IToolStackView tool, ModifierEntry modifier, int tank) {
+  public int getTankCapacity(ToolStackView tool, ModifierEntry modifier, int tank) {
     return helper.getCapacity(tool);
   }
 
   @Override
-  public FluidStack getFluidInTank(IToolStackView tool, ModifierEntry modifier, int tank) {
+  public FluidStack getFluidInTank(ToolStackView tool, ModifierEntry modifier, int tank) {
     return helper.getFluid(tool);
   }
 
@@ -89,7 +89,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     FluidStack fluid = helper.getFluid(tool);
     int capacity = helper.getCapacity(tool);
     if (fluid.getAmount() > capacity) {
@@ -101,7 +101,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     helper.setFluid(tool, FluidStack.EMPTY);
     return null;
   }
@@ -110,7 +110,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   /* Filling and draining */
 
   @Override
-  public int fill(IToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
+  public int fill(ToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
     // make sure this modifier is in charge of the tank, that is first come first serve
     if (!resource.isEmpty()) {
       // if empty, just directly fill, setFluid will check capacity
@@ -136,7 +136,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public FluidStack drain(IToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
     modifier.id();
     if (!resource.isEmpty()) {
       // ensure we have something and it matches the request
@@ -160,7 +160,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public FluidStack drain(IToolStackView tool, ModifierEntry modifier, int maxDrain, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, ModifierEntry modifier, int maxDrain, FluidAction action) {
     modifier.id();
     if (maxDrain > 0) {
       // ensure we have something and it matches the request
@@ -187,14 +187,14 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   /* Inventory slot stacking */
 
   /** Gets a tank instance for the given tool */
-  private FluidTank getTank(IToolStackView tool) {
+  private FluidTank getTank(ToolStackView tool) {
     FluidTank tank = new FluidTank(helper.getCapacity(tool));
     tank.setFluid(helper.getFluid(tool));
     return tank;
   }
 
   @Override
-  public boolean overrideStackedOnOther(IToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
+  public boolean overrideStackedOnOther(ToolStackView heldTool, ModifierEntry modifier, Slot slot, Player player) {
     ItemStack slotStack = slot.getItem();
     // must have something with possible fluid in the slot
     if (!slotStack.isEmpty() && TankItem.mayHaveFluid(slotStack)) {
@@ -217,7 +217,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public boolean overrideOtherStackedOnMe(IToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
+  public boolean overrideOtherStackedOnMe(ToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
     // must have something with possible fluid held
     if (!held.isEmpty() && TankItem.mayHaveFluid(held)) {
       FluidTank tank = getTank(slotTool);

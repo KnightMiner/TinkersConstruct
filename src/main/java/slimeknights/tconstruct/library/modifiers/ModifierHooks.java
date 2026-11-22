@@ -76,8 +76,9 @@ import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchM
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleModule;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.Schedule.Scheduler;
 
 import javax.annotation.Nullable;
@@ -111,12 +112,12 @@ public class ModifierHooks {
   /** Hook for allowing an extra material to repair the tool */
   public static final ModuleHook<MaterialRepairModifierHook> MATERIAL_REPAIR = register("material_repair", MaterialRepairModifierHook.class, MaterialRepairModifierHook.MaxMerger::new, new MaterialRepairModifierHook() {
     @Override
-    public boolean isRepairMaterial(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+    public boolean isRepairMaterial(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
       return false;
     }
 
     @Override
-    public float getRepairAmount(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+    public float getRepairAmount(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
       return 0;
     }
   });
@@ -131,12 +132,12 @@ public class ModifierHooks {
   /** Hook for providing a BlockItem via the {@link slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability}*/
   public static final ModuleHook<BlockItemProviderModifierHook> BLOCK_ITEM_PROVIDER = register("block_item_provider", BlockItemProviderModifierHook.class, new BlockItemProviderModifierHook() {
     @Override
-    public ItemStack getBlockItemStack(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity) {
+    public ItemStack getBlockItemStack(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity entity) {
       return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean consumeBlockItem(IToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity) {
+    public boolean consumeBlockItem(ToolStackView tool, ModifierEntry modifier, ItemStack backingStack, @Nullable LivingEntity entity) {
       return false;
     }
   });
@@ -145,17 +146,17 @@ public class ModifierHooks {
   /** Hook for working with capacity bars, mainly used for durability bars  */
   public static final ModuleHook<CapacityBarHook> CAPACITY_BAR = register("capacity_bar", CapacityBarHook.class, new CapacityBarHook() {
     @Override
-    public int getAmount(IToolStackView tool) {
+    public int getAmount(ToolStackView tool) {
       return 0;
     }
 
     @Override
-    public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+    public int getCapacity(ToolStackView tool, ModifierEntry entry) {
       return 0;
     }
 
     @Override
-    public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {}
+    public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {}
   });
 
 
@@ -174,17 +175,17 @@ public class ModifierHooks {
   public static final ModuleHook<DurabilityDisplayModifierHook> DURABILITY_DISPLAY = register("durability_display", DurabilityDisplayModifierHook.class, DurabilityDisplayModifierHook.FirstMerger::new, new DurabilityDisplayModifierHook() {
     @Nullable
     @Override
-    public Boolean showDurabilityBar(IToolStackView tool, ModifierEntry modifier) {
+    public Boolean showDurabilityBar(ToolStackView tool, ModifierEntry modifier) {
       return null;
     }
 
     @Override
-    public int getDurabilityWidth(IToolStackView tool, ModifierEntry modifier) {
+    public int getDurabilityWidth(ToolStackView tool, ModifierEntry modifier) {
       return 0;
     }
 
     @Override
-    public int getDurabilityRGB(IToolStackView tool, ModifierEntry modifier) {
+    public int getDurabilityRGB(ToolStackView tool, ModifierEntry modifier) {
       return -1;
     }
   });
@@ -207,12 +208,12 @@ public class ModifierHooks {
   /** Hook for adding item stack attributes to a tool when in the proper slot */
   public static final ModuleHook<EnchantmentModifierHook> ENCHANTMENTS = register("enchantments", EnchantmentModifierHook.class, EnchantmentModifierHook.AllMerger::new, new EnchantmentModifierHook() {
     @Override
-    public int updateEnchantmentLevel(IToolStackView tool, ModifierEntry modifier, Enchantment enchantment, int level) {
+    public int updateEnchantmentLevel(ToolStackView tool, ModifierEntry modifier, Enchantment enchantment, int level) {
       return level;
     }
 
     @Override
-    public void updateEnchantments(IToolStackView tool, ModifierEntry modifier, Map<Enchantment,Integer> map) {}
+    public void updateEnchantments(ToolStackView tool, ModifierEntry modifier, Map<Enchantment,Integer> map) {}
   });
 
   /** Hook to add data that resets every time stats rebuild */
@@ -223,10 +224,10 @@ public class ModifierHooks {
   /** Hook to add and remove data directly to the tools NBT. It is generally better to use persistent data or volatile data when possible. */
   public static final ModuleHook<RawDataModifierHook> RAW_DATA = register("raw_data", RawDataModifierHook.class, RawDataModifierHook.AllMerger::new, new RawDataModifierHook() {
     @Override
-    public void addRawData(IToolStackView tool, ModifierEntry modifier) {}
+    public void addRawData(ToolStackView tool, ModifierEntry modifier) {}
 
     @Override
-    public void removeRawData(IToolStackView tool, Modifier modifier) {}
+    public void removeRawData(ToolStackView tool, Modifier modifier) {}
   });
 
   /**
@@ -234,7 +235,7 @@ public class ModifierHooks {
    * @see #VALIDATE_CRAFTED
    */
   public static final ModuleHook<ValidateModifierHook> VALIDATE;
-  /** Same as {@link #VALIDATE}, but only called on modifiers in {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#getCraftedModifiers()}. */
+  /** Same as {@link #VALIDATE}, but only called on modifiers in {@link ToolStack#getCraftedModifiers()}. */
   public static final ModuleHook<ValidateModifierHook> VALIDATE_CRAFTED;
   static {
     Function<Collection<ValidateModifierHook>,ValidateModifierHook> merger = ValidateModifierHook.AllMerger::new;
@@ -352,10 +353,10 @@ public class ModifierHooks {
   /** Hook for scheduling tasks to happen later in a projectile's lifetime. Only works on modifiable projectiles, launchers such as bows will never use this hook. */
   public static final ModuleHook<ScheduledProjectileTaskModifierHook> SCHEDULE_PROJECTILE_TASK = register("schedule_projectile_task", ScheduledProjectileTaskModifierHook.class, ScheduledProjectileTaskModifierHook.ScheduleMerger::new, new ScheduledProjectileTaskModifierHook() {
     @Override
-    public void scheduleProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {}
+    public void scheduleProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, Scheduler scheduler) {}
 
     @Override
-    public void onScheduledProjectileTask(IToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {}
+    public void onScheduledProjectileTask(ToolStackView tool, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, int task) {}
   });
 
 
@@ -381,7 +382,7 @@ public class ModifierHooks {
 
   /**
    * Hook for regular interactions not targeting blocks or entities. Needed for charged interactions, while other hooks may be better for most interactions.
-   * Note the charged interaction hooks will only fire for the modifier that called {@link GeneralInteractionModifierHook#startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)},
+   * Note the charged interaction hooks will only fire for the modifier that called {@link GeneralInteractionModifierHook#startUsing(ToolStackView, ModifierId, LivingEntity, InteractionHand)},
    * meaning there is no need to manually track that you were called.
    */
   public static final ModuleHook<GeneralInteractionModifierHook> GENERAL_INTERACT = register("general_interact", GeneralInteractionModifierHook.class, GeneralInteractionModifierHook.FirstMerger::new, ((tool, modifier, player, hand, source) -> InteractionResult.PASS));

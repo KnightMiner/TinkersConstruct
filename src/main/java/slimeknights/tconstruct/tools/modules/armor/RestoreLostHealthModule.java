@@ -33,7 +33,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -49,7 +49,7 @@ import java.util.List;
  * @param defender         Condition on the defender who will heal.
  * @param condition        Condition on the tool and modifier level.
  */
-public record RestoreLostHealthModule(LevelingValue percent, LevelingInt effectLevel, LevelingInt durabilityUsage, LevelingValue chance, EntityTargetPredicate attacker, IJsonPredicate<LivingEntity> defender, ModifierCondition<IToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record RestoreLostHealthModule(LevelingValue percent, LevelingInt effectLevel, LevelingInt durabilityUsage, LevelingValue chance, EntityTargetPredicate attacker, IJsonPredicate<LivingEntity> defender, ModifierCondition<ToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<RestoreLostHealthModule>defaultHooks(ModifierHooks.MODIFY_DAMAGE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<RestoreLostHealthModule> LOADER = RecordLoadable.create(
     LevelingValue.LOADABLE.requiredField("percentage", RestoreLostHealthModule::percent),
@@ -77,7 +77,7 @@ public record RestoreLostHealthModule(LevelingValue percent, LevelingInt effectL
   }
 
   @Override
-  public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     // works like vanilla, if multiple pieces have it we get the highest effect
     LivingEntity defender = context.getEntity();
     if (condition.matches(tool, modifier) && this.defender.matches(defender) && EntityTargetPredicate.matchesNullable(this.attacker, source.getEntity())) {
@@ -104,7 +104,7 @@ public record RestoreLostHealthModule(LevelingValue percent, LevelingInt effectL
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (TinkerPredicate.matchesInTooltip(this.defender, player, tooltipKey)) {
       float percent = this.percent.compute(entry.getEffectiveLevel());
       if (percent > 0) {

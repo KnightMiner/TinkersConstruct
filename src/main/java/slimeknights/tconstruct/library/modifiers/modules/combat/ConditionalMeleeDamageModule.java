@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * @param formula    Damage formula
  * @param condition  Standard modifier conditions
  */
-public record ConditionalMeleeDamageModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, MeleeFormula formula, ModifierCondition<IToolStackView> condition) implements MeleeDamageModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<IToolStackView> {
+public record ConditionalMeleeDamageModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, MeleeFormula formula, ModifierCondition<ToolStackView> condition) implements MeleeDamageModifierHook, ConditionalStatTooltip, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ConditionalMeleeDamageModule>defaultHooks(ModifierHooks.MELEE_DAMAGE, ModifierHooks.MONSTER_MELEE_DAMAGE, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ConditionalMeleeDamageModule> LOADER = RecordLoadable.create(
     EntityTargetPredicate.defaultField(ConditionalMeleeDamageModule::target),
@@ -63,7 +63,7 @@ public record ConditionalMeleeDamageModule(EntityTargetPredicate target, IJsonPr
   }
 
   @Override
-  public float getMeleeDamage(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
+  public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
     if (condition.matches(tool, modifier) && attacker.matches(context.getAttacker())) {
       if (this.target.matches(context)) {
         damage = formula.apply(tool, modifier, context, context.getAttacker(), baseDamage, damage);
@@ -83,7 +83,7 @@ public record ConditionalMeleeDamageModule(EntityTargetPredicate target, IJsonPr
   }
 
   @Override
-  public float computeTooltipValue(IToolStackView tool, ModifierEntry entry, @Nullable Player player) {
+  public float computeTooltipValue(ToolStackView tool, ModifierEntry entry, @Nullable Player player) {
     return formula.apply(tool, entry, null, player, 1, 1);
   }
 

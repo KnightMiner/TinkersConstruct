@@ -7,17 +7,17 @@ import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.function.Function;
 
 /** Represents common conditions for a modifier module using tool stacks, since this is reused across several modules */
-public record ModifierCondition<T extends IToolContext>(IJsonPredicate<T> tool, IntRange modifierLevel) {
+public record ModifierCondition<T extends ToolContext>(IJsonPredicate<T> tool, IntRange modifierLevel) {
   /** Instance matching any tool context predicate and any modifier level */
-  public static final ModifierCondition<IToolContext> ANY_CONTEXT = new ModifierCondition<>(ToolContextPredicate.ANY, ModifierEntry.VALID_LEVEL);
+  public static final ModifierCondition<ToolContext> ANY_CONTEXT = new ModifierCondition<>(ToolContextPredicate.ANY, ModifierEntry.VALID_LEVEL);
   /** Instance matching any tool context predicate and any modifier level */
-  public static final ModifierCondition<IToolStackView> ANY_TOOL = new ModifierCondition<>(ToolStackPredicate.ANY, ModifierEntry.VALID_LEVEL);
+  public static final ModifierCondition<ToolStackView> ANY_TOOL = new ModifierCondition<>(ToolStackPredicate.ANY, ModifierEntry.VALID_LEVEL);
 
   /** Validates that the tool and modifier pass the conditions */
   public boolean matches(T tool, ModifierEntry modifier) {
@@ -48,23 +48,23 @@ public record ModifierCondition<T extends IToolContext>(IJsonPredicate<T> tool, 
   /* Loadable */
 
   /** Simple interface to allow a module to use  */
-  public interface ConditionalModule<T extends IToolContext> {
+  public interface ConditionalModule<T extends ToolContext> {
     ModifierCondition<T> condition();
   }
 
   /** Loadable for tool context conditions, typically used with {@link RecordLoadable#directField(Function)} */
-  public static final RecordLoadable<ModifierCondition<IToolContext>> CONTEXT_LOADABLE = RecordLoadable.create(
+  public static final RecordLoadable<ModifierCondition<ToolContext>> CONTEXT_LOADABLE = RecordLoadable.create(
     ToolContextPredicate.LOADER.defaultField("tool", ModifierCondition::tool),
     ModifierEntry.VALID_LEVEL.defaultField("modifier_level", ModifierCondition::modifierLevel),
     ModifierCondition::new);
   /** Loadable for tool stack conditions {@link RecordLoadable#directField(Function)} */
-  public static final RecordLoadable<ModifierCondition<IToolStackView>> TOOL_LOADABLE = RecordLoadable.create(
+  public static final RecordLoadable<ModifierCondition<ToolStackView>> TOOL_LOADABLE = RecordLoadable.create(
     ToolStackPredicate.LOADER.defaultField("tool", ModifierCondition::tool),
     ModifierEntry.VALID_LEVEL.defaultField("modifier_level", ModifierCondition::modifierLevel),
     ModifierCondition::new);
 
   /** Generic field instance used for most modules with conditions */
-  public static final RecordField<ModifierCondition<IToolContext>,ConditionalModule<IToolContext>> CONTEXT_FIELD = CONTEXT_LOADABLE.directField(ConditionalModule::condition);
+  public static final RecordField<ModifierCondition<ToolContext>,ConditionalModule<ToolContext>> CONTEXT_FIELD = CONTEXT_LOADABLE.directField(ConditionalModule::condition);
   /** Generic field instance used for most modules with conditions */
-  public static final RecordField<ModifierCondition<IToolStackView>,ConditionalModule<IToolStackView>> TOOL_FIELD = TOOL_LOADABLE.directField(ConditionalModule::condition);
+  public static final RecordField<ModifierCondition<ToolStackView>,ConditionalModule<ToolStackView>> TOOL_FIELD = TOOL_LOADABLE.directField(ConditionalModule::condition);
 }

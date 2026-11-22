@@ -27,7 +27,7 @@ import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -229,7 +229,7 @@ public class ToolAttackContext {
 
     /** Sets the base damage based on tool stats */
     @SuppressWarnings("unused") // API
-    public Builder applyStats(IToolStackView tool) {
+    public Builder applyStats(ToolStackView tool) {
       baseDamage = tool.getStats().get(ToolStats.ATTACK_DAMAGE);
       return this;
     }
@@ -242,7 +242,7 @@ public class ToolAttackContext {
     }
 
     /** Sets the base damage from the player attributes for the given slot containing the given tool. Should not be used if the tool is in mainhand, call {@link #applyAttributes()} instead. */
-    public Builder toolAttributes(IToolStackView tool) {
+    public Builder toolAttributes(ToolStackView tool) {
       baseDamage = ToolAttackUtil.getToolAttribute(tool, attacker, Attributes.ATTACK_DAMAGE, tool.getStats().get(ToolStats.ATTACK_DAMAGE));
       baseKnockback = ToolAttackUtil.getToolAttribute(tool, attacker, Attributes.ATTACK_KNOCKBACK, baseKnockback) / 2;
       return this;

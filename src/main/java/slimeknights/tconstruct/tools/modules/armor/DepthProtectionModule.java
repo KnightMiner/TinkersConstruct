@@ -27,7 +27,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.List;
  * @param amount          Multiplier to the protection level to grant
  */
 // TODO: consider formula support in protection module
-public record DepthProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, float baselineHeight, float neutralRange, LevelingValue amount, ModifierCondition<IToolStackView> condition) implements ModifierModule, ProtectionModifierHook, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record DepthProtectionModule(IJsonPredicate<DamageSource> source, IJsonPredicate<LivingEntity> entity, float baselineHeight, float neutralRange, LevelingValue amount, ModifierCondition<ToolStackView> condition) implements ModifierModule, ProtectionModifierHook, TooltipModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<DepthProtectionModule>defaultHooks(ModifierHooks.PROTECTION, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<DepthProtectionModule> LOADER = RecordLoadable.create(
     DamageSourcePredicate.LOADER.defaultField("damage_source", DepthProtectionModule::source),
@@ -76,7 +76,7 @@ public record DepthProtectionModule(IJsonPredicate<DamageSource> source, IJsonPr
   }
 
   @Override
-  public float getProtectionModifier(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
+  public float getProtectionModifier(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float modifierValue) {
     LivingEntity target = context.getEntity();
     if (this.condition.matches(tool, modifier) && this.source.matches(source) && this.entity.matches(target)) {
       modifierValue += getBonusMultiplier(context.getEntity(), baselineHeight, neutralRange) * amount.compute(modifier.getEffectiveLevel());
@@ -85,7 +85,7 @@ public record DepthProtectionModule(IJsonPredicate<DamageSource> source, IJsonPr
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (this.condition.matches(tool, modifier)) {
       float multiplier = 0;
       if (player == null || tooltipKey != TooltipKey.SHIFT) {

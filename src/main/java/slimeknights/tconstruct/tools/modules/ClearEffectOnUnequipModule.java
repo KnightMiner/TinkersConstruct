@@ -14,12 +14,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module to reduce duration of effects on unequip. Used to prevent an exploit with {@link slimeknights.tconstruct.library.TinkerAttributes#GOOD_EFFECT_DURATION} */
-public record ClearEffectOnUnequipModule(Holder<MobEffect> effect, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record ClearEffectOnUnequipModule(Holder<MobEffect> effect, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ClearEffectOnUnequipModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final RecordLoadable<ClearEffectOnUnequipModule> LOADER = RecordLoadable.create(
     Loadables.MOB_EFFECT.requiredField("effect", ClearEffectOnUnequipModule::effect),
@@ -37,7 +37,7 @@ public record ClearEffectOnUnequipModule(Holder<MobEffect> effect, ModifierCondi
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     LivingEntity entity = context.getEntity();
     if (!entity.level().isClientSide && condition.matches(tool, modifier) && EquipmentChangeModifierHook.didUnequip(tool, context)) {
       entity.removeEffect(effect);

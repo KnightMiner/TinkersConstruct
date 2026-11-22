@@ -6,8 +6,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,7 @@ public interface InventoryTickModifierHook {
    * @param isCorrectSlot  If true, this item is in the proper slot. For tools, that is main hand or off hand. For armor, this means its in the correct armor slot
    * @param stack          Item stack instance to check other slots for the tool. Do not modify
    */
-  void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack);
+  void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack);
 
   /**
    * Handles ticking a modifiable item that works when held. Armor uses different logic
@@ -57,7 +57,7 @@ public interface InventoryTickModifierHook {
   /** Merger that runs all hooks one after another */
   record AllMerger(Collection<InventoryTickModifierHook> modules) implements InventoryTickModifierHook {
     @Override
-    public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+    public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
       for (InventoryTickModifierHook module : modules) {
         module.onInventoryTick(tool, modifier, world, holder, itemSlot, isSelected, isCorrectSlot, stack);
       }

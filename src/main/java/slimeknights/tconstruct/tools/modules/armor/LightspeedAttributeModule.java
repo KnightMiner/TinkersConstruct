@@ -35,7 +35,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -69,7 +69,7 @@ public record LightspeedAttributeModule(ResourceLocation unique, Holder<Attribut
   }
 
   @Override
-  public void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  public void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     // no point trying if not on the ground
     Level level = living.level();
     if (tool.isBroken() || !living.onGround() || level.isClientSide) {
@@ -101,11 +101,11 @@ public record LightspeedAttributeModule(ResourceLocation unique, Holder<Attribut
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     // remove boost when boots are removed
     LivingEntity livingEntity = context.getEntity();
     if (context.getChangedSlot() == EquipmentSlot.FEET) {
-      IToolStackView newTool = context.getReplacementTool();
+      ToolStackView newTool = context.getReplacementTool();
       // damaging the tool will trigger this hook, so ensure the new tool has the same level
       if (newTool == null || newTool.isBroken() || newTool.getModifier(modifier.id()).getEffectiveLevel() != modifier.getEffectiveLevel()) {
         AttributeInstance attribute = livingEntity.getAttribute(this.attribute);
@@ -117,7 +117,7 @@ public record LightspeedAttributeModule(ResourceLocation unique, Holder<Attribut
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     if (!tool.hasTag(TinkerTags.Items.BOOTS)) {
       return;
     }

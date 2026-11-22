@@ -12,8 +12,8 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -31,12 +31,12 @@ public class EquipmentContext {
   /** Determines if the tool in the given slot was fetched */
   protected final boolean[] fetchedTool = new boolean[6];
   /** Array of tools currently on the entity */
-  protected final IToolStackView[] toolsInSlots = new IToolStackView[6];
+  protected final ToolStackView[] toolsInSlots = new ToolStackView[6];
   /** Cached tinker data capability, saves capability lookup times slightly */
   private LazyOptional<TinkerDataCapability.Holder> tinkerData = null;
 
   /** Creates a context with an existing tool instance */
-  public static EquipmentContext withTool(LivingEntity living, IToolStackView tool, EquipmentSlot slot) {
+  public static EquipmentContext withTool(LivingEntity living, ToolStackView tool, EquipmentSlot slot) {
     EquipmentContext context = new EquipmentContext(living);
     int index = slot.getFilterFlag();
     context.toolsInSlots[index] = tool;
@@ -46,7 +46,7 @@ public class EquipmentContext {
 
   /** Gets a tool stack if the stack is modifiable, null otherwise */
   @Nullable
-  protected static IToolStackView getToolStackIfModifiable(ItemStack stack) {
+  protected static ToolStackView getToolStackIfModifiable(ItemStack stack) {
     if (!stack.isEmpty() && stack.is(MODIFIABLE)) {
       return ToolStack.from(stack);
     }
@@ -64,7 +64,7 @@ public class EquipmentContext {
    * @return  Tool stack in the given slot, or null if the slot is not modifiable
    */
   @Nullable
-  public IToolStackView getToolInSlot(EquipmentSlot slotType) {
+  public ToolStackView getToolInSlot(EquipmentSlot slotType) {
     int index = slotType.getFilterFlag();
     if (!fetchedTool[index]) {
       toolsInSlots[index] = getToolStackIfModifiable(entity.getItemBySlot(slotType));
@@ -75,7 +75,7 @@ public class EquipmentContext {
 
   /** Same as {@link #getToolInSlot(EquipmentSlot)}, but validates that the tool can be used in this slot */
   @Nullable
-  public IToolStackView getValidTool(EquipmentSlot slotType) {
+  public ToolStackView getValidTool(EquipmentSlot slotType) {
     return ModifierUtil.validArmorSlot(entity, slotType) ? getToolInSlot(slotType) : null;
   }
 
@@ -113,11 +113,11 @@ public class EquipmentContext {
   private Iterable<EquipmentEntry> toolIterable, armorIterable, wornArmorIterable;
 
   /** Gets all tools from the given function */
-  public Iterable<EquipmentEntry> makeIterable(Function<EquipmentSlot,IToolStackView> getter) {
-    List<IToolStackView> tools = new ArrayList<>(6);
+  public Iterable<EquipmentEntry> makeIterable(Function<EquipmentSlot, ToolStackView> getter) {
+    List<ToolStackView> tools = new ArrayList<>(6);
     List<EquipmentSlot> slots = new ArrayList<>(6);
     for (EquipmentSlot slot : EquipmentSlot.values()) {
-      IToolStackView tool = getter.apply(slot);
+      ToolStackView tool = getter.apply(slot);
       if (tool != null && !tool.isBroken() && !tool.getModifiers().isEmpty()) {
         tools.add(tool);
         slots.add(slot);

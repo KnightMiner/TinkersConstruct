@@ -10,7 +10,7 @@ import slimeknights.mantle.data.registry.NamedComponentRegistry;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.ModifierTraitModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.CapacityStat;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.tools.TinkerModifiers;
@@ -43,7 +43,7 @@ public class ToolTankHelper {
   private final ResourceLocation fluidKey;
 
   /** Gets the capacity for the tool */
-  public int getCapacity(IToolStackView tool) {
+  public int getCapacity(ToolStackView tool) {
     return tool.getStats().getInt(capacityStat);
   }
 
@@ -51,12 +51,12 @@ public class ToolTankHelper {
   /* Fluid */
 
   /** Gets the fluid in the tank */
-  public FluidStack getFluid(IToolStackView tool) {
+  public FluidStack getFluid(ToolStackView tool) {
     return tool.getPersistentData().get(getFluidKey(), PARSE_FLUID);
   }
 
   /** Sets the fluid in the tank */
-  public FluidStack setFluid(IToolStackView tool, FluidStack fluid) {
+  public FluidStack setFluid(ToolStackView tool, FluidStack fluid) {
     if (fluid.isEmpty()) {
       tool.getPersistentData().remove(fluidKey);
       return FluidStack.EMPTY;

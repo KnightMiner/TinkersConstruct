@@ -16,12 +16,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module to damage the player when taking off the equipment */
-public record DamageOnUnequipModule(float damage, ResourceKey<DamageType> damageType, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record DamageOnUnequipModule(float damage, ResourceKey<DamageType> damageType, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<DamageOnUnequipModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final RecordLoadable<DamageOnUnequipModule> LOADER = RecordLoadable.create(
     FloatLoadable.FROM_ZERO.requiredField("damage", DamageOnUnequipModule::damage),
@@ -29,7 +29,7 @@ public record DamageOnUnequipModule(float damage, ResourceKey<DamageType> damage
     ModifierCondition.TOOL_FIELD,
     DamageOnUnequipModule::new);
 
-  public DamageOnUnequipModule(float damage, ModifierCondition<IToolStackView> condition) {
+  public DamageOnUnequipModule(float damage, ModifierCondition<ToolStackView> condition) {
     this(damage, TinkerDamageTypes.ENTANGLED, condition);
   }
 
@@ -48,7 +48,7 @@ public record DamageOnUnequipModule(float damage, ResourceKey<DamageType> damage
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (condition.matches(tool, modifier)) {
       Level level = context.getLevel();
       if (!level.isClientSide && EquipmentChangeModifierHook.didUnequip(tool, context)) {

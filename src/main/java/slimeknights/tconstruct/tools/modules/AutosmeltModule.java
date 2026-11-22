@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.SingleItemContainer;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -132,7 +132,7 @@ public class AutosmeltModule implements ModifierModule, ProcessLootModifierHook 
   }
 
   @Override
-  public void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
+  public void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
     Level world = context.getLevel();
     if (!generatedLoot.isEmpty()) {
       ListIterator<ItemStack> iterator = generatedLoot.listIterator();

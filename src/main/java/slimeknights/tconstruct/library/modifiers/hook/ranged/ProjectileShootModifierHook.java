@@ -5,7 +5,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
@@ -24,12 +24,12 @@ public interface ProjectileShootModifierHook {
    * @param persistentData  Persistent data instance stored on the arrow to write arbitrary data. Note the modifier list was already written
    * @param primary         If true, this is the primary projectile. Multishot may launch multiple
    */
-  void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary);
+  void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary);
 
   /** Logic to merge multiple hooks into one */
   record AllMerger(Collection<ProjectileShootModifierHook> modules) implements ProjectileShootModifierHook {
     @Override
-    public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+    public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
       for (ProjectileShootModifierHook module : modules) {
         module.onProjectileShoot(tool, modifier, shooter, ammo, projectile, arrow, persistentData, primary);
       }

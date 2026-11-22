@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -23,12 +23,12 @@ public interface ToolDamageModifierHook {
    * @param cause      Modifier causing the damage. Will be {@link ModifierId#EMPTY} for the tool itself.
    * @return  Replacement damage. Returning 0 cancels the damage and stops other modifiers from processing.
    */
-  int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause);
+  int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause);
 
   /** Merger that runs all nested modules, but stops if the amount ever reaches 0 */
   record Merger(Collection<ToolDamageModifierHook> modules) implements ToolDamageModifierHook {
     @Override
-    public int beforeDamageTool(IToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
+    public int beforeDamageTool(ToolStackView tool, ModifierEntry modifier, int amount, @Nullable LivingEntity holder, ItemStack stack, ModifierId cause) {
       for (ToolDamageModifierHook module : modules) {
         amount = module.beforeDamageTool(tool, modifier, amount, holder, stack, cause);
         if (amount <= 0) {

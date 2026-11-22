@@ -29,9 +29,9 @@ import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.world.client.BlockModelSkullRenderer;
@@ -74,7 +74,7 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
   /** Prepares the model */
   public Model setup(LivingEntity living, ItemStack stack, HumanoidModel<?> base, ArmorModel model) {
     super.setup(living, stack, EquipmentSlot.HEAD, base, model);
-    MaterialHolder material = MaterialNBT.get(stack, 0).holder();
+    MaterialHolder material = ToolMaterials.get(stack, 0).holder();
     if (material.isPresent()) {
       MaterialId id = material.id();
       SkullModelBase skull = getHeadModel(id);
@@ -84,11 +84,11 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
         headTexture = texture;
         // if dyed, color is the dye
         ModifierId dyed = TinkerModifiers.dyed.id();
-        if (ModifierNBT.getLevel(stack, dyed) > 0) {
+        if (ModifierEntries.getLevel(stack, dyed) > 0) {
           headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed.id(), -1);
         } else {
           // if not dyed, color is the material, fallback to no tint if missing
-          MaterialVariant slime = MaterialNBT.get(stack, 1);
+          MaterialVariant slime = ToolMaterials.get(stack, 1);
           if (slime.isPresent()) {
             headColor = MATERIAL_COLOR_CACHE.apply(slime.id());
           } else {

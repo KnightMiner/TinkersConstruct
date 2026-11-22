@@ -25,14 +25,14 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
 /** Variant of {@link slimeknights.tconstruct.library.modifiers.modules.build.EnchantmentModule} for adding soulspeed with a tooltip. */
-public record SoulSpeedModule(LevelingInt level, ModifierCondition<IToolStackView> condition) implements ModifierModule, TooltipModifierHook, EnchantmentModifierHook, ConditionalModule<IToolStackView> {
+public record SoulSpeedModule(LevelingInt level, ModifierCondition<ToolStackView> condition) implements ModifierModule, TooltipModifierHook, EnchantmentModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SoulSpeedModule>defaultHooks(ModifierHooks.ENCHANTMENTS, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<SoulSpeedModule> LOADER = RecordLoadable.create(LevelingInt.LOADABLE.directField(SoulSpeedModule::level), ModifierCondition.TOOL_FIELD, SoulSpeedModule::new);
 
@@ -47,7 +47,7 @@ public record SoulSpeedModule(LevelingInt level, ModifierCondition<IToolStackVie
   }
 
   @Override
-  public int updateEnchantmentLevel(IToolStackView tool, ModifierEntry modifier, Enchantment enchantment, int level) {
+  public int updateEnchantmentLevel(ToolStackView tool, ModifierEntry modifier, Enchantment enchantment, int level) {
     if (enchantment == Enchantments.SOUL_SPEED && condition.matches(tool, modifier)) {
       level += this.level.compute(modifier);
     }
@@ -55,7 +55,7 @@ public record SoulSpeedModule(LevelingInt level, ModifierCondition<IToolStackVie
   }
 
   @Override
-  public void updateEnchantments(IToolStackView tool, ModifierEntry modifier, Map<Enchantment, Integer> map) {
+  public void updateEnchantments(ToolStackView tool, ModifierEntry modifier, Map<Enchantment, Integer> map) {
     if (condition.matches(tool, modifier)) {
       EnchantmentModifierHook.addEnchantment(map, Enchantments.SOUL_SPEED, this.level.compute(modifier));
     }
@@ -80,7 +80,7 @@ public record SoulSpeedModule(LevelingInt level, ModifierCondition<IToolStackVie
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     // must either have no player or a player on soulsand
     int level = this.level.compute(entry);
     if (level > 0 && condition.matches(tool, entry) && (player == null || key != TooltipKey.SHIFT || (!player.isFallFlying() && player.level().getBlockState(getOnPosition(player)).is(BlockTags.SOUL_SPEED_BLOCKS)))) {

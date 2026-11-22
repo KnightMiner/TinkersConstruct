@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -43,20 +43,20 @@ public record FluidPredicateAsCapacityModule(ToolTankHelper helper, IJsonPredica
     return DEFAULT_HOOKS;
   }
   @Override
-  public int getAmount(IToolStackView tool) {
+  public int getAmount(ToolStackView tool) {
     FluidStack fluid = helper.getFluid(tool);
     return !fluid.isEmpty() && this.fluid.matches(fluid.getFluid()) ? fluid.getAmount() : 0;
   }
 
   @Override
-  public int getCapacity(IToolStackView tool, ModifierEntry entry) {
+  public int getCapacity(ToolStackView tool, ModifierEntry entry) {
     // if another fluid is present, act like the tank is full
     FluidStack fluid = helper.getFluid(tool);
     return fluid.isEmpty() || this.fluid.matches(fluid.getFluid()) ? helper.getCapacity(tool) : 0;
   }
 
   @Override
-  public void setAmount(IToolStackView tool, ModifierEntry entry, int amount) {
+  public void setAmount(ToolStackView tool, ModifierEntry entry, int amount) {
     // only allow draining; growing the fluid is just going to cause exploits as this is a predicate; we don't know the type
     FluidStack fluid = helper.getFluid(tool);
     if (amount < fluid.getAmount() && this.fluid.matches(fluid.getFluid())) {

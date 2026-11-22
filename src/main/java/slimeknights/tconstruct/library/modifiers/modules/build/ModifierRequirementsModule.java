@@ -23,8 +23,8 @@ import slimeknights.tconstruct.library.modifiers.hook.display.RequirementsModifi
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierRequirementsModule>defaultHooks(ModifierHooks.VALIDATE_CRAFTED, ModifierHooks.REQUIREMENTS);
 
   /** Requirements to check, if they fail, the error will be displayed */
-  private final IJsonPredicate<IToolContext> requirement;
+  private final IJsonPredicate<ToolContext> requirement;
   /** Level range for the modifier, if outside this range it is considered valid */
   private final IntRange level;
   /** Translation key of the message to display */
@@ -57,7 +57,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
   /** Message to display */
   private final Component errorMessage;
 
-  private ModifierRequirementsModule(IJsonPredicate<IToolContext> requirement, IntRange level, String translationKey, List<ModifierEntry> display) {
+  private ModifierRequirementsModule(IJsonPredicate<ToolContext> requirement, IntRange level, String translationKey, List<ModifierEntry> display) {
     this.requirement = requirement;
     this.level = level;
     this.translationKey = translationKey;
@@ -67,7 +67,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     if (level.test(modifier.getLevel()) && !this.requirement.matches(tool)) {
       return errorMessage;
     }
@@ -103,7 +103,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
   @Setter
   @Accessors(fluent = true)
   public static class Builder {
-    private final ImmutableList.Builder<IJsonPredicate<IToolContext>> requirements = ImmutableList.builder();
+    private final ImmutableList.Builder<IJsonPredicate<ToolContext>> requirements = ImmutableList.builder();
     private final ImmutableList.Builder<ModifierEntry> displayModifiers = ImmutableList.builder();
     private int minLevel = 1;
     private int maxLevel = VALID_LEVEL.max();
@@ -130,7 +130,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
     }
 
     /** Adds a requirement to the builder */
-    public Builder requirement(IJsonPredicate<IToolContext> requirement) {
+    public Builder requirement(IJsonPredicate<ToolContext> requirement) {
       this.requirements.add(requirement);
       return this;
     }
@@ -166,7 +166,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
       if (translationKey == null) {
         throw new IllegalStateException("Must set translation key");
       }
-      List<IJsonPredicate<IToolContext>> predicates = this.requirements.build();
+      List<IJsonPredicate<ToolContext>> predicates = this.requirements.build();
       if (predicates.isEmpty()) {
         throw new IllegalStateException("Must have at least one requirement");
       }

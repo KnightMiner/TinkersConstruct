@@ -6,10 +6,10 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public record ToolSlotsModule(Map<SlotType,Integer> slots) implements AddSlotsTo
   }
 
   @Override
-  public void addSlots(IToolContext context, SlotsNBT.Builder slots) {
+  public void addSlots(ToolContext context, ModifierSlots.Builder slots) {
     for (Entry<SlotType,Integer> entry : this.slots.entrySet()) {
       slots.add(entry.getKey(), entry.getValue());
     }

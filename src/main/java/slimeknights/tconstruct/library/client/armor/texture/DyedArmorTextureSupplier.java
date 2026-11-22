@@ -9,8 +9,8 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
@@ -68,7 +68,7 @@ public class DyedArmorTextureSupplier implements ArmorTextureSupplier {
   @Override
   public ArmorTexture getArmorTexture(ItemStack stack, TextureType textureType, RegistryAccess access) {
     TintedArmorTexture texture = textures[textureType.ordinal()];
-    if (texture != null && (alwaysRender || ModifierNBT.getLevel(stack, modifier) > 0)) {
+    if (texture != null && (alwaysRender || ModifierEntries.getLevel(stack, modifier) > 0)) {
       int color = ModifierUtil.getPersistentInt(stack, modifier, defaultColor);
       return texture.color(0xFF000000 | color);
     }

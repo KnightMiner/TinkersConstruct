@@ -6,8 +6,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.ApiStatus.OverrideOnly;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -27,10 +27,10 @@ public interface ProjectileHitModifierHook {
    * @param attacker        Living entity who fired the projectile, null if non-living or not fired
    * @param target          Living target, will be null if not living
    * @return true if the hit should be canceled, preventing vanilla and other modifiers logic
-   * @apiNote This method should not be called directly, instead calling {@link #onProjectileHitEntity(ModifierNBT, ModDataNBT, ModifierEntry, Projectile, EntityHitResult, LivingEntity, LivingEntity, boolean)}
+   * @apiNote This method should not be called directly, instead calling {@link #onProjectileHitEntity(ModifierEntries, ModDataNBT, ModifierEntry, Projectile, EntityHitResult, LivingEntity, LivingEntity, boolean)}
    */
   @OverrideOnly
-  default boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  default boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     return false;
   }
 
@@ -46,7 +46,7 @@ public interface ProjectileHitModifierHook {
    * @param unblocked       If false, the projectile was blocked with a shield. Some modifiers may wish to run their effects regardless, just keep in mind the projectile is often reusable when blocked.
    * @return true if the hit should be canceled, preventing vanilla and other modifiers logic
    */
-  default boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
+  default boolean onProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
     return unblocked && unblockedProjectileHitEntity(modifiers, persistentData, modifier, projectile, hit, attacker, target);
   }
 
@@ -60,14 +60,14 @@ public interface ProjectileHitModifierHook {
    * @param owner           Living entity who fired the projectile, null if non-living or not fired
    * @return true if the hit should be canceled, preventing vanilla and other modifiers logic
    */
-  default boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
+  default boolean onProjectileHitBlock(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
     return false;
   }
 
   /** Merger that runs all hooks and returns true if any did */
   record AllMerger(Collection<ProjectileHitModifierHook> modules) implements ProjectileHitModifierHook {
     @Override
-    public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+    public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
       for (ProjectileHitModifierHook module : modules) {
         if (module.unblockedProjectileHitEntity(modifiers, persistentData, modifier, projectile, hit, attacker, target)) {
           return true;
@@ -77,7 +77,7 @@ public interface ProjectileHitModifierHook {
     }
 
     @Override
-    public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
+    public boolean onProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
       for (ProjectileHitModifierHook module : modules) {
         if (module.onProjectileHitEntity(modifiers, persistentData, modifier, projectile, hit, attacker, target, unblocked)) {
           return true;
@@ -87,7 +87,7 @@ public interface ProjectileHitModifierHook {
     }
 
     @Override
-    public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
+    public boolean onProjectileHitBlock(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity owner) {
       for (ProjectileHitModifierHook module : modules) {
         if (module.onProjectileHitBlock(modifiers, persistentData, modifier, projectile, hit, owner)) {
           return true;

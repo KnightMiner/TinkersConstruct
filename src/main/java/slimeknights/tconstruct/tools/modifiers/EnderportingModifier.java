@@ -31,13 +31,13 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModi
 import slimeknights.tconstruct.library.modifiers.hook.special.PlantHarvestModifierHook;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.TeleportHelper;
 
 import javax.annotation.Nullable;
@@ -86,7 +86,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (!context.isExtraAttack()) {
       LivingEntity target = context.getLivingTarget();
       // if the entity is dead now
@@ -102,7 +102,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
+  public void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
     if (harvested > 0 && context.canHarvest() && tool.hasTag(TinkerTags.Items.HARVEST)) {
       BlockPos pos = context.getPos();
       LivingEntity living = context.getLiving();
@@ -113,7 +113,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public void afterHarvest(IToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
+  public void afterHarvest(ToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
     // only teleport to the center block
     if (context.getClickedPos().equals(pos)) {
       LivingEntity living = context.getPlayer();
@@ -129,7 +129,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public boolean unblockedProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
+  public boolean unblockedProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
     if (attacker != null && attacker != target && canTeleport(persistentData)) {
       Entity hitEntity = hit.getEntity();
       Vec3 oldPosition = attacker.position();
@@ -143,7 +143,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
+  public boolean onProjectileHitBlock(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
     if (attacker != null && canTeleport(persistentData)) {
       BlockPos target = hit.getBlockPos().relative(hit.getDirection());
       // attempt the teleport, if successful and the projectile is not reusable then discard it
@@ -156,7 +156,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public void onProjectileFuseFinish(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
+  public void onProjectileFuseFinish(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
     if (canTeleport(persistentData) && projectile.getOwner() instanceof LivingEntity attacker) {
       // no need to discard, fuse did that for us
       if (attacker.level() == projectile.level()) {
@@ -170,7 +170,7 @@ public class EnderportingModifier extends NoLevelsModifier implements PlantHarve
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (primary) {
       ToolDamageUtil.damageLauncher(tool, 10, shooter, projectile, modifier.id());
     } else {

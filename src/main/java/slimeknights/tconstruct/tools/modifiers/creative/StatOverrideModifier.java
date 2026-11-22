@@ -18,9 +18,9 @@ import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
@@ -61,7 +61,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(KEY_BONUS);
     tool.getPersistentData().remove(KEY_MULTIPLY);
     return null;
@@ -92,7 +92,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   @Override
-  public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     IModDataView persistentData = context.getPersistentData();
     processStats(persistentData, KEY_BONUS, (stat, tag) -> update(builder, stat, tag));
     processStats(persistentData, KEY_MULTIPLY, (stat, tag) -> {
@@ -142,7 +142,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   @Override
-  public List<Component> getDescriptionList(IToolStackView tool, ModifierEntry entry) {
+  public List<Component> getDescriptionList(ToolStackView tool, ModifierEntry entry) {
     List<Component> defaultList = getDescriptionList(entry.getLevel());
 
     // create the list when we first try to add text
@@ -179,7 +179,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @return  Tag, or null if missing and {@code createTag} is false
    */
   @Nullable
-  private static CompoundTag getTag(IToolStackView tool, ResourceLocation groupKey, boolean createTag) {
+  private static CompoundTag getTag(ToolStackView tool, ResourceLocation groupKey, boolean createTag) {
     // first, find the proper tag, create if missing
     ModDataNBT data = tool.getPersistentData();
     CompoundTag nbt;
@@ -196,7 +196,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   /** Gets the given stat from Tag */
-  private static float getStat(IToolStackView tool, ResourceLocation groupKey, INumericToolStat<?> stat, float defaultValue) {
+  private static float getStat(ToolStackView tool, ResourceLocation groupKey, INumericToolStat<?> stat, float defaultValue) {
     IModDataView data = tool.getPersistentData();
     if (data.contains(groupKey, Tag.TAG_COMPOUND)) {
       CompoundTag nbt = data.getCompound(groupKey);
@@ -216,7 +216,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param value     New stat value
    * @return  True if the modifier is required to represent this change
    */
-  private static boolean setStat(IToolStackView tool, ResourceLocation groupKey, INumericToolStat<?> stat, float value, float neutralValue) {
+  private static boolean setStat(ToolStackView tool, ResourceLocation groupKey, INumericToolStat<?> stat, float value, float neutralValue) {
     CompoundTag nbt = getTag(tool, groupKey, value != neutralValue);
     if (nbt == null) {
       return false;
@@ -242,7 +242,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to set
    * @param value  New value
    */
-  public static <T> boolean set(IToolStackView tool, IToolStat<T> stat, T value) {
+  public static <T> boolean set(ToolStackView tool, IToolStat<T> stat, T value) {
     // first, find the proper tag, create if missing
     ModDataNBT data = tool.getPersistentData();
     boolean storeValue;
@@ -277,7 +277,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to update
    * @param bonus  Value to add to current bonus
    */
-  public static boolean addBonus(IToolStackView tool, INumericToolStat<?> stat, float bonus) {
+  public static boolean addBonus(ToolStackView tool, INumericToolStat<?> stat, float bonus) {
     if (bonus != 0) {
       return setStat(tool, KEY_BONUS, stat, getStat(tool, KEY_BONUS, stat, 0) + bonus, 0);
     }
@@ -290,7 +290,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat        Stat to set
    * @param multiplier  New multiplier
    */
-  public static boolean setMultiplier(IToolStackView tool, INumericToolStat<?> stat, float multiplier) {
+  public static boolean setMultiplier(ToolStackView tool, INumericToolStat<?> stat, float multiplier) {
     return setStat(tool, KEY_MULTIPLY, stat, multiplier, 1);
   }
 
@@ -300,7 +300,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
    * @param stat   Stat to set
    * @param value  New multiplier
    */
-  public static boolean multiply(IToolStackView tool, INumericToolStat<?> stat, float value) {
+  public static boolean multiply(ToolStackView tool, INumericToolStat<?> stat, float value) {
     if (value != 1) {
       return setMultiplier(tool, stat, getStat(tool, KEY_MULTIPLY, stat, 1) * value);
     }
@@ -308,7 +308,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
   }
 
   /** Removes the given stat from the bonuses */
-  public static <T> boolean remove(IToolStackView tool, IToolStat<T> stat) {
+  public static <T> boolean remove(ToolStackView tool, IToolStat<T> stat) {
     CompoundTag nbt = getTag(tool, KEY_BONUS, false);
     if (nbt == null) {
       return false;

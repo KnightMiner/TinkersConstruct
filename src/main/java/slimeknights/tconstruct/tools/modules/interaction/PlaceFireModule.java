@@ -43,7 +43,7 @@ import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectI
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
@@ -69,12 +69,12 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return ability == TinkerItemAbilities.LIGHT_CAMPFIRE || ability == TinkerItemAbilities.LIGHT_FIRE;
   }
 
   @Override
-  public InteractionResult afterEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
+  public InteractionResult afterEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
     if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source) && target instanceof Creeper creeper) {
       Level level = player.level();
       level.playSound(player, creeper.getX(), creeper.getY(), creeper.getZ(), SoundEvents.FLINTANDSTEEL_USE, creeper.getSoundSource(), 1.0F, level.random.nextFloat() * 0.4F + 0.8F);
@@ -115,7 +115,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
   }
 
   @Override
-  public InteractionResult beforeBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult beforeBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
@@ -126,7 +126,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
   }
 
   @Override
-  public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       return InteractionResult.PASS;
     }
@@ -185,7 +185,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
 
   @Nullable
   @Override
-  public Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+  public Boolean removeBlock(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     // if we have left click modifiers active, ensure we don't break the block on left click
     // otherwise our newly placed block is immediately removed
     if (context.getState().is(Blocks.FIRE) && tool.hasTag(TinkerTags.Items.INTERACTABLE_LEFT) && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), InteractionSource.LEFT_CLICK)) {

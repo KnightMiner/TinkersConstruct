@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRate;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.smeltery.block.entity.module.EntityMeltingModule;
 
 import javax.annotation.Nullable;
@@ -52,7 +52,7 @@ import static slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHel
  * @param shardsPerGem     Number of quarter gems to produce per gem from ore recipes.
  * @param condition        General modifier conditions
  */
-public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal, LevelingInt shardsPerGem, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ProcessLootModifierHook, ConditionalModule<IToolStackView>, MeltingRecipeInput, OreRate {
+public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal, LevelingInt shardsPerGem, ModifierCondition<ToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ProcessLootModifierHook, ConditionalModule<ToolStackView>, MeltingRecipeInput, OreRate {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeltingModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.LAUNCHER_HIT, ModifierHooks.PROCESS_LOOT);
   /** Volatile data flag which makes a tool always melt regardless of tank space */
   public static final ResourceLocation FORCE_MELTING = TConstruct.getResource("force_melting");
@@ -134,7 +134,7 @@ public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal
   }
 
   @Override
-  public void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
+  public void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
     if (!condition.matches(tool, modifier)) {
       return;
     }
@@ -200,7 +200,7 @@ public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal
   }
 
   /** Melts the target entity based on the damage dealt */
-  private void meltTarget(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity target, float damageDealt) {
+  private void meltTarget(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity target, float damageDealt) {
     // must have done damage, and must be fully charged
     if (damageDealt > 0 && condition.matches(tool, modifier)) {
       // first, find the proper recipe
@@ -239,14 +239,14 @@ public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (context.isFullyCharged()) {
       meltTarget(tool, modifier, context.getLivingTarget(), damageDealt);
     }
   }
 
   @Override
-  public void onLauncherHitEntity(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
+  public void onLauncherHitEntity(ToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
     meltTarget(tool, modifier, livingTarget, damageDealt);
   }
 

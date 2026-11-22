@@ -13,7 +13,7 @@ import slimeknights.tconstruct.fixture.ToolDefinitionFixture;
 import slimeknights.tconstruct.library.materials.MaterialRegistryExtension;
 import slimeknights.tconstruct.library.modifiers.ModifierFixture;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.test.BaseMcTest;
 import slimeknights.tconstruct.test.TestHelper;
 
@@ -35,7 +35,7 @@ public abstract class ToolItemTest extends BaseMcTest {
   }
 
   protected ItemStack buildTestTool(IModifiable tool) {
-    return ToolBuildHandler.buildItemFromMaterials(tool, MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA));
+    return ToolBuildHandler.buildItemFromMaterials(tool, ToolMaterials.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA));
   }
 
   protected ItemStack buildTestTool() {

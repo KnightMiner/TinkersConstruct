@@ -22,15 +22,15 @@ import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
+import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 
@@ -114,7 +114,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
         int max = this.level.max();
         stream = stream.filter(stack -> {
           if (stack.getItem() instanceof IModifiable modifiable) {
-            return ToolTraitHook.getTraits(modifiable.getToolDefinition(), MaterialNBT.EMPTY).getLevel(result) < max;
+            return ToolTraitHook.getTraits(modifiable.getToolDefinition(), ToolMaterials.EMPTY).getLevel(result) < max;
           }
           return false;
         });
@@ -181,8 +181,8 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
       persistentData.putString(result.id().id(), variant);
     }
     // build slot data
-    SlotsNBT.Builder slots = SlotsNBT.builder();
-    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(new DummyToolStack(tool, ModifierNBT.EMPTY, persistentData), result, slots);
+    ModifierSlots.Builder slots = ModifierSlots.builder();
+    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(new DummyToolStack(tool, ModifierEntries.EMPTY, persistentData), result, slots);
     return slots.buildCounts();
   }
 
@@ -233,13 +233,13 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   }
 
   /**
-   * Validate tool has the right number of slots, called internally by {@link #validatePrerequisites(IToolStackView, int)}
+   * Validate tool has the right number of slots, called internally by {@link #validatePrerequisites(ToolStackView, int)}
    * @param tool   Tool instance
    * @param slots  Required slots
    * @return  Error message, or null if no error
    */
   @Nullable
-  protected static Component checkSlots(IToolStackView tool, @Nullable SlotCount slots) {
+  protected static Component checkSlots(ToolStackView tool, @Nullable SlotCount slots) {
     return IDisplayModifierRecipe.checkSlots(tool, slots);
   }
 
@@ -250,7 +250,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
    * @return  Error message, or null if no error
    */
   @Nullable
-  protected Component validatePrerequisites(IToolStackView tool, int resultLevel) {
+  protected Component validatePrerequisites(ToolStackView tool, int resultLevel) {
     Component error = validateLevel(resultLevel);
     if (error != null) {
       return error;
@@ -259,7 +259,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   }
 
   /** Gets the new level after applying this recipe */
-  protected int getNewLevel(IToolStackView tool) {
+  protected int getNewLevel(ToolStackView tool) {
     return (checkTraitLevel ? tool.getModifiers() : tool.getCraftedModifiers()).getLevel(result.id()) + 1;
   }
 
@@ -269,7 +269,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
    * @return  Error message, or null if no error
    */
   @Nullable
-  protected Component validatePrerequisites(IToolStackView tool) {
+  protected Component validatePrerequisites(ToolStackView tool) {
     return validatePrerequisites(tool, getNewLevel(tool));
   }
 }

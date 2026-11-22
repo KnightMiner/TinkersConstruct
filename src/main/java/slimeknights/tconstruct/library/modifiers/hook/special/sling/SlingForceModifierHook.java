@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.special.sling;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -21,12 +21,12 @@ public interface SlingForceModifierHook {
    * @param multiplier  Force multiplier from non-power sources such as charge.
    * @return Updated force value.
    */
-  float modifySlingForce(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier);
+  float modifySlingForce(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier);
 
   /** Merger composing the results of each nested hook */
   record ComposeMerger(Collection<SlingForceModifierHook> modules) implements SlingForceModifierHook {
     @Override
-    public float modifySlingForce(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
+    public float modifySlingForce(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
       for (SlingForceModifierHook module : modules) {
         force = module.modifySlingForce(tool, modifier, holder, target, slingSource, force, multiplier);
       }
@@ -35,8 +35,8 @@ public interface SlingForceModifierHook {
   }
 
 
-  /** Helper to call {@link #modifySlingForce(IToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float)} on all modifiers. */
-  static float modifySlingForce(IToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
+  /** Helper to call {@link #modifySlingForce(ToolStackView, ModifierEntry, LivingEntity, LivingEntity, ModifierEntry, float, float)} on all modifiers. */
+  static float modifySlingForce(ToolStackView tool, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier) {
     for (ModifierEntry entry : tool.getModifiers()) {
       force = entry.getHook(ModifierHooks.SLING_FORCE).modifySlingForce(tool, entry, holder, target, slingSource, force, multiplier);
       if (force <= 0) {

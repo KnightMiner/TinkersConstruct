@@ -26,13 +26,13 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.TeleportHelper;
 
 import java.util.List;
 
 /** Module for armor to randomly teleport the wearer to prevent damage. */
-public record TeleportDodgeModule(IJsonPredicate<LivingEntity> defender, IJsonPredicate<DamageSource> damageSource, LevelingValue chance, LevelingInt cooldown, ModifierCondition<IToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, ConditionalModule<IToolStackView> {
+public record TeleportDodgeModule(IJsonPredicate<LivingEntity> defender, IJsonPredicate<DamageSource> damageSource, LevelingValue chance, LevelingInt cooldown, ModifierCondition<ToolStackView> condition) implements ModifierModule, ModifyDamageModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<TeleportDodgeModule>defaultHooks(ModifierHooks.MODIFY_HURT);
   public static final RecordLoadable<TeleportDodgeModule> LOADER = RecordLoadable.create(
     LivingEntityPredicate.LOADER.defaultField("defender", TeleportDodgeModule::defender),
@@ -56,7 +56,7 @@ public record TeleportDodgeModule(IJsonPredicate<LivingEntity> defender, IJsonPr
   }
 
   @Override
-  public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     LivingEntity entity = context.getEntity();
     // entity must not have enderference, and conditions must match
     if (!entity.hasEffect(TinkerEffects.enderference) && this.defender.matches(entity) && damageSource.matches(source)) {

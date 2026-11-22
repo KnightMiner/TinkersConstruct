@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifie
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,7 +36,7 @@ public record MaterialVariantColorModule(MaterialId material) implements Modifie
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     // use the color of the first match found
     for (MaterialVariant material : tool.getMaterials()) {
       if (this.material.equals(material.material())) {

@@ -29,13 +29,13 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
 
@@ -95,7 +95,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
   /* Arrow launching */
 
   /** Checks if the given tool is a ballista */
-  public static boolean isBallista(IToolStackView tool) {
+  public static boolean isBallista(ToolStackView tool) {
     return tool.hasTag(TinkerTags.Items.BALLISTAS) && tool.getVolatileData().getBoolean(KEY_BALLISTA);
   }
 
@@ -239,7 +239,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
       SoundEvent sound = SoundEvents.ARROW_SHOOT;
       if (thrownTool) {
         sound = SoundEvents.TRIDENT_THROW;
-        IToolStackView thrown = ToolStack.from(ammo);
+        ToolStackView thrown = ToolStack.from(ammo);
         float thrownVelocity = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.VELOCITY);
         power *= thrownVelocity * ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.DRAW_SPEED) / 1.5f;
         if (ammo.is(TinkerTags.Items.MELEE_WEAPON)) {
@@ -272,7 +272,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
         arrow.setBaseDamage(ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.PROJECTILE_DAMAGE, baseArrowDamage));
 
         // just store all modifiers on the tool for simplicity
-        ModifierNBT modifiers = tool.getModifiers();
+        ModifierEntries modifiers = tool.getModifiers();
         EntityModifierCapability.getCapability(arrow).addModifiers(modifiers);
 
         // fetch the persistent data for the arrow as modifiers may want to store data
@@ -311,7 +311,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
   }
 
   @Override
-  protected void onStopUsing(IToolStackView tool, LivingEntity entity, int timeLeft) {
+  protected void onStopUsing(ToolStackView tool, LivingEntity entity, int timeLeft) {
     super.onStopUsing(tool, entity, timeLeft);
     tool.getPersistentData().remove(KEY_BALLISTA);
   }

@@ -10,12 +10,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module for changing how much ammo is crafted in an ammo modifier. Note this cannot increase the result above the tool stack size. */
-public record CraftCountModule(LevelingValue multiplier, ModifierCondition<IToolStackView> condition) implements ModifierModule, CraftCountModifierHook, ConditionalModule<IToolStackView> {
+public record CraftCountModule(LevelingValue multiplier, ModifierCondition<ToolStackView> condition) implements ModifierModule, CraftCountModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<CraftCountModule>defaultHooks(ModifierHooks.CRAFT_COUNT);
   public static final RecordLoadable<CraftCountModule> LOADER = RecordLoadable.create(LevelingValue.LOADABLE.requiredField("multiplier", CraftCountModule::multiplier), ModifierCondition.TOOL_FIELD, CraftCountModule::new);
 
@@ -34,7 +34,7 @@ public record CraftCountModule(LevelingValue multiplier, ModifierCondition<ITool
   }
 
   @Override
-  public float modifyCraftCount(IToolStackView tool, ModifierEntry entry, float amount) {
+  public float modifyCraftCount(ToolStackView tool, ModifierEntry entry, float amount) {
     if (condition.matches(tool, entry)) {
       amount *= multiplier.compute(entry.getEffectiveLevel());
     }

@@ -7,7 +7,7 @@ import slimeknights.tconstruct.library.json.predicate.modifier.SingleModifierPre
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate.ModifierCheck;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Variable which fetches the level of a modifier on the tool.
@@ -21,7 +21,7 @@ public record ModifierLevelVariable(IJsonPredicate<ModifierId> modifier, Modifie
     ModifierLevelVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool) {
+  public float getValue(ToolStackView tool) {
     for (ModifierEntry entry : check.getModifiers(tool)) {
       if (modifier.matches(entry.id())) {
         return entry.getEffectiveLevel();

@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectI
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
@@ -63,7 +63,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
   }
 
   @Override
-  public boolean shouldHighlight(IToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
+  public boolean shouldHighlight(ToolStackView tool, ModifierEntry modifier, UseOnContext context, BlockPos offset, BlockState state) {
     FluidStack fluid = TANK_HELPER.getFluid(tool);
     if (!fluid.isEmpty()) {
       return FluidEffectManager.INSTANCE.find(fluid.getFluid()).hasBlockEffects();
@@ -72,7 +72,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
   }
 
   @Override
-  public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+  public InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     // melee items get spilling via attack, non melee interact to use it
     if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
@@ -143,7 +143,7 @@ public record SplashingModule(LevelingValue strength) implements ModifierModule,
   }
 
   @Override
-  public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty()) {

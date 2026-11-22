@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.TinkerCommons;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public record PlaceGlowModule(int damage) implements ModifierModule, BlockIntera
   }
 
   @Override
-  public InteractionResult afterBlockUse(IToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
+  public InteractionResult afterBlockUse(ToolStackView tool, ModifierEntry modifier, UseOnContext context, InteractionSource source) {
     if (!tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       Player player = context.getPlayer();
       if (!context.getLevel().isClientSide) {
@@ -67,7 +67,7 @@ public record PlaceGlowModule(int damage) implements ModifierModule, BlockIntera
 
   @Nullable
   @Override
-  public Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+  public Boolean removeBlock(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     // if we have left click modifiers active, ensure we don't break the block on left click
     // otherwise our newly placed block is immediately removed
     if (context.getState().is(TinkerCommons.glow.get()) && tool.hasTag(TinkerTags.Items.INTERACTABLE_LEFT) && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), InteractionSource.LEFT_CLICK)) {

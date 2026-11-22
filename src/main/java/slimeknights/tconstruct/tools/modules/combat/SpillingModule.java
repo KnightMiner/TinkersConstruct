@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,7 +32,7 @@ import static slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHel
 import static slimeknights.tconstruct.tools.modifiers.fluid.UseFluidOnHitModifier.spawnParticles;
 
 /** Module to apply spilling effects post melee or projectile hit */
-public record SpillingModule(LevelingValue level, ModifierCondition<IToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ConditionalModule<IToolStackView> {
+public record SpillingModule(LevelingValue level, ModifierCondition<ToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SpillingModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.LAUNCHER_HIT);
   public static final RecordLoadable<SpillingModule> LOADER = RecordLoadable.create(LevelingValue.LOADABLE.directField(SpillingModule::level), ModifierCondition.TOOL_FIELD, SpillingModule::new);
 
@@ -47,7 +47,7 @@ public record SpillingModule(LevelingValue level, ModifierCondition<IToolStackVi
   }
 
   /** Applies the fluid to the target */
-  private void applyEffect(IToolStackView tool, ModifierEntry modifier, LivingEntity attacker, @Nullable Player playerAttacker, Entity target, @Nullable LivingEntity livingTarget, @Nullable Projectile projectile) {
+  private void applyEffect(ToolStackView tool, ModifierEntry modifier, LivingEntity attacker, @Nullable Player playerAttacker, Entity target, @Nullable LivingEntity livingTarget, @Nullable Projectile projectile) {
     if (condition.matches(tool, modifier)) {
       FluidStack fluid = TANK_HELPER.getFluid(tool);
       if (!fluid.isEmpty()) {
@@ -65,14 +65,14 @@ public record SpillingModule(LevelingValue level, ModifierCondition<IToolStackVi
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     if (damageDealt > 0 && context.isFullyCharged()) {
       applyEffect(tool, modifier, context.getAttacker(), context.getPlayerAttacker(), context.getTarget(), context.getLivingTarget(), context.getProjectile());
     }
   }
 
   @Override
-  public void onLauncherHitEntity(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
+  public void onLauncherHitEntity(ToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
     if (damageDealt > 0) {
       applyEffect(tool, modifier, attacker, ModifierUtil.asPlayer(attacker), target, livingTarget, projectile);
     }

@@ -45,12 +45,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.entity.CustomFireball;
@@ -69,7 +69,7 @@ import java.util.function.Predicate;
  * @param ammoModifiers  Extra modifiers to add to the projectile unconditionally
  * @param condition      Standard modifier conditions
  */
-public record FireballModule(List<FireballType> options, DamageTypePair damageType, float damageMultiplier, List<ModifierEntry> ammoModifiers, LevelingInt durability, SoundEvent sound, ModifierCondition<IToolStackView> condition) implements ModifierModule, GeneralInteractionModifierHook, KeybindInteractModifierHook, ConditionalModule<IToolStackView>, Predicate<ItemStack> {
+public record FireballModule(List<FireballType> options, DamageTypePair damageType, float damageMultiplier, List<ModifierEntry> ammoModifiers, LevelingInt durability, SoundEvent sound, ModifierCondition<ToolStackView> condition) implements ModifierModule, GeneralInteractionModifierHook, KeybindInteractModifierHook, ConditionalModule<ToolStackView>, Predicate<ItemStack> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FireballModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.ARMOR_INTERACT);
   public static final RecordLoadable<FireballModule> LOADER = RecordLoadable.create(
     FireballType.LOADABLE.list(ArrayLoadable.COMPACT).requiredField("options", FireballModule::options),
@@ -133,7 +133,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
   }
 
   /** Shoots the actual projectile */
-  private boolean shoot(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, @Nullable Player player, EquipmentSlot slot) {
+  private boolean shoot(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, @Nullable Player player, EquipmentSlot slot) {
     Level level = entity.level();
 
     // first, try to find the requested ammo
@@ -164,9 +164,9 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
         projectile.setDamageType(damageTypes.ranged(), damageTypes.melee());
 
         // set projectile modifiers
-        ModifierNBT modifiers = tool.getModifiers();
+        ModifierEntries modifiers = tool.getModifiers();
         if (!ammoModifiers.isEmpty()) {
-          ModifierNBT.Builder builder = ModifierNBT.builder();
+          ModifierEntries.Builder builder = ModifierEntries.builder();
           builder.add(modifiers);
           builder.add(ammoModifiers);
           builder.add(type.ammoModifiers);
@@ -196,7 +196,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (condition.matches(tool, modifier) && !tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source)) {
       if (shoot(tool, modifier, player, player, Util.getSlotType(hand))) {
         GeneralInteractionModifierHook.addCooldown(tool, player, 1);
@@ -207,7 +207,7 @@ public record FireballModule(List<FireballType> options, DamageTypePair damageTy
   }
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (keyModifier == TooltipKey.NORMAL && condition.matches(tool, modifier) && !tool.isBroken() && !player.hasEffect(TinkerEffects.fireballCooldownEffect)) {
       if (shoot(tool, modifier, player, player, slot)) {
         if (!player.level().isClientSide) {

@@ -23,15 +23,15 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolMaterialHook;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
   @Override
   public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     // copy the tool NBT to ensure the original tool is intact
-    IToolStackView original = inv.getTinkerable();
+    ToolStackView original = inv.getTinkerable();
     List<MaterialStatsId> materials = ToolMaterialHook.stats(original.getDefinition());
     // prevent part swapping on large tools in small tables
     if (materials.size() > inv.getInputCount()) {
@@ -94,7 +94,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     for (int i = 0; i < inv.getInputCount(); i++) {
       ItemStack stack = inv.getInput(i);
       if (!stack.isEmpty() && stack.getItem() == original.getItem()) {
-        IToolStackView sacrifice = ToolStack.from(stack);
+        ToolStackView sacrifice = ToolStack.from(stack);
         // ensure the sacrifice does not have any modifiers
         if (!sacrifice.getCraftedModifiers().isEmpty()) {
           return NO_MODIFIERS;
@@ -154,7 +154,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
         }
         List<MaterialVariant> renderMaterials = IntStream.range(0, stats.size()).mapToObj(ToolBuildHandler::getRenderMaterial).toList();
         ToolStack displayTool = tool.copy();
-        displayTool.setMaterials(MaterialNBT.of(renderMaterials));
+        displayTool.setMaterials(ToolMaterials.of(renderMaterials));
         ResourceLocation toolId = id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName());
         // start making recipes
         for (int i = 0; i < stats.size(); i++) {
@@ -221,7 +221,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     @Override
     public List<ItemStack> getDisplayItems(int slot, ItemStack focus, boolean focusOutput) {
       if (slot == index && !focus.isEmpty() && (focusOutput || isTool(focus))) {
-        MaterialVariant material = MaterialNBT.get(focus, index);
+        MaterialVariant material = ToolMaterials.get(focus, index);
         // if focusing on the output, display a sacrifice that would create this tool
         if (focusOutput) {
           if (material.hasStats(statType)) {
@@ -280,7 +280,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     @Override
     public List<ItemStack> getToolWithModifier(ItemStack focus, boolean focusOutput) {
       // copy materials from the display output, but replace the swapped material to that from the focus
-      return List.of(replaceMaterial(MaterialNBT.get(toolWithoutModifier.get(0)), MaterialNBT.get(focus, index), focus));
+      return List.of(replaceMaterial(ToolMaterials.get(toolWithoutModifier.get(0)), ToolMaterials.get(focus, index), focus));
     }
 
 
@@ -299,7 +299,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
     @Override
     public boolean isVisibleFromItem(ItemStack focus, boolean output) {
       // only show on inputs without modifiers
-      return !output && !ModifierNBT.hasCrafted(focus);
+      return !output && !ModifierEntries.hasCrafted(focus);
     }
   }
 }

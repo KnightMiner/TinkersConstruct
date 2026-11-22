@@ -23,10 +23,10 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -109,7 +109,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
       }
       return filteredModifiers;
     }
-    IToolStackView tool = inv.getTinkerable();
+    ToolStackView tool = inv.getTinkerable();
     Set<ModifierId> existing = getModifierSet(tool.getPersistentData(), dataKey);
     Predicate<ModifierEntry> applicable = entry -> existing.contains(entry.id()) != addToSet;
     return getModifiers(inv).stream().filter(this.entryFilter).filter(applicable).toList();

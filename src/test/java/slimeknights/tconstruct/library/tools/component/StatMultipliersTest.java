@@ -1,9 +1,11 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import slimeknights.tconstruct.library.materials.MaterialRegistryExtension;
@@ -13,19 +15,19 @@ import slimeknights.tconstruct.test.BaseMcTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MaterialRegistryExtension.class)
-class MultiplierNBTTest extends BaseMcTest {
+class StatMultipliersTest extends BaseMcTest {
   @Test
   void empty_ensureEmpty() {
     // ensure no stats present
-    assertThat(MultiplierNBT.EMPTY.getContainedStats()).isEmpty();
+    assertThat(StatMultipliers.EMPTY.getContainedStats()).isEmpty();
     // ensure defaults
-    assertThat(MultiplierNBT.EMPTY.get(ToolStats.DURABILITY)).isEqualTo(1f);
-    assertThat(MultiplierNBT.EMPTY.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(1f);
+    assertThat(StatMultipliers.EMPTY.get(ToolStats.DURABILITY)).isEqualTo(1f);
+    assertThat(StatMultipliers.EMPTY.get(ToolStats.ATTACK_DAMAGE)).isEqualTo(1f);
   }
 
   @Test
   void builder_builds() {
-    MultiplierNBT multipliers = MultiplierNBT
+    StatMultipliers multipliers = StatMultipliers
       .builder()
       .set(ToolStats.DURABILITY, 6)
       .set(ToolStats.ATTACK_DAMAGE, 4)
@@ -45,7 +47,7 @@ class MultiplierNBTTest extends BaseMcTest {
 
   @Test
   void buffer_readsWrites() {
-    MultiplierNBT multipliers = MultiplierNBT
+    StatMultipliers multipliers = StatMultipliers
       .builder()
       .set(ToolStats.DURABILITY, 4)
       .set(ToolStats.ATTACK_DAMAGE, 3.5f)
@@ -53,9 +55,9 @@ class MultiplierNBTTest extends BaseMcTest {
       .set(ToolStats.ATTACK_SPEED, 2)
       .build();
 
-    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-    MultiplierNBT.LOADABLE.encode(buffer, multipliers);
-    MultiplierNBT decoded = MultiplierNBT.LOADABLE.decode(buffer);
+    RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY, ConnectionType.OTHER);
+    StatMultipliers.LOADABLE.encode(buffer, multipliers);
+    StatMultipliers decoded = StatMultipliers.LOADABLE.decode(buffer);
 
     // multiplier of 1 is skipped
     assertThat(decoded.getContainedStats()).hasSize(4);
@@ -67,7 +69,7 @@ class MultiplierNBTTest extends BaseMcTest {
 
   @Test
   void serialize() {
-    MultiplierNBT testStatsNBT = MultiplierNBT
+    StatMultipliers testStatsNBT = StatMultipliers
       .builder()
       .set(ToolStats.DURABILITY, 1)
       .set(ToolStats.ATTACK_DAMAGE, 3)
@@ -86,7 +88,7 @@ class MultiplierNBTTest extends BaseMcTest {
 
   @Test
   void serializeEmpty_emptyList() {
-    CompoundTag nbt = MultiplierNBT.EMPTY.serializeToNBT();
+    CompoundTag nbt = StatMultipliers.EMPTY.serializeToNBT();
     assertThat(nbt.size()).isEqualTo(0);
   }
 
@@ -99,7 +101,7 @@ class MultiplierNBTTest extends BaseMcTest {
     nbt.putFloat(ToolStats.ATTACK_SPEED.getId().toString(), 2);
     nbt.putFloat(ToolStats.ARMOR.getId().toString(), 1);
 
-    MultiplierNBT multipliers = MultiplierNBT.readFromNBT(nbt);
+    StatMultipliers multipliers = StatMultipliers.readFromNBT(nbt);
 
     // multiplier of 1 is skipped
     assertThat(multipliers.getContainedStats()).hasSize(4);
@@ -113,20 +115,20 @@ class MultiplierNBTTest extends BaseMcTest {
   @Test
   void deserializeNoData_empty() {
     CompoundTag nbt = new CompoundTag();
-    MultiplierNBT multipliers = MultiplierNBT.readFromNBT(nbt);
-    assertThat(multipliers).isEqualTo(MultiplierNBT.EMPTY);
+    StatMultipliers multipliers = StatMultipliers.readFromNBT(nbt);
+    assertThat(multipliers).isEqualTo(StatMultipliers.EMPTY);
   }
 
   @Test
   void wrongNbtType_empty() {
     Tag wrongNbt = new CompoundTag();
-    StatsNBT statsNBT = StatsNBT.readFromNBT(wrongNbt);
-    assertThat(statsNBT).isEqualTo(StatsNBT.EMPTY);
+    StatValues statValues = StatValues.readFromNBT(wrongNbt);
+    assertThat(statValues).isEqualTo(StatValues.EMPTY);
   }
 
   @Test
   void missing_isDefault() {
-    MultiplierNBT partialStatsNBT = MultiplierNBT
+    StatMultipliers partialStatsNBT = StatMultipliers
       .builder()
       .set(ToolStats.DURABILITY, 1f)
       .set(ToolStats.ATTACK_DAMAGE, 3f)

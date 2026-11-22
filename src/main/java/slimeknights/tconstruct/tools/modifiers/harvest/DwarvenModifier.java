@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHoo
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.stats.ToolType;
@@ -77,7 +77,7 @@ public class DwarvenModifier extends Modifier implements ConditionalStatModifier
   }
 
   @Override
-  public float modifyBreakSpeed(IToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
+  public float modifyBreakSpeed(ToolStackView tool, ModifierEntry modifier, BreakSpeedContext context, float speed) {
     if (context.isEffective()) {
       BlockPos pos = context.pos();
       if (pos != null) {
@@ -88,7 +88,7 @@ public class DwarvenModifier extends Modifier implements ConditionalStatModifier
   }
 
   @Override
-  public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+  public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
     if (stat == ToolStats.VELOCITY) {
       return getBoost(living.level(), (float)living.getY(), modifier, baseValue, multiplier * VELOCITY_BONUS);
     }
@@ -96,7 +96,7 @@ public class DwarvenModifier extends Modifier implements ConditionalStatModifier
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey key, TooltipFlag tooltipFlag) {
     ToolType type = ToolType.from(tool.getItem(), TYPES);
     if (type != null) {
       Component prefix = type == ToolType.RANGED ? VELOCITY : MINING_SPEED;

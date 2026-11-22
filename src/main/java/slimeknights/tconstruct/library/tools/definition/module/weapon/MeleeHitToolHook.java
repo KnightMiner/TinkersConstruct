@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.tools.definition.module.weapon;
 
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -14,10 +14,10 @@ public interface MeleeHitToolHook {
    * @param context  Attack context
    * @param damage   Damage to deal
    */
-  void afterMeleeHit(IToolStackView tool, ToolAttackContext context, float damage);
+  void afterMeleeHit(ToolStackView tool, ToolAttackContext context, float damage);
 
   /** Deals damage using the given tool, applying any post damage effects */
-  static boolean dealDamage(IToolStackView tool, ToolAttackContext context, float damage) {
+  static boolean dealDamage(ToolStackView tool, ToolAttackContext context, float damage) {
     boolean hit = context.getTarget().hurt(context.makeDamageSource(), damage);
     if (hit) {
       tool.getHook(ToolHooks.MELEE_HIT).afterMeleeHit(tool, context, damage);
@@ -28,7 +28,7 @@ public interface MeleeHitToolHook {
   /** Merger that runs all hooks */
   record AllMerger(Collection<MeleeHitToolHook> hooks) implements MeleeHitToolHook {
     @Override
-    public void afterMeleeHit(IToolStackView tool, ToolAttackContext context, float damage) {
+    public void afterMeleeHit(ToolStackView tool, ToolAttackContext context, float damage) {
       for (MeleeHitToolHook hook : hooks) {
         hook.afterMeleeHit(tool, context, damage);
       }

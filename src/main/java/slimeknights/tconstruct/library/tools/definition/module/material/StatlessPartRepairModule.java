@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.ArmorModuleBuilder;
 
 import java.util.List;
@@ -42,12 +42,12 @@ public record StatlessPartRepairModule(int partIndex, int repairAmount) implemen
   }
 
   @Override
-  public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
+  public boolean isRepairMaterial(ToolStackView tool, MaterialId material) {
     return material.equals(tool.getMaterial(partIndex).material());
   }
 
   @Override
-  public void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {
+  public void addRepairMaterials(ToolStackView tool, Set<MaterialId> materials) {
     MaterialVariant material = tool.getMaterial(partIndex);
     if (material.isBound() && !material.is(ToolBuildHandler.RENDER_MATERIAL)) {
       materials.add(material.material());
@@ -55,7 +55,7 @@ public record StatlessPartRepairModule(int partIndex, int repairAmount) implemen
   }
 
   @Override
-  public float getRepairAmount(IToolStackView tool, MaterialId material) {
+  public float getRepairAmount(ToolStackView tool, MaterialId material) {
     return isRepairMaterial(tool, material) ? repairAmount : 0;
   }
 

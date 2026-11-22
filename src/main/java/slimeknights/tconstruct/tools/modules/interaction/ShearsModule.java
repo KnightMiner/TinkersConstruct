@@ -34,13 +34,13 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
 
 /** Module implementing shearing on kamas, scythes, and swords */
-public record ShearsModule(float flatBonus, float perLevelBonus, float expandedBonus, ModifierCondition<IToolStackView> condition) implements ModifierModule, EntityInteractionModifierHook, ItemAbilityModifierHook, ConditionalModule<IToolStackView> {
+public record ShearsModule(float flatBonus, float perLevelBonus, float expandedBonus, ModifierCondition<ToolStackView> condition) implements ModifierModule, EntityInteractionModifierHook, ItemAbilityModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ShearsModule>defaultHooks(ModifierHooks.ENTITY_INTERACT, ModifierHooks.ITEM_ABILITY);
   public static final RecordLoadable<ShearsModule> LOADER = RecordLoadable.create(
     FloatLoadable.FROM_ZERO.defaultField("flat", 0f, ShearsModule::flatBonus),
@@ -64,7 +64,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return condition.matches(tool, modifier) && (
       ability == ItemAbilities.SHEARS_DIG ||
       ability == ItemAbilities.SHEARS_HARVEST ||
@@ -73,7 +73,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
   }
 
   /** Runs the hook after shearing an entity */
-  private static void runShearHook(IToolStackView tool, Player player, Entity entity, boolean isTarget) {
+  private static void runShearHook(ToolStackView tool, Player player, Entity entity, boolean isTarget) {
     for (ModifierEntry entry : tool.getModifierList()) {
       entry.getHook(ModifierHooks.SHEAR_ENTITY).afterShearEntity(tool, entry, player, entity, isTarget);
     }
@@ -89,7 +89,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
    * @param fortune the fortune to apply to the sheared entity
    * @return if the sheering of the entity was performed or not
    */
-  private static boolean shearEntity(ItemStack itemStack, IToolStackView tool, Level world, Player player, Entity entity, int fortune) {
+  private static boolean shearEntity(ItemStack itemStack, ToolStackView tool, Level world, Player player, Entity entity, int fortune) {
     // event to override entity shearing
     Result result = new ToolShearEvent(itemStack, tool, world, player, entity, fortune).fire();
     if (result != Result.DEFAULT) {
@@ -107,7 +107,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
   }
 
   @Override
-  public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+  public InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     if (tool.isBroken() || !tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source) || !condition.matches(tool, modifier)) {
       return InteractionResult.PASS;
     }

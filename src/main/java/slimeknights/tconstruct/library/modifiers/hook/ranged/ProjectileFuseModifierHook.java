@@ -4,8 +4,8 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -21,12 +21,12 @@ public interface ProjectileFuseModifierHook {
    * @param projectile      Acting projectile
    * @param arrow           Acting arrow
    */
-  void onProjectileFuseFinish(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow);
+  void onProjectileFuseFinish(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow);
 
   /** Merger running each hook in sequence */
   record AllMerger(Collection<ProjectileFuseModifierHook> modules) implements ProjectileFuseModifierHook {
     @Override
-    public void onProjectileFuseFinish(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
+    public void onProjectileFuseFinish(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
       for (ProjectileFuseModifierHook module : modules) {
         module.onProjectileFuseFinish(modifiers, persistentData, modifier, ammo, projectile, arrow);
       }

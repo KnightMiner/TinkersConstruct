@@ -17,12 +17,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module for making eating a tool consume durability. */
-public record EdibleConsumeDurabilityModule(LevelingInt durabilityUsage, IJsonPredicate<LivingEntity> holder, ModifierCondition<IToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<IToolStackView> {
+public record EdibleConsumeDurabilityModule(LevelingInt durabilityUsage, IJsonPredicate<LivingEntity> holder, ModifierCondition<ToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<EdibleConsumeDurabilityModule>defaultHooks(ModifierHooks.EDIBLE_EFFECT);
   public static final RecordLoadable<EdibleConsumeDurabilityModule> LOADER = RecordLoadable.create(
     LevelingInt.LOADABLE.requiredField("durability_usage", EdibleConsumeDurabilityModule::durabilityUsage),
@@ -44,7 +44,7 @@ public record EdibleConsumeDurabilityModule(LevelingInt durabilityUsage, IJsonPr
   }
 
   @Override
-  public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+  public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
     if (condition.matches(tool, modifier) && holder.matches(player)) {
       int damage = this.durabilityUsage.compute(modifier.getEffectiveLevel());
       // want to direct damage, so handling the animation ourselves

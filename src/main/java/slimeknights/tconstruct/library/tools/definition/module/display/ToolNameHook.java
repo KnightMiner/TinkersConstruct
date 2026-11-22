@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -21,10 +21,10 @@ public interface ToolNameHook {
    * @param name        Name from previous hooks, allowing composing.
    * @return  Display name component
    */
-  Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name);
+  Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool, Component name);
 
   /** Gets the tool for the parameters */
-  static IToolStackView getTool(ItemStack stack, @Nullable IToolStackView tool) {
+  static ToolStackView getTool(ItemStack stack, @Nullable ToolStackView tool) {
     if (tool != null) {
       return tool;
     }
@@ -38,7 +38,7 @@ public interface ToolNameHook {
    * @param tool        Tool instance, may be null if one does not exist
    * @return  Display name including the head material
    */
-  static Component getName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool) {
+  static Component getName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool) {
     // support override name
     String name = TooltipUtil.getDisplayName(stack);
     if (!name.isEmpty()) {
@@ -60,7 +60,7 @@ public interface ToolNameHook {
   /** Merger running each hook in order */
   record ComposeMerger(Collection<ToolNameHook> modules) implements ToolNameHook {
     @Override
-    public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name) {
+    public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool, Component name) {
       // create the tool instance so we can share it between multiple implementations
       tool = getTool(stack, tool);
       for (ToolNameHook hook : modules) {

@@ -7,23 +7,12 @@ import slimeknights.mantle.data.codec.LoadableCodec;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.common.TinkerTags.Items;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 /** Variant of ItemPredicate for matching Tinker tools using {@link ToolStackPredicate} */
-public record ToolSubPredicate(IJsonPredicate<IToolStackView> predicate) implements ItemSubPredicate {
+public record ToolSubPredicate(IJsonPredicate<ToolStackView> predicate) implements ItemSubPredicate {
   public static final Codec<ToolSubPredicate> CODEC = new LoadableCodec<>(ToolStackPredicate.LOADER).xmap(ToolSubPredicate::new, ToolSubPredicate::predicate);
-
-  /** Creates a tool stack predicate */
-  public static ToolSubPredicate ofTool(IJsonPredicate<IToolStackView> predicate) {
-    return new ToolSubPredicate(predicate);
-  }
-
-  /** Creates a tool context predicate */
-  public static ToolSubPredicate ofContext(IJsonPredicate<IToolContext> predicate) {
-    return new ToolSubPredicate(ToolStackPredicate.context(predicate));
-  }
 
   @Override
   public boolean matches(ItemStack stack) {

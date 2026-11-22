@@ -50,11 +50,11 @@ import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability.FluidModifierHook;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -138,7 +138,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   /** Gets the amount to store in NBT to ensure no funny business with part swapping causes dupes */
-  private static float getValidationAmount(IToolStackView tool, ModifierEntry modifier) {
+  private static float getValidationAmount(ToolStackView tool, ModifierEntry modifier) {
     float level = modifier.getEffectiveLevel();
     for (ModifierEntry entry : tool.getModifiers()) {
       level = entry.getHook(ModifierHooks.CRAFT_COUNT).modifyCraftCount(tool, modifier, level);
@@ -149,7 +149,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Tank filling/draining */
 
   @Override
-  public int fill(IToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
+  public int fill(ToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
     if (resource.isEmpty()) {
       return 0;
     }
@@ -178,7 +178,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public FluidStack drain(IToolStackView tool, ModifierEntry modifier, int maxDrain, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, ModifierEntry modifier, int maxDrain, FluidAction action) {
     if (maxDrain > 0) {
       ModDataNBT data = tool.getPersistentData();
       Fluid fluid = getFluid(data);
@@ -201,7 +201,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public FluidStack drain(IToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
+  public FluidStack drain(ToolStackView tool, ModifierEntry modifier, FluidStack resource, FluidAction action) {
     if (!resource.isEmpty()) {
       ModDataNBT data = tool.getPersistentData();
       Fluid fluid = getFluid(data);
@@ -232,7 +232,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Other tank behaviors */
 
   @Override
-  public FluidStack getFluidInTank(IToolStackView tool, ModifierEntry modifier, int tank) {
+  public FluidStack getFluidInTank(ToolStackView tool, ModifierEntry modifier, int tank) {
     ModDataNBT data = tool.getPersistentData();
     Fluid fluid = getFluid(data);
     if (fluid != Fluids.EMPTY) {
@@ -248,7 +248,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public int getTankCapacity(IToolStackView tool, ModifierEntry modifier, int tank) {
+  public int getTankCapacity(ToolStackView tool, ModifierEntry modifier, int tank) {
     Fluid fluid = getFluid(tool.getPersistentData());
     if (fluid != Fluids.EMPTY) {
       return getAmount(modifier, fluid);
@@ -258,7 +258,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public boolean isFluidValid(IToolStackView tool, ModifierEntry modifier, int tank, FluidStack fluid) {
+  public boolean isFluidValid(ToolStackView tool, ModifierEntry modifier, int tank, FluidStack fluid) {
     return getAmount(fluid.getFluid()) > 0;
   }
 
@@ -266,13 +266,13 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Tool data */
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     ToolFluidCapability.addTanks(modifier, volatileData, this);
   }
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     ModDataNBT data = tool.getPersistentData();
     if (data.contains(KEY_FLUID, Tag.TAG_STRING)) {
       // if our new level is larger, error to prevent a fluid dupe
@@ -288,7 +288,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     // delete fluid on swap, such a waste
     clearFluid(tool.getPersistentData());
     return null;
@@ -298,7 +298,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Fluid effects */
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // if firing an arrow via multishot, don't fill the extra projectiles with fluid to prevent some dupes with effects
     if (arrow == null || arrow.pickup == Pickup.ALLOWED || shooter instanceof Player player && player.getAbilities().instabuild) {
       ModDataNBT toolData = tool.getPersistentData();
@@ -317,7 +317,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
+  public boolean onProjectileHitEntity(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target, boolean unblocked) {
     // find our fluid and ensure it affects blocks
     Fluid fluid = getFluid(persistentData);
     if (fluid != Fluids.EMPTY) {
@@ -359,7 +359,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public boolean onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
+  public boolean onProjectileHitBlock(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
     // find our fluid and ensure it affects blocks
     Fluid fluid = getFluid(persistentData);
     boolean used = false;
@@ -401,7 +401,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public void onProjectileFuseFinish(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
+  public void onProjectileFuseFinish(ModifierEntries modifiers, ModDataNBT persistentData, ModifierEntry modifier, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow) {
     Fluid fluid = getFluid(persistentData);
     boolean used = false;
     if (fluid != Fluids.EMPTY) {
@@ -444,7 +444,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Tooltip */
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     IModDataView data = tool.getPersistentData();
     Fluid fluid = getFluid(data);
     if (fluid != Fluids.EMPTY) {
@@ -457,7 +457,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     IModDataView data = tool.getPersistentData();
     Fluid fluid = getFluid(data);
     if (fluid != Fluids.EMPTY) {
@@ -476,7 +476,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /** Helper for working with models. Not designed to be used directly. */
   public static ToolTankHelper TANK_HELPER = new ToolTankHelper(ToolTankHelper.CAPACITY_STAT, KEY_FLUID) {
     @Override
-    public FluidStack getFluid(IToolStackView tool) {
+    public FluidStack getFluid(ToolStackView tool) {
       IModDataView data = tool.getPersistentData();
       Fluid fluid = SmashingModule.getFluid(data);
       if (fluid != Fluids.EMPTY) {
@@ -490,13 +490,13 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
 
     @Deprecated
     @Override
-    public FluidStack setFluid(IToolStackView tool, FluidStack fluid) {
+    public FluidStack setFluid(ToolStackView tool, FluidStack fluid) {
       // disallowed currently, as we don't have a quick way to validate capacity for multiple levels
       return FluidStack.EMPTY;
     }
 
     @Override
-    public int getCapacity(IToolStackView tool) {
+    public int getCapacity(ToolStackView tool) {
       IModDataView data = tool.getPersistentData();
       Fluid fluid = SmashingModule.getFluid(data);
       if (fluid != Fluids.EMPTY) {

@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // API
 public record LoadConditionStatVariable(ConditionalStatVariable ifTrue, ConditionalStatVariable ifFalse, ICondition... conditions) implements ConditionalStatVariable, ConditionalObject<ConditionalStatVariable> {
   @Override
-  public float getValue(IToolStackView tool, @Nullable LivingEntity entity) {
+  public float getValue(ToolStackView tool, @Nullable LivingEntity entity) {
     return (Util.testConditions(conditions) ? ifTrue : ifFalse).getValue(tool, entity);
   }
 

@@ -13,8 +13,8 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +28,7 @@ public interface EntityInteractionModifierHook {
 
   /**
 	 * Called when interacting with an entity before standard entity interaction.
-   * In general, its better to use {@link #afterEntityUse(IToolStackView, ModifierEntry, Player, LivingEntity, InteractionHand, InteractionSource)} for behavior more consistent with vanilla.
+   * In general, its better to use {@link #afterEntityUse(ToolStackView, ModifierEntry, Player, LivingEntity, InteractionHand, InteractionSource)} for behavior more consistent with vanilla.
    * @param tool       Tool performing interaction
    * @param modifier   Modifier instance
    * @param player     Interacting player
@@ -37,7 +37,7 @@ public interface EntityInteractionModifierHook {
    * @param source     Source of the interaction
    * @return  Return PASS or FAIL to allow vanilla handling, any other to stop vanilla and later modifiers from running.
 	 */
-  default InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+  default InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
     return InteractionResult.PASS;
   }
 
@@ -51,14 +51,14 @@ public interface EntityInteractionModifierHook {
    * @param source     Source of the interaction
    * @return  Return PASS or FAIL to allow vanilla handling, any other to stop vanilla and later modifiers from running.
    */
-  default InteractionResult afterEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
+  default InteractionResult afterEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
     return InteractionResult.PASS;
   }
 
   /** Logic to merge multiple interaction hooks into one */
   record FirstMerger(Collection<EntityInteractionModifierHook> modules) implements EntityInteractionModifierHook {
     @Override
-    public InteractionResult beforeEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
+    public InteractionResult beforeEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, Entity target, InteractionHand hand, InteractionSource source) {
       InteractionResult result = InteractionResult.PASS;
       for (EntityInteractionModifierHook module : modules) {
         result = module.beforeEntityUse(tool, modifier, player, target, hand, source);
@@ -70,7 +70,7 @@ public interface EntityInteractionModifierHook {
     }
 
     @Override
-    public InteractionResult afterEntityUse(IToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
+    public InteractionResult afterEntityUse(ToolStackView tool, ModifierEntry modifier, Player player, LivingEntity target, InteractionHand hand, InteractionSource source) {
       InteractionResult result = InteractionResult.PASS;
       for (EntityInteractionModifierHook module : modules) {
         result = module.afterEntityUse(tool, modifier, player, target, hand, source);
@@ -84,17 +84,17 @@ public interface EntityInteractionModifierHook {
 
 
   /** Checks if the tool has melee attacks disabled. Note this tells you nothing about it being a melee tool in the first place. */
-  static boolean meleeDisabled(IToolStackView tool) {
+  static boolean meleeDisabled(ToolStackView tool) {
     return tool.getVolatileData().getBoolean(NO_MELEE);
   }
 
   /** Checks if the tool is able to perform melee attacks. */
-  static boolean isMelee(IToolStackView tool) {
+  static boolean isMelee(ToolStackView tool) {
     return tool.hasTag(TinkerTags.Items.MELEE) && !meleeDisabled(tool);
   }
 
   /** Checks if the tool is able to perform melee attacks with attack speed. */
-  static boolean isMeleeWeapon(IToolStackView tool) {
+  static boolean isMeleeWeapon(ToolStackView tool) {
     return tool.hasTag(TinkerTags.Items.MELEE_WEAPON) && !meleeDisabled(tool);
   }
 

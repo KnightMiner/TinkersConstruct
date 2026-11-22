@@ -9,7 +9,7 @@ import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.tconstruct.library.json.variable.VariableLoaderRegistry;
 import slimeknights.tconstruct.library.json.variable.mining.MiningSpeedVariable;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -26,10 +26,10 @@ public interface ConditionalStatVariable extends IHaveLoader, MiningSpeedVariabl
    * @param entity  Entity context, will be null in tooltips
    * @return  Value for the given context
    */
-  float getValue(IToolStackView tool, @Nullable LivingEntity entity);
+  float getValue(ToolStackView tool, @Nullable LivingEntity entity);
 
   @Override
-  default float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  default float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     return getValue(tool, player);
   }
 
@@ -46,7 +46,7 @@ public interface ConditionalStatVariable extends IHaveLoader, MiningSpeedVariabl
     public static final RecordLoadable<ConditionalStatVariable.Constant> LOADER = VariableLoaderRegistry.constantLoader(ConditionalStatVariable.Constant::new);
 
     @Override
-    public float getValue(IToolStackView tool, @Nullable LivingEntity entity) {
+    public float getValue(ToolStackView tool, @Nullable LivingEntity entity) {
       return value;
     }
 

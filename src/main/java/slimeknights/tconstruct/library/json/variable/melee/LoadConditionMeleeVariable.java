@@ -5,7 +5,7 @@ import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // API
 public record LoadConditionMeleeVariable(MeleeVariable ifTrue, MeleeVariable ifFalse, ICondition... conditions) implements MeleeVariable, ConditionalObject<MeleeVariable> {
   @Override
-  public float getValue(IToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
+  public float getValue(ToolStackView tool, @Nullable ToolAttackContext context, @Nullable LivingEntity attacker) {
     return (Util.testConditions(conditions) ? ifTrue : ifFalse).getValue(tool, context, attacker);
   }
 

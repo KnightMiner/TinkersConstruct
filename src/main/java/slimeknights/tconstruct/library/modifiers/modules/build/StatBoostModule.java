@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Module that boosts a tool stat */
-public record StatBoostModule(INumericToolStat<?> stat, StatOperation operation, LevelingValue amount, ModifierCondition<IToolContext> condition) implements ToolStatsModifierHook, ModifierModule, ConditionalModule<IToolContext> {
+public record StatBoostModule(INumericToolStat<?> stat, StatOperation operation, LevelingValue amount, ModifierCondition<ToolContext> condition) implements ToolStatsModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<StatBoostModule>defaultHooks(ModifierHooks.TOOL_STATS);
   public static RecordLoadable<StatBoostModule> LOADER = RecordLoadable.create(
     ToolStats.NUMERIC_LOADER.requiredField("stat", StatBoostModule::stat),
@@ -39,7 +39,7 @@ public record StatBoostModule(INumericToolStat<?> stat, StatOperation operation,
   public StatBoostModule {}
 
   @Override
-  public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     if (condition.matches(context, modifier) && stat.supports(context.getItem())) {
       operation.apply(builder, stat, amount.compute(modifier.getEffectiveLevel()));
     }

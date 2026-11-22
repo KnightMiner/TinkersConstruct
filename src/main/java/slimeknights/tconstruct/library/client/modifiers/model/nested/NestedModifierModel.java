@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.client.modifiers.ModifierModelLoadable;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public interface NestedModifierModel extends ModifierModel {
   ModifierModel nested();
 
   /** Gets the relevant modifier entry to use from the tool */
-  ModifierEntry getEntry(IToolStackView tool);
+  ModifierEntry getEntry(ToolStackView tool);
 
   @Override
   default void validate(Function<Material, TextureAtlasSprite> spriteGetter) {
@@ -35,7 +35,7 @@ public interface NestedModifierModel extends ModifierModel {
 
   @Nullable
   @Override
-  default Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+  default Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     ModifierEntry entry = getEntry(tool);
     if (entry.getLevel() > 0) {
       return nested().getCacheKey(tool, entry);
@@ -44,7 +44,7 @@ public interface NestedModifierModel extends ModifierModel {
   }
 
   @Override
-  default void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  default void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material, TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     ModifierEntry trait = getEntry(tool);
     if (trait.getLevel() > 0) {
       nested().addQuads(tool, trait, spriteGetter, transforms, isLarge, startTintIndex, quadConsumer, pixels);
@@ -57,7 +57,7 @@ public interface NestedModifierModel extends ModifierModel {
   }
 
   @Override
-  default int getTint(IToolStackView tool, ModifierEntry entry, int index) {
+  default int getTint(ToolStackView tool, ModifierEntry entry, int index) {
     // assuming if we made it this far, the condition matches
     return nested().getTint(tool, getEntry(tool), index);
   }
@@ -78,7 +78,7 @@ public interface NestedModifierModel extends ModifierModel {
     }
 
     @Override
-    public ModifierEntry getEntry(IToolStackView tool) {
+    public ModifierEntry getEntry(ToolStackView tool) {
       return tool.getCraftedModifiers().getEntry(modifier);
     }
   }
@@ -100,7 +100,7 @@ public interface NestedModifierModel extends ModifierModel {
     }
 
     @Override
-    public ModifierEntry getEntry(IToolStackView tool) {
+    public ModifierEntry getEntry(ToolStackView tool) {
       return tool.getModifier(modifier);
     }
   }

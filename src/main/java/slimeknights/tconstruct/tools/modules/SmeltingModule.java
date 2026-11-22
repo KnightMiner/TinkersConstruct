@@ -61,7 +61,7 @@ import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.layout.Patterns;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -145,13 +145,13 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
     }
   }
 
-  /** Redirect to {@link #cookItems(IToolStackView, ModifierEntry, Level, LivingEntity, float)} that fetches level from an entity. */
-  private void cookItems(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, float amount) {
+  /** Redirect to {@link #cookItems(ToolStackView, ModifierEntry, Level, LivingEntity, float)} that fetches level from an entity. */
+  private void cookItems(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, float amount) {
     cookItems(tool, modifier, holder.level(), holder, amount);
   }
 
   /** Logic to actually cook the items */
-  private void cookItems(IToolStackView tool, ModifierEntry modifier, Level level, @Nullable LivingEntity holder, float amount) {
+  private void cookItems(ToolStackView tool, ModifierEntry modifier, Level level, @Nullable LivingEntity holder, float amount) {
     if (!input.condition().matches(tool, modifier) || amount < 0) {
       return;
     }
@@ -279,25 +279,25 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
+  public void afterMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
     // melee hits cook by melee damage
     cookItems(tool, modifier, context.getAttacker(), damageDealt);
   }
 
   @Override
-  public void onLauncherHitEntity(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
+  public void onLauncherHitEntity(ToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity attacker, Entity target, @Nullable LivingEntity livingTarget, float damageDealt) {
     cookItems(tool, modifier, attacker, damageDealt);
   }
 
   @Override
-  public void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
+  public void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
     if (tool.hasTag(TinkerTags.Items.HARVEST)) {
       cookItems(tool, modifier, context.getLiving(), harvested);
     }
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // arrow launch cook by arrow power
     float amount;
     if (arrow != null) {
@@ -311,7 +311,7 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
   }
 
   @Override
-  public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     // damage taken cooks for armor/shields
     if (tool.hasTag(TinkerTags.Items.ARMOR)) {
       cookItems(tool, modifier, context.getEntity(), amount);
@@ -319,18 +319,18 @@ public record SmeltingModule(RecipeType<? extends AbstractCookingRecipe> recipeT
   }
 
   @Override
-  public void afterSlingLaunch(IToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
+  public void afterSlingLaunch(ToolStackView tool, ModifierEntry modifier, LivingEntity holder, LivingEntity target, ModifierEntry slingSource, float force, float multiplier, Vec3 angle) {
     // power becomes force, but is halved when applied, so double it. Divide by sling specific multipliers
     cookItems(tool, modifier, holder, force * 2 / multiplier);
   }
 
   @Override
-  public void afterHarvest(IToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
+  public void afterHarvest(ToolStackView tool, ModifierEntry modifier, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos) {
     cookItems(tool, modifier, context.getLevel(), context.getPlayer(), 1);
   }
 
   @Override
-  public void afterShearEntity(IToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
+  public void afterShearEntity(ToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
     cookItems(tool, modifier, player, 1);
   }
 

@@ -30,7 +30,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Set;
@@ -39,7 +39,7 @@ import java.util.Set;
  * Module for increasing the looting level, used for tools, on pants, and from bows
  * Currently, does not support incremental.
  */
-public interface LootingModule extends ModifierModule, LevelingIntModule, ConditionalModule<IToolStackView> {
+public interface LootingModule extends ModifierModule, LevelingIntModule, ConditionalModule<ToolStackView> {
   /* Common fields */
   LoadableField<IJsonPredicate<LivingEntity>,LootingModule> HOLDER = LivingEntityPredicate.LOADER.defaultField("holder", LootingModule::holder);
   RecordField<EntityTargetPredicate,LootingModule> TARGET = EntityTargetPredicate.defaultField(LootingModule::target);
@@ -53,7 +53,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   IJsonPredicate<DamageSource> damageSource();
 
   /** Checks if the conditions match the given context */
-  default boolean matchesConditions(IToolStackView tool, ModifierEntry modifier, LootingContext context) {
+  default boolean matchesConditions(ToolStackView tool, ModifierEntry modifier, LootingContext context) {
     return condition().matches(tool, modifier) && holder().matches(context.getHolder()) && target().matches(context.getTarget(), context.getLivingTarget()) && TinkerPredicate.matches(damageSource(), context.getDamageSource());
   }
 
@@ -105,7 +105,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   }
 
   /** Implementation for weapon looting */
-  record Weapon(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition) implements LootingModule, LootingModifierHook {
+  record Weapon(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<ToolStackView> condition) implements LootingModule, LootingModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Weapon>defaultHooks(ModifierHooks.WEAPON_LOOTING);
     public static final RecordLoadable<Weapon> LOADER = RecordLoadable.create(LevelingIntModule.FIELD, HOLDER, TARGET, DAMAGE_SOURCE, ModifierCondition.TOOL_FIELD, Weapon::new);
 
@@ -114,7 +114,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
     public Weapon {}
 
     @Override
-    public int updateLooting(IToolStackView tool, ModifierEntry modifier, LootingContext context, int looting) {
+    public int updateLooting(ToolStackView tool, ModifierEntry modifier, LootingContext context, int looting) {
       if (matchesConditions(tool, modifier, context)) {
         looting += getLevel(modifier);
       }
@@ -133,7 +133,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
   }
 
   /** Implementation for armor looting */
-  record Armor(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<IToolStackView> condition, Set<EquipmentSlot> slots) implements LootingModule, ArmorLootingModifierHook {
+  record Armor(LevelingInt level, IJsonPredicate<LivingEntity> holder, EntityTargetPredicate target, IJsonPredicate<DamageSource> damageSource, ModifierCondition<ToolStackView> condition, Set<EquipmentSlot> slots) implements LootingModule, ArmorLootingModifierHook {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<Armor>defaultHooks(ModifierHooks.ARMOR_LOOTING);
     public static final RecordLoadable<Armor> LOADER = RecordLoadable.create(LevelingIntModule.FIELD, HOLDER, TARGET, DAMAGE_SOURCE, ModifierCondition.TOOL_FIELD, TinkerLoadables.EQUIPMENT_SLOT_SET.requiredField("slots", Armor::slots), Armor::new);
 
@@ -142,7 +142,7 @@ public interface LootingModule extends ModifierModule, LevelingIntModule, Condit
     public Armor {}
 
     @Override
-    public int updateArmorLooting(IToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting) {
+    public int updateArmorLooting(ToolStackView tool, ModifierEntry modifier, LootingContext context, EquipmentContext equipment, EquipmentSlot slot, int looting) {
       if (slots.contains(slot) && matchesConditions(tool, modifier, context)) {
         looting += getLevel(modifier);
       }

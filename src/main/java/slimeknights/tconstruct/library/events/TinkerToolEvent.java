@@ -11,11 +11,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 @Getter
 public abstract class TinkerToolEvent extends Event {
   private final ItemStack stack;
-  private final IToolStackView tool;
+  private final ToolStackView tool;
   public TinkerToolEvent(ItemStack stack) {
     this.stack = stack;
     this.tool = ToolStack.from(stack);
@@ -42,7 +42,7 @@ public abstract class TinkerToolEvent extends Event {
     private final BlockPos pos;
     private final InteractionSource source;
 
-    public ToolHarvestEvent(IToolStackView tool, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos, InteractionSource source) {
+    public ToolHarvestEvent(ToolStackView tool, UseOnContext context, ServerLevel world, BlockState state, BlockPos pos, InteractionSource source) {
       super(getItem(context, source), tool);
       this.context = context;
       this.world = world;
@@ -76,7 +76,7 @@ public abstract class TinkerToolEvent extends Event {
 
     /** Fires this event and posts the result */
     public Result fire() {
-      MinecraftForge.EVENT_BUS.post(this);
+      NeoForge.EVENT_BUS.post(this);
       return this.getResult();
     }
   }
@@ -91,7 +91,7 @@ public abstract class TinkerToolEvent extends Event {
     private final Player player;
     private final Entity target;
     private final int fortune;
-    public ToolShearEvent(ItemStack stack, IToolStackView tool, Level world, Player player, Entity target, int fortune) {
+    public ToolShearEvent(ItemStack stack, ToolStackView tool, Level world, Player player, Entity target, int fortune) {
       super(stack, tool);
       this.world = world;
       this.player = player;

@@ -42,6 +42,7 @@ import slimeknights.tconstruct.library.modifiers.modules.build.RarityModule;
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.capability.ToolCapabilityProvider;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
@@ -50,9 +51,8 @@ import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -288,7 +288,7 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
 
 
   @Override
-  public Multimap<Attribute,AttributeModifier> getAttributeModifiers(IToolStackView tool, EquipmentSlot slot) {
+  public Multimap<Attribute,AttributeModifier> getAttributeModifiers(ToolStackView tool, EquipmentSlot slot) {
     if (slot != getEquipmentSlot()) {
       return ImmutableMultimap.of();
     }
@@ -296,17 +296,17 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
     ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
     if (!tool.isBroken()) {
       // base stats
-      StatsNBT statsNBT = tool.getStats();
+      StatValues statValues = tool.getStats();
       UUID uuid = ARMOR_MODIFIER_UUID_PER_TYPE.get(type);
-      float armor = statsNBT.get(ToolStats.ARMOR);
+      float armor = statValues.get(ToolStats.ARMOR);
       if (armor > 0) {
         builder.put(Attributes.ARMOR, new AttributeModifier(uuid, "tconstruct.armor.armor", armor, AttributeModifier.Operation.ADDITION));
       }
-      float toughness = statsNBT.get(ToolStats.ARMOR_TOUGHNESS);
+      float toughness = statValues.get(ToolStats.ARMOR_TOUGHNESS);
       if (toughness > 0) {
         builder.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(uuid, "tconstruct.armor.toughness", toughness, AttributeModifier.Operation.ADDITION));
       }
-      double knockbackResistance = statsNBT.get(ToolStats.KNOCKBACK_RESISTANCE);
+      double knockbackResistance = statValues.get(ToolStats.KNOCKBACK_RESISTANCE);
       if (knockbackResistance > 0) {
         builder.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(uuid, "tconstruct.armor.knockback_resistance", knockbackResistance, AttributeModifier.Operation.ADDITION));
       }
@@ -404,7 +404,7 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
   }
 
   @Override
-  public List<Component> getStatInformation(IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
+  public List<Component> getStatInformation(ToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
     tooltips = TooltipUtil.getArmorStats(tool, player, tooltips, key, tooltipFlag);
     TooltipUtil.addAttributes(this, tool, player, tooltips, TooltipUtil.SHOW_ARMOR_ATTRIBUTES, getEquipmentSlot());
     return tooltips;

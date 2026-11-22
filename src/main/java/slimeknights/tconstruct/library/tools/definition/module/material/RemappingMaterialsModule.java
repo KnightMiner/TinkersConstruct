@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +45,13 @@ public record RemappingMaterialsModule(List<RandomMaterial> materials, List<Map<
   }
 
   @Override
-  public MaterialNBT fillMaterials(ToolDefinition definition, RandomSource random) {
+  public ToolMaterials fillMaterials(ToolDefinition definition, RandomSource random) {
     return RandomMaterial.build(ToolMaterialHook.stats(definition), materials, random);
   }
 
   @Override
-  public MaterialNBT fillMaterials(ToolDefinition definition, MaterialNBT existing, RandomSource random) {
-    MaterialNBT newMaterials = fillMaterials(definition, random);
+  public ToolMaterials fillMaterials(ToolDefinition definition, ToolMaterials existing, RandomSource random) {
+    ToolMaterials newMaterials = fillMaterials(definition, random);
     int oldSize = existing.size();
     // no existing materials, return the full new ones
     if (oldSize == 0) {
@@ -77,7 +77,7 @@ public record RemappingMaterialsModule(List<RandomMaterial> materials, List<Map<
     for (int i = oldSize; i < newSize; i++) {
       materials.add(newMaterials.get(i));
     }
-    return MaterialNBT.of(materials);
+    return ToolMaterials.of(materials);
   }
 
 

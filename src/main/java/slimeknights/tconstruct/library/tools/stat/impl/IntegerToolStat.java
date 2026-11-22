@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 /**
  * Same as {@link FloatToolStat} but displays stat values as integers. Used for stats that are always read as ints.
- * @see slimeknights.tconstruct.library.tools.nbt.StatsNBT#getInt(IToolStat)
+ * @see slimeknights.tconstruct.library.tools.component.StatValues#getInt(IToolStat)
  */
 public class IntegerToolStat extends FloatToolStat {
   public IntegerToolStat(ResourceId<IToolStat<?>> id, int color, float defaultValue, float minValue, float maxValue, IJsonPredicate<Item> items) {

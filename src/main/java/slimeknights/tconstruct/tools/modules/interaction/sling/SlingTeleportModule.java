@@ -21,14 +21,14 @@ import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchM
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Teleport through blocks in the look direction
  * @param forceMultiplier     Base force multiplier to apply.
  * @param drawtimeMultiplier  Multiplier on the drawspeed to apply.
  */
-public record SlingTeleportModule(LevelingValue forceMultiplier, float drawtimeMultiplier, IJsonPredicate<LivingEntity> target, ModifierCondition<IToolStackView> condition) implements SlingModule {
+public record SlingTeleportModule(LevelingValue forceMultiplier, float drawtimeMultiplier, IJsonPredicate<LivingEntity> target, ModifierCondition<ToolStackView> condition) implements SlingModule {
   public static final RecordLoadable<SlingTeleportModule> LOADER = RecordLoadable.create(FORCE_FIELD, DRAWTIME_FIELD, TARGET_FIELD, ModifierCondition.TOOL_FIELD, SlingTeleportModule::new);
 
   @Override
@@ -37,7 +37,7 @@ public record SlingTeleportModule(LevelingValue forceMultiplier, float drawtimeM
   }
 
   @Override
-  public void sling(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
+  public void sling(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int chargeTime, ModifierEntry activeModifier) {
     Level level = entity.level();
     if (!level.isClientSide && entity instanceof ServerPlayer player) {
       // must have enough charge and force must not be zeroed by a modifier

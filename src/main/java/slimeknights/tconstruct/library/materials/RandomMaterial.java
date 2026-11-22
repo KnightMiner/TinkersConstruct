@@ -30,7 +30,7 @@ import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.recipe.material.MaterialRecipeCache;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
@@ -102,8 +102,8 @@ public abstract class RandomMaterial implements IHaveLoader {
   public void clearCache() {}
 
   /** Builds the material list from the given random materials and stat types */
-  public static MaterialNBT build(List<MaterialStatsId> statTypes, List<RandomMaterial> materials, RandomSource random) {
-    MaterialNBT.Builder builder = MaterialNBT.builder();
+  public static ToolMaterials build(List<MaterialStatsId> statTypes, List<RandomMaterial> materials, RandomSource random) {
+    ToolMaterials.Builder builder = ToolMaterials.builder();
     int max = Math.min(materials.size(), statTypes.size());
     for (int i = 0; i < max; i++) {
       builder.add(materials.get(i).getMaterial(statTypes.get(i), random));

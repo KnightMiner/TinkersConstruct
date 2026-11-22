@@ -7,7 +7,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -30,12 +30,12 @@ public interface OnAttackedModifierHook {
    * @param amount           Amount of damage caused
    * @param isDirectDamage   If true, this attack is direct damage from an entity
    */
-  void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage);
+  void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage);
 
   /** Merger that runs all submodules */
   record AllMerger(Collection<OnAttackedModifierHook> modules) implements OnAttackedModifierHook {
     @Override
-    public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+    public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
       for (OnAttackedModifierHook module : modules) {
         module.onAttacked(tool, modifier, context, slotType, source, amount, isDirectDamage);
       }

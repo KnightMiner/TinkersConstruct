@@ -27,6 +27,7 @@ import slimeknights.tconstruct.library.modifiers.modules.build.RarityModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
@@ -36,9 +37,8 @@ import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDat
 import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.tools.modules.ArmorModuleBuilder;
 import slimeknights.tconstruct.tools.stats.PlatingMaterialStats;
@@ -81,9 +81,9 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public void addVolatileData(IToolContext context, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, MutableDataComponentHolder volatileData) {
     Rarity max = null;
-    MaterialNBT materials = context.getMaterials();
+    ToolMaterials materials = context.getMaterials();
     boolean shiny = false;
     for (int i = 0; i < statTypes.size(); i++) {
       MaterialVariant material = materials.get(i);
@@ -134,8 +134,8 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public boolean isRepairMaterial(IToolStackView tool, MaterialId material) {
-    MaterialNBT toolMaterials = tool.getMaterials();
+  public boolean isRepairMaterial(ToolStackView tool, MaterialId material) {
+    ToolMaterials toolMaterials = tool.getMaterials();
     for (int part : getRepairIndices()) {
       if (toolMaterials.get(part).is(material)) {
         return true;
@@ -145,8 +145,8 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public void addRepairMaterials(IToolStackView tool, Set<MaterialId> materials) {
-    MaterialNBT toolMaterials = tool.getMaterials();
+  public void addRepairMaterials(ToolStackView tool, Set<MaterialId> materials) {
+    ToolMaterials toolMaterials = tool.getMaterials();
     for (int part : getRepairIndices()) {
       MaterialVariant material = toolMaterials.get(part);
       if (material.isBound() && !material.is(ToolBuildHandler.RENDER_MATERIAL)) {
@@ -156,7 +156,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public float getRepairAmount(IToolStackView tool, MaterialId material) {
+  public float getRepairAmount(ToolStackView tool, MaterialId material) {
     // first, find all stat types we might try for this material
     Set<MaterialStatsId> matchingStats = new HashSet<>();
     for (int i : getRepairIndices()) {
@@ -178,8 +178,8 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public void addToolStats(IToolContext context, ModifierStatsBuilder builder) {
-    MaterialNBT materials = context.getMaterials();
+  public void addToolStats(ToolContext context, ModifierStatsBuilder builder) {
+    ToolMaterials materials = context.getMaterials();
     if (!materials.isEmpty()) {
       IMaterialRegistry registry = MaterialRegistry.getInstance();
       for (int i = 0; i < statTypes.size(); i++) {
@@ -194,7 +194,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
   }
 
   @Override
-  public void addTraits(ToolDefinition definition, MaterialNBT materials, ModifierBuilder builder) {
+  public void addTraits(ToolDefinition definition, ToolMaterials materials, ModifierBuilder builder) {
     int max = Math.min(materials.size(), statTypes.size());
     if (max > 0) {
       IMaterialRegistry materialRegistry = MaterialRegistry.getInstance();

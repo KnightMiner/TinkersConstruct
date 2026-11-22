@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.tables.block.entity.table.ModifierWorktableBlockEntity;
 
 import javax.annotation.Nullable;

@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Set;
@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * Module that allows a modifier to perform tool actions
  */
-public record ItemAbilitiesModule(Set<ItemAbility> abilities, ModifierCondition<IToolStackView> condition) implements ItemAbilityModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record ItemAbilitiesModule(Set<ItemAbility> abilities, ModifierCondition<ToolStackView> condition) implements ItemAbilityModifierHook, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ItemAbilitiesModule>defaultHooks(ModifierHooks.ITEM_ABILITY);
   public static final RecordLoadable<ItemAbilitiesModule> LOADER = RecordLoadable.create(
     Loadables.ITEM_ABILITY.set().requiredField("abilities", ItemAbilitiesModule::abilities),
@@ -32,7 +32,7 @@ public record ItemAbilitiesModule(Set<ItemAbility> abilities, ModifierCondition<
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return condition.matches(tool, modifier) && abilities.contains(ability);
   }
 

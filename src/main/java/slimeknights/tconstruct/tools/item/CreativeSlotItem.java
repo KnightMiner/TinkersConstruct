@@ -19,9 +19,9 @@ import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.CollectionComponent;
-import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.CollectionComponent;
+import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -110,7 +110,7 @@ public class CreativeSlotItem extends Item {
           }
 
           // add the slot - automatically removes if empty
-          SlotsNBT slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, SlotsNBT.EMPTY).add(slotType, amount);
+          ModifierSlots slots = tool.getOrDefault(TinkerData.CREATIVE_SLOTS, ModifierSlots.EMPTY).add(slotType, amount);
           CollectionComponent.set(tool, TinkerData.CREATIVE_SLOTS, slots);
 
           // if no slot remain in the creative modifier, remove it

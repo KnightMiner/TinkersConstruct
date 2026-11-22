@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.behavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,12 +18,12 @@ public interface ProcessLootModifierHook {
    * @param context        Full loot context
    * TODO: can we ditch this hook in favor of just using GLMs? Just need a loot condition to detect a modifier, and it gives us a lot more flexability
    */
-  void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context);
+  void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<ProcessLootModifierHook> modules) implements ProcessLootModifierHook {
     @Override
-    public void processLoot(IToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
+    public void processLoot(ToolStackView tool, ModifierEntry modifier, List<ItemStack> generatedLoot, LootContext context) {
       for (ProcessLootModifierHook module : modules) {
         module.processLoot(tool, modifier, generatedLoot, context);
       }

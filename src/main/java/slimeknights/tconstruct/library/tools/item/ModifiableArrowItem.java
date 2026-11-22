@@ -35,8 +35,8 @@ import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameH
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ModifiableArrow;
 
@@ -83,7 +83,7 @@ public class ModifiableArrowItem extends ArrowItem implements IModifiableDisplay
       player.getCooldowns().addCooldown(stack.getItem(), 10);
       if (!level.isClientSide()) {
         ModifiableArrow arrow = new ModifiableArrow(level, player);
-        IToolStackView tool = arrow.onCreate(stack, player);
+        ToolStackView tool = arrow.onCreate(stack, player);
         float velocity = ConditionalStatModifierHook.getModifiedStat(tool, player, ToolStats.VELOCITY);
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity, 1.0F);
         level.addFreshEntity(arrow);
@@ -184,7 +184,7 @@ public class ModifiableArrowItem extends ArrowItem implements IModifiableDisplay
   }
 
   @Override
-  public List<Component> getStatInformation(IToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
+  public List<Component> getStatInformation(ToolStackView tool, @Nullable Player player, List<Component> tooltips, TooltipKey key, TooltipFlag tooltipFlag) {
     return TooltipUtil.getAmmoStats(tool, player, tooltips, key, tooltipFlag);
   }
 

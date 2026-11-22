@@ -10,7 +10,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -58,7 +58,7 @@ public class ModifierRecipeLookup {
    * @return  Salvage recipe, or null if no salvage is found
    */
   @Nullable
-  public static ModifierSalvage getSalvage(ItemStack stack, IToolStackView tool, ModifierId modifier, int modifierLevel) {
+  public static ModifierSalvage getSalvage(ItemStack stack, ToolStackView tool, ModifierId modifier, int modifierLevel) {
     for (ModifierSalvage salvage : SALVAGE.get(modifier)) {
       if (salvage.matches(stack, tool, modifierLevel)) {
         return salvage;

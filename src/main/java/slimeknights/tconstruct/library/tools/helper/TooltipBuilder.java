@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningTierToolHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -42,11 +42,11 @@ public class TooltipBuilder {
   /** Prefixed broken string */
   private static final Component TOOLTIP_BROKEN_PREFIXED = ToolStats.DURABILITY.getPrefix().append(TOOLTIP_BROKEN);
 
-  private final IToolStackView tool;
+  private final ToolStackView tool;
   @Getter
   private final List<Component> tooltips;
 
-  public TooltipBuilder(IToolStackView tool) {
+  public TooltipBuilder(ToolStackView tool) {
     this.tool = tool;
     this.tooltips = new ArrayList<>();
   }

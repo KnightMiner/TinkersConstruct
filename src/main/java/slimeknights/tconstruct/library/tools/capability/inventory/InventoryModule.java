@@ -42,9 +42,9 @@ import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.InventoryModifierHook;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.StackMatch;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.BitSet;
@@ -55,7 +55,7 @@ import java.util.function.Predicate;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class InventoryModule implements ModifierModule, InventoryModifierHook, VolatileDataModifierHook, ValidateModifierHook, ModifierRemovalHook, ModuleWithKey, ConditionalModule<IToolContext>, SlotStackModifierHook {
+public class InventoryModule implements ModifierModule, InventoryModifierHook, VolatileDataModifierHook, ValidateModifierHook, ModifierRemovalHook, ModuleWithKey, ConditionalModule<ToolContext>, SlotStackModifierHook {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<InventoryModule>defaultHooks(ToolInventoryCapability.HOOK, ModifierHooks.VOLATILE_DATA, ModifierHooks.VALIDATE, ModifierHooks.REMOVE, ModifierHooks.SLOT_STACK);
   /** Mod Data NBT mapper to get a compound list */
   public static final BiFunction<CompoundTag,String,ListTag> GET_COMPOUND_LIST = (nbt, name) -> nbt.getList(name, Tag.TAG_COMPOUND);
@@ -84,7 +84,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   /** Filter for valid items in the slot */
   private final @Nullable Pattern pattern;
   /** Slot background to show */
-  private final ModifierCondition<IToolContext> condition;
+  private final ModifierCondition<ToolContext> condition;
   /** Additional conditions */
   private final IntRange validationLevel;
 
@@ -107,30 +107,30 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   }
 
   @Override
-  public int getSlots(IToolStackView tool, ModifierEntry modifier) {
+  public int getSlots(ToolStackView tool, ModifierEntry modifier) {
     return condition.matches(tool, modifier) ? getPotentialSlots(modifier.getEffectiveLevel()) : 0;
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
       ToolInventoryCapability.addSlots(volatileData, getPotentialSlots(modifier.getEffectiveLevel()));
     }
   }
 
   @Override
-  public int getSlotLimit(IToolStackView tool, ModifierEntry modifier, int slot) {
+  public int getSlotLimit(ToolStackView tool, ModifierEntry modifier, int slot) {
     return slotLimit.compute(modifier.getEffectiveLevel());
   }
 
   @Override
-  public boolean isItemValid(IToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
+  public boolean isItemValid(ToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
     return condition.matches(tool, modifier) && filter.matches(stack.getItem());
   }
 
   @Nullable
   @Override
-  public Pattern getPattern(IToolStackView tool, ModifierEntry modifier, int slot, boolean hasStack) {
+  public Pattern getPattern(ToolStackView tool, ModifierEntry modifier, int slot, boolean hasStack) {
     return hasStack ? null : pattern;
   }
 
@@ -138,7 +138,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   /* Inventory */
 
   @Override
-  public ItemStack getStack(IToolStackView tool, ModifierEntry modifier, int slot) {
+  public ItemStack getStack(ToolStackView tool, ModifierEntry modifier, int slot) {
     IModDataView modData = tool.getPersistentData();
     ResourceLocation key = getKey(modifier.getModifier());
     if (slot < getSlots(tool, modifier) && modData.contains(key, Tag.TAG_LIST)) {
@@ -154,7 +154,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   }
 
   @Override
-  public void setStack(IToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
+  public void setStack(ToolStackView tool, ModifierEntry modifier, int slot, ItemStack stack) {
     if (slot < getSlots(tool, modifier)) {
       ListTag list;
       ModDataNBT modData = tool.getPersistentData();
@@ -206,7 +206,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     // don't validate if the module is not running
     if (condition.tool().matches(tool) && validationLevel.test(modifier.getLevel())) {
       IModDataView persistentData = tool.getPersistentData();
@@ -244,7 +244,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     // if we currently have item data, then return an error
     ModDataNBT persistentData = tool.getPersistentData();
     ResourceLocation key = getKey(modifier);
@@ -273,7 +273,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   }
 
   @Override
-  public StackMatch findStack(IToolStackView tool, ModifierEntry modifier, Predicate<ItemStack> predicate) {
+  public StackMatch findStack(ToolStackView tool, ModifierEntry modifier, Predicate<ItemStack> predicate) {
     // can save a lot of effort if we have no slots
     int max = getSlots(tool, modifier);
     if (max > 0) {
@@ -299,7 +299,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   }
 
   @Override
-  public List<ItemStack> getAllStacks(IToolStackView tool, ModifierEntry entry, List<ItemStack> stackList) {
+  public List<ItemStack> getAllStacks(ToolStackView tool, ModifierEntry entry, List<ItemStack> stackList) {
     // can save a lot of effort if we have no slots
     int max = getSlots(tool, entry);
     if (max > 0) {
@@ -333,7 +333,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   /* Slot interaction */
 
   @Override
-  public boolean overrideOtherStackedOnMe(IToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
+  public boolean overrideOtherStackedOnMe(ToolStackView slotTool, ModifierEntry modifier, ItemStack held, Slot slot, Player player, SlotAccess access) {
     if (getSlots(slotTool, modifier) > 0) {
       return InventorySlotMenuModule.INSTANCE.overrideOtherStackedOnMe(slotTool, modifier, held, slot, player, access);
     }

@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
@@ -18,15 +18,15 @@ import java.util.function.Function;
 
 /** Handles free and used modifier slots on tools */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class SlotsNBT implements CollectionComponent {
+public class ModifierSlots implements CollectionComponent {
   /** Instance with no entries. */
-  public static final SlotsNBT EMPTY = new SlotsNBT(Object2IntMaps.emptyMap());
+  public static final ModifierSlots EMPTY = new ModifierSlots(Object2IntMaps.emptyMap());
 
-  public static final Codec<SlotsNBT> CODEC;
-  public static final StreamCodec<ByteBuf,SlotsNBT> STREAM_CODEC;
+  public static final Codec<ModifierSlots> CODEC;
+  public static final StreamCodec<ByteBuf, ModifierSlots> STREAM_CODEC;
   static {
-    Function<Object2IntMap<SlotType>,SlotsNBT> constructor = SlotsNBT::create;
-    Function<SlotsNBT,Object2IntMap<SlotType>> getter = s -> s.slots;
+    Function<Object2IntMap<SlotType>, ModifierSlots> constructor = ModifierSlots::create;
+    Function<ModifierSlots,Object2IntMap<SlotType>> getter = s -> s.slots;
     CODEC = TinkerCodecs.object2IntMap(SlotType.CODEC).xmap(constructor, getter);
     STREAM_CODEC = TinkerStreamCodecs.object2IntMap(SlotType.STREAM_CODEC).map(constructor, getter);
   }
@@ -35,11 +35,11 @@ public class SlotsNBT implements CollectionComponent {
   private final Object2IntMap<SlotType> slots;
 
   /** Creates a new map with the given slots */
-  private static SlotsNBT create(Object2IntMap<SlotType> slots) {
+  private static ModifierSlots create(Object2IntMap<SlotType> slots) {
     if (slots.isEmpty()) {
       return EMPTY;
     }
-    return new SlotsNBT(Object2IntMaps.unmodifiable(slots));
+    return new ModifierSlots(Object2IntMaps.unmodifiable(slots));
   }
 
   /** Gets the number of slots of the given type. */
@@ -53,7 +53,7 @@ public class SlotsNBT implements CollectionComponent {
   }
 
   /** Creates a copy of this data with the given number of slots */
-  public SlotsNBT with(SlotType type, int count) {
+  public ModifierSlots with(SlotType type, int count) {
     Object2IntMap<SlotType> slots = new Object2IntOpenHashMap<>(this.slots);
     if (count == 0) {
       slots.removeInt(type);
@@ -64,17 +64,17 @@ public class SlotsNBT implements CollectionComponent {
   }
 
   /** Creates a copy of this data with the given slots added */
-  public SlotsNBT with(SlotCount count) {
+  public ModifierSlots with(SlotCount count) {
     return with(count.type(), count.count());
   }
 
   /** Creates a copy of this data with the given slots removed */
-  public SlotsNBT without(SlotCount count) {
+  public ModifierSlots without(SlotCount count) {
     return with(count.type(), -count.count());
   }
 
   /** Creates a copy of this data adding the given number of slots */
-  public SlotsNBT add(SlotType slot, int count) {
+  public ModifierSlots add(SlotType slot, int count) {
     return with(slot, get(slot) + count);
   }
 
@@ -108,7 +108,7 @@ public class SlotsNBT implements CollectionComponent {
     }
 
     /** Adds all slots from the given object */
-    public Builder add(SlotsNBT slots) {
+    public Builder add(ModifierSlots slots) {
       for (Object2IntMap.Entry<SlotType> entry : slots.slots.object2IntEntrySet()) {
         add(entry.getKey(), entry.getIntValue());
       }
@@ -116,7 +116,7 @@ public class SlotsNBT implements CollectionComponent {
     }
 
     /** Builds the final slots instance */
-    public SlotsNBT build() {
+    public ModifierSlots build() {
       return create(slots);
     }
 

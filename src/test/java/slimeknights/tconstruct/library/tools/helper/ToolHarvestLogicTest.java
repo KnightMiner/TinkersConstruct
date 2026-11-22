@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiv
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningSpeedToolHook;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
 import slimeknights.tconstruct.library.tools.item.ToolItemTest;
-import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.test.TestHelper;
 
@@ -86,7 +86,7 @@ class ToolHarvestLogicTest extends ToolItemTest {
                                                 .part(MaterialItemFixture.MATERIAL_ITEM_HEAD)
                                                 .part(MaterialItemFixture.MATERIAL_ITEM_HANDLE)
                                                 .part(MaterialItemFixture.MATERIAL_ITEM_EXTRA).build())
-                         .module(new MultiplyStatsModule(MultiplierNBT.builder().set(ToolStats.MINING_SPEED, modifier).build()))
+                         .module(new MultiplyStatsModule(StatMultipliers.builder().set(ToolStats.MINING_SPEED, modifier).build()))
                          .build());
 
     ModifiableItem toolWithMiningModifier = new ModifiableItem(new Item.Properties(), definition);

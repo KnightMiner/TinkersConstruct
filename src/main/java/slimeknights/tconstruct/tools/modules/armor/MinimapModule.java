@@ -32,7 +32,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.modules.InventorySelectionModule;
 
 import javax.annotation.Nullable;
@@ -68,7 +68,7 @@ public enum MinimapModule implements ModifierModule, EquipmentChangeModifierHook
   }
 
   @Override
-  public void onEquip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onEquip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (context.getChangedSlot() == EquipmentSlot.HEAD) {
       TinkerDataCapability.Holder data = LogicHelper.orElseNull(context.getTinkerData());
       if (data != null) {
@@ -84,7 +84,7 @@ public enum MinimapModule implements ModifierModule, EquipmentChangeModifierHook
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     if (context.getChangedSlot() == EquipmentSlot.HEAD) {
       TinkerDataCapability.Holder data = LogicHelper.orElseNull(context.getTinkerData());
       if (data != null) {
@@ -94,7 +94,7 @@ public enum MinimapModule implements ModifierModule, EquipmentChangeModifierHook
   }
 
   @Override
-  public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+  public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     if (isCorrectSlot && !world.isClientSide) {
       TinkerDataCapability.Holder data = TinkerDataCapability.getData(holder);
       if (data != null) {
@@ -122,17 +122,17 @@ public enum MinimapModule implements ModifierModule, EquipmentChangeModifierHook
   }
 
   @Override
-  public void onDisableSelection(IToolStackView tool, ModifierEntry modifier, Player player) {
+  public void onDisableSelection(ToolStackView tool, ModifierEntry modifier, Player player) {
     player.displayClientMessage(DISABLED, true);
   }
 
   @Override
-  public void onInventorySelect(IToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
+  public void onInventorySelect(ToolStackView tool, ModifierEntry modifier, Player player, int newIndex, ItemStack stack) {
     player.displayClientMessage(Component.translatable(SELECTED, stack.getHoverName(), MapItem.getMapId(stack), newIndex + 1), true);
   }
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (keyModifier == TooltipKey.NORMAL || keyModifier == TooltipKey.CONTROL) {
       return selectNext(tool, modifier, player, SELECTED_SLOT);
     }
@@ -141,7 +141,7 @@ public enum MinimapModule implements ModifierModule, EquipmentChangeModifierHook
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     tool.getPersistentData().remove(SELECTED_SLOT);
     return null;
   }

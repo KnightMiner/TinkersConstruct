@@ -8,7 +8,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 import java.util.Set;
@@ -33,7 +33,7 @@ public record ItemAbilitiesModule(Set<ItemAbility> abilities) implements ItemAbi
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ItemAbility ability) {
     return abilities.contains(ability);
   }
 }

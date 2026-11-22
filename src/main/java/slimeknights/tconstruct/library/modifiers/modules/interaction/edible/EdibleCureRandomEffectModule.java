@@ -15,13 +15,13 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.item.CheeseItem;
 
 import java.util.List;
 
 /** Module for making eating a tool remove a random effect. */
-public record EdibleCureRandomEffectModule(IJsonPredicate<LivingEntity> holder, ModifierCondition<IToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<IToolStackView> {
+public record EdibleCureRandomEffectModule(IJsonPredicate<LivingEntity> holder, ModifierCondition<ToolStackView> condition) implements ModifierModule, EdibleEffectHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<EdibleCureRandomEffectModule>defaultHooks(ModifierHooks.EDIBLE_EFFECT);
   public static final RecordLoadable<EdibleCureRandomEffectModule> LOADER = RecordLoadable.create(
     LivingEntityPredicate.LOADER.defaultField("holder", EdibleCureRandomEffectModule::holder),
@@ -42,7 +42,7 @@ public record EdibleCureRandomEffectModule(IJsonPredicate<LivingEntity> holder, 
   }
 
   @Override
-  public void onToolEaten(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
+  public void onToolEaten(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot eatenSlot, int hunger, float saturation, List<ItemStack> representativeItems) {
     if (condition.matches(tool, modifier) && holder.matches(player)) {
       CheeseItem.removeRandomEffect(player);
     }

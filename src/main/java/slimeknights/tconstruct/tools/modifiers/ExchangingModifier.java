@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderModifierHook;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ public class ExchangingModifier extends NoLevelsModifier implements RemoveBlockM
 
   @Nullable
   @Override
-  public Boolean removeBlock(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+  public Boolean removeBlock(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
     // We check the offhand first for a block provider
     LivingEntity entity = context.getLiving();
     ItemStack item = entity.getOffhandItem();

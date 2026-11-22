@@ -47,8 +47,8 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Com
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -65,7 +65,7 @@ import java.util.function.Function;
 public class InteractionHandler {
   public static final EquipmentSlot[] HAND_SLOTS = {EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND};
 
-  /** Implements {@link EntityInteractionModifierHook#beforeEntityUse(IToolStackView, ModifierEntry, Player, Entity, InteractionHand, InteractionSource)} */
+  /** Implements {@link EntityInteractionModifierHook#beforeEntityUse(ToolStackView, ModifierEntry, Player, Entity, InteractionHand, InteractionSource)} */
   @SubscribeEvent
   static void beforeEntityInteract(EntityInteract event) {
     ItemStack stack = event.getItemStack();
@@ -101,7 +101,7 @@ public class InteractionHandler {
     }
   }
 
-  /** Implements {@link EntityInteractionModifierHook#afterEntityUse(IToolStackView, ModifierEntry, Player, LivingEntity, InteractionHand, InteractionSource)} for chestplates */
+  /** Implements {@link EntityInteractionModifierHook#afterEntityUse(ToolStackView, ModifierEntry, Player, LivingEntity, InteractionHand, InteractionSource)} for chestplates */
   @SubscribeEvent(priority = EventPriority.LOWEST)
   static void afterEntityInteract(EntityInteract event) {
     Player player = event.getEntity();
@@ -144,7 +144,7 @@ public class InteractionHandler {
   }
 
   /** Runs one of the two blockUse hooks for a chestplate */
-  private static InteractionResult onBlockUse(UseOnContext context, IToolStackView tool, ItemStack stack, Function<ModifierEntry, InteractionResult> callback) {
+  private static InteractionResult onBlockUse(UseOnContext context, ToolStackView tool, ItemStack stack, Function<ModifierEntry, InteractionResult> callback) {
     Player player = context.getPlayer();
     Level world = context.getLevel();
     BlockInWorld info = new BlockInWorld(world, context.getClickedPos(), false);
@@ -236,7 +236,7 @@ public class InteractionHandler {
     }
   }
 
-  /** Implements {@link GeneralInteractionModifierHook#onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}, called differently on client and server */
+  /** Implements {@link GeneralInteractionModifierHook#onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}, called differently on client and server */
   public static InteractionResult onChestplateUse(Player player, ItemStack chestplate, InteractionHand hand) {
     if (player.getCooldowns().isOnCooldown(chestplate.getItem())) {
       return InteractionResult.PASS;
@@ -343,7 +343,7 @@ public class InteractionHandler {
   }
 
   /** Runs the left click interaction for left click */
-  private static InteractionResult onLeftClickInteraction(IToolStackView tool, Player player, InteractionHand hand) {
+  private static InteractionResult onLeftClickInteraction(ToolStackView tool, Player player, InteractionHand hand) {
     for (ModifierEntry entry : tool.getModifierList()) {
       InteractionResult result = entry.getHook(ModifierHooks.GENERAL_INTERACT).onToolUse(tool, entry, player, hand, InteractionSource.LEFT_CLICK);
       if (result.consumesAction()) {
@@ -453,7 +453,7 @@ public class InteractionHandler {
   }
 
   /** Checks if the shield block angle allows blocking this attack */
-  public static boolean canBlock(LivingEntity holder, @Nullable Vec3 sourcePosition, IToolStackView tool) {
+  public static boolean canBlock(LivingEntity holder, @Nullable Vec3 sourcePosition, ToolStackView tool) {
     // source position should never be null (checked by livingentity) but safety as its marked nullable
     if (sourcePosition == null) {
       return false;

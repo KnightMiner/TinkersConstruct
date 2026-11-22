@@ -19,7 +19,7 @@ import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
 import slimeknights.tconstruct.tools.modules.armor.CounterModule;
@@ -48,7 +48,7 @@ public abstract class UseFluidOnHitModifier extends Modifier {
   public abstract FluidEffectContext.Entity createContext(LivingEntity self, @Nullable Player player, @Nullable Entity attacker);
 
   /** Logic for using the fluid */
-  protected void useFluid(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source) {
+  protected void useFluid(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source) {
     LivingEntity self = context.getEntity();
     float level = CounterModule.getLevel(tool, modifier, slotType, self);
     // 25% chance per level, though a blocking shield doubles it

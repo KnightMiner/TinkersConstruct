@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
@@ -33,24 +33,24 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode
 @ToString
-public class StatsNBT {
+public class StatValues {
   /** Set of all tool stat IDs that failed to parse, to reduce log spam as they get parsed many times in UIs when dumb mods don't call proper methods */
   static final Set<String> ERRORED_IDS = new HashSet<>();
   /** Empty stats */
-  public static final StatsNBT EMPTY = new StatsNBT(Map.of());
+  public static final StatValues EMPTY = new StatValues(Map.of());
 
   /** Codec instance for NBT and JSON */
-  public static final Codec<StatsNBT> CODEC;
+  public static final Codec<StatValues> CODEC;
   /** Stream codec instance for syncing the component */
-  public static final StreamCodec<FriendlyByteBuf,StatsNBT> STREAM_CODEC;
+  public static final StreamCodec<FriendlyByteBuf, StatValues> STREAM_CODEC;
   static {
-    Function<StatsNBT,Map<IToolStat<?>,Object>> getter = s -> s.stats;
-    Function<Map<IToolStat<?>,Object>,StatsNBT> constructor = StatsNBT::new;
+    Function<StatValues,Map<IToolStat<?>,Object>> getter = s -> s.stats;
+    Function<Map<IToolStat<?>,Object>, StatValues> constructor = StatValues::new;
     CODEC = Codec.<IToolStat<?>,Object>dispatchedMap(ToolStats.CODEC, IToolStat::codec).xmap(constructor, getter);
     STREAM_CODEC = new DispatchedMapStreamCodec<FriendlyByteBuf,IToolStat<?>,Object>(ToolStats.STREAM_CODEC, IToolStat::streamCodec).map(constructor, getter);
   }
   /** Loadable instance for tool modules */
-  public static final Loadable<StatsNBT> LOADABLE = new CodecLoadable.Direct<>(CODEC, STREAM_CODEC);
+  public static final Loadable<StatValues> LOADABLE = new CodecLoadable.Direct<>(CODEC, STREAM_CODEC);
 
   /** All currently contained stats */
   private final Map<IToolStat<?>, Object> stats;
@@ -109,8 +109,8 @@ public class StatsNBT {
         return stat;
       }
     }
-    if (!StatsNBT.ERRORED_IDS.contains(name)) {
-      StatsNBT.ERRORED_IDS.add(name);
+    if (!StatValues.ERRORED_IDS.contains(name)) {
+      StatValues.ERRORED_IDS.add(name);
       TConstruct.LOG.error("Ignoring unknown stat {} in tool stat NBT", name);
     }
     return null;
@@ -118,7 +118,7 @@ public class StatsNBT {
 
   /** use {@link #CODEC} */
   @Deprecated
-  public static StatsNBT readFromNBT(@Nullable Tag tag) {
+  public static StatValues readFromNBT(@Nullable Tag tag) {
     return tag == null ? EMPTY : TagUtil.decode(CODEC, "tool stats", tag).orElse(EMPTY);
   }
 
@@ -139,7 +139,7 @@ public class StatsNBT {
 
   /** use {@link #STREAM_CODEC} */
   @Deprecated
-  public static StatsNBT fromNetwork(RegistryFriendlyByteBuf buffer) {
+  public static StatValues fromNetwork(RegistryFriendlyByteBuf buffer) {
     return STREAM_CODEC.decode(buffer);
   }
 
@@ -160,12 +160,12 @@ public class StatsNBT {
     }
 
     /** Builds the stats from the given values */
-    public StatsNBT build() {
+    public StatValues build() {
       Map<IToolStat<?>,Object> map = builder.build();
       if (map.isEmpty()) {
         return EMPTY;
       }
-      return new StatsNBT(map);
+      return new StatValues(map);
     }
   }
 

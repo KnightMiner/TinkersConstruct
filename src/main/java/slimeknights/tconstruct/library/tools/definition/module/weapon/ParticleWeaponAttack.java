@@ -10,7 +10,7 @@ import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public record ParticleWeaponAttack(SimpleParticleType particle) implements Melee
   }
 
   @Override
-  public void afterMeleeHit(IToolStackView tool, ToolAttackContext context, float damage) {
+  public void afterMeleeHit(ToolStackView tool, ToolAttackContext context, float damage) {
     if (context.isFullyCharged() && !context.isProjectile()) {
       ToolAttackUtil.spawnAttackParticle(particle, context.getAttacker(), 0.8d);
     }

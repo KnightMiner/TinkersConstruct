@@ -16,10 +16,10 @@ import slimeknights.tconstruct.library.json.predicate.EntityTargetPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Module implementing thorns */
-public record ThornsModule(ResourceKey<DamageType> damageType, LevelingValue chance, LevelingValue constant, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<IToolStackView> condition) implements CounterModule {
+public record ThornsModule(ResourceKey<DamageType> damageType, LevelingValue chance, LevelingValue constant, LevelingValue random, int durabilityUsage, IJsonPredicate<LivingEntity> defender, EntityTargetPredicate attacker, ModifierCondition<ToolStackView> condition) implements CounterModule {
   public static final RecordLoadable<ThornsModule> LOADER = RecordLoadable.create(
     Loadables.DAMAGE_TYPE_KEY.defaultField("damage_type", DamageTypes.THORNS, true, ThornsModule::damageType),
     CHANCE_FIELD,
@@ -43,7 +43,7 @@ public record ThornsModule(ResourceKey<DamageType> damageType, LevelingValue cha
   }
 
   @Override
-  public void applyEffect(IToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {
+  public void applyEffect(ToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt) {
     // this works like vanilla, damage is capped due to the hurt immunity mechanics, so if multiple pieces apply thorns between us and vanilla, damage is capped at max amount
     attacker.hurt(CombatHelper.damageSource(damageType, context.getEntity()), value);
   }

@@ -6,8 +6,8 @@ import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /** Capability provider for tool stacks, returns the proper cap for  */
 public class ToolCapabilityProvider implements ICapabilityProvider {
-  private static final List<BiFunction<ItemStack,Supplier<? extends IToolStackView>,IToolCapabilityProvider>> PROVIDER_CONSTRUCTORS = new ArrayList<>();
+  private static final List<BiFunction<ItemStack,Supplier<? extends ToolStackView>,IToolCapabilityProvider>> PROVIDER_CONSTRUCTORS = new ArrayList<>();
 
   private final ItemStack stack;
   private final Lazy<ToolStack> tool;
@@ -51,7 +51,7 @@ public class ToolCapabilityProvider implements ICapabilityProvider {
 
   /** Registers a tool capability provider constructor. Every new tool will call this constructor to create your provider.
    * Is it valid for this constructor to return null, just note that it will not be called a second time if the tools state changes. Thus you should avoid conditioning on anything other than item type */
-  public static void register(BiFunction<ItemStack,Supplier<? extends IToolStackView>,IToolCapabilityProvider> constructor) {
+  public static void register(BiFunction<ItemStack,Supplier<? extends ToolStackView>,IToolCapabilityProvider> constructor) {
     PROVIDER_CONSTRUCTORS.add(constructor);
   }
 
@@ -59,7 +59,7 @@ public class ToolCapabilityProvider implements ICapabilityProvider {
   @FunctionalInterface
   public interface IToolCapabilityProvider {
     /** Gets a capability on the given tool */
-    <T> LazyOptional<T> getCapability(IToolStackView tool, Capability<T> cap);
+    <T> LazyOptional<T> getCapability(ToolStackView tool, Capability<T> cap);
 
     /** Called to clear the cache of the provider */
     default void clearCache() {}

@@ -28,7 +28,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.stats.ToolType;
 
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
   }
 
   @Override
-  public float modifyDamageTaken(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public float modifyDamageTaken(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
       int level = SlotInChargeModule.getLevel(context.getTinkerData(), SLOT_KEY, slotType);
       if (level > 0) {
@@ -80,7 +80,7 @@ public record RecurrentProtectionModule(LevelingValue percent, LevelingInt durat
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     // if not holding shift or no player, display the percent amount
     if (player == null || tooltipKey != TooltipKey.SHIFT) {
       TooltipModifierHook.addPercentBoost(modifier.getModifier(), PROTECTION, this.percent.compute(modifier.getLevel()), tooltip);

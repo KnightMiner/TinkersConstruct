@@ -25,9 +25,9 @@ import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -151,7 +151,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
   @Nullable
   @Override
-  public Component canApply(IToolStackView tool) {
+  public Component canApply(ToolStackView tool) {
     ModifierId result = this.result.id();
     // only check slots if we lack the modifier
     if (tool.getCraftedModifiers().getLevel(result) == 0) {

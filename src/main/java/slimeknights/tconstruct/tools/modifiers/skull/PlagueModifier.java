@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.modifiers.hook.combat.DamageDealtModifier
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 public class PlagueModifier extends NoLevelsModifier implements DamageDealtModifierHook {
   @Override
@@ -21,7 +21,7 @@ public class PlagueModifier extends NoLevelsModifier implements DamageDealtModif
   }
 
   @Override
-  public void onDamageDealt(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
+  public void onDamageDealt(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, LivingEntity target, DamageSource source, float amount, boolean isDirectDamage) {
     if (isDirectDamage && !source.is(DamageTypeTags.IS_PROJECTILE)) {
       // copy all negative effects to target
       LivingEntity attacker = context.getEntity();

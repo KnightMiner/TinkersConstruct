@@ -12,8 +12,8 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput.Mutable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public class ExtractModifierRecipe extends ModifierRemovalRecipe {
   @Override
   public Component getDescription(@Nullable TinkerableRecipeInput inv) {
     if (inv != null) {
-      IToolStackView tool = inv.getTinkerable();
+      ToolStackView tool = inv.getTinkerable();
       if (filter(tool, tool.getModifierList()).isEmpty()) {
         return NO_MODIFIERS;
       }
@@ -50,7 +50,7 @@ public class ExtractModifierRecipe extends ModifierRemovalRecipe {
   }
 
   @Override
-  protected List<ModifierEntry> filter(@Nullable IToolStackView tool, List<ModifierEntry> modifiers) {
+  protected List<ModifierEntry> filter(@Nullable ToolStackView tool, List<ModifierEntry> modifiers) {
     if (tool != null) {
       // filter out incremental modifiers at level 1 with only a partial level to prevent exploiting the recipe to get a lot of crystals
       return modifiers.stream().filter(entryPredicate).filter(entry -> entry.intEffectiveLevel() > 0).toList();

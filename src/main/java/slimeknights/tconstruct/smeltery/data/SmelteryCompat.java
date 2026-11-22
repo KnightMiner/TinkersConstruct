@@ -5,14 +5,14 @@ import net.minecraft.core.HolderSet.Named;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.tconstruct.fluids.TinkerFluids;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.definition.MaterialId;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 
 import java.util.Locale;
@@ -64,7 +64,7 @@ public enum SmelteryCompat {
 
   @Getter
   private final String name = this.name().toLowerCase(Locale.US);
-  private final FluidObject<? extends ForgeFlowingFluid> fluid;
+  private final FluidObject<? extends BaseFlowingFluid> fluid;
   @Getter
   private final CompatType type;
   /** Material that must be present to show this compat. */
@@ -72,14 +72,14 @@ public enum SmelteryCompat {
   private final MaterialId material;
 
   /** Creates a compat using a material for the JEI condition. Will show fluids if the material is present. */
-  SmelteryCompat(FluidObject<? extends ForgeFlowingFluid> fluid, CompatType type, @Nullable MaterialId material) {
+  SmelteryCompat(FluidObject<? extends BaseFlowingFluid> fluid, CompatType type, @Nullable MaterialId material) {
     this.fluid = fluid;
     this.type = type;
     this.material = material;
   }
 
   /** Creates compat using just the local name as JEI condition. */
-  SmelteryCompat(FluidObject<? extends ForgeFlowingFluid> fluid, CompatType type) {
+  SmelteryCompat(FluidObject<? extends BaseFlowingFluid> fluid, CompatType type) {
     this(fluid, type, null);
   }
 
@@ -111,7 +111,6 @@ public enum SmelteryCompat {
   }
 
   /** Checks if the given tag exists */
-  @SuppressWarnings("deprecation")
   private static boolean ingotPresent(String name) {
     Optional<Named<Item>> tag = BuiltInRegistries.ITEM.getTag(ItemTags.create(commonResource("ingots/" + name)));
     return tag.isPresent() && tag.get().size() > 0;

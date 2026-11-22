@@ -29,10 +29,10 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.ModifierTraitModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.IntegerToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.PercentToolStat;
@@ -78,7 +78,7 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK && !tool.isBroken() && player.canEat(false) && tool.getStats().getInt(HUNGER) > 0) {
       GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
@@ -87,18 +87,18 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return UseAnim.EAT;
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return tool.getStats().getInt(EAT_DURATION);
   }
 
   /** Takes a nibble of the tool */
-  private void eat(IToolStackView tool, Player player, EquipmentSlot eatenSlot) {
-    StatsNBT stats = tool.getStats();
+  private void eat(ToolStackView tool, Player player, EquipmentSlot eatenSlot) {
+    StatValues stats = tool.getStats();
     int hunger = Math.round(ConditionalStatModifierHook.getModifiedStat(tool, player, HUNGER));
     if (hunger > 0) {
       // eat
@@ -122,9 +122,9 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   }
 
   @Override
-  public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (modifier != activeModifier && !entity.level().isClientSide) {
-      StatsNBT stats = tool.getStats();
+      StatValues stats = tool.getStats();
       if (stats.getInt(HUNGER) > 0) {
         int useTime = useDuration - timeLeft;
 
@@ -137,9 +137,9 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   }
 
   @Override
-  public void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (!entity.level().isClientSide && !tool.isBroken() && entity instanceof Player player && player.canEat(false)) {
-      StatsNBT stats = tool.getStats();
+      StatValues stats = tool.getStats();
       if (stats.getInt(HUNGER) > 0 && useDuration - timeLeft == stats.getInt(EAT_DURATION)) {
         eat(tool, player, Util.getSlotType(entity.getUsedItemHand()));
       }
@@ -147,9 +147,9 @@ public enum EdibleModule implements ModifierModule, GeneralInteractionModifierHo
   }
 
   @Override
-  public void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
+  public void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount, boolean isDirectDamage) {
     if (!tool.isBroken() && tool.hasTag(TinkerTags.Items.ARMOR)) {
-      StatsNBT stats = tool.getStats();
+      StatValues stats = tool.getStats();
       if (stats.getInt(HUNGER) > 0) {
         LivingEntity entity = context.getEntity();
         if (context.getLevel().random.nextFloat() < ConditionalStatModifierHook.getModifiedStat(tool, entity, COUNTER_CHANCE) && entity instanceof Player player && player.canEat(true)) {

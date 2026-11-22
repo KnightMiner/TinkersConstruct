@@ -31,12 +31,12 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayCraftingTink
 import slimeknights.tconstruct.library.recipe.tinkerstation.IDisplayToolTinkering;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.nbt.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tables.recipe.TinkerStationRepairRecipe;
 
@@ -165,8 +165,8 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
       this.inputs = List.of(recipe.getIngredient().getItems());
 
       // set durability on each tool to 250, covers most instances
-      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 250).build();
-      ModifierNBT modifiers = ModifierNBT.builder().add(modifier, 1).build();
+      StatValues stats = StatValues.builder().set(ToolStats.DURABILITY, 250).build();
+      ModifierEntries modifiers = ModifierEntries.builder().add(modifier, 1).build();
       toolWithoutModifier = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DURABILITY)
         .map(item -> {
           if (item instanceof IModifiableDisplay modifiable) {
@@ -210,7 +210,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
 
     @Override
     public boolean isVisibleFromItem(ItemStack focus, boolean output) {
-      return !output && !isTool(focus) || ModifierNBT.getLevel(focus, modifier) > 0;
+      return !output && !isTool(focus) || ModifierEntries.getLevel(focus, modifier) > 0;
     }
 
     @Override

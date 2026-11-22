@@ -17,12 +17,12 @@ import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
-import slimeknights.tconstruct.library.tools.nbt.DummyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -89,10 +89,10 @@ public class ModifierLootingHandler {
 
       // determine who is in charge of the looting
       LootingContext context;
-      IToolStackView tool = null;
+      ToolStackView tool = null;
       if (direct instanceof Projectile) {
         // need to build a context from the relevant capabilities to use the modifier
-        ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(direct);
+        ModifierEntries modifiers = EntityModifierCapability.getOrEmpty(direct);
         context = new LootingContext(holder, target, damageSource, null);
         // no modifiers means its not a projectile we fired, so just defer to dumb vanilla behavior of whatever looting
         // since we don't set the enchantment on our tools, our looting modifiers won't set anything here anyways

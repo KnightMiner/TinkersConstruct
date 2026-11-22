@@ -58,9 +58,9 @@ import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
 import javax.annotation.Nullable;
@@ -277,7 +277,7 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
   }
 
   @Override
-  public Multimap<Attribute,AttributeModifier> getAttributeModifiers(IToolStackView tool, EquipmentSlot slot) {
+  public Multimap<Attribute,AttributeModifier> getAttributeModifiers(ToolStackView tool, EquipmentSlot slot) {
     return AttributesModifierHook.getHeldAttributeModifiers(tool, slot);
   }
 
@@ -322,7 +322,7 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
   }
 
   /** Same as {@link #onStopUsing(ItemStack, LivingEntity, int)} but uses a tool. */
-  protected void onStopUsing(IToolStackView tool, LivingEntity entity, int timeLeft) {
+  protected void onStopUsing(ToolStackView tool, LivingEntity entity, int timeLeft) {
     UsingToolModifierHook.afterStopUsing(tool, entity, timeLeft);
     ModDataNBT data = tool.getPersistentData();
     data.remove(KEY_DRAWTIME);

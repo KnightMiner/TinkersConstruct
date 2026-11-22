@@ -14,14 +14,14 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module implementing the arrow pierce modifier */
-public record ArrowPierceModule(LevelingInt amount, ModifierCondition<IToolStackView> condition) implements ModifierModule, ProjectileShootModifierHook, ConditionalModule<IToolStackView> {
+public record ArrowPierceModule(LevelingInt amount, ModifierCondition<ToolStackView> condition) implements ModifierModule, ProjectileShootModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ArrowPierceModule>defaultHooks(ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT);
   public static final RecordLoadable<ArrowPierceModule> LOADER = RecordLoadable.create(LevelingInt.LOADABLE.directField(ArrowPierceModule::amount), ModifierCondition.TOOL_FIELD, ArrowPierceModule::new);
 
@@ -36,7 +36,7 @@ public record ArrowPierceModule(LevelingInt amount, ModifierCondition<IToolStack
   }
 
   @Override
-  public void onProjectileShoot(IToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
+  public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     if (condition.matches(tool, modifier) && arrow != null) {
       int amount = this.amount.compute(modifier.getEffectiveLevel());
       if (amount > 0) {

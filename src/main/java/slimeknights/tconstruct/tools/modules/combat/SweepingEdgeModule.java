@@ -16,8 +16,8 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.weapon.SweepWeaponAttack;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -39,12 +39,12 @@ public record SweepingEdgeModule(LevelingValue value) implements ModifierModule,
   }
 
   @Override
-  public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
     volatileData.putFloat(SweepWeaponAttack.SWEEP_PERCENT, volatileData.getFloat(SweepWeaponAttack.SWEEP_PERCENT) + value.compute(modifier.getEffectiveLevel()));
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     Modifier modifier = entry.getModifier();
     tooltip.add(modifier.applyStyle(
       Component.literal(Util.PERCENT_FORMAT.format(value.compute(entry.getEffectiveLevel())))

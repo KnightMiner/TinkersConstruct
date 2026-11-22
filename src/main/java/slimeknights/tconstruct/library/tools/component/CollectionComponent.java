@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;

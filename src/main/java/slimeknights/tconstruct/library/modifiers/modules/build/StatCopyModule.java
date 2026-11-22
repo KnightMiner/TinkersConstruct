@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -22,7 +22,7 @@ import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import java.util.List;
 
 /** Module that copies from one stat to another */
-public record StatCopyModule(INumericToolStat<?> target, INumericToolStat<?> source, LevelingValue percentage, ModifierCondition<IToolContext> condition) implements ToolStatsModifierHook, ModifierModule, ConditionalModule<IToolContext> {
+public record StatCopyModule(INumericToolStat<?> target, INumericToolStat<?> source, LevelingValue percentage, ModifierCondition<ToolContext> condition) implements ToolStatsModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<StatBoostModule>defaultHooks(ModifierHooks.TOOL_STATS);
   public static RecordLoadable<StatCopyModule> LOADER = RecordLoadable.create(
     ToolStats.NUMERIC_LOADER.requiredField("target", StatCopyModule::target),
@@ -52,7 +52,7 @@ public record StatCopyModule(INumericToolStat<?> target, INumericToolStat<?> sou
   }
 
   @Override
-  public void addToolStats(IToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
+  public void addToolStats(ToolContext context, ModifierEntry modifier, ModifierStatsBuilder builder) {
     if (condition.matches(context, modifier)) {
       target.add(builder, builder.getStat(source).floatValue() * percentage.compute(modifier.getEffectiveLevel()) / builder.getMultiplier(source));
     }

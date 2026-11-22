@@ -10,7 +10,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -20,7 +20,7 @@ public enum SimpleToolName implements ToolModule, ToolNameHook {
   /** Displays the tool using the simple translation of the item, ignoring materials. */
   ITEM {
     @Override
-    public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable IToolStackView tool, Component name) {
+    public Component getDisplayName(ToolDefinition definition, ItemStack stack, @Nullable ToolStackView tool, Component name) {
       // this one is kinda pointless if you are composing it. So I guess don't?
       return name;
     }

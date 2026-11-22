@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library.tools.nbt;
+package slimeknights.tconstruct.library.tools.component;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
@@ -29,16 +29,16 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode
 @ToString
-public class MultiplierNBT implements CollectionComponent {
+public class StatMultipliers implements CollectionComponent {
   /** Codec instance for NBT */
-  public static final Codec<MultiplierNBT> CODEC;
+  public static final Codec<StatMultipliers> CODEC;
   /** Stream codec instance for network syncing */
-  public static final StreamCodec<ByteBuf,MultiplierNBT> STREAM_CODEC;
+  public static final StreamCodec<ByteBuf, StatMultipliers> STREAM_CODEC;
   /** Loadable instance for recipes */
-  public static final Loadable<MultiplierNBT> LOADABLE;
+  public static final Loadable<StatMultipliers> LOADABLE;
   static {
-    Function<MultiplierNBT,Map<INumericToolStat<?>,Float>> getter = m -> m.stats;
-    Function<Map<INumericToolStat<?>,Float>,MultiplierNBT> constructor = MultiplierNBT::new;
+    Function<StatMultipliers,Map<INumericToolStat<?>,Float>> getter = m -> m.stats;
+    Function<Map<INumericToolStat<?>,Float>, StatMultipliers> constructor = StatMultipliers::new;
     CODEC = Codec.unboundedMap(ToolStats.NUMERIC_CODEC, Codec.FLOAT).xmap(constructor, getter);
     StreamCodec<ByteBuf,Map<INumericToolStat<?>,Float>> mapStream = ByteBufCodecs.map(Object2FloatOpenHashMap::new, ToolStats.NUMERIC_STREAM_CODEC, ByteBufCodecs.FLOAT);
     STREAM_CODEC = mapStream.map(constructor, getter);
@@ -46,7 +46,7 @@ public class MultiplierNBT implements CollectionComponent {
   }
 
   /** Empty stats */
-  public static final MultiplierNBT EMPTY = new MultiplierNBT(ImmutableMap.of());
+  public static final StatMultipliers EMPTY = new StatMultipliers(ImmutableMap.of());
 
   /** All currently contained multipliers */
   private final Map<INumericToolStat<?>, Float> stats;
@@ -91,7 +91,7 @@ public class MultiplierNBT implements CollectionComponent {
   /* NBT */
 
   /** Reads the multipliers from NBT */
-  public static MultiplierNBT readFromNBT(@Nullable Tag inbt) {
+  public static StatMultipliers readFromNBT(@Nullable Tag inbt) {
     if (inbt == null || inbt.getId() != Tag.TAG_COMPOUND) {
       return EMPTY;
     }
@@ -99,7 +99,7 @@ public class MultiplierNBT implements CollectionComponent {
     Builder builder = builder();
     CompoundTag nbt = (CompoundTag)inbt;
     for (String key : nbt.getAllKeys()) {
-      if (nbt.contains(key, Tag.TAG_ANY_NUMERIC) && StatsNBT.readStatIdFromNBT(key) instanceof INumericToolStat<?> stat) {
+      if (nbt.contains(key, Tag.TAG_ANY_NUMERIC) && StatValues.readStatIdFromNBT(key) instanceof INumericToolStat<?> stat) {
         builder.set(stat, nbt.getFloat(key));
       }
     }
@@ -131,12 +131,12 @@ public class MultiplierNBT implements CollectionComponent {
     }
 
     /** Builds the stats from the given values */
-    public MultiplierNBT build() {
+    public StatMultipliers build() {
       Map<INumericToolStat<?>,Float> map = builder.build();
       if (map.isEmpty()) {
         return EMPTY;
       }
-      return new MultiplierNBT(map);
+      return new StatMultipliers(map);
     }
   }
 }

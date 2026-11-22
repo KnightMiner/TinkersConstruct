@@ -2,7 +2,7 @@ package slimeknights.tconstruct.library.modifiers.hook.behavior;
 
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.Set;
@@ -18,7 +18,7 @@ public interface MaterialRepairModifierHook {
    * @param material  Material to check
    * @return  True if it can be used to repair this tool
    */
-  boolean isRepairMaterial(IToolStackView tool, ModifierEntry modifier, MaterialId material);
+  boolean isRepairMaterial(ToolStackView tool, ModifierEntry modifier, MaterialId material);
 
   /**
    * Gets the amount of durability restored by this material for repair.
@@ -27,19 +27,19 @@ public interface MaterialRepairModifierHook {
    * @param material  Material used for repair
    * @return  Repair amount
    */
-  float getRepairAmount(IToolStackView tool, ModifierEntry modifier, MaterialId material);
+  float getRepairAmount(ToolStackView tool, ModifierEntry modifier, MaterialId material);
 
   /**
    * Adds all repair materials from the given tool to the material list for display in recipe viewers.
    * @param tool       Tool instance
    * @param materials  List of materials being built;
    */
-  default void addRepairMaterials(IToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {}
+  default void addRepairMaterials(ToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {}
 
   /** Merger that gets the max repair amount across all materials */
   record MaxMerger(Collection<MaterialRepairModifierHook> modules) implements MaterialRepairModifierHook {
     @Override
-    public boolean isRepairMaterial(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+    public boolean isRepairMaterial(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
       for (MaterialRepairModifierHook module : modules) {
         if (module.isRepairMaterial(tool, modifier, material)) {
           return true;
@@ -49,7 +49,7 @@ public interface MaterialRepairModifierHook {
     }
 
     @Override
-    public float getRepairAmount(IToolStackView tool, ModifierEntry modifier, MaterialId material) {
+    public float getRepairAmount(ToolStackView tool, ModifierEntry modifier, MaterialId material) {
       float maxRepair = 0;
       for (MaterialRepairModifierHook module : modules) {
         float repair = module.getRepairAmount(tool, modifier, material);
@@ -61,7 +61,7 @@ public interface MaterialRepairModifierHook {
     }
 
     @Override
-    public void addRepairMaterials(IToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {
+    public void addRepairMaterials(ToolStackView tool, ModifierEntry modifier, Set<MaterialId> materials) {
       for (MaterialRepairModifierHook module : modules) {
         module.addRepairMaterials(tool, modifier, materials);
       }

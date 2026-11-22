@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveModule;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningTierToolHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public record MeltingFluidEffectiveModule(IJsonPredicate<BlockState> predicate, 
   }
 
   @Override
-  public boolean isToolEffective(IToolStackView tool, BlockState state) {
+  public boolean isToolEffective(ToolStackView tool, BlockState state) {
     // outer predicate must match, typically this is a very inclusive predicate
     if (predicate.matches(state)) {
       // tool must have capacity

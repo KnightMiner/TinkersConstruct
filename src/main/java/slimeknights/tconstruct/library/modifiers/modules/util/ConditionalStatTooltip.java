@@ -11,14 +11,14 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /** Common tooltip logic for conditional stat modules */
-public interface ConditionalStatTooltip extends TooltipModifierHook, ConditionalModule<IToolStackView> {
+public interface ConditionalStatTooltip extends TooltipModifierHook, ConditionalModule<ToolStackView> {
   /** Gets the holder condition for this module */
   IJsonPredicate<LivingEntity> holder();
   /** Gets the stat for this tooltip */
@@ -27,15 +27,15 @@ public interface ConditionalStatTooltip extends TooltipModifierHook, Conditional
   boolean percent();
 
   /** Computes the value to display in the tooltip */
-  float computeTooltipValue(IToolStackView tool, ModifierEntry entry, @Nullable Player player);
+  float computeTooltipValue(ToolStackView tool, ModifierEntry entry, @Nullable Player player);
 
   /** Checks if the tool condition matches */
-  default boolean matchesTool(IToolStackView tool, ModifierEntry entry) {
+  default boolean matchesTool(ToolStackView tool, ModifierEntry entry) {
     return condition().matches(tool, entry);
   }
 
   @Override
-  default void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  default void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     // if holding shift, or we have no attacker condition, then we don't need the player to show the tooltip
     INumericToolStat<?> stat = stat();
     IJsonPredicate<LivingEntity> holder = holder();

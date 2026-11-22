@@ -28,13 +28,13 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
@@ -62,12 +62,12 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  public boolean canPerformAction(IToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
+  public boolean canPerformAction(ToolStackView tool, ModifierEntry modifier, ItemAbility ability) {
     return ability == ItemAbilities.FISHING_ROD_CAST;
   }
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     // disallow casting if the main hand can cast. Only comes up if the main hand is doing left click fishing; vanilla limitations means we can't support that
     if (source != InteractionSource.ARMOR && !tool.isBroken() && tool.getHook(ToolHooks.INTERACTION).canInteract(tool, modifier.id(), source) && (hand == InteractionHand.MAIN_HAND || !player.getMainHandItem().canPerformAction(ItemAbilities.FISHING_ROD_CAST))) {
       Level level = player.level();
@@ -98,7 +98,7 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
           hook.setMaterial(tool.getMaterial(tool.getVolatileData().getInt(HOOK_MATERIAL)).id());
 
           // copy tool data to the bobber for modifier hooks
-          ModifierNBT modifiers = tool.getModifiers();
+          ModifierEntries modifiers = tool.getModifiers();
           EntityModifierCapability.getCapability(hook).setModifiers(modifiers);
           // apply grapple or drill
           if (ModifierUtil.canPerformAction(tool, TinkerItemAbilities.GRAPPLE_HOOK)) {
@@ -132,10 +132,10 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     // if actively fishing, switching to a new rod means we need to retrieve to prevent a cheese
     if (context.getEntity() instanceof Player player && player.fishing != null) {
-      IToolStackView replacement = context.getReplacementTool();
+      ToolStackView replacement = context.getReplacementTool();
       if (replacement == null || !replacement.getModifiers().equals(tool.getModifiers())) {
         player.fishing.discard();
       }
@@ -143,7 +143,7 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
   }
 
   @Override
-  public void onEquipmentChange(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
+  public void onEquipmentChange(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context, EquipmentSlot slotType) {
     // if the main hand changed such that it gained the ability to fish, then vanilla is going to move our fishing bobber to attach to the mainhand
     // so just retrieve it to prevent a cheese
     // there is technically an issue with us inheriting someone elses bobber, but thats just a worse version of our bobber, so not really a cheese

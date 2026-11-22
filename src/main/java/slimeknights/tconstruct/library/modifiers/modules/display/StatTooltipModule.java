@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.IToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /** Module to show a tool stat in the tooltip. */
-public record StatTooltipModule<T>(IToolStat<T> stat, ModifierCondition<IToolStackView> condition) implements ModifierModule, TooltipModifierHook, ConditionalModule<IToolStackView> {
+public record StatTooltipModule<T>(IToolStat<T> stat, ModifierCondition<ToolStackView> condition) implements ModifierModule, TooltipModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<StatTooltipModule<?>>defaultHooks(ModifierHooks.TOOLTIP);
   /** Priority to use to show stat tooltips above all other tooltips. */
   public static final int STAT_TOOLTIP_PRIORITY = 1000;
@@ -50,7 +50,7 @@ public record StatTooltipModule<T>(IToolStat<T> stat, ModifierCondition<IToolSta
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (condition.matches(tool, modifier)) {
       tooltip.add(stat.formatValue(tool.getStats().get(stat)));
     }

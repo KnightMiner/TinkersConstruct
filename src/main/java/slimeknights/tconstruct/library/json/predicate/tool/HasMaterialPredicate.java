@@ -7,7 +7,7 @@ import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicate
 import slimeknights.tconstruct.library.json.predicate.material.MaterialPredicateField;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.nbt.IToolContext;
+import slimeknights.tconstruct.library.tools.stack.ToolContext;
 
 /**
  * Tool predicate checking for the given material on the tool
@@ -29,7 +29,7 @@ public record HasMaterialPredicate(IJsonPredicate<MaterialVariant> material, int
   }
 
   @Override
-  public boolean matches(IToolContext input) {
+  public boolean matches(ToolContext input) {
     // if given an index, use exact location match
     if (index >= 0) {
       return material.matches(input.getMaterial(index));

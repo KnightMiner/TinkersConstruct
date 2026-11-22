@@ -65,6 +65,7 @@ import slimeknights.tconstruct.library.modifiers.modules.armor.MobDisguiseModule
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.context.EquipmentIterator.EquipmentEntry;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
@@ -73,10 +74,9 @@ import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiv
 import slimeknights.tconstruct.library.tools.helper.ArmorUtil;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
 import slimeknights.tconstruct.tools.TinkerModifiers;
@@ -206,7 +206,7 @@ public class ToolEvents {
     if (context.hasModifiableArmor()) {
       // first we need to determine if any of the four slots want to cancel the event
       for (EquipmentSlot slotType : EquipmentSlot.values()) {
-        IToolStackView toolStack = context.getValidTool(slotType);
+        ToolStackView toolStack = context.getValidTool(slotType);
         if (toolStack != null && !toolStack.isBroken()) {
           for (ModifierEntry entry : toolStack.getModifierList()) {
             if (entry.getHook(ModifierHooks.DAMAGE_BLOCK).isDamageBlocked(toolStack, entry, context, slotType, source, amount)) {
@@ -227,7 +227,7 @@ public class ToolEvents {
       context = new EquipmentContext(livingAttacker);
       if (context.hasModifiableArmor()) {
         for (EquipmentSlot slotType : ModifiableArmorMaterial.ARMOR_SLOTS) {
-          IToolStackView toolStack = context.getToolInSlot(slotType);
+          ToolStackView toolStack = context.getToolInSlot(slotType);
           if (toolStack != null && !toolStack.isBroken()) {
             for (ModifierEntry entry : toolStack.getModifierList()) {
               entry.getHook(ModifierHooks.DAMAGE_DEALT).onDamageDealt(toolStack, entry, context, slotType, entity, source, amount, isDirectDamage);
@@ -273,7 +273,7 @@ public class ToolEvents {
         ItemStack weapon = living.getMainHandItem();
         if (!weapon.isEmpty()) {
             if (weapon.is(TinkerTags.Items.MELEE_WEAPON)) {
-              IToolStackView tool = ToolStack.from(weapon);
+              ToolStackView tool = ToolStack.from(weapon);
               // already know the player is null
               ToolAttackContext meleeContext = ToolAttackContext.attacker(living, null).target(entity).applyAttributes().build();
               float baseDamage = originalDamage;
@@ -287,7 +287,7 @@ public class ToolEvents {
           if (!unarmed.isEmpty() && unarmed.is(TinkerTags.Items.UNARMED)) {
             // get the melee damage attribute
             float damageAttr = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            IToolStackView tool = ToolStack.from(unarmed);
+            ToolStackView tool = ToolStack.from(unarmed);
             // already know the player is null
             ToolAttackContext meleeContext = ToolAttackContext.attacker(living, null).target(entity).toolAttributes(tool).addBaseDamage(originalDamage - damageAttr).slot(EquipmentSlot.CHEST, InteractionHand.MAIN_HAND).build();
             originalDamage = meleeContext.getBaseDamage();
@@ -385,7 +385,7 @@ public class ToolEvents {
         if (damageMissed > 0 && entity instanceof Player) {
           for (EquipmentSlot slotType : ModifiableArmorMaterial.ARMOR_SLOTS) {
             // for our own armor, saves effort to damage directly with our utility
-            IToolStackView tool = context.getToolInSlot(slotType);
+            ToolStackView tool = context.getToolInSlot(slotType);
             if (tool != null && (!source.is(DamageTypeTags.IS_FIRE) || !tool.getItem().isFireResistant())) {
               // mark this as protection (any valid modifier really would do) so tanned can reduce it to not count it as separate damage
               ToolDamageUtil.damageAnimated(tool, damageMissed, entity, slotType, ARMOR_DAMAGE);
@@ -429,7 +429,7 @@ public class ToolEvents {
         if (!weapon.isEmpty()) {
           if (weapon.is(TinkerTags.Items.MELEE_WEAPON)) {
             // already know we are not a player
-            IToolStackView tool = ToolStack.from(weapon);
+            ToolStackView tool = ToolStack.from(weapon);
             ToolAttackContext meleeContext = ToolAttackContext.attacker(living, null).target(event.getEntity()).applyAttributes().build();
             for (ModifierEntry entry : tool.getModifiers()) {
               entry.getHook(ModifierHooks.MONSTER_MELEE_HIT).onMonsterMeleeHit(tool, entry, meleeContext, amount);
@@ -440,7 +440,7 @@ public class ToolEvents {
           ItemStack unarmed = living.getItemBySlot(EquipmentSlot.CHEST);
           if (!unarmed.isEmpty() && unarmed.is(TinkerTags.Items.UNARMED)) {
             // already know we are not a player
-            IToolStackView tool = ToolStack.from(unarmed);
+            ToolStackView tool = ToolStack.from(unarmed);
             ToolAttackContext meleeContext = ToolAttackContext.attacker(living, null).target(event.getEntity()).applyAttributes().addBaseDamage(tool.getStats().get(ToolStats.ATTACK_DAMAGE)).slot(EquipmentSlot.CHEST, InteractionHand.MAIN_HAND).build();
             for (ModifierEntry entry : tool.getModifiers()) {
               entry.getHook(ModifierHooks.MONSTER_MELEE_HIT).onMonsterMeleeHit(tool, entry, meleeContext, amount);
@@ -513,7 +513,7 @@ public class ToolEvents {
   @SubscribeEvent
   static void projectileHit(ProjectileImpactEvent event) {
     Projectile projectile = event.getProjectile();
-    ModifierNBT modifiers = EntityModifierCapability.getOrEmpty(projectile);
+    ModifierEntries modifiers = EntityModifierCapability.getOrEmpty(projectile);
     if (!modifiers.isEmpty()) {
       ModDataNBT nbt = ModDataNBT.get(projectile);
       HitResult hit = event.getRayTraceResult();

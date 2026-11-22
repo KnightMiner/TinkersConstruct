@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public record BlockTemperatureVariable(float fallback) implements MiningSpeedVar
     BlockTemperatureVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     if (player != null) {
       // use block position if possible player position otherwise
       BlockPos pos = player.blockPosition();

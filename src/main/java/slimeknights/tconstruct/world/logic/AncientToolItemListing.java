@@ -14,8 +14,8 @@ import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public enum AncientToolItemListing implements ItemListing {
       ToolStack tool = ToolBuildHandler.buildToolRandomMaterials(toolItem, RandomMaterial.ancient(), random);
       // step 3: calculate cost based on tier
       float tier = 0;
-      MaterialNBT materials = tool.getMaterials();
+      ToolMaterials materials = tool.getMaterials();
       if (materials.isEmpty()) {
         // if no materials, just choose a baseline tier of 2
         tier = 2;

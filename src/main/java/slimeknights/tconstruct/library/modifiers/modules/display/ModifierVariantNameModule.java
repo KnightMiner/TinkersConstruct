@@ -14,7 +14,7 @@ import slimeknights.tconstruct.library.modifiers.modules.build.SwappableSlotModu
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe.VariantFormatter;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +30,7 @@ public record ModifierVariantNameModule(VariantFormatter formatter) implements M
     ModifierVariantNameModule::new);
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     String variant = tool.getPersistentData().getString(entry.id());
     if (!variant.isEmpty()) {
       // allow overriding the color of the result using the resource color manager

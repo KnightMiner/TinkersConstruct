@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ProjectilePredicat
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * @param formula    Formula to compute the knockback amount
  */
 // TODO 1.21: support formulas, maybe with melee variable?
-public record KnockbackModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, ModifierFormula formula, ProjectilePredicate projectile, ModifierCondition<IToolStackView> condition) implements MeleeHitModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record KnockbackModule(EntityTargetPredicate target, IJsonPredicate<LivingEntity> attacker, ModifierFormula formula, ProjectilePredicate projectile, ModifierCondition<ToolStackView> condition) implements MeleeHitModifierHook, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<KnockbackModule>defaultHooks(ModifierHooks.MELEE_HIT);
   /** Setup for the formula */
   private static final FormulaLoadable FORMULA = new FormulaLoadable(FallbackFormula.ADD, "level", "knockback");
@@ -55,7 +55,7 @@ public record KnockbackModule(EntityTargetPredicate target, IJsonPredicate<Livin
   }
 
   @Override
-  public float beforeMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
+  public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
     // might want to consider an entity predicate here, this special casing is a bit odd
     if (this.condition.matches(tool, modifier) && projectile.test(context.isProjectile()) && this.attacker.matches(context.getAttacker()) && this.target.matches(context)) {
       return formula.apply(formula.processLevel(modifier), knockback);

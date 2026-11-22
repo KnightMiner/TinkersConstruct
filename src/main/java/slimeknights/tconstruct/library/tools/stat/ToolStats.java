@@ -10,8 +10,8 @@ import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.resource.ResourceId;
 import slimeknights.tconstruct.library.resource.ResourceIdLoadable;
-import slimeknights.tconstruct.library.tools.nbt.MultiplierNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.component.StatMultipliers;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.stat.impl.IntegerToolStat;
 import slimeknights.tconstruct.library.tools.stat.impl.PercentToolStat;
 
@@ -37,7 +37,7 @@ public class ToolStats {
   public static final ResourceLocationLoadable<ResourceId<IToolStat<?>>> ID_LOADABLE = ResourceIdLoadable.loadable();
   /** Loader for general tool stats */
   public static final StringLoadable<IToolStat<?>> LOADER = ID_LOADABLE.mapChecked((id, error) -> {
-    IToolStat<?> stat = ToolStats.getToolStat(id);
+    IToolStat<?> stat = getToolStat(id);
     if (stat != null) {
       return stat;
     }
@@ -77,17 +77,17 @@ public class ToolStats {
     return stat;
   });
 
-  /** Codec instance for {@link StatsNBT} */
+  /** Codec instance for {@link StatValues} */
   public static final Codec<IToolStat<?>> CODEC = ResourceId.<IToolStat<?>>codec().comapFlatMap(id -> {
     IToolStat<?> stat = getToolStat(id);
     return stat != null ? DataResult.success(stat) : DataResult.error(() -> "Unknown stat type " + id);
   }, IToolStat::getId);
-  /** Numeric codec instance for {@link MultiplierNBT} */
+  /** Numeric codec instance for {@link StatMultipliers} */
   public static final Codec<INumericToolStat<?>> NUMERIC_CODEC = CODEC.comapFlatMap(stat -> stat instanceof INumericToolStat<?> numeric
     ? DataResult.success(numeric)
     : DataResult.error(() -> "Invalid tool stat " + stat.getId() + ", must be a numeric stat"),
     stat -> stat);
-  /** Stream codec instance for {@link StatsNBT} */
+  /** Stream codec instance for {@link StatValues} */
   public static final StreamCodec<ByteBuf,IToolStat<?>> STREAM_CODEC = ResourceId.<IToolStat<?>>streamCodec().map(id -> {
     IToolStat<?> stat = getToolStat(id);
     if (stat != null) {
@@ -95,7 +95,7 @@ public class ToolStats {
     }
     throw new IllegalStateException("Unknown stat type " + id);
   }, IToolStat::getId);
-  /** Numeric stream codec instance for {@link MultiplierNBT} */
+  /** Numeric stream codec instance for {@link StatMultipliers} */
   public static final StreamCodec<ByteBuf,INumericToolStat<?>> NUMERIC_STREAM_CODEC = STREAM_CODEC.map(stat -> {
     if (stat instanceof INumericToolStat<?> numeric) {
       return numeric;

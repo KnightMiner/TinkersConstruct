@@ -19,7 +19,7 @@ import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
 import slimeknights.tconstruct.library.tools.definition.module.display.CustomMaterialName;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.tools.TinkerToolParts;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.stats.RepairStats;
@@ -74,7 +74,7 @@ public class SkullMaterialContent extends SingleMaterialStatContent {
     if (!searchedSkullRecipe && world != null) {
       Item skull = TinkerTools.slimesuit.get(ArmorItem.Type.HELMET);
       skullRecipe = MultiNamedRecipe.streamRecipes(world.registryAccess(), world.getRecipeManager(), TinkerRecipes.castingBasinType.get(), IDisplayableCastingRecipe.class)
-        .filter(recipe -> recipe.getOutputs().stream().anyMatch(output -> output.is(skull) && getMaterialVariant().matchesVariant(MaterialNBT.get(output, 0))))
+        .filter(recipe -> recipe.getOutputs().stream().anyMatch(output -> output.is(skull) && getMaterialVariant().matchesVariant(ToolMaterials.get(output, 0))))
         .findFirst().orElse(null);
       searchedSkullRecipe = true;
     }

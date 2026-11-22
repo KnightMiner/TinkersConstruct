@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import slimeknights.tconstruct.fixture.MaterialItemFixture;
 import slimeknights.tconstruct.library.materials.MaterialRegistryExtension;
 import slimeknights.tconstruct.library.materials.stats.IMaterialStats;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
+import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.test.BaseMcTest;
 import slimeknights.tconstruct.tools.stats.HandleMaterialStats;
 import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
@@ -32,7 +32,7 @@ class StatProviderTest extends BaseMcTest {
 
   @Test
   void calculateValues_noStats() {
-    StatsNBT stats = addStats(ModifierStatsBuilder.builder()).build();
+    StatValues stats = addStats(ModifierStatsBuilder.builder()).build();
     assertThat(stats.getInt(ToolStats.DURABILITY)).isEqualTo(1);
     assertThat(stats.get(ToolStats.HARVEST_TIER)).isEqualTo(Tiers.WOOD);
     assertThat(stats.get(ToolStats.MINING_SPEED)).isGreaterThan(0).isLessThanOrEqualTo(1);
@@ -192,7 +192,7 @@ class StatProviderTest extends BaseMcTest {
   void calculateValues_headScales() {
     ModifierStatsBuilder builder = ModifierStatsBuilder.builder();
     new HeadMaterialStats(100, 5, Tiers.DIAMOND, 8).apply(builder, 2f);
-    StatsNBT stats = builder.build();
+    StatValues stats = builder.build();
 
     assertThat(stats.getInt(ToolStats.DURABILITY)).isEqualTo(200);
     assertThat(stats.get(ToolStats.HARVEST_TIER)).isEqualTo(Tiers.DIAMOND);
@@ -208,7 +208,7 @@ class StatProviderTest extends BaseMcTest {
     ToolStats.ATTACK_SPEED.update(builder, 4f);
     ToolStats.ATTACK_DAMAGE.update(builder, 5f);
     new HandleMaterialStats(1, 2, 3, 4).apply(builder, 2f);
-    StatsNBT stats = builder.build();
+    StatValues stats = builder.build();
 
     assertThat(stats.getInt(ToolStats.DURABILITY)).isEqualTo(6); // 2 * (1 + 1*2)
     assertThat(stats.get(ToolStats.MINING_SPEED)).isEqualTo(15); // 3 * (1 + 2*2)

@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.armor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -17,13 +17,13 @@ public interface ArmorWalkModifierHook {
    * @param prevPos  Previous block position
    * @param newPos   New block position, will match the entity's position
    */
-  void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos);
+  void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos);
 
 
   /** Walk modifier hook merger: runs hooks of all children */
   record AllMerger(Collection<ArmorWalkModifierHook> modules) implements ArmorWalkModifierHook {
     @Override
-    public void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+    public void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
       for (ArmorWalkModifierHook module : modules) {
         module.onWalk(tool, modifier, living, prevPos, newPos);
       }

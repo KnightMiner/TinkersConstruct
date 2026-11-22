@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHo
 import slimeknights.tconstruct.library.recipe.tinkerstation.building.ToolBuildingRecipe;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.layout.LayoutSlot;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
 import slimeknights.tconstruct.plugin.jei.util.CategoryUtil;
@@ -88,7 +88,7 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
       // if we have an output focus, set the input slots to match
       if (!focus.isEmpty()) {
         List<IToolPart> parts = recipe.getToolParts();
-        MaterialNBT materials = MaterialNBT.get(focus);
+        ToolMaterials materials = ToolMaterials.get(focus);
         for (int i = 0; i < partCount; i++) {
           IMaterialItem part = parts.get(i);
           MaterialVariant material = materials.get(i);
@@ -146,7 +146,7 @@ public class ToolBuildingCategory extends NamedRecipeCategory<ToolBuildingRecipe
     List<IRecipeSlotDrawable> inputSlots = CategoryUtil.filterSlots(recipeSlots, PART_SLOT_PREFIX);
     if (resultSlot != null && !inputSlots.isEmpty()) {
       List<IToolPart> parts = recipe.getToolParts();
-      MaterialNBT.Builder builder = MaterialNBT.builder();
+      ToolMaterials.Builder builder = ToolMaterials.builder();
       for (int i = 0; i < parts.size(); i++) {
         builder.add(parts.get(i).getMaterial(inputSlots.get(i).getDisplayedItemStack().orElse(ItemStack.EMPTY)));
       }

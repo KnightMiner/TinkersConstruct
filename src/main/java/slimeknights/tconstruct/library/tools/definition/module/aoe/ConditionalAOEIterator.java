@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Iterator that tries one iterator, falling back to a second if the block does not match a tag
@@ -27,7 +27,7 @@ public record ConditionalAOEIterator(IJsonPredicate<BlockState> condition, AreaO
   }
 
   @Override
-  public Iterable<BlockPos> getBlocks(IToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
+  public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
     AreaOfEffectIterator iterator = condition.matches(state) ? ifTrue : ifFalse;
     return iterator.getBlocks(tool, context, state, matchType);
   }

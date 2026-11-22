@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -24,28 +24,28 @@ public interface BlockHarvestModifierHook {
    * @param modifier  Modifier level
    * @param context   Harvest context
    */
-  default void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {}
+  default void startHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {}
 
   /**
-   * Called after all blocks are broken on the target block. Use to perform effects or to cleanup changes from {@link #startHarvest(IToolStackView, ModifierEntry, ToolHarvestContext)}.
+   * Called after all blocks are broken on the target block. Use to perform effects or to cleanup changes from {@link #startHarvest(ToolStackView, ModifierEntry, ToolHarvestContext)}.
    * @param tool       Tool used
    * @param modifier   Modifier level
    * @param context    Harvest context
    * @param harvested  Number of blocks harvested
    */
-  void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested);
+  void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested);
 
   /** Merger that runs all submodules */
   record AllMerger(Collection<BlockHarvestModifierHook> modules) implements BlockHarvestModifierHook {
     @Override
-    public void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+    public void startHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
       for (BlockHarvestModifierHook module : modules) {
         module.startHarvest(tool, modifier, context);
       }
     }
 
     @Override
-    public void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
+    public void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
       for (BlockHarvestModifierHook module : modules) {
         module.finishHarvest(tool, modifier, context, harvested);
       }
@@ -62,17 +62,17 @@ public interface BlockHarvestModifierHook {
     ResourceLocation HARVESTING_FLAG = TConstruct.getResource("is_harvesting");
 
     @Override
-    default void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+    default void startHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
       tool.getPersistentData().putBoolean(HARVESTING_FLAG, true);
     }
 
     @Override
-    default void finishHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
+    default void finishHarvest(ToolStackView tool, ModifierEntry modifier, ToolHarvestContext context, int harvested) {
       tool.getPersistentData().remove(HARVESTING_FLAG);
     }
 
     /** Checks if we are presently harvesting */
-    static boolean isHarvesting(IToolStackView tool) {
+    static boolean isHarvesting(ToolStackView tool) {
       return tool.getPersistentData().getBoolean(HARVESTING_FLAG);
     }
   }

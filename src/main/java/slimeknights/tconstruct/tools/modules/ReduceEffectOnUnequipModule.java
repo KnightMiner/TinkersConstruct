@@ -17,12 +17,12 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
 
 /** Module to reduce duration of effects on unequip. Used to prevent an exploit with {@link TinkerAttributes#GOOD_EFFECT_DURATION} */
-public record ReduceEffectOnUnequipModule(MobEffectCategory category, LevelingValue percent, ModifierCondition<IToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<IToolStackView> {
+public record ReduceEffectOnUnequipModule(MobEffectCategory category, LevelingValue percent, ModifierCondition<ToolStackView> condition) implements ModifierModule, EquipmentChangeModifierHook, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ReduceEffectOnUnequipModule>defaultHooks(ModifierHooks.EQUIPMENT_CHANGE);
   public static final RecordLoadable<ReduceEffectOnUnequipModule> LOADER = RecordLoadable.create(
     new EnumLoadable<>(MobEffectCategory.class).requiredField("category", ReduceEffectOnUnequipModule::category),
@@ -41,7 +41,7 @@ public record ReduceEffectOnUnequipModule(MobEffectCategory category, LevelingVa
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
     // must actually be removing, and run on both sides so we don't need to sync
     if (condition.matches(tool, modifier) && EquipmentChangeModifierHook.didUnequip(tool, context)) {
       LivingEntity entity = context.getEntity();

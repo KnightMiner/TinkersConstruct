@@ -21,7 +21,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.FloatToolStat;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -36,7 +36,7 @@ import java.util.List;
  * @param formula     Formula to apply
  * @param condition   Standard modifier module conditions
  */
-public record ConditionalStatModule(INumericToolStat<?> stat, IJsonPredicate<LivingEntity> holder, ConditionalStatFormula formula, ModifierCondition<IToolStackView> condition) implements ModifierModule, ConditionalStatModifierHook, ConditionalStatTooltip, ConditionalModule<IToolStackView> {
+public record ConditionalStatModule(INumericToolStat<?> stat, IJsonPredicate<LivingEntity> holder, ConditionalStatFormula formula, ModifierCondition<ToolStackView> condition) implements ModifierModule, ConditionalStatModifierHook, ConditionalStatTooltip, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ConditionalStatModule>defaultHooks(ModifierHooks.CONDITIONAL_STAT, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<ConditionalStatModule> LOADER = RecordLoadable.create(
     ToolStats.CONDITIONAL_LOADER.requiredField("stat", ConditionalStatModule::stat),
@@ -62,7 +62,7 @@ public record ConditionalStatModule(INumericToolStat<?> stat, IJsonPredicate<Liv
   }
 
   @Override
-  public float modifyStat(IToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
+  public float modifyStat(ToolStackView tool, ModifierEntry modifier, LivingEntity living, FloatToolStat stat, float baseValue, float multiplier) {
     if (this.stat == stat && condition.matches(tool, modifier) && this.holder.matches(living)) {
       return formula.apply(tool, modifier, living, baseValue, multiplier);
     }
@@ -70,7 +70,7 @@ public record ConditionalStatModule(INumericToolStat<?> stat, IJsonPredicate<Liv
   }
 
   @Override
-  public float computeTooltipValue(IToolStackView tool, ModifierEntry entry, @Nullable Player player) {
+  public float computeTooltipValue(ToolStackView tool, ModifierEntry entry, @Nullable Player player) {
     return formula.apply(tool, entry, player, 1, tool.getMultiplier(stat));
   }
 

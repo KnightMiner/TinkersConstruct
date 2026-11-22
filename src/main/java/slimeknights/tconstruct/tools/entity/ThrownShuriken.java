@@ -38,9 +38,9 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ScheduledProjectile
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Schedule;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
@@ -56,7 +56,7 @@ public class ThrownShuriken extends Projectile implements ToolProjectile, Projec
   protected static final EntityDataAccessor<Float> WATER_INERTIA = SynchedEntityData.defineId(ThrownShuriken.class, EntityDataSerializers.FLOAT);
 
   private ItemStack stack = ItemStack.EMPTY;
-  private IToolStackView tool = null;
+  private ToolStackView tool = null;
   private boolean reclaim = false;
   @Getter
   private float power = 4;
@@ -98,7 +98,7 @@ public class ThrownShuriken extends Projectile implements ToolProjectile, Projec
   /**
    * Gets the tool instance, ensuring its created
    */
-  private IToolStackView getTool() {
+  private ToolStackView getTool() {
     if (tool == null) {
       tool = ToolStack.from(stack);
     }
@@ -109,11 +109,11 @@ public class ThrownShuriken extends Projectile implements ToolProjectile, Projec
    * Called when the arrow is created to set initial properties.
    * @see ModifiableArrow#onCreate(ItemStack, LivingEntity)
    */
-  public IToolStackView onCreate(ItemStack stack, @Nullable LivingEntity shooter) {
+  public ToolStackView onCreate(ItemStack stack, @Nullable LivingEntity shooter) {
     stack = stack.copyWithCount(1);
     setStack(stack);
     // initialize arrow stats
-    IToolStackView tool = getTool();
+    ToolStackView tool = getTool();
     EntityModifierCapability.getCapability(this).addModifiers(tool.getModifiers());
     this.power = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.PROJECTILE_DAMAGE);
     this.entityData.set(WATER_INERTIA, ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.WATER_INERTIA));
@@ -124,7 +124,7 @@ public class ThrownShuriken extends Projectile implements ToolProjectile, Projec
   @Override
   public void shoot(double pX, double pY, double pZ, float velocity, float inaccuracy) {
     if (!stack.isEmpty()) {
-      IToolStackView tool = getTool();
+      ToolStackView tool = getTool();
       LivingEntity shooter = ModifierUtil.asLiving(getOwner());
       // apply accuracy, no need to compute this earlier nor store it
       inaccuracy *= ModifierUtil.getInaccuracy(tool, shooter);

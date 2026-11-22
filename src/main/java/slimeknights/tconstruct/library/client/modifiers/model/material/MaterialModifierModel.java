@@ -24,7 +24,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.ModuleWithKey;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
 
   /** Gets the material to use to render this modifier */
   @Nullable
-  MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry);
+  MaterialVariantId getMaterial(ToolStackView tool, ModifierEntry entry);
 
   /**
    * Gets the color to tint the given material texture
@@ -57,12 +57,12 @@ public interface MaterialModifierModel extends SimpleModifierModel {
    * @param sprite   Current material sprite
    * @return  Color to tint
    */
-  default int getColor(IToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
+  default int getColor(ToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
     return sprite.color();
   }
 
   @Override
-  default void addQuads(IToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
+  default void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     Material texture = isLarge ? large() : small();
     if (texture != null) {
       MaterialVariantId material = getMaterial(tool, modifier);
@@ -81,7 +81,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     int index();
 
     @Override
-    default MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry) {
+    default MaterialVariantId getMaterial(ToolStackView tool, ModifierEntry entry) {
       return tool.getMaterial(index()).id();
     }
   }
@@ -112,7 +112,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
 
     @Nullable
     @Override
-    public MaterialVariantId getMaterial(IToolStackView tool, ModifierEntry entry) {
+    public MaterialVariantId getMaterial(ToolStackView tool, ModifierEntry entry) {
       String material = tool.getPersistentData().getString(getKey(entry));
       if (!material.isEmpty()) {
         return MaterialVariantId.tryParse(material);
@@ -121,7 +121,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     }
 
     @Override
-    public Object getCacheKey(IToolStackView tool, ModifierEntry entry) {
+    public Object getCacheKey(ToolStackView tool, ModifierEntry entry) {
       // since we are using a key in NBT for the material, need to include it in the cache key
       return new CacheKey(entry.id(), tool.getPersistentData().getString(getKey(entry)));
     }
@@ -147,7 +147,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     }
 
     @Override
-    public int getColor(IToolStackView tool, ModifierEntry modifier, TintedSprite sprite) {
+    public int getColor(ToolStackView tool, ModifierEntry modifier, TintedSprite sprite) {
       int color = useMaterialColor ? sprite.color() : -1;
       // fetch the dye color
       IModDataView data = tool.getPersistentData();
@@ -167,7 +167,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     }
 
     @Override
-    public Object getCacheKey(IToolStackView tool, ModifierEntry modifier) {
+    public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
       ResourceLocation key = getKey(modifier);
       IModDataView data = tool.getPersistentData();
       int color = -1;

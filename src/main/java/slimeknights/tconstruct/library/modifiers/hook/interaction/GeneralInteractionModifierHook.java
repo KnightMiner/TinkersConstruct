@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
@@ -35,43 +35,43 @@ public interface GeneralInteractionModifierHook {
    * @param source     Source of the interaction
    * @return  Return PASS or FAIL to allow vanilla handling, any other to stop vanilla and later modifiers from running.
    */
-  InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source);
+  InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source);
 
 
   /* Charged usage */
 
   /**
    * Called every tick when the player is using this modifier. Only supported for {@link InteractionSource#RIGHT_CLICK}.
-   * To setup, use {@link #startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)} in {@link #onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}.
+   * To setup, use {@link #startUsing(ToolStackView, ModifierId, LivingEntity, InteractionHand)} in {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}.
    * @param tool       Tool performing interaction
    * @param modifier   Modifier instance
    * @param entity     Interacting entity
    * @param timeLeft   How many ticks of use duration was left.
-   * @see UsingToolModifierHook#onUsingTick(IToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
+   * @see UsingToolModifierHook#onUsingTick(ToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
    */
-  default void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {}
+  default void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {}
 
   /**
-   * Called on the active modifier when the player stops using the modifier without finishing. See {@link #onFinishUsing(IToolStackView, ModifierEntry, LivingEntity)} for finishing interaction.
+   * Called on the active modifier when the player stops using the modifier without finishing. See {@link #onFinishUsing(ToolStackView, ModifierEntry, LivingEntity)} for finishing interaction.
    * Only supported for {@link InteractionSource#RIGHT_CLICK}.
-   * To setup, use {@link #startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)} in {@link #onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}.
+   * To setup, use {@link #startUsing(ToolStackView, ModifierId, LivingEntity, InteractionHand)} in {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)}.
    * @param tool       Tool performing interaction
    * @param modifier   Modifier instance
    * @param entity     Interacting entity
    * @param timeLeft   How many ticks of use duration was left
-   * @see UsingToolModifierHook#beforeReleaseUsing(IToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
+   * @see UsingToolModifierHook#beforeReleaseUsing(ToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
    */
-  default void onStoppedUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {}
+  default void onStoppedUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {}
 
   /**
-   * Called on the active modifier when the use duration on this modifier reaches the end. See {@link #onStoppedUsing(IToolStackView, ModifierEntry, LivingEntity, int)} for unfinished interaction.
-   * To setup, use {@link LivingEntity#startUsingItem(InteractionHand)} in {@link #onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} and set the duration in {@link #getUseDuration(IToolStackView, ModifierEntry)}
+   * Called on the active modifier when the use duration on this modifier reaches the end. See {@link #onStoppedUsing(ToolStackView, ModifierEntry, LivingEntity, int)} for unfinished interaction.
+   * To setup, use {@link LivingEntity#startUsingItem(InteractionHand)} in {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} and set the duration in {@link #getUseDuration(ToolStackView, ModifierEntry)}
    * @param tool       Tool performing interaction
    * @param modifier   Modifier instance
    * @param entity     Interacting entity
-   * @see UsingToolModifierHook#beforeReleaseUsing(IToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
+   * @see UsingToolModifierHook#beforeReleaseUsing(ToolStackView, ModifierEntry, LivingEntity, int, int, ModifierEntry)
    */
-  default void onFinishUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity) {}
+  default void onFinishUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity) {}
 
   /**
    * Called on the active modifier to determines how long usage lasts on a tool.
@@ -79,7 +79,7 @@ public interface GeneralInteractionModifierHook {
    * @param modifier   Modifier instance
    * @return  For how many ticks the modifier should run its use action
    */
-  default int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  default int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return 0;
   }
 
@@ -89,7 +89,7 @@ public interface GeneralInteractionModifierHook {
    * @param modifier   Modifier instance
    * @return  Use action to be performed
    */
-  default UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  default UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return UseAnim.NONE;
   }
 
@@ -102,48 +102,48 @@ public interface GeneralInteractionModifierHook {
   ResourceLocation KEY_DRAWTIME = TConstruct.getResource("drawtime");
 
   /**
-   * Use in {@link #onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} to start using an item, ensuring later hooks are properly called.
+   * Use in {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} to start using an item, ensuring later hooks are properly called.
    * @param tool      Tool being used
    * @param modifier  Modifier to call for later hooks, must be on the tool
    * @param living    Entity using the tool, used for the vanilla hook
    * @param hand      Hand using the tool
    */
-  static void startUsing(IToolStackView tool, ModifierId modifier, LivingEntity living, InteractionHand hand) {
+  static void startUsing(ToolStackView tool, ModifierId modifier, LivingEntity living, InteractionHand hand) {
     tool.getPersistentData().putString(KEY_ACTIVE_MODIFIER, modifier.toString());
     living.startUsingItem(hand);
   }
 
   /** Gets the drawtime for the passed tool. */
-  static int getDrawtime(IToolStackView tool, LivingEntity living, float speedFactor) {
+  static int getDrawtime(ToolStackView tool, LivingEntity living, float speedFactor) {
     return (int)Math.ceil(20f * speedFactor / ConditionalStatModifierHook.getModifiedStat(tool, living, ToolStats.DRAW_SPEED));
   }
 
   /** Causes cooldown on the given tool based on its draw speed stat. */
-  static void addCooldown(IToolStackView tool, Player player, float speedFactor) {
+  static void addCooldown(ToolStackView tool, Player player, float speedFactor) {
     player.getCooldowns().addCooldown(tool.getItem(), getDrawtime(tool, player, speedFactor));
   }
 
   /**
-   * Use in {@link net.minecraft.world.item.Item#use(Level, Player, InteractionHand)} or {@link #onToolUse(IToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} to setup draw time for {@link slimeknights.tconstruct.library.client.model.TinkerItemProperties}.
+   * Use in {@link net.minecraft.world.item.Item#use(Level, Player, InteractionHand)} or {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} to setup draw time for {@link slimeknights.tconstruct.library.client.model.TinkerItemProperties}.
    * @param tool      Tool being used
    * @param living    Entity using the tool, used for the vanilla hook
    * @param speedFactor  Additional factor to multiply drawtime by, after considering {@link ToolStats#DRAW_SPEED}
    */
-  static int startDrawing(IToolStackView tool, LivingEntity living, float speedFactor) {
+  static int startDrawing(ToolStackView tool, LivingEntity living, float speedFactor) {
     int drawtime = getDrawtime(tool, living, speedFactor);
     tool.getPersistentData().putInt(KEY_DRAWTIME, drawtime);
     return drawtime;
   }
 
   /**
-   * Combination of {@link #startUsing(IToolStackView, ModifierId, LivingEntity, InteractionHand)} and {@link #startDrawing(IToolStackView, LivingEntity, float)} ensuring they are added in the proper order.
+   * Combination of {@link #startUsing(ToolStackView, ModifierId, LivingEntity, InteractionHand)} and {@link #startDrawing(ToolStackView, LivingEntity, float)} ensuring they are added in the proper order.
    * @param tool         Tool being used
    * @param modifier     Modifier to call for later hooks, must be on the tool
    * @param living       Entity using the tool, used for the vanilla hook
    * @param hand         Hand using the tool
    * @param speedFactor  Additional factor to multiply drawtime by, after considering {@link ToolStats#DRAW_SPEED}
    */
-  static void startUsingWithDrawtime(IToolStackView tool, ModifierId modifier, LivingEntity living, InteractionHand hand, float speedFactor) {
+  static void startUsingWithDrawtime(ToolStackView tool, ModifierId modifier, LivingEntity living, InteractionHand hand, float speedFactor) {
     startDrawing(tool, living, speedFactor);
     startUsing(tool, modifier, living, hand);
   }
@@ -151,9 +151,9 @@ public interface GeneralInteractionModifierHook {
   /**
    * Gets the current charge percentage based on the given tool
    * @param tool        Tool being used
-   * @param chargeTime  Ticks the item has been used so far, typically from {@link #onStoppedUsing(IToolStackView, ModifierEntry, LivingEntity, int)}.
+   * @param chargeTime  Ticks the item has been used so far, typically from {@link #onStoppedUsing(ToolStackView, ModifierEntry, LivingEntity, int)}.
    */
-  static float getToolCharge(IToolStackView tool, float chargeTime) {
+  static float getToolCharge(ToolStackView tool, float chargeTime) {
     if (chargeTime < 0) {
       return 0;
     }
@@ -166,7 +166,7 @@ public interface GeneralInteractionModifierHook {
   }
 
   /** Gets the currently active modifier, or {@link ModifierEntry#EMPTY} if none is active. Generally does not need to be called in modifiers as we call it in internal logic. */
-  static ModifierEntry getActiveModifier(IToolStackView tool) {
+  static ModifierEntry getActiveModifier(ToolStackView tool) {
     IModDataView persistentData = tool.getPersistentData();
     if (persistentData.contains(KEY_ACTIVE_MODIFIER, Tag.TAG_STRING)) {
       ModifierId modifier = ModifierId.tryParse(persistentData.getString(KEY_ACTIVE_MODIFIER));
@@ -178,7 +178,7 @@ public interface GeneralInteractionModifierHook {
   }
 
   /** Called to clear any data modifiers set when usage starts. Generally does not need to be called in modifiers as we call it in internal logic. */
-  static void finishUsing(IToolStackView tool) {
+  static void finishUsing(ToolStackView tool) {
     ModDataNBT persistentData = tool.getPersistentData();
     persistentData.remove(KEY_ACTIVE_MODIFIER);
     persistentData.remove(KEY_DRAWTIME);
@@ -188,7 +188,7 @@ public interface GeneralInteractionModifierHook {
   /** Logic to merge multiple interaction hooks into one */
   record FirstMerger(Collection<GeneralInteractionModifierHook> modules) implements GeneralInteractionModifierHook {
     @Override
-    public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+    public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
       InteractionResult result = InteractionResult.PASS;
       for (GeneralInteractionModifierHook module : modules) {
         result = module.onToolUse(tool, modifier, player, hand, source);
@@ -200,28 +200,28 @@ public interface GeneralInteractionModifierHook {
     }
 
     @Override
-    public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
+    public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
       for (GeneralInteractionModifierHook module : modules) {
         module.onUsingTick(tool, modifier, entity, timeLeft);
       }
     }
 
     @Override
-    public void onStoppedUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
+    public void onStoppedUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int timeLeft) {
       for (GeneralInteractionModifierHook module : modules) {
         module.onStoppedUsing(tool, modifier, entity, timeLeft);
       }
     }
 
     @Override
-    public void onFinishUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity) {
+    public void onFinishUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity) {
       for (GeneralInteractionModifierHook module : modules) {
         module.onFinishUsing(tool, modifier, entity);
       }
     }
 
     @Override
-    public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+    public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
       for (GeneralInteractionModifierHook module : modules) {
         int duration = module.getUseDuration(tool, modifier);
         if (duration > 0) {
@@ -232,7 +232,7 @@ public interface GeneralInteractionModifierHook {
     }
 
     @Override
-    public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+    public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
       for (GeneralInteractionModifierHook module : modules) {
         UseAnim anim = module.getUseAction(tool, modifier);
         if (anim != UseAnim.NONE) {

@@ -16,7 +16,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.ArmorWalkRadiusModule;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Module that places fire as you walk */
 public record FireWalkerModule(LevelingValue radius) implements ModifierModule, ArmorWalkRadiusModule<Void> {
@@ -28,12 +28,12 @@ public record FireWalkerModule(LevelingValue radius) implements ModifierModule, 
   }
 
   @Override
-  public float getRadius(IToolStackView tool, ModifierEntry modifier) {
+  public float getRadius(ToolStackView tool, ModifierEntry modifier) {
     return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
   }
 
   @Override
-  public boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
+  public boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
     if (BaseFireBlock.canBePlacedAt(world, target, living.getDirection())) {
       world.playSound(null, target, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, living.level().random.nextFloat() * 0.4F + 0.8F);
       world.setBlock(target, BaseFireBlock.getState(world, target), Block.UPDATE_ALL_IMMEDIATE);

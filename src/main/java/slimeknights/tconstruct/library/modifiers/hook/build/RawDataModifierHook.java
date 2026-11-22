@@ -3,7 +3,8 @@ package slimeknights.tconstruct.library.modifiers.hook.build;
 import net.minecraft.core.component.DataComponentType;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
  */
 public interface RawDataModifierHook {
   /**
-   * Allows editing a restricted view of the tools raw NBT. You are responsible for cleaning up that data on removal via {@link #removeRawData(IToolStackView, Modifier)}.
+   * Allows editing a restricted view of the tools raw NBT. You are responsible for cleaning up that data on removal via {@link #removeRawData(ToolStackView, Modifier)}.
    * This may be called when your data is already on the tool, ensure running multiple times in a row will give the same result.
    * In most cases volatile data via {@link VolatileDataModifierHook} is a much better choice, only use this hook if you have no other choice.
    * <br>
@@ -21,10 +22,10 @@ public interface RawDataModifierHook {
    * <ul>
    *   <li>{@link VolatileDataModifierHook}: Modifier data that automatically cleans up when the modifier is removed.</li>
    * </ul>
-   * @param tool     Tool stack instance. Can modify data using {@link IToolStackView#set(DataComponentType, Object)} provided its not {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#isRestricted(DataComponentType)}.
+   * @param tool     Tool stack instance. Can modify data using {@link ToolStackView#set(DataComponentType, Object)} provided its not {@link ToolStack#isRestricted(DataComponentType)}.
    * @param modifier Modifier entry of the modifier
    */
-  void addRawData(IToolStackView tool, ModifierEntry modifier);
+  void addRawData(ToolStackView tool, ModifierEntry modifier);
 
   /**
    * Called when this modifier is about to be removed to remove any raw data added. At this time stats are not yet rebuild and the modifier is still on the tool.
@@ -36,22 +37,22 @@ public interface RawDataModifierHook {
    *   <li>{@link VolatileDataModifierHook}: Adds NBT that is automatically removed</li>
    *   <li>{@link ValidateModifierHook}: Allows marking a new state invalid</li>
    * </ul>
-   * @param tool     Tool instance. Can modify data using {@link IToolStackView#set(DataComponentType, Object)} provided its not {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#isRestricted(DataComponentType)}.
+   * @param tool     Tool instance. Can modify data using {@link ToolStackView#set(DataComponentType, Object)} provided its not {@link ToolStack#isRestricted(DataComponentType)}.
    * @param modifier Modifier being removed
    */
-  void removeRawData(IToolStackView tool, Modifier modifier);
+  void removeRawData(ToolStackView tool, Modifier modifier);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<RawDataModifierHook> modules) implements RawDataModifierHook {
     @Override
-    public void addRawData(IToolStackView tool, ModifierEntry modifier) {
+    public void addRawData(ToolStackView tool, ModifierEntry modifier) {
       for (RawDataModifierHook module : modules) {
         module.addRawData(tool, modifier);
       }
     }
 
     @Override
-    public void removeRawData(IToolStackView tool, Modifier modifier) {
+    public void removeRawData(ToolStackView tool, Modifier modifier) {
       for (RawDataModifierHook module : modules) {
         module.removeRawData(tool, modifier);
       }

@@ -11,7 +11,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.capability.ToolEnergyCapability;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public final class EnergyHandlerModifier extends NoLevelsModifier implements Val
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, @Nullable RegistryAccess access) {
     // format: Energy: #,### / #,### FE
     return Component.translatable(getTranslationKey() + ".current")
                     .append(ToolEnergyCapability.MAX_STAT.formatContents(ToolEnergyCapability.getEnergy(tool), ToolEnergyCapability.getMaxEnergy(tool)));
@@ -42,14 +42,14 @@ public final class EnergyHandlerModifier extends NoLevelsModifier implements Val
 
   @Nullable
   @Override
-  public Component validate(IToolStackView tool, ModifierEntry modifier) {
+  public Component validate(ToolStackView tool, ModifierEntry modifier) {
     ToolEnergyCapability.checkEnergy(tool);
     return null;
   }
 
   @Nullable
   @Override
-  public Component onRemoved(IToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, Modifier modifier) {
     // we could just remove the energy, but this is less prone to risk of another modifier using energy
     // this will remove the energy if the capacity became 0 which should happen when your last energy modifier is removed
     ToolEnergyCapability.checkEnergy(tool);

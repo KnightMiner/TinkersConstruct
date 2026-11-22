@@ -34,7 +34,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
@@ -77,7 +77,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   /** Drinks some of the fluid in the tank, reducing its value and spawning particles and playing sounds */
-  private void finishDrinking(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, boolean playSound) {
+  private void finishDrinking(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, boolean playSound) {
     FluidStack fluid = TANK_HELPER.getFluid(tool);
     if (!fluid.isEmpty()) {
       // sound and particles
@@ -122,7 +122,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   /* Held */
 
   @Override
-  public InteractionResult onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
+  public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.RIGHT_CLICK) {
       if (slurp(TANK_HELPER.getFluid(tool), modifier, player, player, FluidAction.SIMULATE) > 0) {
         GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
@@ -133,17 +133,17 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   @Override
-  public int getUseDuration(IToolStackView tool, ModifierEntry modifier) {
+  public int getUseDuration(ToolStackView tool, ModifierEntry modifier) {
     return duration.compute(modifier.getEffectiveLevel());
   }
 
   @Override
-  public UseAnim getUseAction(IToolStackView tool, ModifierEntry modifier) {
+  public UseAnim getUseAction(ToolStackView tool, ModifierEntry modifier) {
     return UseAnim.DRINK;
   }
 
   @Override
-  public void onUsingTick(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void onUsingTick(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     // mark the tool with whether we can drink; don't play particles if simulate does nothing
     int useTime = useDuration - timeLeft;
     boolean notActive = modifier != activeModifier;
@@ -174,7 +174,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   @Override
-  public void beforeReleaseUsing(IToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
+  public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     if (useDuration - timeLeft == getUseDuration(tool, modifier)) {
       finishDrinking(tool, modifier, entity, modifier != activeModifier);
     }
@@ -185,7 +185,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   /* Armor */
 
   @Override
-  public boolean startInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
+  public boolean startInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, TooltipKey keyModifier) {
     if (keyModifier == TooltipKey.NORMAL) {
       if (slurp(TANK_HELPER.getFluid(tool), modifier, player, player, FluidAction.SIMULATE) > 0) {
         tool.getPersistentData().putInt(modifier.id(), player.tickCount + duration.compute(modifier.getEffectiveLevel()));
@@ -196,13 +196,13 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   @Override
-  public void stopInteract(IToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
+  public void stopInteract(ToolStackView tool, ModifierEntry modifier, Player player, EquipmentSlot slot, int chargeTime, ModifierEntry activeModifier) {
     tool.getPersistentData().remove(modifier.id());
   }
 
   @Override
-  public void onUnequip(IToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
-    IToolStackView replacement = context.getReplacementTool();
+  public void onUnequip(ToolStackView tool, ModifierEntry modifier, EquipmentChangeContext context) {
+    ToolStackView replacement = context.getReplacementTool();
     // modifier list changing is a good heuristic for tool changing, avoids deleting during the slurp
     Level level = context.getLevel();
     if (!level.isClientSide && (replacement == null || replacement.getItem() != tool.getItem() || !replacement.getModifiers().equals(tool.getModifiers()))) {
@@ -211,7 +211,7 @@ public record SlurpingModule(LevelingValue strength, LevelingInt duration) imple
   }
 
   @Override
-  public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+  public void onInventoryTick(ToolStackView tool, ModifierEntry modifier, Level world, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
     if (isCorrectSlot && tool.hasTag(TinkerTags.Items.WORN_ARMOR)) {
       ModDataNBT persistentData = tool.getPersistentData();
       int finishTime = persistentData.getInt(modifier.id());

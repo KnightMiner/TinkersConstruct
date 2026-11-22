@@ -12,7 +12,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -36,18 +36,18 @@ public interface BowAmmoModifierHook {
    * @param ammoPredicate  Predicate from the bow of types of ammo it accepts
    * @return  Item stack of ammo found. If empty, will continue searching for ammo elsewhere until falling back to standard ammo
    */
-  ItemStack findAmmo(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack standardAmmo, Predicate<ItemStack> ammoPredicate);
+  ItemStack findAmmo(ToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack standardAmmo, Predicate<ItemStack> ammoPredicate);
 
   /**
-   * Callback to shrink the ammo returned by {@link #findAmmo(IToolStackView, ModifierEntry, LivingEntity, ItemStack, Predicate)}.
+   * Callback to shrink the ammo returned by {@link #findAmmo(ToolStackView, ModifierEntry, LivingEntity, ItemStack, Predicate)}.
    * Will only be called on the modifier that returned non-empty in the previous method
    * @param tool      Tool instance
    * @param modifier  Modifier instance
    * @param shooter   Entity shooting the ammo
-   * @param ammo      Ammo that was found by {@link #findAmmo(IToolStackView, ModifierEntry, LivingEntity, ItemStack, Predicate)}
+   * @param ammo      Ammo that was found by {@link #findAmmo(ToolStackView, ModifierEntry, LivingEntity, ItemStack, Predicate)}
    * @param needed    Desired size, should always be less than the size of {@code ammo}
    */
-  default void shrinkAmmo(IToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, int needed) {
+  default void shrinkAmmo(ToolStackView tool, ModifierEntry modifier, LivingEntity shooter, ItemStack ammo, int needed) {
     ammo.shrink(needed);
   }
 
@@ -59,7 +59,7 @@ public interface BowAmmoModifierHook {
    * @param predicate  Predicate for finding ammo in modifiers
    * @return  True if there is ammo either on the player or on the modifiers
    */
-  static ItemStack getAmmo(IToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Predicate<ItemStack> predicate) {
+  static ItemStack getAmmo(ToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Predicate<ItemStack> predicate) {
     // if no predicate, means we want the event result, used for ballista
     // TODO: this is a little bit janky in retrospective, probably just handle in the caller?
     if (predicate == null) {
@@ -114,7 +114,7 @@ public interface BowAmmoModifierHook {
   }
 
   /** Gets the number of projectiles desired for the given tool */
-  static int getDesiredProjectiles(IToolStackView tool) {
+  static int getDesiredProjectiles(ToolStackView tool) {
     return 1 + tool.getVolatileData().getInt(MULTISHOT);
   }
 
@@ -127,7 +127,7 @@ public interface BowAmmoModifierHook {
    * @param player     Player firing bow. If null, will not remove the fired stack from the player inventory.
    * @return  Found ammo
    */
-  static ItemStack consumeAmmo(IToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Player player, @Nullable Predicate<ItemStack> predicate) {
+  static ItemStack consumeAmmo(ToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Player player, @Nullable Predicate<ItemStack> predicate) {
     return consumeAmmo(tool, bow, living, player, predicate, getDesiredProjectiles(tool));
   }
 
@@ -141,7 +141,7 @@ public interface BowAmmoModifierHook {
    * @param projectilesDesired  Number of projectiles to locate at maximum.
    * @return  Found ammo
    */
-  static ItemStack consumeAmmo(IToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Player player, @Nullable Predicate<ItemStack> predicate, int projectilesDesired) {
+  static ItemStack consumeAmmo(ToolStackView tool, ItemStack bow, LivingEntity living, @Nullable Player player, @Nullable Predicate<ItemStack> predicate, int projectilesDesired) {
     // treat client side as creative, no need to shrink the stacks clientside
     Level level = living.level();
     boolean creative = (player != null && player.getAbilities().instabuild) || level.isClientSide;

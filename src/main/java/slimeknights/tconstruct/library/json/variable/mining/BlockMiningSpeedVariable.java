@@ -5,7 +5,7 @@ import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.variable.block.BlockVariable;
 import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,7 @@ public record BlockMiningSpeedVariable(BlockVariable block, float fallback) impl
     BlockMiningSpeedVariable::new);
 
   @Override
-  public float getValue(IToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
+  public float getValue(ToolStackView tool, @Nullable BreakSpeedContext context, @Nullable Player player) {
     if (context != null) {
       return block.getValue(context.state());
     }

@@ -31,13 +31,13 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import java.util.List;
 
 /** Helpers for counterattack modules */
-public interface CounterModule extends ModifierModule, OnAttackedModifierHook, ConditionalModule<IToolStackView> {
+public interface CounterModule extends ModifierModule, OnAttackedModifierHook, ConditionalModule<ToolStackView> {
   List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<CounterModule>defaultHooks(ModifierHooks.ON_ATTACKED);
 
   @Override
@@ -93,10 +93,10 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
    * @param source       Damage that was dealt
    * @param damageDealt  Amount of damage dealt
    */
-  void applyEffect(IToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt);
+  void applyEffect(ToolStackView tool, ModifierEntry modifier, float value, EquipmentContext context, Entity attacker, DamageSource source, float damageDealt);
 
   @Override
-  default void onAttacked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float damageDealt, boolean isDirectDamage) {
+  default void onAttacked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float damageDealt, boolean isDirectDamage) {
     // must be direct damage, and must be armor (held or
     Entity attacker = source.getEntity();
     LivingEntity defender = context.getEntity();
@@ -122,7 +122,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
    * Checks if the given slot is blocking.
    * Essentially a tool stack version of {@link LivingEntity#isBlocking()}.
    */
-  static boolean isBlocking(IToolStackView tool, EquipmentSlot slotType, LivingEntity holder) {
+  static boolean isBlocking(ToolStackView tool, EquipmentSlot slotType, LivingEntity holder) {
     // holder must be using an item with shield block in the same hand as the slot
     return slotType.getType() == Type.HAND && holder.isUsingItem()
       && Util.getSlotType(holder.getUsedItemHand()) == slotType
@@ -132,7 +132,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   }
 
   /** Gets the scaled level of the modifier, doubling for shields that are blocking */
-  static float getLevel(IToolStackView tool, ModifierEntry modifier, EquipmentSlot slotType, LivingEntity defender) {
+  static float getLevel(ToolStackView tool, ModifierEntry modifier, EquipmentSlot slotType, LivingEntity defender) {
     float level = modifier.getEffectiveLevel();
     // if its a hand slot, we are blocking, and the hand
     if (isBlocking(tool, slotType, defender)) {
@@ -150,7 +150,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   RecordField<EntityTargetPredicate,CounterModule> ATTACKER_FIELD = EntityTargetPredicate.attackerField(CounterModule::attacker);
 
   /** Creates a loader with the standard parameter set */
-  static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<IToolStackView>,T> constructor) {
+  static <T extends CounterModule> RecordLoadable<T> makeLoader(String value, Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<ToolStackView>,T> constructor) {
     return RecordLoadable.create(
       CHANCE_FIELD,
       LevelingValue.LOADABLE.defaultField("constant_" + value, LevelingValue.ZERO, CounterModule::constant),
@@ -168,7 +168,7 @@ public interface CounterModule extends ModifierModule, OnAttackedModifierHook, C
   @Setter
   @Accessors(fluent = true)
   class Builder<T> extends ModuleBuilder.Stack<Builder<T>> implements EntityTargetPredicate.AttackerBuilder<Builder<T>> {
-    private final Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<IToolStackView>,T> constructor;
+    private final Function7<LevelingValue,LevelingValue,LevelingValue,Integer,IJsonPredicate<LivingEntity>,EntityTargetPredicate,ModifierCondition<ToolStackView>,T> constructor;
     private LevelingValue chance = LevelingValue.eachLevel(0.15f);
     private LevelingValue constant = LevelingValue.ZERO;
     private LevelingValue random = LevelingValue.ZERO;

@@ -25,7 +25,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHoo
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.utils.TinkerTooltipFlags;
 import slimeknights.tconstruct.library.utils.Util;
@@ -59,7 +59,7 @@ public enum BannerModule implements ModifierModule, DisplayNameModifierHook, Too
   }
 
   @Override
-  public Component getDisplayName(IToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
+  public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
     // color the tooltip the color of the first pattern
     ListTag patterns = tool.getPersistentData().getList(patternKey(entry.id()), ListTag.TAG_COMPOUND);
     if (!patterns.isEmpty()) {
@@ -69,7 +69,7 @@ public enum BannerModule implements ModifierModule, DisplayNameModifierHook, Too
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     // add all patterns in a tinker station when holding
     if (tooltipFlag == TinkerTooltipFlags.TINKER_STATION) {
       if (tooltipKey == TooltipKey.SHIFT) {

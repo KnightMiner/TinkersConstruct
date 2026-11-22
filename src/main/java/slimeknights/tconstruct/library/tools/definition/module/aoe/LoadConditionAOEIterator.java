@@ -7,7 +7,7 @@ import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable.ConditionalObject;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.client.armor.texture.ArmorTextureSupplier;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 /**
@@ -25,7 +25,7 @@ public record LoadConditionAOEIterator(Loadable ifTrue, Loadable ifFalse, ICondi
   }
 
   @Override
-  public Iterable<BlockPos> getBlocks(IToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
+  public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
     AreaOfEffectIterator iterator = Util.testConditions(conditions) ? ifTrue : ifFalse;
     return iterator.getBlocks(tool, context, state, matchType);
   }

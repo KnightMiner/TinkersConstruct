@@ -3,7 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.special;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -17,13 +17,13 @@ public interface ShearsModifierHook {
    * @param entity   Entity sheared
    * @param isTarget If true, the sheared entity was targeted. If false, this is AOE shearing
    */
-  void afterShearEntity(IToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget);
+  void afterShearEntity(ToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget);
 
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<ShearsModifierHook> modules) implements ShearsModifierHook {
     @Override
-    public void afterShearEntity(IToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
+    public void afterShearEntity(ToolStackView tool, ModifierEntry modifier, Player player, Entity entity, boolean isTarget) {
       for (ShearsModifierHook module : modules) {
         module.afterShearEntity(tool, modifier, player, entity, isTarget);
       }

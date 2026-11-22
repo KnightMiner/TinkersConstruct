@@ -4,7 +4,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 
@@ -28,12 +28,12 @@ public interface DamageBlockModifierHook {
    * @param amount     Amount of damage caused
    * @return True if this attack should be blocked entirely
    */
-  boolean isDamageBlocked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount);
+  boolean isDamageBlocked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount);
 
   /** Merger that returns true if any is successful */
   record AnyMerger(Collection<DamageBlockModifierHook> modules) implements DamageBlockModifierHook {
     @Override
-    public boolean isDamageBlocked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount) {
+    public boolean isDamageBlocked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount) {
       for (DamageBlockModifierHook module : modules) {
         if (module.isDamageBlocked(tool, modifier, context, slotType, source, amount)) {
           return true;

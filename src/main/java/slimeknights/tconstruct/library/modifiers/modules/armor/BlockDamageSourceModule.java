@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.context.EquipmentContext;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ import java.util.List;
  * Module to block damage of the passed sources
  * @param source  Predicate of sources to block
  */
-public record BlockDamageSourceModule(IJsonPredicate<DamageSource> source, ModifierCondition<IToolStackView> condition) implements DamageBlockModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<IToolStackView> {
+public record BlockDamageSourceModule(IJsonPredicate<DamageSource> source, ModifierCondition<ToolStackView> condition) implements DamageBlockModifierHook, TooltipModifierHook, ModifierModule, ConditionalModule<ToolStackView> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.DAMAGE_BLOCK, ModifierHooks.TOOLTIP);
   public static final RecordLoadable<BlockDamageSourceModule> LOADER = RecordLoadable.create(
     DamageSourcePredicate.LOADER.defaultField("damage_source", BlockDamageSourceModule::source),
@@ -50,12 +50,12 @@ public record BlockDamageSourceModule(IJsonPredicate<DamageSource> source, Modif
   }
 
   @Override
-  public boolean isDamageBlocked(IToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount) {
+  public boolean isDamageBlocked(ToolStackView tool, ModifierEntry modifier, EquipmentContext context, EquipmentSlot slotType, DamageSource source, float amount) {
     return condition.matches(tool, modifier) && this.source.matches(source);
   }
 
   @Override
-  public void addTooltip(IToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
+  public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
     if (condition.matches(tool, entry)) {
       Modifier modifier = entry.getModifier();
       tooltip.add(modifier.applyStyle(Component.literal(Util.PERCENT_BOOST_FORMAT.format(1)).append(" ").append(Component.translatable(modifier.getTranslationKey() + ".resistance"))));

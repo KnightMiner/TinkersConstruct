@@ -18,7 +18,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
  * Module to cover the ground in the given block
@@ -26,7 +26,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
  * @param radius     Radius to cover
  * @param condition  Standard module condition
  */
-public record CoverGroundWalkerModule(BlockState state, LevelingValue radius, ModifierCondition<IToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<Void>, ConditionalModule<IToolStackView> {
+public record CoverGroundWalkerModule(BlockState state, LevelingValue radius, ModifierCondition<ToolStackView> condition) implements ModifierModule, ArmorWalkRadiusModule<Void>, ConditionalModule<ToolStackView> {
   public static final RecordLoadable<CoverGroundWalkerModule> LOADER = RecordLoadable.create(
     BlockStateLoadable.DIFFERENCE.directField(CoverGroundWalkerModule::state),
     LevelingValue.LOADABLE.requiredField("radius", CoverGroundWalkerModule::radius),
@@ -38,19 +38,19 @@ public record CoverGroundWalkerModule(BlockState state, LevelingValue radius, Mo
   public CoverGroundWalkerModule {}
 
   @Override
-  public float getRadius(IToolStackView tool, ModifierEntry modifier) {
+  public float getRadius(ToolStackView tool, ModifierEntry modifier) {
     return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
   }
 
   @Override
-  public void onWalk(IToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
+  public void onWalk(ToolStackView tool, ModifierEntry modifier, LivingEntity living, BlockPos prevPos, BlockPos newPos) {
     if (condition.matches(tool, modifier)) {
       ArmorWalkRadiusModule.super.onWalk(tool, modifier, living, prevPos, newPos);
     }
   }
 
   @Override
-  public boolean walkOn(IToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
+  public boolean walkOn(ToolStackView tool, ModifierEntry entry, LivingEntity living, Level world, BlockPos target, MutableBlockPos mutable, Void context) {
     if (world.isEmptyBlock(target) && state.canSurvive(world, target)) {
       world.setBlockAndUpdate(target, state);
     }
