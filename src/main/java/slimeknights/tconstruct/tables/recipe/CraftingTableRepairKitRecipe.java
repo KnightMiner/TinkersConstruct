@@ -136,10 +136,10 @@ public class CraftingTableRepairKitRecipe extends CustomRecipe {
     }
 
     // repair the tool
-    tool = tool.copy();
+    tool = tool.copyWithCount(1);
     ToolDamageUtil.repair(tool, (int)repairAmount);
     // return final stack
-    return tool.copyStack(inputs.tool);
+    return tool.getStack();
   }
 
   @Override

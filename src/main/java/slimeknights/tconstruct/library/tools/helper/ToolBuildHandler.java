@@ -57,19 +57,23 @@ public final class ToolBuildHandler {
 
   /**
    * Builds a tool stack from a material list and a given tool definition
-   * @param tool       Tool instance
+   * @param item       Tool item
    * @param materials  Material list
    * @return  Item stack with materials
    */
-  public static ItemStack buildItemFromMaterials(IModifiable tool, MaterialNBT materials) {
-    return ToolStack.createTool(tool.asItem(), tool.getToolDefinition(), materials).createStack();
+  public static ItemStack buildItemFromMaterials(IModifiable item, MaterialNBT materials) {
+    ToolStack tool = ToolStack.create(item);
+    tool.setMaterials(materials);
+    return tool.getStack();
   }
 
   /** Method to build an ancient tool with random materials */
-  public static ToolStack buildToolRandomMaterials(IModifiable tool, RandomMaterial material, RandomSource randomSource) {
-    ToolDefinition definition = tool.getToolDefinition();
+  public static ToolStack buildToolRandomMaterials(IModifiable item, RandomMaterial material, RandomSource randomSource) {
+    ToolDefinition definition = item.getToolDefinition();
+    ToolStack tool = ToolStack.create(item, definition);
     List<MaterialStatsId> stats = ToolMaterialHook.stats(definition);
-    return ToolStack.createTool(tool.asItem(), definition, RandomMaterial.build(stats, Collections.nCopies(stats.size(), material), randomSource));
+    tool.setMaterials(RandomMaterial.build(stats, Collections.nCopies(stats.size(), material), randomSource));
+    return tool;
   }
 
   /** Method to build an ancient tool with random materials */
@@ -79,7 +83,7 @@ public final class ToolBuildHandler {
 
   /** Method to build an ancient tool with random materials */
   public static ItemStack buildItemRandomMaterials(IModifiable tool, RandomSource randomSource) {
-    return buildToolRandomMaterials(tool, randomSource).createStack();
+    return buildToolRandomMaterials(tool, randomSource).getStack();
   }
 
   /**

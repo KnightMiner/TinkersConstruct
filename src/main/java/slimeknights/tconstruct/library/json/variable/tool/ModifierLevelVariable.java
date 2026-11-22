@@ -39,13 +39,13 @@ public record ModifierLevelVariable(IJsonPredicate<ModifierId> modifier, Modifie
   /* Constructors */
 
   /** Checks the list of craftable modifiers */
-  public static ModifierLevelVariable upgrade(IJsonPredicate<ModifierId> modifier) {
-    return new ModifierLevelVariable(modifier, ModifierCheck.UPGRADES);
+  public static ModifierLevelVariable crafted(IJsonPredicate<ModifierId> modifier) {
+    return new ModifierLevelVariable(modifier, ModifierCheck.CRAFTED);
   }
 
   /** Checks the list of craftable modifiers */
-  public static ModifierLevelVariable upgrade(ModifierId modifier) {
-    return upgrade(new SingleModifierPredicate(modifier));
+  public static ModifierLevelVariable crafted(ModifierId modifier) {
+    return crafted(new SingleModifierPredicate(modifier));
   }
 
   /** Checks all modifiers including traits */

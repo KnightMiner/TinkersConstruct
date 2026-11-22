@@ -1,10 +1,10 @@
 package slimeknights.tconstruct.library.tools.item;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import slimeknights.tconstruct.common.TagFixture;
 import slimeknights.tconstruct.fixture.MaterialFixture;
@@ -13,16 +13,13 @@ import slimeknights.tconstruct.fixture.ToolDefinitionFixture;
 import slimeknights.tconstruct.library.materials.MaterialRegistryExtension;
 import slimeknights.tconstruct.library.modifiers.ModifierFixture;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
-import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.test.BaseMcTest;
 import slimeknights.tconstruct.test.TestHelper;
 
 @ExtendWith(MaterialRegistryExtension.class)
 public abstract class ToolItemTest extends BaseMcTest {
-
   protected static ModifiableItem tool;
-  protected ItemStack testItemStack;
 
   @BeforeAll
   synchronized static void beforeAllToolCore() {
@@ -31,24 +28,18 @@ public abstract class ToolItemTest extends BaseMcTest {
     TagFixture.init();
     if (tool == null) {
       tool = new ModifiableItem(new Item.Properties().stacksTo(1), ToolDefinitionFixture.getStandardToolDefinition());
-      ForgeRegistries.ITEMS.register(TestHelper.id("toolcore"), tool);
+      Registry.register(BuiltInRegistries.ITEM, TestHelper.id("toolcore"), tool);
     }
     setupTierSorting();
     // ModifierStatsBuilder.disableFilter();
-  }
-
-  @BeforeEach
-  void setUpToolCore() {
-    testItemStack = buildTestTool(tool);
   }
 
   protected ItemStack buildTestTool(IModifiable tool) {
     return ToolBuildHandler.buildItemFromMaterials(tool, MaterialNBT.of(MaterialFixture.MATERIAL_WITH_HEAD, MaterialFixture.MATERIAL_WITH_HANDLE, MaterialFixture.MATERIAL_WITH_EXTRA));
   }
 
-  /** Checks if the test item is broken */
-  protected boolean IsTestItemBroken() {
-    return ToolDamageUtil.isBroken(testItemStack);
+  protected ItemStack buildTestTool() {
+    return buildTestTool(tool);
   }
 
   /** Breaks a tool using high damage */

@@ -148,7 +148,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
     }
 
     // consume slots
-    tool = tool.copy();
+    tool = tool.copyMaxCount(shrinkToolSlotBy());
     SlotCount slots = getSlots();
     if (slots != null) {
       tool.removeSlots(slots);
@@ -162,7 +162,7 @@ public class ModifierRecipe extends AbstractModifierRecipe {
     if (toolValidation != null) {
       return RecipeResult.failure(toolValidation);
     }
-    return success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   /** Updates all inputs in the given container */

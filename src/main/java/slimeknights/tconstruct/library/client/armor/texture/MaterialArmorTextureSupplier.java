@@ -3,8 +3,6 @@ package slimeknights.tconstruct.library.client.armor.texture;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.Util;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -13,9 +11,9 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
+import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -36,15 +34,14 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
   }
 
   /** Makes a material getter for the given base and type */
-  public static Function<String,ArmorTexture> materialGetter(ResourceLocation name) {
+  public static Function<MaterialVariantId,ArmorTexture> materialGetter(ResourceLocation name) {
     // if the base texture does not exist, means we decided to skip this piece. Notably used for skipping some layers of wings
     if (!TEXTURE_VALIDATOR.test(name)) {
       return material -> ArmorTexture.EMPTY;
     }
-    // TODO: consider memoizing these functions, as if the same name appears twice in different models we can reuse it
-    return Util.memoize(materialStr -> {
-      if (!materialStr.isEmpty()) {
-        MaterialVariantId material = MaterialVariantId.tryParse(materialStr);
+    // TODO: consider memoizing these memoized functions, as if the same name appears twice in different models we can reuse it
+    return Util.memoize(material -> {
+      if (!MaterialId.UNKNOWN.equals(material)) {
         int color = -1;
         int luminosity = 0;
         if (material != null) {
@@ -76,11 +73,11 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
   }
 
   private final ResourceLocation prefix;
-  private final Function<String, ArmorTexture>[] textures;
+  private final Function<MaterialVariantId, ArmorTexture>[] textures;
   @SuppressWarnings("unchecked")
   public MaterialArmorTextureSupplier(ResourceLocation prefix) {
     this.prefix = prefix;
-      this.textures = new Function[] {
+    this.textures = new Function[] {
       materialGetter(prefix.withSuffix("armor")),
       materialGetter(prefix.withSuffix("leggings")),
       materialGetter(prefix.withSuffix("wings"))
@@ -88,12 +85,12 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
   }
 
   /** Gets the material from a given stack */
-  protected abstract String getMaterial(ItemStack stack);
+  protected abstract MaterialVariantId getMaterial(ItemStack stack);
 
   @Override
   public ArmorTexture getArmorTexture(ItemStack stack, TextureType textureType, RegistryAccess access) {
-    String material = getMaterial(stack);
-    if (!material.isEmpty()) {
+    MaterialVariantId material = getMaterial(stack);
+    if (!MaterialId.UNKNOWN.equals(material)) {
       return textures[textureType.ordinal()].apply(material);
     }
     return ArmorTexture.EMPTY;
@@ -118,8 +115,9 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
     }
 
     @Override
-    protected String getMaterial(ItemStack stack) {
-      return ModifierUtil.getPersistentString(stack, key);
+    protected MaterialVariantId getMaterial(ItemStack stack) {
+      // TODO: update embellishments via swappable data
+      return MaterialId.UNKNOWN;
     }
 
     @Override
@@ -146,12 +144,8 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
     }
 
     @Override
-    protected String getMaterial(ItemStack stack) {
-      CompoundTag tag = stack.getTag();
-      if (tag != null && tag.contains(ToolStack.TAG_MATERIALS, Tag.TAG_LIST)) {
-        return tag.getList(ToolStack.TAG_MATERIALS, Tag.TAG_STRING).getString(index);
-      }
-      return "";
+    protected MaterialVariantId getMaterial(ItemStack stack) {
+      return MaterialNBT.get(stack, index).id();
     }
 
     @Override

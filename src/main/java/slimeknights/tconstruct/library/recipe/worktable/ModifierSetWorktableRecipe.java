@@ -90,7 +90,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
     if (allowTraits) {
       return inv.getTinkerable().getModifiers().modifiers();
     }
-    return inv.getTinkerable().getUpgrades().modifiers();
+    return inv.getTinkerable().getCraftedModifiers().modifiers();
   }
 
   @Override
@@ -134,7 +134,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
       // this might be the first one added, so ensure the list is there
       persistentData.put(dataKey, tagList);
     }
-    return LazyToolStack.successCopy(tool, inv.getTinkerableStack());
+    return LazyToolStack.success(tool);
   }
 
   @Override

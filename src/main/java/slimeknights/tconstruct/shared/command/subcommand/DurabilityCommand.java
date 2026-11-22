@@ -63,7 +63,7 @@ public class DurabilityCommand {
         tool.setDamage(Math.max(0, tool.getStats().getInt(ToolStats.DURABILITY) - amount));
       }
       // if successful, update held item
-      living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+      living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       return true;
     });
 

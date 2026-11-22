@@ -10,7 +10,6 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.utils.RestrictedCompoundTag;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public enum TheOneProbeModule implements ModifierModule, RawDataModifierHook {
   public static final String TOP_NBT_HAND = "theoneprobe_hand";
 
   @Override
-  public void addRawData(IToolStackView tool, ModifierEntry modifier, RestrictedCompoundTag tag) {
+  public void addRawData(IToolStackView tool, ModifierEntry modifier) {
     if (tool.hasTag(TinkerTags.Items.HELD)) {
       tag.putBoolean(TOP_NBT_HAND, true);
     }
@@ -34,7 +33,7 @@ public enum TheOneProbeModule implements ModifierModule, RawDataModifierHook {
   }
 
   @Override
-  public void removeRawData(IToolStackView tool, Modifier modifier, RestrictedCompoundTag tag) {
+  public void removeRawData(IToolStackView tool, Modifier modifier) {
     tag.remove(TOP_NBT_HAND);
     tag.remove(TOP_NBT_HELMET);
   }

@@ -118,7 +118,7 @@ public class PartBuilderToolRecycle implements IPartBuilderRecipe, MultiNamedRec
 
   @Override
   public boolean matches(PartBuilderInput inv, Level pLevel) {
-    return partialMatch(inv) && ToolStack.from(inv.getItem()).getUpgrades().isEmpty();
+    return partialMatch(inv) && ToolStack.from(inv.getItem()).getCraftedModifiers().isEmpty();
   }
 
   @Override

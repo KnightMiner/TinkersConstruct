@@ -51,10 +51,9 @@ public abstract class TravelersPlateSlimeEntity extends ArmoredSlimeEntity {
       }
       // next select materials; first is always fixed
       ToolDefinition definition = helmetItem.getToolDefinition();
-      ToolStack tool = ToolStack.createTool(
-        helmetItem.asItem(), definition,
-        RandomMaterial.build(ToolMaterialHook.stats(definition), List.of(RandomMaterial.fixed(getPlating()), RandomMaterial.ancient()), random));
-      ModifierNBT modifiers = tool.getUpgrades();
+      ToolStack tool = ToolStack.create(helmetItem, definition);
+      tool.setMaterials(RandomMaterial.build(ToolMaterialHook.stats(definition), List.of(RandomMaterial.fixed(getPlating()), RandomMaterial.ancient()), random));
+      ModifierNBT modifiers = tool.getCraftedModifiers();
       SlotsNBT.Builder slots = tool.getPersistentSlots().toBuilder();
 
       // add some random defense modifiers
@@ -74,10 +73,10 @@ public abstract class TravelersPlateSlimeEntity extends ArmoredSlimeEntity {
 
       // triggers stat rebuild
       tool.setPersistentSlots(slots.build());
-      tool.setUpgrades(modifiers);
+      tool.setCraftedModifiers(modifiers);
 
       // finally, give the slime the helmet
-      this.setItemSlot(EquipmentSlot.HEAD, tool.createStack());
+      this.setItemSlot(EquipmentSlot.HEAD, tool.getStack());
     }
   }
 

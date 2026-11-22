@@ -113,7 +113,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, MultiNamedRec
 
   @Override
   public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
-    ToolStack tool = inv.getTinkerable().copy();
+    ToolStack tool = inv.getTinkerable().copyMaxCount(shrinkToolSlotBy());
 
     ModifierId key = TinkerModifiers.banner.id();
 
@@ -158,7 +158,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, MultiNamedRec
     if (tool.getModifierLevel(key) == 0) {
       tool.addModifier(key, 1);
     }
-    return ITinkerStationRecipe.success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override
@@ -357,7 +357,7 @@ public class BannerModifierRecipe implements ITinkerStationRecipe, MultiNamedRec
           tool.addModifier(modifier, 1);
         }
         // build the display stack
-        output.set(tool.copyStack(toolStack));
+        output.set(tool.getStack());
       }
     }
 

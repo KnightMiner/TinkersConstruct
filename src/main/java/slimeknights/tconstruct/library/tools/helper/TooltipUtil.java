@@ -143,11 +143,8 @@ public class TooltipUtil {
       // if not initialized, show no data tooltip on non-standard items
     } else if (!ToolStack.isInitialized(stack)) {
       tooltip.add(UNINITIALIZED);
-      if (definition.hasMaterials()) {
-        CompoundTag nbt = stack.getTag();
-        if (nbt == null || !nbt.contains(ToolStack.TAG_MATERIALS, Tag.TAG_LIST)) {
-          tooltip.add(RANDOM_MATERIALS);
-        }
+      if (definition.hasMaterials() && !stack.has(TinkerData.MATERIALS)) {
+        tooltip.add(RANDOM_MATERIALS);
       }
     } else {
       switch (tooltipKey) {

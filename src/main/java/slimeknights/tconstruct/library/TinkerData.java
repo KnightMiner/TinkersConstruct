@@ -65,7 +65,7 @@ public class TinkerData {
   public static final DeferredDataComponent<MultiplierNBT> STAT_MULTIPLIERS = DATA_COMPONENTS.registerPersistent("stats_multipliers", MultiplierNBT.CODEC, MultiplierNBT.STREAM_CODEC);
 
   /** Modifier slots on a tool from the tool or modifier data. Will be refreshed whenever modifiers rebuild. Will typically be positive. */
-  private static final DeferredDataComponent<SlotsNBT> VOLATILE_SLOTS = DATA_COMPONENTS.registerPersistent("volatile_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<SlotsNBT> VOLATILE_SLOTS = DATA_COMPONENTS.registerPersistent("volatile_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
   /** Modifier slots on the tool due to recipes or cheats. Will typically be negative. */
-  private static final DeferredDataComponent<SlotsNBT> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
+  public static final DeferredDataComponent<SlotsNBT> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", SlotsNBT.CODEC, SlotsNBT.STREAM_CODEC);
 }

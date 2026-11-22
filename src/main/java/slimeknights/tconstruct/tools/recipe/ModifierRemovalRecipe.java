@@ -105,12 +105,12 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
       }
       return displayModifiers;
     }
-    return filter(inv.getTinkerable(), inv.getTinkerable().getUpgrades().modifiers());
+    return filter(inv.getTinkerable(), inv.getTinkerable().getCraftedModifiers().modifiers());
   }
 
   @Override
   public Component getDescription(@Nullable TinkerableRecipeInput inv) {
-    if (inv != null && inv.getTinkerable().getUpgrades().modifiers().stream().noneMatch(entryPredicate)) {
+    if (inv != null && inv.getTinkerable().getCraftedModifiers().modifiers().stream().noneMatch(entryPredicate)) {
       return NO_MODIFIERS;
     }
     return DESCRIPTION;
@@ -135,7 +135,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
     int newLevel = tool.getModifierLevel(modifierId) - 1;
     Modifier modifier = entry.getModifier();
     if (newLevel <= 0) {
-      modifier.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, modifier, tool.getRestrictedNBT());
+      modifier.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, modifier);
     }
 
     // remove the actual modifier
@@ -151,7 +151,7 @@ public class ModifierRemovalRecipe extends AbstractWorktableRecipe {
       return RecipeResult.failure(error);
     }
     // successfully removed
-    return LazyToolStack.successCopy(tool, originalStack);
+    return LazyToolStack.success(tool);
   }
 
   @Override

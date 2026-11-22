@@ -118,7 +118,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, MultiNamedRecipe<I
     }
 
     // store into tool NBT
-    ToolStack tool = inv.getTinkerable().copy();
+    ToolStack tool = inv.getTinkerable().copyMaxCount(shrinkToolSlotBy());
     ModDataNBT persistentData = tool.getPersistentData();
     ModifierId modifier = TinkerModifiers.trim.id();
     persistentData.putString(TrimModule.materialKey(modifier), material.key().location().toString());
@@ -130,7 +130,7 @@ public class ArmorTrimRecipe implements ITinkerStationRecipe, MultiNamedRecipe<I
     if (tool.getModifierLevel(modifier) == 0) {
       tool.addModifier(modifier, 1);
     }
-    return ITinkerStationRecipe.success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override

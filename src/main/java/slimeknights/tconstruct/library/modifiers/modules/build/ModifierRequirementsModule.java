@@ -44,7 +44,7 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
     ModifierEntry.LOADABLE.list(0).defaultField("display_modifiers", List.of(), m -> m.display),
     ModifierRequirementsModule::new);
 
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierRequirementsModule>defaultHooks(ModifierHooks.VALIDATE_UPGRADE, ModifierHooks.REQUIREMENTS);
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<ModifierRequirementsModule>defaultHooks(ModifierHooks.VALIDATE_CRAFTED, ModifierHooks.REQUIREMENTS);
 
   /** Requirements to check, if they fail, the error will be displayed */
   private final IJsonPredicate<IToolContext> requirement;
@@ -136,9 +136,9 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
     }
 
     /** Adds a displayed upgrade requirement to the builder */
-    public Builder requireUpgrade(ModifierId id, int level) {
+    public Builder requireCrafted(ModifierId id, int level) {
       displayModifier(id, level);
-      this.requirements.add(HasModifierPredicate.hasUpgrade(id, level));
+      this.requirements.add(HasModifierPredicate.hasCrafted(id, level));
       return this;
     }
 
@@ -150,8 +150,8 @@ public class ModifierRequirementsModule implements ValidateModifierHook, Modifie
     }
 
     /** Adds an undisplayed upgrade requirement to the builder */
-    public Builder requireUpgrade(TagKey<Modifier> tag, int level) {
-      this.requirements.add(HasModifierPredicate.hasUpgrade(ModifierPredicate.tag(tag), level));
+    public Builder requireCrafted(TagKey<Modifier> tag, int level) {
+      this.requirements.add(HasModifierPredicate.hasCrafted(ModifierPredicate.tag(tag), level));
       return this;
     }
 

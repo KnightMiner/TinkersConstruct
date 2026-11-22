@@ -79,7 +79,7 @@ public interface NestedModifierModel extends ModifierModel {
 
     @Override
     public ModifierEntry getEntry(IToolStackView tool) {
-      return tool.getUpgrades().getEntry(modifier);
+      return tool.getCraftedModifiers().getEntry(modifier);
     }
   }
 

@@ -77,7 +77,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     ModifierId modifier = result.id();
 
     boolean needsModifier;
-    int level = tool.getUpgrades().getLevel(modifier);
+    int level = tool.getCraftedModifiers().getLevel(modifier);
     if (level == 0) {
       needsModifier = true;
       // no need to check level as we know the level is 0 and we are making it 1
@@ -96,7 +96,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     }
 
     // consume slots
-    tool = tool.copy();
+    tool = tool.copyMaxCount(shrinkToolSlotBy());
     if (needsModifier) {
       SlotCount slots = getSlots();
       if (slots != null) {
@@ -119,7 +119,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     if (toolValidation != null) {
       return RecipeResult.failure(toolValidation);
     }
-    return success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override
@@ -154,7 +154,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   public Component canApply(IToolStackView tool) {
     ModifierId result = this.result.id();
     // only check slots if we lack the modifier
-    if (tool.getUpgrades().getLevel(result) == 0) {
+    if (tool.getCraftedModifiers().getLevel(result) == 0) {
       return checkSlots(tool, getSlots());
     }
     // if we already have it, ensure the variant is changing
@@ -168,7 +168,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   public void applyModifier(ToolStack tool) {
     ModifierId result = this.result.id();
     // only add the modifier if we lack it
-    if (tool.getUpgrades().getLevel(result) == 0) {
+    if (tool.getCraftedModifiers().getLevel(result) == 0) {
       super.applyModifier(tool);
     }
     // apply the variant

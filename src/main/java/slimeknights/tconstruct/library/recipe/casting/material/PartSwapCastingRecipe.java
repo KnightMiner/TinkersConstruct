@@ -149,7 +149,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     MaterialVariant material = fluidRecipe.getOutput();
     ItemStack cast = inv.getItem();
     ToolStack original = ToolStack.from(cast);
-    ToolStack tool = original.copy();
+    ToolStack tool = original.copyWithCount(1);
     List<MaterialStatsId> stats = ToolMaterialHook.stats(tool.getDefinition());
     int index = getIndex(stats);
     tool.replaceMaterial(index, material);
@@ -174,7 +174,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
     // validate and run removal hooks, but don't give up if either failed (hopefully matches dealt with that)
     tool.tryValidate();
     ModifierRemovalHook.onRemoved(original, tool);
-    return tool.copyStack(cast, 1);
+    return tool.getStack();
   }
 
 
@@ -282,7 +282,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
       inputs = new ArrayList<>();
       inputMaterials = new ArrayList<>();
     } else {
-      inputs = List.of(tool.tool.createStack());
+      inputs = List.of(tool.tool.getStack());
       inputMaterials = List.of();
     }
     List<ItemStack> results = new ArrayList<>();
@@ -297,7 +297,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
         inputMaterials.add(recipe.input.id());
         copy.replaceMaterial(tool.index, recipe.input);
         // copy to unlink from the tool instance
-        ItemStack input = copy.createStack().copy();
+        ItemStack input = copy.getStack().copy();
         for (int i = 0; i < newFluids.size(); i++) {
           inputs.add(input);
         }
@@ -305,7 +305,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
       // add result tool regardless
       resultMaterials.add(recipe.output.id());
       copy.replaceMaterial(tool.index, recipe.output);
-      ItemStack result = copy.createStack();
+      ItemStack result = copy.getStack();
       for (int i = 0; i < newFluids.size(); i++) {
         results.add(result);
       }
@@ -441,7 +441,7 @@ public class PartSwapCastingRecipe extends AbstractMaterialCastingRecipe impleme
           List<ItemStack> outputs = indicesFromInput(material).mapToObj(i -> {
             // safe to mutate as long as we copy for the return; we are not using parallel streams
             tool.replaceMaterial(fluidIndex, resultMaterials.get(i));
-            return tool.createStack().copy();
+            return tool.getStack().copy();
           }).toList();
           if (!outputs.isEmpty()) return outputs;
         }

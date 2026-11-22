@@ -30,7 +30,7 @@ public interface ToolContextPredicate extends IJsonPredicate<IToolContext> {
   /* Singleton */
 
   /** Predicate checking for a tool having any upgrades */
-  ToolContextPredicate HAS_UPGRADES = simple(tool -> !tool.getUpgrades().isEmpty());
+  ToolContextPredicate HAS_CRAFTED_MODIFIERS = simple(tool -> !tool.getCraftedModifiers().isEmpty());
 
   /** Creates a new simple predicate */
   static ToolContextPredicate simple(Predicate<IToolContext> predicate) {

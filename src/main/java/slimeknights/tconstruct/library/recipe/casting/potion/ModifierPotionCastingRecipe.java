@@ -58,7 +58,7 @@ public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
     return potions.stream().map(id -> {
       ToolStack tool = ToolStack.copyFrom(stack);
       tool.getPersistentData().putString(modifier.id(), id);
-      return tool.copyStack(stack);
+      return tool.getStack();
     }).toList();
   }
 }

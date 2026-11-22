@@ -78,7 +78,6 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderModifierHook;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.utils.RestrictedCompoundTag;
 import slimeknights.tconstruct.library.utils.Schedule.Scheduler;
 
 import javax.annotation.Nullable;
@@ -224,24 +223,24 @@ public class ModifierHooks {
   /** Hook to add and remove data directly to the tools NBT. It is generally better to use persistent data or volatile data when possible. */
   public static final ModuleHook<RawDataModifierHook> RAW_DATA = register("raw_data", RawDataModifierHook.class, RawDataModifierHook.AllMerger::new, new RawDataModifierHook() {
     @Override
-    public void addRawData(IToolStackView tool, ModifierEntry modifier, RestrictedCompoundTag tag) {}
+    public void addRawData(IToolStackView tool, ModifierEntry modifier) {}
 
     @Override
-    public void removeRawData(IToolStackView tool, Modifier modifier, RestrictedCompoundTag tag) {}
+    public void removeRawData(IToolStackView tool, Modifier modifier) {}
   });
 
   /**
    * Hook called to give a modifier a chance to clean up data while on the tool and to reject the current tool state.
-   * TOD0 1.21: rename to disambiguate from {@link #VALIDATE_UPGRADE}.
+   * @see #VALIDATE_CRAFTED
    */
   public static final ModuleHook<ValidateModifierHook> VALIDATE;
-  /** Same as {@link #VALIDATE}, but only called on modifiers in {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#getUpgrades()}. */
-  public static final ModuleHook<ValidateModifierHook> VALIDATE_UPGRADE;
+  /** Same as {@link #VALIDATE}, but only called on modifiers in {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#getCraftedModifiers()}. */
+  public static final ModuleHook<ValidateModifierHook> VALIDATE_CRAFTED;
   static {
     Function<Collection<ValidateModifierHook>,ValidateModifierHook> merger = ValidateModifierHook.AllMerger::new;
     ValidateModifierHook defaultInstance = (tool, modifier) -> null;
     VALIDATE = register("validate", ValidateModifierHook.class, merger, defaultInstance);
-    VALIDATE_UPGRADE = register("validate_upgrade", ValidateModifierHook.class, merger, defaultInstance);
+    VALIDATE_CRAFTED = register("validate_crafted", ValidateModifierHook.class, merger, defaultInstance);
   }
 
   /** Hook called when a modifier is removed to give it a chance to clean up data */

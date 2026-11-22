@@ -95,7 +95,6 @@ public class RepairKitItem extends MaterialItem implements IRepairKitItem {
             }
             // assuming no modifier said no repair, we are good, time to repair
             ToolDamageUtil.repair(tool, (int)amount);
-            tool.updateStack(toolItem);
             stack.shrink(1);
             player.playSound(Sounds.SAW.getSound(), 1, 0.8f + 0.4f * player.level().random.nextFloat());
           }

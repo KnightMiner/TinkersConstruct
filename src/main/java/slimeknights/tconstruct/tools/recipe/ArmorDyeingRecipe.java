@@ -68,7 +68,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
 
   @Override
   public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
-    ToolStack tool = inv.getTinkerable().copy();
+    ToolStack tool = inv.getTinkerable().copyMaxCount(shrinkToolSlotBy());
 
     ModDataNBT persistentData = tool.getPersistentData();
     ModifierId key = TinkerModifiers.dyed.id();
@@ -127,7 +127,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
     if (tool.getModifierLevel(key) == 0) {
       tool.addModifier(key, 1);
     }
-    return ITinkerStationRecipe.success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override

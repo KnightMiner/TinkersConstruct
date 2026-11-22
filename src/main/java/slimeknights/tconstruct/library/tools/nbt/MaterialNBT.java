@@ -37,7 +37,7 @@ import java.util.function.Function;
 @EqualsAndHashCode
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class MaterialNBT implements Iterable<MaterialVariant> {
+public class MaterialNBT implements Iterable<MaterialVariant>, CollectionComponent {
   /** Instance containing no materials, for errors with parsing NBT */
   public final static MaterialNBT EMPTY = new MaterialNBT(List.of());
 
@@ -102,7 +102,7 @@ public class MaterialNBT implements Iterable<MaterialVariant> {
     return list.size();
   }
 
-  /** Checks if the internal list is empty */
+  @Override
   public boolean isEmpty() {
     return list.isEmpty();
   }

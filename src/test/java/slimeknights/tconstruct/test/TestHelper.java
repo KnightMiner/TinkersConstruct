@@ -25,9 +25,8 @@ public class TestHelper {
   private TestHelper() {}
 
   /** Creates a resource location under {@link #MOD_ID} */
-  @SuppressWarnings("removal")
   public static ResourceLocation id(String name) {
-    return new ResourceLocation(MOD_ID, name);
+    return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
   }
 
   /** Helper to fetch traits from the trait hook */

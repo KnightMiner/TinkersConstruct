@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.library.TinkerData;
@@ -25,6 +26,7 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
+import slimeknights.tconstruct.library.tools.nbt.RestrictedComponentMap;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import javax.annotation.Nullable;
@@ -51,7 +53,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     return ModifierEntry.VALID_LEVEL;
   }
 
-  /** If true, this recipe checks the level from {@link IToolStackView#getModifiers()}. If false, it uses the level from {@link IToolStackView#getUpgrades()} */
+  /** If true, this recipe checks the level from {@link IToolStackView#getModifiers()}. If false, it uses the level from {@link IToolStackView#getCraftedModifiers()} */
   default boolean checkTraitLevel() {
     return false;
   }
@@ -87,7 +89,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
 
   /** Gets the matching entry on the tool */
   private ModifierEntry getEntry(IToolStackView tool) {
-    return (checkTraitLevel() ? tool.getModifiers() : tool.getUpgrades()).getEntry(getDisplayResult().id());
+    return (checkTraitLevel() ? tool.getModifiers() : tool.getCraftedModifiers()).getEntry(getDisplayResult().id());
   }
 
   @Override
@@ -112,7 +114,7 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
         }
       }
 
-      return RecipeResult.success(tool.copyStack(focus));
+      return RecipeResult.success(tool.getStack());
     }
     return RecipeResult.pass();
   }
@@ -218,13 +220,12 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     CompoundTag persistentNBT = new CompoundTag();
     ModDataNBT persistentData = ModDataNBT.readFromNBT(persistentNBT);
     CompoundTag volatileNBT = new CompoundTag();
-    ModDataNBT volatileData = ModDataNBT.readFromNBT(volatileNBT);
+    MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
     persistentDataConsumer.accept(persistentData);
-    ToolRebuildContext context = new ToolRebuildContext(stack.getItem(), ToolDefinition.EMPTY, MaterialNBT.EMPTY, modifiers, modifiers, persistentData);
+    ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, MaterialNBT.EMPTY, modifiers, modifiers, persistentData);
     for (ModifierEntry entry : modifiers.modifiers()) {
       entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
     }
-    nbt.put(ToolStack.TAG_VOLATILE_MOD_DATA, volatileNBT);
     nbt.put(ToolStack.TAG_PERSISTENT_MOD_DATA, persistentNBT);
 
     return output;

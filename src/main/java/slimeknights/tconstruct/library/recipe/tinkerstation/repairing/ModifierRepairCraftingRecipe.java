@@ -84,9 +84,9 @@ public class ModifierRepairCraftingRecipe extends CustomRecipe implements IModif
     }
 
     // repair the tool
-    tool = tool.copy();
+    tool = tool.copyWithCount(1);
     ToolDamageUtil.repair(tool, (int)repairAmount);
-    return tool.copyStack(inputs.tool(), 1);
+    return tool.getStack();
   }
 
   @Override

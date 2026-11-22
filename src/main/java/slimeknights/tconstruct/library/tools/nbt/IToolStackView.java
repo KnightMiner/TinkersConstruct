@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.tools.nbt;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
@@ -12,7 +13,7 @@ import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
  * Used since modifiers should not be modifying the tool materials or modifiers in their behaviors.
  * If you receive an instance of this interface a parameter, do NOT use an instanceof check and cast it to a ToolStack. Don't make me use a private wrapper class.
  */
-public interface IToolStackView extends IToolContext {
+public interface IToolStackView extends IToolContext, MutableDataComponentHolder {
   /* Item stack */
 
   /**
@@ -67,18 +68,16 @@ public interface IToolStackView extends IToolContext {
   /** Gets volatile slot counts from the tool. This data is volatile and will reset stat rebuild. */
   SlotsNBT getVolatileSlots();
 
-  /**
-   * Gets persistent modifier data from the tool.
-   * This data may be edited by modifiers and will persist when stats rebuild
-   */
+  @Deprecated(forRemoval = true)
   @Override
-  ModDataNBT getPersistentData();
+  default ModDataNBT getPersistentData() {
+    return new ModDataNBT();
+  }
 
-  /**
-   * Gets volatile modifier data from the tool.
-   * This data will be reset whenever modifiers reload and should not be edited.
-   */
-  IModDataView getVolatileData();
+  @Deprecated(forRemoval = true)
+  default IModDataView getVolatileData() {
+    return IModDataView.EMPTY;
+  }
 
 
   /* Helpers */

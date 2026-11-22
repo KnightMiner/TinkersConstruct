@@ -96,7 +96,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
       if (!stack.isEmpty() && stack.getItem() == original.getItem()) {
         IToolStackView sacrifice = ToolStack.from(stack);
         // ensure the sacrifice does not have any modifiers
-        if (!sacrifice.getUpgrades().isEmpty()) {
+        if (!sacrifice.getCraftedModifiers().isEmpty()) {
           return NO_MODIFIERS;
         }
         int index = i;
@@ -162,7 +162,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
           List<MaterialHolder> filtered = materials.stream().filter(material -> material.hasStats(stat)).toList();
           ToolStack copy = tool.copy();
           setMaterials(copy, i, renderMaterials.get(i));
-          List<ItemStack> withoutMaterial = List.of(copy.createStack().copy());
+          List<ItemStack> withoutMaterial = List.of(copy.getStack().copy());
           // standard recipe - focus is the tool being changed
           ResourceLocation statId = toolId.withSuffix("/material_" + i);
           int index = i;
@@ -171,14 +171,14 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
             filtered.stream().map(mat -> {
               ToolStack displayCopy = displayTool.copy();
               displayCopy.replaceMaterial(index, mat);
-              return displayCopy.createStack();
+              return displayCopy.getStack();
             }).toList(),
             // single tool with the material to swap left blank
             withoutMaterial,
             // one output per material
             filtered.stream().map(mat -> {
               copy.replaceMaterial(index, mat);
-              return copy.createStack().copy();
+              return copy.getStack().copy();
             }).toList(),
             // material list
             filtered, stat, displayTool
@@ -227,7 +227,7 @@ public class ToolMaterialSwappingRecipe extends MaterialSwappingRecipe implement
           if (material.hasStats(statType)) {
             ToolStack tool = displayTool.copy();
             tool.replaceMaterial(index, material);
-            return List.of(tool.createStack());
+            return List.of(tool.getStack());
           }
         } else {
           // sacrifice generic tools, will sacrifice the focus itself in the other display recipe

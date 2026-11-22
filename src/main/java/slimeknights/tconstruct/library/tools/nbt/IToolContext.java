@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.tools.nbt;
 
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Provides partial access to tool data, essentially a bridge between {@link IToolStackView} and {@link slimeknights.tconstruct.library.tools.context.ToolRebuildContext}
  */
-public interface IToolContext {
+public interface IToolContext extends DataComponentHolder {
   /** Gets the item contained in this tool */
   Item getItem();
 
@@ -56,8 +57,12 @@ public interface IToolContext {
 
   /* Modifiers */
 
-  /** Gets a list of modifiers that are specifically added to this tool. Unlike {@link #getModifiers()}, does not include modifiers from the tool or materials */
-  ModifierNBT getUpgrades();
+  /**
+   * Gets a list of modifiers added from recipes.
+   * In general, you should use {@link #getModifiers()} when performing modifier actions to include traits.
+   * @return  Crafted modifier list
+   */
+  ModifierNBT getCraftedModifiers();
 
   /** Gets a full list of effective modifiers on this tool, from both upgrades/abilities and material traits */
   ModifierNBT getModifiers();
@@ -113,5 +118,8 @@ public interface IToolContext {
    * Gets persistent modifier data from the tool.
    * This data may be edited by modifiers and will persist when stats rebuild
    */
-  IModDataView getPersistentData();
+  @Deprecated(forRemoval = true)
+  default IModDataView getPersistentData() {
+    return IModDataView.EMPTY;
+  }
 }

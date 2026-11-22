@@ -81,7 +81,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     // fetch the amount from the modifier, will be 0 if we have a full level
     ModifierId modifier = result.id();
     boolean crystal = matchesCrystal(inv);
-    ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getEntry(modifier);
+    ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getCraftedModifiers()).getEntry(modifier);
     boolean isNewLevel = crystal || entry.getAmount(0) <= 0;
 
     Component commonError;
@@ -97,7 +97,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     }
 
     // if at the max, add a new level
-    tool = tool.copy();
+    tool = tool.copyMaxCount(shrinkToolSlotBy());
 
     // if a new level, consume slots now that we copied
     if (isNewLevel) {
@@ -122,7 +122,7 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     }
 
     // successfully added the modifier
-    return success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override
@@ -136,8 +136,8 @@ public class IncrementalModifierRecipe extends AbstractModifierRecipe {
     // fetch the differences
     ToolStack inputTool = inv.getTinkerable();
     ModifierId modifier = this.result.id();
-    ModifierEntry inputEntry = inputTool.getUpgrades().getEntry(modifier);
-    ModifierEntry resultEntry = result.getTool().getUpgrades().getEntry(modifier);
+    ModifierEntry inputEntry = inputTool.getCraftedModifiers().getEntry(modifier);
+    ModifierEntry resultEntry = result.getTool().getCraftedModifiers().getEntry(modifier);
 
     // if we had no partial level before, we just need to consume what we saw on the result
     int inputNeed = inputEntry.getNeeded();

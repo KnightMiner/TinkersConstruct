@@ -93,7 +93,7 @@ public class StatsCommand {
       boolean needsModifier = updateAction.test(tool);
 
       // ensure the modifier is present if needed/not present if not needed
-      int level = tool.getUpgrades().getLevel(stats);
+      int level = tool.getCraftedModifiers().getLevel(stats);
       boolean hasModifier = level > 0;
       if (needsModifier && !hasModifier) {
         tool.addModifier(stats, 1);
@@ -110,7 +110,7 @@ public class StatsCommand {
       }
 
       // if successful, update held item
-      living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+      living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       return true;
     });
   }
@@ -210,7 +210,7 @@ public class StatsCommand {
         }
 
         // if successful, update held item
-        living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+        living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       }
       return true;
     });

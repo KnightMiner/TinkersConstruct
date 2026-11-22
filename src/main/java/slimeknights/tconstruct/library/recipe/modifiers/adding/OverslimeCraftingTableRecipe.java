@@ -107,9 +107,9 @@ public class OverslimeCraftingTableRecipe extends CustomRecipe {
       TConstruct.LOG.error("Overslime crafting table recipe failed to find tool after matching");
       return ItemStack.EMPTY;
     }
-    ToolStack tool = ToolStack.copyFrom(match.tool);
+    ToolStack tool = ToolStack.copyWithCount(match.tool, 1);
     OverslimeModule.INSTANCE.addAmount(tool, match.itemsFound * restoreAmount);
-    return tool.copyStack(match.tool);
+    return tool.getStack();
   }
 
   /** Gets the remaining items after repairing the necessary number of times */

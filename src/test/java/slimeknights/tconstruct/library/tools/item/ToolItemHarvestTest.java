@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.tools.item;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import org.junit.jupiter.api.Test;
+import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 //import static org.mockito.Mockito.verify;
@@ -13,7 +14,7 @@ public class ToolItemHarvestTest extends ToolItemTest {
 
   @Test
   void getToolTypes_notBroken_ok() {
-    assertThat(IsTestItemBroken()).isFalse();
+    assertThat(ToolDamageUtil.isBroken(testItemStack)).isFalse();
     assertThat(testItemStack.canPerformAction(ItemAbilities.PICKAXE_DIG)).isTrue();
   }
 
@@ -22,20 +23,20 @@ public class ToolItemHarvestTest extends ToolItemTest {
 
     breakTool(testItemStack);
 
-    assertThat(IsTestItemBroken()).isTrue();
+    assertThat(ToolDamageUtil.isBroken(testItemStack)).isTrue();
     assertThat(testItemStack.canPerformAction(ItemAbilities.PICKAXE_DIG)).isFalse();
   }
 
   @Test
   void getHarvestLevel_notBroken_ok() {
-    assertThat(IsTestItemBroken()).isFalse();
+    assertThat(ToolDamageUtil.isBroken(testItemStack)).isFalse();
     assertThat(testItemStack.isCorrectToolForDrops(Blocks.STONE.defaultBlockState())).isTrue();
   }
 
   @Test
   void getHarvestLevel_broken_none() {
     breakTool(testItemStack);
-    assertThat(IsTestItemBroken()).isTrue();
+    assertThat(ToolDamageUtil.isBroken(testItemStack)).isTrue();
     assertThat(testItemStack.isCorrectToolForDrops(Blocks.STONE.defaultBlockState())).isFalse();
   }
 

@@ -69,10 +69,10 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
 
   /** Enum of modifier type */
   public enum ModifierCheck {
-    UPGRADES {
+    CRAFTED {
       @Override
       public ModifierNBT getModifiers(IToolContext tool) {
-        return tool.getUpgrades();
+        return tool.getCraftedModifiers();
       }
     },
     ALL {
@@ -91,8 +91,8 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
   /* Constructors */
 
   /** Creates a predicate for a tool having the given upgrade (recipe modifier) */
-  public static HasModifierPredicate hasUpgrade(IJsonPredicate<ModifierId> modifier, int min) {
-    return new HasModifierPredicate(modifier, ModifierEntry.VALID_LEVEL.min(min), ModifierCheck.UPGRADES);
+  public static HasModifierPredicate hasCrafted(IJsonPredicate<ModifierId> modifier, int min) {
+    return new HasModifierPredicate(modifier, ModifierEntry.VALID_LEVEL.min(min), ModifierCheck.CRAFTED);
   }
 
   /** Creates a predicate for a tool having the given modifier (recipe or trait) */
@@ -101,8 +101,8 @@ public record HasModifierPredicate(IJsonPredicate<ModifierId> modifier, IntRange
   }
 
   /** Creates a predicate for a tool having the given upgrade (recipe modifier) */
-  public static HasModifierPredicate hasUpgrade(ModifierId modifier, int min) {
-    return new HasModifierPredicate(modifier, ModifierEntry.ANY_LEVEL.min(min), ModifierCheck.UPGRADES);
+  public static HasModifierPredicate hasCrafted(ModifierId modifier, int min) {
+    return new HasModifierPredicate(modifier, ModifierEntry.ANY_LEVEL.min(min), ModifierCheck.CRAFTED);
   }
 
   /** Creates a predicate for a tool having the given modifier (recipe or trait) */

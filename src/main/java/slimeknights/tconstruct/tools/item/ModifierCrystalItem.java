@@ -110,7 +110,7 @@ public class ModifierCrystalItem extends Item {
           if (toolValidation != null) {
             player.displayClientMessage(toolValidation, false);
           } else {
-            tool.updateStack(toolItem);
+            slot.set(tool.getStack());
             FluidTransferHelper.playUISound(player, SoundEvents.ENCHANTMENT_TABLE_USE);
           }
         }
@@ -137,14 +137,14 @@ public class ModifierCrystalItem extends Item {
           ToolStack tool = original.copy();
 
           // ensure we have something to remove
-          ModifierEntry entry = tool.getUpgrades().getEntry(modifier.id());
+          ModifierEntry entry = tool.getCraftedModifiers().getEntry(modifier.id());
           if (entry.getLevel() <= 0) {
             return true;
           }
           // call remove hook
           int newLevel = entry.getLevel() - stack.getCount();
           if (newLevel <= 0) {
-            entry.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, entry.getModifier(), tool.getRestrictedNBT());
+            entry.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, entry.getModifier());
           }
           tool.removeModifier(modifier.id(), stack.getCount());
 
@@ -163,7 +163,7 @@ public class ModifierCrystalItem extends Item {
           }
 
           // success, update tool
-          tool.updateStack(toolItem);
+          access.set(tool.getStack());
           FluidTransferHelper.playUISound(player, SoundEvents.GRINDSTONE_USE);
         }
         return true;

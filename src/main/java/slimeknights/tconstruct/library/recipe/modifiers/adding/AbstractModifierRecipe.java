@@ -8,7 +8,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
@@ -32,7 +31,6 @@ import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.SlotsNBT;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 
@@ -262,7 +260,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
 
   /** Gets the new level after applying this recipe */
   protected int getNewLevel(IToolStackView tool) {
-    return (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getLevel(result.id()) + 1;
+    return (checkTraitLevel ? tool.getModifiers() : tool.getCraftedModifiers()).getLevel(result.id()) + 1;
   }
 
   /**
@@ -273,23 +271,5 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   @Nullable
   protected Component validatePrerequisites(IToolStackView tool) {
     return validatePrerequisites(tool, getNewLevel(tool));
-  }
-
-  /** Creates a successful result for the given tool, size, and original stack */
-  @NonExtendable
-  protected RecipeResult<LazyToolStack> success(ToolStack tool, int count, ItemStack original) {
-    return LazyToolStack.successCopy(tool, Math.min(count, shrinkToolSlotBy()), original);
-  }
-
-  /** Creates a successful result for the given tool and original stack */
-  @NonExtendable
-  protected RecipeResult<LazyToolStack> success(ToolStack tool, ItemStack original) {
-    return success(tool, original.getCount(), original);
-  }
-
-  /** Creates a successful result for the given tool and input stack size */
-  @NonExtendable
-  protected RecipeResult<LazyToolStack> success(ToolStack tool, TinkerStationRecipeInput inv) {
-    return success(tool, inv.getTinkerableStack());
   }
 }

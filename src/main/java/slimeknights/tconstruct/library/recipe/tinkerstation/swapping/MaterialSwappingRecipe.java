@@ -82,7 +82,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     // if the output is shrinking, we want to ensure we take the minumum amount needed for that output
     // for example, if its reducing by 50%, just consuming the full amount might consume 3 arrows to produce 1 (instead of 2 to produce 1)
     int outputMax = maxStackSize(result.getTool());
-    return maxStackSize(inv.getTinkerable(), result.getSize() * maxStackSize / (float) outputMax);
+    return maxStackSize(inv.getTinkerable(), result.getCount() * maxStackSize / (float) outputMax);
   }
 
   /** Logic to actually swap the material */
@@ -164,9 +164,10 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     if (resultSize <= 0) {
       return TOO_FEW_INPUTS;
     }
+    copy.setCount(resultSize);
 
     // everything worked, so good to go
-    return LazyToolStack.successCopy(copy, resultSize, originalStack);
+    return LazyToolStack.success(copy);
   }
 
   /** Shrinks the part, returning false if no match */
@@ -202,7 +203,8 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
   /** Creates a new item stack with the given material. Will modify {@code tool}. */
   public ItemStack withMaterial(ToolStack tool, int index, MaterialVariant material) {
     setMaterials(tool, index, material);
-    return tool.createStack(maxStackSize(tool));
+    tool.setCount(maxStackSize(tool));
+    return tool.getStack();
   }
 
   /** Sets the materials on the given tool using the passed material */
@@ -231,8 +233,9 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
 
   /** Creates a stack with the item from the given tool and the passed materials. */
   protected ItemStack copyMaterials(IToolStackView tool, MaterialNBT materials) {
-    ToolStack copy = ToolStack.createTool(tool.getItem(), tool.getDefinition(), materials);
-    return copy.createStack(maxStackSize(tool));
+    ToolStack copy = ToolStack.create(tool.getItem(), tool.getDefinition(), maxStackSize(tool));
+    copy.setMaterials(materials);
+    return copy.getStack();
   }
 
   /** Recipe mapping a single ingredient to a part */
@@ -303,7 +306,8 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
     /** Helper to create a stack with replaced material. Will modify the tool stack instance. */
     protected ItemStack replaceMaterial(ToolStack tool, MaterialVariant replacement, ItemStack focus) {
       tool.replaceMaterial(index, replacement);
-      return tool.updateStack(focus.copyWithCount(maxStackSize(tool)), true);
+      tool.setCount(maxStackSize(tool));
+      return tool.getStack();
     }
 
     /** Creates an input for the given materials list */
@@ -381,7 +385,7 @@ public abstract class MaterialSwappingRecipe implements ITinkerStationRecipe {
       // if focusing on an input tool, output is the input with the new material. need to filter our list of options to just new ones
       List<ItemStack> results = materials.stream()
         .filter(newMaterial -> !newMaterial.sameVariant(material))
-        .map(newMaterial -> replaceMaterial(tool, newMaterial, focus))
+        .map(newMaterial -> replaceMaterial(tool.copy(), newMaterial, focus))
         .toList();
       if (!results.isEmpty()) {
         return results;

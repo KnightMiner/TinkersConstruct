@@ -1,9 +1,10 @@
 package slimeknights.tconstruct.library.modifiers.hook.build;
 
+import net.minecraft.core.component.DataComponentType;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import java.util.Collection;
 
@@ -21,14 +22,14 @@ public interface VolatileDataModifierHook {
    * </ul>
    * @param context         Context about the tool being built. Partial view of {@link IToolStackView} as the tool is not fully built
    * @param modifier        Modifier level
-   * @param volatileData    Mutable mod NBT data, result of this method
+   * @param volatileData    Component holder that only accepts components from {@link slimeknights.tconstruct.library.tools.nbt.ToolStack#isVolatile(DataComponentType)}.
    */
-  void addVolatileData(IToolContext context, ModifierEntry modifier, ModDataNBT volatileData);
+  void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<VolatileDataModifierHook> modules) implements VolatileDataModifierHook {
     @Override
-    public void addVolatileData(IToolContext context, ModifierEntry modifier, ModDataNBT volatileData) {
+    public void addVolatileData(IToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
       for (VolatileDataModifierHook module : modules) {
         module.addVolatileData(context, modifier, volatileData);
       }

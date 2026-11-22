@@ -58,7 +58,7 @@ public class ModifiersCommand {
     Modifier modifier = ModifierArgument.getModifier(context, "modifier");
     List<LivingEntity> successes = HeldModifiableItemIterator.apply(context, (living, stack) -> {
       // add modifier
-      ToolStack tool = ToolStack.from(stack).copy();
+      ToolStack tool = ToolStack.copyFrom(stack);
       // add the modifier
       tool.addModifier(modifier.id(), level);
       // ensure no modifier problems after adding
@@ -68,7 +68,7 @@ public class ModifiersCommand {
       }
 
       // if successful, update held item
-      living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+      living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       return true;
     });
 
@@ -92,7 +92,7 @@ public class ModifiersCommand {
       ToolStack original = ToolStack.from(stack);
 
       // first, see if the modifier exists
-      int currentLevel = original.getUpgrades().getLevel(modifier.id());
+      int currentLevel = original.getCraftedModifiers().getLevel(modifier.id());
       if (currentLevel == 0) {
         throw CANNOT_REMOVE.create(modifier.getDisplayName(level), living.getName());
       }
@@ -105,7 +105,7 @@ public class ModifiersCommand {
       // first remove hook, primarily for removing raw NBT which is highly discouraged using
       int newLevel = currentLevel - removeLevel;
       if (newLevel <= 0) {
-        modifier.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, modifier, tool.getRestrictedNBT());
+        modifier.getHook(ModifierHooks.RAW_DATA).removeRawData(tool, modifier);
       }
 
       // remove the actual modifier
@@ -124,7 +124,7 @@ public class ModifiersCommand {
       }
 
       // if successful, update held item
-      living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+      living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       return true;
     });
 

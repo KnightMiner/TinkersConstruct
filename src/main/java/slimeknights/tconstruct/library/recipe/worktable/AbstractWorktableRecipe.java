@@ -53,7 +53,7 @@ public abstract class AbstractWorktableRecipe implements IModifierWorktableRecip
     if (inv == null) {
       return ModifierRecipeLookup.getRecipeModifierList();
     }
-    return inv.getTinkerable().getUpgrades().modifiers();
+    return inv.getTinkerable().getCraftedModifiers().modifiers();
   }
 
   @Override

@@ -6,7 +6,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -98,9 +97,9 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
       return RecipeResult.pass();
     }
     // we will just repair the max possible here, no reason to try less
-    tool = tool.copy();
+    tool = tool.copyWithCount(1);
     ToolDamageUtil.repair(tool, available);
-    return LazyToolStack.successCopy(tool, 1, inv.getTinkerableStack());
+    return LazyToolStack.success(tool);
   }
 
   @Override
@@ -166,14 +165,13 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
       this.inputs = List.of(recipe.getIngredient().getItems());
 
       // set durability on each tool to 250, covers most instances
-      CompoundTag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 250).build().serializeToNBT();
+      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 250).build();
       ModifierNBT modifiers = ModifierNBT.builder().add(modifier, 1).build();
       toolWithoutModifier = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DURABILITY)
         .map(item -> {
           if (item instanceof IModifiableDisplay modifiable) {
             ItemStack stack = modifiable.getRenderTool().copy();
-            CompoundTag tag = stack.getOrCreateTag();
-            tag.put(ToolStack.TAG_STATS, stats);
+            stack.set(TinkerData.TOOL_STATS, stats);
             stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
             stack.set(TinkerData.ALL_MODIFIERS, modifiers);
             stack.set(DataComponents.DAMAGE, 200); // mostly broken
@@ -246,7 +244,7 @@ public class ModifierRepairTinkerStationRecipe implements ITinkerStationRecipe, 
       }
       tool = tool.copy();
       ToolDamageUtil.repair(tool, amount);
-      return RecipeResult.success(tool.copyStack(focus));
+      return RecipeResult.success(tool.getStack());
     }
   }
 }

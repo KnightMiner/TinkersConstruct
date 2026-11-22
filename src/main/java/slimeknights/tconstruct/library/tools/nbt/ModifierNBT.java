@@ -35,12 +35,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * NBT object containing all current modifiers.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ModifierNBT implements Iterable<ModifierEntry> {
+public class ModifierNBT implements Iterable<ModifierEntry>, CollectionComponent {
   /** Instance containing no modifiers */
   public static final ModifierNBT EMPTY = new ModifierNBT(List.of(), Map.of());
 
@@ -61,7 +62,15 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
   private final Map<ModifierId,ModifierEntry> modifierLookup;
 
   /** Creates a new modifier NBT from a list of modifiers that may need merging */
-  private static ModifierNBT createUnchecked(List<ModifierEntry> modifiers) {
+  public static ModifierNBT create(List<ModifierEntry> modifiers) {
+    if (modifiers.isEmpty()) {
+      return EMPTY;
+    }
+    return new ModifierNBT(List.copyOf(modifiers), modifiers.stream().collect(Collectors.toUnmodifiableMap(ModifierEntry::id, Function.identity())));
+  }
+
+  /** Creates a new modifier NBT from a list of modifiers that may need merging */
+  public static ModifierNBT createUnchecked(List<ModifierEntry> modifiers) {
     if (modifiers.isEmpty()) {
       return EMPTY;
     }
@@ -73,10 +82,7 @@ public class ModifierNBT implements Iterable<ModifierEntry> {
     return new ModifierNBT(List.copyOf(entries.values()), Map.copyOf(entries));
   }
   
-  /**
-   * Checks if the NBT has no modifiers
-   * @return  True if there are no modifiers
-   */
+  @Override
   public boolean isEmpty() {
     return modifiers.isEmpty();
   }

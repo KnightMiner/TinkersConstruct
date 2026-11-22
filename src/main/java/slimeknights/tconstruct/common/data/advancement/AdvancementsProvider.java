@@ -204,18 +204,18 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
       with.accept(TinkerTools.sword.get());
     });
     AdvancementHolder modified = builder(Items.REDSTONE, resource("tools/modified"), tinkerTool, AdvancementType.TASK, builder ->
-      builder.addCriterion("crafted_tool", hasTool(ToolContextPredicate.HAS_UPGRADES)));
+      builder.addCriterion("crafted_tool", hasTool(ToolContextPredicate.HAS_CRAFTED_MODIFIERS)));
     //    builder(TinkerTools.cleaver.get().buildToolForRendering(), location("tools/glass_cannon"), modified, AdvancementType.CHALLENGE, builder ->
     //      builder.addCriterion()("crafted_tool", InventoryChangeTrigger.TriggerInstance.hasItems(ToolPredicate.builder()
     //                                                                                                  .withStat(StatPredicate.max(ToolStats.DURABILITY, 100))
     //                                                                                                  .withStat(StatPredicate.min(ToolStats.ATTACK_DAMAGE, 20))
     //                                                                                                  .build())));
     builder(Items.WRITABLE_BOOK, resource("tools/upgrade_slots"), modified, AdvancementType.CHALLENGE, builder -> builder.addCriterion("has_modified", hasTool(
-      HasModifierPredicate.hasUpgrade(ModifierIds.writable, 1),
-      HasModifierPredicate.hasUpgrade(ModifierIds.recapitated, 1),
-      HasModifierPredicate.hasUpgrade(ModifierIds.harmonious, 1),
-      HasModifierPredicate.hasUpgrade(ModifierIds.forecast, 1),
-      HasModifierPredicate.hasUpgrade(ModifierIds.gilded, 1)))
+      HasModifierPredicate.hasCrafted(ModifierIds.writable, 1),
+      HasModifierPredicate.hasCrafted(ModifierIds.recapitated, 1),
+      HasModifierPredicate.hasCrafted(ModifierIds.harmonious, 1),
+      HasModifierPredicate.hasCrafted(ModifierIds.forecast, 1),
+      HasModifierPredicate.hasCrafted(ModifierIds.gilded, 1)))
     );
 
     // smeltery path
@@ -285,7 +285,7 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
       with.accept(TinkerTools.javelin);
     });
     builder(TinkerModifiers.silkyCloth, resource("smeltery/abilities"), anvil, AdvancementType.CHALLENGE, builder -> {
-      Consumer<ModifierId> with = modifier -> builder.addCriterion(modifier.getPath(), hasTool(HasModifierPredicate.hasUpgrade(modifier, 1)));
+      Consumer<ModifierId> with = modifier -> builder.addCriterion(modifier.getPath(), hasTool(HasModifierPredicate.hasCrafted(modifier, 1)));
       Consumer<ModifierHolder> withH = modifier -> with.accept(modifier.id());
 
       // sorted like the modifier tag provider tags

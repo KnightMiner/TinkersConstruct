@@ -34,6 +34,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.MaterialTagProvider;
 import slimeknights.tconstruct.common.registration.object.EnumItem;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.predicate.tool.HasMaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasStatTypePredicate;
@@ -47,9 +48,9 @@ import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.materials.definition.IMaterial;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
@@ -272,9 +273,21 @@ public final class TinkerTools extends TinkerModule {
           player.disableShield();
         }
       }, EntityType.PLAYER);
+
     });
     ModifierHooks.init();
     ToolHooks.init();
+
+    // tool stack restrictions
+    ToolStack.registerRestricted(DataComponents.DAMAGE);
+    ToolStack.registerRestricted(
+      TinkerData.BROKEN, TinkerData.MATERIALS,
+      TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS,
+      TinkerData.PERSISTENT_SLOTS, TinkerData.VOLATILE_SLOTS,
+      TinkerData.CRAFTED_MODIFIERS, TinkerData.ALL_MODIFIERS
+    );
+    // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
+    ToolStack.registerVolatile(TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS, TinkerData.VOLATILE_SLOTS, TinkerData.ALL_MODIFIERS);
   }
 
   @SubscribeEvent
@@ -343,7 +356,7 @@ public final class TinkerTools extends TinkerModule {
       ToolModule.LOADER.register(getResource("unique_material_name"), UniqueMaterialToolName.LOADER);
       ToolModule.LOADER.register(getResource("custom_material_name"), CustomMaterialName.LOADER);
       // tool predicates
-      ToolContextPredicate.LOADER.register(getResource("has_upgrades"), ToolContextPredicate.HAS_UPGRADES.getLoader());
+      ToolContextPredicate.LOADER.register(getResource("has_crafted_modifiers"), ToolContextPredicate.HAS_CRAFTED_MODIFIERS.getLoader());
       ToolContextPredicate.LOADER.register(getResource("has_modifier"), HasModifierPredicate.LOADER);
       ToolContextPredicate.LOADER.register(getResource("has_material"), HasMaterialPredicate.LOADER);
       ToolContextPredicate.LOADER.register(getResource("has_stat_type"), HasStatTypePredicate.LOADER);
@@ -454,13 +467,13 @@ public final class TinkerTools extends TinkerModule {
       IMaterial gunpowder = MaterialRegistry.getMaterial(MaterialIds.gunpowder);
       IMaterial prismarine = MaterialRegistry.getMaterial(MaterialIds.prismarine);
       if (gunpowder != IMaterial.UNKNOWN && prismarine != IMaterial.UNKNOWN) {
-        ToolStack efln = ToolStack.createTool(item.asItem(), definition, MaterialNBT.of(gunpowder, prismarine));
+        ToolStack efln = ToolStack.create(item);
+        efln.setMaterials(MaterialNBT.of(gunpowder, prismarine));
         if (ModifierManager.INSTANCE.contains(ModifierIds.redirected)) {
           efln.addModifier(ModifierIds.redirected, 1);
         }
-        ItemStack stack = efln.createStack();
-        stack.set(DataComponents.CUSTOM_NAME, TConstruct.makeTranslation("item", "efln_ball"));
-        tab.accept(stack);
+        efln.set(DataComponents.CUSTOM_NAME, TConstruct.makeTranslation("item", "efln_ball"));
+        tab.accept(efln.getStack());
       }
     }
   }

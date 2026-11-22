@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -196,7 +195,7 @@ public class ToolCastingRecipe extends PartSwapCastingRecipe implements MultiNam
       } else {
         // tool is valid, create setup to call part swapping methods
         int fluidIndex = getIndex(requirements);
-        ToolRequirement tool = new ToolRequirement(ToolStack.from(result.asItem(), result.getToolDefinition(), new CompoundTag()), fluidIndex, requirements.get(fluidIndex));
+        ToolRequirement tool = new ToolRequirement(ToolStack.create(result), fluidIndex, requirements.get(fluidIndex));
         MaterialSwappingRecipe.setMaterials(tool.tool(), fluidIndex, ToolBuildHandler.getRenderMaterial(0));
         List<NamedRecipe<IDisplayableCastingRecipe>> displayRecipes = new ArrayList<>(fluidSwapping ? 3 : 1);
         List<ResourceLocation> parent = List.of(id);

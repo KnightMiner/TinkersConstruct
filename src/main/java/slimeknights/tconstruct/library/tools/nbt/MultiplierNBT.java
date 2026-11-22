@@ -29,7 +29,7 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode
 @ToString
-public class MultiplierNBT {
+public class MultiplierNBT implements CollectionComponent {
   /** Codec instance for NBT */
   public static final Codec<MultiplierNBT> CODEC;
   /** Stream codec instance for network syncing */
@@ -54,6 +54,11 @@ public class MultiplierNBT {
   /** Creates a new builder */
   public static Builder builder() {
     return new Builder();
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return stats.isEmpty();
   }
 
   /**

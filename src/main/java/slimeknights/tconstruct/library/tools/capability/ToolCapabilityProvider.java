@@ -38,7 +38,6 @@ public class ToolCapabilityProvider implements ICapabilityProvider {
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     // clear the tool cache, as it may have changed since the last time a cap was fetched
     ToolStack toolStack = tool.get();
-    toolStack.refreshTag(stack);
     // return the first successful provider
     for (IToolCapabilityProvider provider : providers) {
       provider.clearCache();

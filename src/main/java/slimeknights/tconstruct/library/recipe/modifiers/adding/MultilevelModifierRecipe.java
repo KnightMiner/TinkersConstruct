@@ -82,7 +82,7 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements MultiNam
     }
 
     // consume slots
-    tool = tool.copy();
+    tool = tool.copyMaxCount(shrinkToolSlotBy());
     if (slots != null) {
       tool.removeSlots(slots);
     }
@@ -95,7 +95,7 @@ public class MultilevelModifierRecipe extends ModifierRecipe implements MultiNam
     if (toolValidation != null) {
       return RecipeResult.failure(toolValidation);
     }
-    return success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override

@@ -2,16 +2,21 @@ package slimeknights.tconstruct.library.tools.nbt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.Item;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 
+import javax.annotation.Nullable;
+
 /** Tool stack instance in a context that does not have a proper tool, used for projectils */
-@SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor @Getter
 public class DummyToolStack implements IToolStackView {
   private final Item item;
   private final ModifierNBT modifiers;
-  private final ModDataNBT persistentData;
+  private final PatchedDataComponentMap components;
 
   @Override
   public ToolDefinition getDefinition() {
@@ -24,7 +29,7 @@ public class DummyToolStack implements IToolStackView {
   }
 
   @Override
-  public ModifierNBT getUpgrades() {
+  public ModifierNBT getCraftedModifiers() {
     return ModifierNBT.EMPTY;
   }
 
@@ -36,11 +41,6 @@ public class DummyToolStack implements IToolStackView {
   @Override
   public SlotsNBT getVolatileSlots() {
     return SlotsNBT.EMPTY;
-  }
-
-  @Override
-  public IModDataView getVolatileData() {
-    return IModDataView.EMPTY;
   }
 
   @Override
@@ -74,5 +74,30 @@ public class DummyToolStack implements IToolStackView {
   @Override
   public MultiplierNBT getMultipliers() {
     return MultiplierNBT.EMPTY;
+  }
+
+
+  /* Data */
+
+  @Nullable
+  @Override
+  public <T> T set(DataComponentType<? super T> componentType, @Nullable T value) {
+    return components.set(componentType, value);
+  }
+
+  @Nullable
+  @Override
+  public <T> T remove(DataComponentType<? extends T> componentType) {
+    return components.remove(componentType);
+  }
+
+  @Override
+  public void applyComponents(DataComponentPatch patch) {
+    components.applyPatch(patch);
+  }
+
+  @Override
+  public void applyComponents(DataComponentMap components) {
+    this.components.setAll(components);
   }
 }

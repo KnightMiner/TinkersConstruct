@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -189,13 +188,13 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       }
     }
     // create tool
-    Item item = output.asItem();
-    ToolStack tool = ToolStack.createTool(item, output.getToolDefinition(), MaterialNBT.of(materials));
+    ToolStack tool = ToolStack.create(output);
+    tool.setMaterials(MaterialNBT.of(materials));
     int count;
     // if we have any parts set, run the count hook
     // no point running it if all materials are set through override/no materials, just set the recipe count in that case
     // note there is an edge case when you have a fixed material that adjusts count plus parts, not really a good solution for that case
-    int itemMax = item.getDefaultMaxStackSize();
+    int itemMax = output.asItem().getDefaultMaxStackSize();
     if (parts > 0 && itemMax > 1) {
       count = CraftCountModifierHook.maxStackSize(tool, outputCount);
       if (count <= 0) {
@@ -205,13 +204,14 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       // the min is handled inside the max stack size helper, so just handle it here
       count = Math.min(itemMax, outputCount);
     }
+    tool.setCount(count);
 
     // validate the tool, lets people have traits reject each other or do weird slot shenanigans
     Component error = tool.tryValidate();
     if (error != null) {
       return RecipeResult.failure(error);
     }
-    return LazyToolStack.success(tool, count);
+    return LazyToolStack.success(tool);
   }
 
 

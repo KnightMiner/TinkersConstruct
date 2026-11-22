@@ -3,7 +3,6 @@ package slimeknights.tconstruct.library.recipe.tinkerstation.damaging;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -15,6 +14,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IncrementalModifierRecipe;
@@ -67,11 +67,11 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
       return BROKEN;
     }
     // simply damage the tool directly
-    tool = tool.copy();
+    tool = tool.copyWithCount(1);
     int maxDamage = IncrementalModifierRecipe.getAvailableAmount(inv, ingredient, damageAmount);
     ItemStack tinkerable = inv.getTinkerableStack();
     ToolDamageUtil.directDamage(tool, maxDamage, null, tinkerable);
-    return LazyToolStack.successCopy(tool, 1, tinkerable);
+    return LazyToolStack.success(tool);
   }
 
   @Override
@@ -136,12 +136,12 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   public List<ItemStack> getToolWithoutModifier() {
     if (toolWithoutModifier == null) {
       // set durability on each tool to 1000, covers most instances
-      CompoundTag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
+      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build();
       toolWithoutModifier = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, TinkerTags.Items.DURABILITY)
         .map(item -> {
           if (item instanceof IModifiableDisplay modifiable) {
             ItemStack stack = modifiable.getRenderTool().copy();
-            stack.getOrCreateTag().put(ToolStack.TAG_STATS, stats);
+            stack.set(TinkerData.TOOL_STATS, stats);
             return stack;
           }
           return ItemStack.EMPTY;
@@ -174,6 +174,6 @@ public class TinkerStationDamagingRecipe implements ITinkerStationRecipe, IDispl
   public RecipeResult<ItemStack> onFocused(ItemStack focus) {
     ToolStack tool = ToolStack.copyFrom(focus);
     ToolDamageUtil.directDamage(tool, damageAmount, null, focus);
-    return RecipeResult.success(tool.copyStack(focus));
+    return RecipeResult.success(tool.getStack());
   }
 }

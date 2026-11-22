@@ -55,7 +55,7 @@ public interface IModifierWorktableRecipe extends ICommonRecipe<TinkerableRecipe
   RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier);
 
   default int shrinkToolSlotBy(LazyToolStack result) {
-    return result.getSize();
+    return result.getCount();
   }
 
   /**

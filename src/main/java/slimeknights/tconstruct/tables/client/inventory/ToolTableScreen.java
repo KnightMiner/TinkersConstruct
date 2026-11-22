@@ -146,7 +146,7 @@ public abstract class ToolTableScreen<T extends BlockEntity, C extends TabbedCon
       ItemStack result = lazyToolStack.getStack();
       tinkerInfo.setCaption(result.getHoverName());
       List<Component> list = new ArrayList<>();
-      result.getItem().appendHoverText(result, Minecraft.getInstance().level, list, Default.NORMAL);
+      result.getItem().appendHoverText(result, Item.TooltipContext.of(Minecraft.getInstance().level), list, Default.NORMAL);
       tinkerInfo.setText(list);
     }
   }
@@ -160,12 +160,12 @@ public abstract class ToolTableScreen<T extends BlockEntity, C extends TabbedCon
     // control displays just traits, bit trickier to do
     if (hasControlDown()) {
       title = TRAITS_TEXT;
-      Map<Modifier,Integer> upgrades = tool.getUpgrades().modifiers().stream()
-                                           .collect(Collectors.toMap(ModifierEntry::getModifier, ModifierEntry::getLevel, Integer::sum));
+      Map<Modifier,Integer> crafted = tool.getCraftedModifiers().modifiers().stream()
+        .collect(Collectors.toMap(ModifierEntry::getModifier, ModifierEntry::getLevel, Integer::sum));
       for (ModifierEntry entry : tool.getModifierList()) {
         Modifier mod = entry.getModifier();
         if (mod.shouldDisplay(ModifierTooltip.TINKER_STATION)) {
-          int level = entry.getLevel() - upgrades.getOrDefault(mod, 0);
+          int level = entry.getLevel() - crafted.getOrDefault(mod, 0);
           if (level > 0) {
             ModifierEntry trait = new ModifierEntry(entry.getModifier(), level);
             modifierNames.add(mod.getDisplayName(tool, trait, access));
@@ -177,7 +177,7 @@ public abstract class ToolTableScreen<T extends BlockEntity, C extends TabbedCon
       // shift is just upgrades/abilities, otherwise all
       List<ModifierEntry> modifiers;
       if (hasShiftDown()) {
-        modifiers = tool.getUpgrades().modifiers();
+        modifiers = tool.getCraftedModifiers().modifiers();
         title = UPGRADES_TEXT;
       } else {
         modifiers = tool.getModifierList();

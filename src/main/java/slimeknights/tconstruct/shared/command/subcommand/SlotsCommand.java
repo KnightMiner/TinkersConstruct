@@ -83,7 +83,7 @@ public class SlotsCommand {
       }
 
       // if successful, update held item
-      living.setItemInHand(InteractionHand.MAIN_HAND, tool.copyStack(stack));
+      living.setItemInHand(InteractionHand.MAIN_HAND, tool.getStack());
       return true;
     });
 

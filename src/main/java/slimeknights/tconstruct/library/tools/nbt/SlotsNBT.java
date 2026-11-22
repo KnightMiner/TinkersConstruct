@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 /** Handles free and used modifier slots on tools */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class SlotsNBT {
+public class SlotsNBT implements CollectionComponent {
   /** Instance with no entries. */
   public static final SlotsNBT EMPTY = new SlotsNBT(Object2IntMaps.emptyMap());
 
@@ -45,6 +45,11 @@ public class SlotsNBT {
   /** Gets the number of slots of the given type. */
   public int get(SlotType slot) {
     return slots.getOrDefault(slot, 0);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return slots.isEmpty();
   }
 
   /** Creates a copy of this data with the given number of slots */

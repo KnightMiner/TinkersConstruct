@@ -47,7 +47,7 @@ public class MultilevelIncrementalModifierRecipe extends IncrementalModifierReci
     // fetch the amount from the modifier, will be 0 if we have a full level
     ModifierId modifier = result.id();
     boolean crystal = matchesCrystal(inv);
-    ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getUpgrades()).getEntry(modifier);
+    ModifierEntry entry = (checkTraitLevel ? tool.getModifiers() : tool.getCraftedModifiers()).getEntry(modifier);
     boolean isNewLevel = crystal || entry.getAmount(0) <= 0;
 
     // if we are working on a partial level, validate against the current level rather than the level + 1
@@ -71,7 +71,7 @@ public class MultilevelIncrementalModifierRecipe extends IncrementalModifierReci
     }
 
     // validations pass, time to modify the tool
-    tool = tool.copy();
+    tool = tool.copyMaxCount(shrinkToolSlotBy());
 
     // if a new level, consume slots now that we copied
     if (slots != null) {
@@ -93,7 +93,7 @@ public class MultilevelIncrementalModifierRecipe extends IncrementalModifierReci
     }
 
     // successfully added the modifier
-    return success(tool, inv);
+    return LazyToolStack.success(tool);
   }
 
   @Override

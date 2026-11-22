@@ -105,7 +105,7 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
         persistentData.put(InteractionSource.RIGHT_CLICK.getKey(), rightList);
       }
     }
-    return LazyToolStack.successCopy(tool, inv.getTinkerableStack());
+    return LazyToolStack.success(tool);
   }
 
   @Override

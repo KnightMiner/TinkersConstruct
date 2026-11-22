@@ -7,8 +7,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -20,6 +18,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
@@ -186,11 +185,11 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
 
     // did we actually repair something?
     if (repairRemaining < repairNeeded) {
-      tool = tool.copy();
+      tool = tool.copyWithCount(1);
       ToolDamageUtil.repair(tool, repairNeeded - repairRemaining);
 
       // repair remaining can be negative
-      return LazyToolStack.successCopy(tool, 1, inv.getTinkerableStack());
+      return LazyToolStack.success(tool);
     }
 
     // for some odd reason, did not repair anything
@@ -259,7 +258,7 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
   @Override
   public List<NamedRecipe<IDisplayCraftingTinkering>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
-      Tag stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build().serializeToNBT();
+      StatsNBT stats = StatsNBT.builder().set(ToolStats.DURABILITY, 1000).build();
       MaterialNBT displayMaterials = MaterialNBT.of(IntStream.range(0, 5).mapToObj(i -> ToolBuildHandler.getRenderMaterial(i)).toList());
       IRepairKitItem repairKit = TinkerToolParts.repairKit.get();
 
@@ -270,20 +269,19 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
       List<ItemStack> dynamicToolStacks = new ArrayList<>();
       for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(TinkerTags.Items.DURABILITY)) {
         if (holder.isBound() && holder.value() instanceof IModifiable modifiable) {
-          CompoundTag tag = new CompoundTag();
-          ToolStack tool = ToolStack.from(modifiable.asItem(), modifiable.getToolDefinition(), tag);
+          ToolStack tool = ToolStack.create(modifiable);
+          ItemStack stack = tool.getStack();
           // assign display materials if needed
           if (tool.hasTag(TinkerTags.Items.MULTIPART_TOOL)) {
             tool.setMaterials(displayMaterials);
             // if using render materials, ensure it has durability
-            tag.put(ToolStack.TAG_STATS, stats);
+            stack.set(TinkerData.TOOL_STATS, stats);
           } else {
             // if no materials, just build its normal durability
             tool.rebuildStats();
           }
           // break the tool - tool stack will figure out how to do the durability later
-          tag.putBoolean(ToolStack.TAG_BROKEN, true);
-          ItemStack stack = tool.createStack();
+          stack.set(TinkerData.BROKEN, true);
 
           Set<MaterialId> repairMaterials = MaterialRepairToolHook.getRepairMaterials(tool);
           if (!repairMaterials.isEmpty()) {
@@ -423,9 +421,9 @@ public class TinkerStationRepairRecipe implements ITinkerStationRecipe, MultiNam
               amount *= factor * repairKit.getRepairAmount() / MaterialRecipe.INGOTS_PER_REPAIR;
 
               // we made it, we are actually repairing
-              tool = tool.copy();
+              tool = tool.copyWithCount(1);
               ToolDamageUtil.repair(tool, (int) amount);
-              outputSlot.set(tool.copyStack(toolStack));
+              outputSlot.set(tool.getStack());
             }
           }
         }

@@ -10,6 +10,7 @@ import java.util.function.BiFunction;
 /**
  * Read only view of {@link ModDataNBT}
  */
+@Deprecated(forRemoval = true)
 public interface IModDataView {
   /** Empty variant of tool data */
   IModDataView EMPTY = new IModDataView() {
