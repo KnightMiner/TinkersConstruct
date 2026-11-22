@@ -2,9 +2,6 @@ package slimeknights.tconstruct.library.modifiers.modules.display;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import slimeknights.mantle.client.ResourceColorManager;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -13,7 +10,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.SwappableSlotModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe.VariantFormatter;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.VariantFormatter;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
@@ -31,15 +28,9 @@ public record ModifierVariantNameModule(VariantFormatter formatter) implements M
 
   @Override
   public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
-    String variant = tool.getPersistentData().getString(entry.id());
-    if (!variant.isEmpty()) {
-      // allow overriding the color of the result using the resource color manager
-      TextColor color = ResourceColorManager.getOrNull(entry.getModifier().getTranslationKey() + '.' + variant);
-      Style style = name.getStyle();
-      if (color != null) {
-        style = style.withColor(color);
-      }
-      return Component.translatable(SwappableSlotModule.FORMAT, name.copy().withStyle(Style.EMPTY), formatter.format(entry.id(), variant)).withStyle(style);
+    Component variant = this.formatter.format(tool, entry.getHolder());
+    if (variant != null) {
+      return Component.translatable(SwappableSlotModule.FORMAT, name, variant).withStyle(name.getStyle());
     }
     return name;
   }

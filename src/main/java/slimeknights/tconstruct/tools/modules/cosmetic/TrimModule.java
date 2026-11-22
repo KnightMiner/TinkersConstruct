@@ -9,8 +9,8 @@ import net.minecraft.world.item.armortrim.TrimPattern;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.NoFieldRecordLoadable;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
@@ -78,7 +78,7 @@ public class TrimModule implements ModifierModule, DisplayNameModifierHook, Modi
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     ModifierId id = modifier.id();
     tool.getPersistentData().remove(patternKey(id));
     tool.getPersistentData().remove(materialKey(id));

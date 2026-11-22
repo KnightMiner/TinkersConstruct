@@ -3,39 +3,31 @@ package slimeknights.tconstruct.library.recipe.modifiers.adding;
 import lombok.Getter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.registry.NamedComponentRegistry;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.IntRange;
-import slimeknights.tconstruct.library.json.field.MergingField;
-import slimeknights.tconstruct.library.json.field.MergingField.MissingMode;
-import slimeknights.tconstruct.library.materials.MaterialId;
-import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableVariant;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
-import slimeknights.tconstruct.library.utils.Util;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static slimeknights.tconstruct.TConstruct.getResource;
 import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe.modifiersForResult;
 import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe.withModifiers;
 
@@ -47,26 +39,21 @@ import static slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayMo
 public class SwappableModifierRecipe extends ModifierRecipe {
   private static final String ALREADY_PRESENT = TConstruct.makeTranslationKey("recipe", "swappable.already_present");
   public static final RecordLoadable<SwappableModifierRecipe> LOADER = RecordLoadable.create(
-    INPUTS_FIELD, TOOLS_FIELD, MAX_TOOL_SIZE_FIELD,
-    new MergingField<>(ModifierId.LOADABLE.requiredField("name", r -> r.result.id()), "result", MissingMode.DISALLOWED),
-    new MergingField<>(StringLoadable.DEFAULT.requiredField("value", r -> r.value), "result", MissingMode.DISALLOWED),
-    VariantFormatter.LOADER.defaultField("variant_formatter", VariantFormatter.DEFAULT, r -> r.variantFormatter),
+    INPUTS_FIELD, TOOLS_FIELD, MAX_TOOL_SIZE_FIELD, RESULT_FIELD,
+    SwappableVariant.LOADER.requiredField("value", r -> r.value),
     SLOTS_FIELD, ALLOW_CRYSTAL_FIELD,
     SwappableModifierRecipe::new);
 
   /** Value of the modifier being swapped, distinguishing this recipe from others for the same modifier */
-  private final String value;
-  /** Logic to format the variant, needed for syncing */
-  private final VariantFormatter variantFormatter;
+  private final SwappableVariant value;
   /** Display component for the variant string */
   @Getter
   private final Component variant;
 
-  public SwappableModifierRecipe(List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, String value, VariantFormatter variantFormatter, @Nullable SlotCount slots, boolean allowCrystal) {
+  public SwappableModifierRecipe(List<SizedIngredient> inputs, Ingredient toolRequirement, int maxToolSize, ModifierId result, SwappableVariant value, @Nullable SlotCount slots, boolean allowCrystal) {
     super(inputs, toolRequirement, maxToolSize, result, new IntRange(1, 1), slots, allowCrystal, false);
     this.value = value;
-    this.variantFormatter = variantFormatter;
-    this.variant = variantFormatter.format(result, value);
+    this.variant = value.formatVariant(this.result);
   }
 
   @Override
@@ -89,9 +76,10 @@ public class SwappableModifierRecipe extends ModifierRecipe {
       needsModifier = false;
     }
 
+
     // do not allow adding the modifier if this variant is already present
-    ResourceLocation key = modifier.id();
-    if (level > 0 && tool.getPersistentData().getString(key).equals(value)) {
+    ResourceMap<String> variants = ResourceMap.get(tool, TinkerData.MODIFIER_STRING);
+    if (level > 0 && value.isPresent(tool, result)) {
       return RecipeResult.failure(ALREADY_PRESENT, result.get().getDisplayName(), variant);
     }
 
@@ -105,7 +93,7 @@ public class SwappableModifierRecipe extends ModifierRecipe {
     }
 
     // set the new value to the modifier
-    tool.getPersistentData().putString(key, value);
+    value.applyToTool(tool, result);
 
     // add modifier if needed
     if (needsModifier) {
@@ -133,9 +121,11 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Override
   public List<ItemStack> getToolWithModifier() {
     if (toolWithModifier == null) {
-      ResourceLocation id = result.id().id();
-      ModifierEntry result = getDisplayResult();
-      toolWithModifier = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiersForResult(result, result), data -> data.putString(id, value))).collect(Collectors.toList());
+      ModifierEntry displayResult = getDisplayResult();
+      ModifierEntries modifiers = modifiersForResult(displayResult, displayResult);
+      toolWithModifier = getToolInputs().stream()
+        .map(stack -> withModifiers(stack, maxToolSize, modifiers, data -> value.applyToTool(data, result)))
+        .toList();
     }
     return toolWithModifier;
   }
@@ -152,13 +142,12 @@ public class SwappableModifierRecipe extends ModifierRecipe {
   @Nullable
   @Override
   public Component canApply(ToolStackView tool) {
-    ModifierId result = this.result.id();
     // only check slots if we lack the modifier
-    if (tool.getCraftedModifiers().getLevel(result) == 0) {
+    if (tool.getCraftedModifiers().getLevel(result.id()) == 0) {
       return checkSlots(tool, getSlots());
     }
     // if we already have it, ensure the variant is changing
-    if (tool.getPersistentData().getString(result.id()).equals(value)) {
+    if (value.isPresent(tool, result)) {
       return Component.translatable(ALREADY_PRESENT, this.result.get().getDisplayName(), variant);
     }
     return null;
@@ -166,30 +155,11 @@ public class SwappableModifierRecipe extends ModifierRecipe {
 
   @Override
   public void applyModifier(ToolStack tool) {
-    ModifierId result = this.result.id();
     // only add the modifier if we lack it
-    if (tool.getCraftedModifiers().getLevel(result) == 0) {
+    if (tool.getCraftedModifiers().getLevel(result.id()) == 0) {
       super.applyModifier(tool);
     }
     // apply the variant
-    tool.getPersistentData().putString(result.id(), value);
-  }
-
-  /** Methods of formatting the variant string */
-  @FunctionalInterface
-  public interface VariantFormatter {
-    NamedComponentRegistry<VariantFormatter> LOADER = new NamedComponentRegistry<>("Unknown variant formatter");
-
-    /** Formats the variant given the modifier */
-    Component format(ModifierId modifier, String variant);
-
-
-    /* Formatters */
-    /** Formats using the modifier ID as a base translation key */
-    VariantFormatter DEFAULT = LOADER.register(getResource("default"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier.id()) + "." + variant));
-    /** Formats using the material translation key */
-    VariantFormatter MATERIAL = LOADER.register(getResource("material"), (modifier, variant) -> MaterialTooltipCache.getDisplayName(Objects.requireNonNullElse(MaterialVariantId.tryParse(variant), MaterialId.UNKNOWN)));
-    /** Formats using the modifier ID as the base with the variant as a parameter */
-    VariantFormatter PARAMETER = LOADER.register(getResource("parameter"), (modifier, variant) -> Component.translatable(Util.makeTranslationKey("modifier", modifier.id()) + ".variant", variant));
+    value.applyToTool(tool, result);
   }
 }

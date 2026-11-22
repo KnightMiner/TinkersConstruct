@@ -160,6 +160,12 @@ import slimeknights.tconstruct.library.modifiers.modules.technical.ArmorLevelMod
 import slimeknights.tconstruct.library.modifiers.util.ModifierDeferredRegister;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableInteger;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableMaterial;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableSlotType;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableString;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableVariant;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.VariantFormatter;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderCapability;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
@@ -634,6 +640,17 @@ public final class TinkerModifiers extends TinkerModule {
       // modifier predicates
       ModifierPredicate.LOADER.register(getResource("single"), SingleModifierPredicate.LOADER);
       ModifierPredicate.LOADER.register(getResource("slot_type"), SlotTypeModifierPredicate.LOADER);
+
+      // swappable variants
+      SwappableVariant.LOADER.register(getResource("string"), SwappableString.LOADER);
+      SwappableVariant.LOADER.register(getResource("integer"), SwappableInteger.LOADER);
+      SwappableVariant.LOADER.register(getResource("material"), SwappableMaterial.LOADER);
+      SwappableVariant.LOADER.register(getResource("slot_type"), SwappableSlotType.LOADER);
+      // variant formatters
+      VariantFormatter.LOADER.register(getResource("string"), VariantFormatter.STRING);
+      VariantFormatter.LOADER.register(getResource("integer"), VariantFormatter.INTEGER);
+      VariantFormatter.LOADER.register(getResource("material"), VariantFormatter.MATERIAL);
+      VariantFormatter.LOADER.register(getResource("slot_type"), VariantFormatter.SLOT_TYPE);
 
 
       // variables

@@ -2280,10 +2280,10 @@
   "stat.tconstruct.slot.prefix.souls": "영혼: ",
   "stat.tconstruct.slot.prefix.defense": "방어: ",
 
-  "stat.tconstruct.slot.display.upgrades": "강화",
-  "stat.tconstruct.slot.display.abilities": "능력",
-  "stat.tconstruct.slot.display.souls": "영혼",
-  "stat.tconstruct.slot.display.defense": "방어",
+  "stat.tconstruct.slot.lower.upgrades": "강화",
+  "stat.tconstruct.slot.lower.abilities": "능력",
+  "stat.tconstruct.slot.lower.souls": "영혼",
+  "stat.tconstruct.slot.lower.defense": "방어",
 
 
 

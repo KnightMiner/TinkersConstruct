@@ -24,6 +24,7 @@ import slimeknights.tconstruct.library.utils.TagUtil;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,6 +68,11 @@ public class ModifierEntries implements Iterable<ModifierEntry>, CollectionCompo
       return EMPTY;
     }
     return new ModifierEntries(List.copyOf(modifiers), modifiers.stream().collect(Collectors.toUnmodifiableMap(ModifierEntry::id, Function.identity())));
+  }
+
+  /** Creates a new instance for the given entries */
+  public static ModifierEntries create(ModifierEntry... modifiers) {
+    return create(Arrays.asList(modifiers));
   }
 
   /** Creates a new modifier NBT from a list of modifiers that may need merging */

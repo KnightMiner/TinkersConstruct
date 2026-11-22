@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.capacity.OverslimeModule;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeCraftingTableRecipe;
@@ -44,7 +43,7 @@ public class OverslimeRecipeExtension implements ICraftingCategoryExtension<Over
   private final List<ItemStack> result;
 
   public OverslimeRecipeExtension(OverslimeCraftingTableRecipe recipe) {
-    List<ModifierEntry> result = List.of(OverslimeModifierRecipe.RESULT);
+    ModifierEntries result = ModifierEntries.create(OverslimeModifierRecipe.RESULT);
 
     this.recipe = recipe;
     Ingredient ingredient = recipe.getTools();
@@ -55,7 +54,7 @@ public class OverslimeRecipeExtension implements ICraftingCategoryExtension<Over
     // result is the same but with overslime
     int restoreAmount = recipe.getRestoreAmount();
     List<ItemStack> toolsWithOverslime = Arrays.stream(ingredient.getItems()).map(IDisplayModifierRecipe.MAP_TOOL_STACK_FOR_RENDERING)
-      .map(stack -> withModifiers(stack, 1, result, data -> OverslimeModule.INSTANCE.setAmountRaw(data, restoreAmount)))
+      .map(stack -> withModifiers(stack, 1, result.modifiers(), data -> OverslimeModule.INSTANCE.setAmountRaw(data, restoreAmount)))
       .toList();
     this.ingredient = List.of(recipe.getIngredient().getItems());
     this.inputs = List.of(toolsWithoutOverslime, this.ingredient);

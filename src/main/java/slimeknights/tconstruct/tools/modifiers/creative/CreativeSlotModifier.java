@@ -2,8 +2,8 @@ package slimeknights.tconstruct.tools.modifiers.creative;
 
 import net.minecraft.network.chat.Component;
 import slimeknights.tconstruct.library.TinkerData;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
@@ -28,7 +28,7 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     tool.remove(TinkerData.CREATIVE_SLOTS);
     return null;
   }
@@ -41,7 +41,7 @@ public class CreativeSlotModifier extends NoLevelsModifier implements AddSlotsMo
   /** Formats the given slot type as a count */
   private static Component formatCount(SlotType slotType, int count) {
     return Component.literal((count > 0 ? "+" : "") + count + " ")
-      .append(slotType.getDisplayName())
+      .append(slotType.getUppercaseName())
       .withStyle(style -> style.withColor(slotType.getColor()));
   }
 

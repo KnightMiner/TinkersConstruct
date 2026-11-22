@@ -14,15 +14,19 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo.TintedSprite;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
 import slimeknights.tconstruct.library.client.model.tools.MaterialModel;
 import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
+import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.ModuleWithKey;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -98,7 +102,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
 
   /** Fetches the material from persistent data on the tool under the specified key, or the modifier ID. */
   record PersistentData(@Nullable Material small, @Nullable Material large, @Nullable ResourceLocation key) implements MaterialModifierModel, ModuleWithKey {
-    public static final RecordLoadable<PersistentData> LOADER = RecordLoadable.create(TEXTURE_FIELD, LARGE_TEXTURE_FIELD, FIELD, PersistentData::new);
+    public static final RecordLoadable<PersistentData> LOADER = RecordLoadable.create(TEXTURE_FIELD, LARGE_TEXTURE_FIELD, KEY_FIELD, PersistentData::new);
 
     /** Creates a model using the modifier's ID as the key. */
     public PersistentData(@Nullable Material small, @Nullable Material large) {
@@ -113,21 +117,18 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     @Nullable
     @Override
     public MaterialVariantId getMaterial(ToolStackView tool, ModifierEntry entry) {
-      String material = tool.getPersistentData().getString(getKey(entry));
-      if (!material.isEmpty()) {
-        return MaterialVariantId.tryParse(material);
-      }
-      return null;
+      MaterialVariant material = ResourceMap.get(tool, TinkerData.MODIFIER_MATERIAL).get(getKey(entry));
+      return material != null ? material.id() : null;
     }
 
     @Override
     public Object getCacheKey(ToolStackView tool, ModifierEntry entry) {
       // since we are using a key in NBT for the material, need to include it in the cache key
-      return new CacheKey(entry.id(), tool.getPersistentData().getString(getKey(entry)));
+      return new CacheKey(entry.id(), ResourceMap.get(tool, TinkerData.MODIFIER_MATERIAL).getOrDefault(getKey(entry), MaterialHolder.UNKNOWN).id());
     }
 
     /** Data class to cache a material texture */
-    private record CacheKey(ModifierId modifier, String material) {}
+    private record CacheKey(ModifierId modifier, MaterialVariantId material) {}
   }
 
   /** Module using a material index, but applying a custom dye color to it. */
@@ -135,7 +136,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     public static final RecordLoadable<Dyed> LOADER = RecordLoadable.create(
       TEXTURE_FIELD, LARGE_TEXTURE_FIELD, INDEX_FIELD,
       BooleanLoadable.INSTANCE.defaultField("use_material_color", true, Dyed::useMaterialColor),
-      FIELD, Dyed::new);
+      KEY_FIELD, Dyed::new);
 
     public Dyed(@Nullable Material small, @Nullable Material large, int index, boolean useMaterialColor) {
       this(small, large, index, useMaterialColor, null);

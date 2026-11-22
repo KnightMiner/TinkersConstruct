@@ -9,6 +9,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifierHook;
@@ -54,7 +55,7 @@ public enum DyeModule implements ModifierModule, DisplayNameModifierHook, Modifi
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     tool.getPersistentData().remove(modifier.id());
     return null;
   }

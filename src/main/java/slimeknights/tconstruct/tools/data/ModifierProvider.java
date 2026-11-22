@@ -165,7 +165,8 @@ import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay;
 import slimeknights.tconstruct.library.modifiers.util.ModifierLevelDisplay.UniqueForLevels;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip.ShowInTooltips;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe.VariantFormatter;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableSlotType;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.VariantFormatter;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.SlotType;
@@ -307,16 +308,19 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.draconic   ).showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(ModifierSlotModule.slot(SlotType.ABILITY).eachLevel(1));
     buildModifier(ModifierIds.embossed, new TagFilledCondition<>(TinkerTags.Items.BOSS_TROPHIES)).showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL).addModule(UPGRADE);
     IJsonPredicate<ToolContext> ancientTool = ToolContextPredicate.tag(TinkerTags.Items.ANCIENT_TOOLS);
+    SlotType traitSlot = SlotType.getOrCreate("traits");
     buildModifier(ModifierIds.rebalanced)
       .showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new SwappableSlotModule(1))
       .addModule(new SwappableSlotModule(null, 1, ModifierCondition.ANY_CONTEXT.with(ancientTool)), ModifierHooks.ADD_SLOTS)
       .addModule(new SwappableSlotModule.BonusSlot(null, SlotType.ABILITY, SlotType.UPGRADE, -1, ModifierCondition.ANY_CONTEXT.with(ancientTool.inverted())))
       .addModule(new SwappableSlotModule.BonusSlot(null, SlotType.ABILITY, SlotType.ABILITY, -1, ModifierCondition.ANY_CONTEXT.with(ancientTool)))
-      .addModule(new SwappableToolTraitsModule(null, "traits", ToolHooks.REBALANCED_TRAIT));
+      .addModule(new SwappableToolTraitsModule(new SwappableSlotType(traitSlot), ToolHooks.REBALANCED_TRAIT))
+      // when type is trait, tool will get a "trait slot", but its just a dummy type so remove it
+      .addModule(new SwappableSlotModule.BonusSlot(traitSlot, traitSlot, -1));
     buildModifier(ModifierIds.redirected)
       .showInTooltips(ShowInTooltips.BONUS_SLOT).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
-      .addModule(new SwappableToolTraitsModule(null, "", ToolHooks.REBALANCED_TRAIT));
+      .addModule(new SwappableToolTraitsModule(null, ToolHooks.REBALANCED_TRAIT));
 
     // tier upgrades
     // emerald
@@ -448,7 +452,8 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.theOneProbe, modLoaded("theoneprobe")).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(TheOneProbeModule.INSTANCE);
     buildModifier(ModifierIds.headlight, modLoaded("headlight"))
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
-      .addModule(new ModifierVariantNameModule(VariantFormatter.PARAMETER))
+      .addModule(ModifierVariantColorModule.INTEGER)
+      .addModule(new ModifierVariantNameModule(VariantFormatter.INTEGER))
       .addModule(new HeadlightModule(10));
 
     // harvest
@@ -631,7 +636,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(InventoryMenuModule.ANY);
     buildModifier(ModifierIds.crystalshot).priority(50) // after bulk quiver
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
-      .addModule(ModifierVariantColorModule.INSTANCE)
+      .addModule(ModifierVariantColorModule.STRING)
       .addModule(new InfinityModule(TinkerTools.crystalshotItem.toStack(), CrystalshotItem.TAG_VARIANT,  4, true));
     buildModifier(ModifierIds.barebow)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
@@ -1691,7 +1696,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new TrimModule())
       .addModule(ModifierSlotModule.slot(SlotType.DEFENSE).toolContext(new HasToolHookPredicate(ToolHooks.TRIM_TRAIT).inverted()).eachLevel(1))
-      .addModule(new SwappableToolTraitsModule(null, "", ToolHooks.TRIM_TRAIT));
+      .addModule(new SwappableToolTraitsModule(null, ToolHooks.TRIM_TRAIT));
   }
 
   /** Creates a modifier that grants 2 levels of another modifier, plus a third on the next level. */

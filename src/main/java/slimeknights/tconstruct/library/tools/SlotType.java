@@ -67,7 +67,9 @@ public final class SlotType {
   /** Key for uppercase slot name */
   private static final String KEY_PREFIX = KEY_SLOT + "prefix.";
   /** Key for lowercase slot name */
-  public static final String KEY_DISPLAY = KEY_SLOT + "display.";
+  private static final String KEY_UPPERCASE = KEY_SLOT + "upper.";
+  /** Key for lowercase slot name */
+  private static final String KEY_LOWERCASE = KEY_SLOT + "lower.";
   /** Map of instances for each name */
   private static final Map<String,SlotType> SLOT_TYPES = new HashMap<>();
   /** List of all slots in the order they were added */
@@ -144,7 +146,7 @@ public final class SlotType {
   private TextColor color = null;
 
   /** Cached text component display names */
-  private Component displayName = null;
+  private Component uppercaseName, lowercaseName = null;
 
   /** Gets the display name for display in a title */
   public String getPrefix() {
@@ -157,11 +159,19 @@ public final class SlotType {
   }
 
   /** Gets the display name for display in a sentence */
-  public Component getDisplayName() {
-    if (displayName == null) {
-      displayName = Component.translatable(KEY_DISPLAY + name);
+  public Component getUppercaseName() {
+    if (uppercaseName == null) {
+      uppercaseName = Component.translatable(KEY_UPPERCASE + name);
     }
-    return displayName;
+    return uppercaseName;
+  }
+
+  /** Gets the display name for display in a sentence */
+  public Component getLowercaseName() {
+    if (lowercaseName == null) {
+      lowercaseName = Component.translatable(KEY_LOWERCASE + name);
+    }
+    return lowercaseName;
   }
 
   /** Gets the color of this slot type */

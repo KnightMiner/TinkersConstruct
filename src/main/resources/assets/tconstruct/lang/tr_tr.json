@@ -2448,10 +2448,10 @@
   "stat.tconstruct.slot.prefix.souls": "Ruh Yuvaları: ",
   "stat.tconstruct.slot.prefix.defense": "Savunma Yuvaları: ",
 
-  "stat.tconstruct.slot.display.upgrades": "yükseltme",
-  "stat.tconstruct.slot.display.abilities": "yetenek",
-  "stat.tconstruct.slot.display.souls": "ruh",
-  "stat.tconstruct.slot.display.defense": "savunma",
+  "stat.tconstruct.slot.lower.upgrades": "yükseltme",
+  "stat.tconstruct.slot.lower.abilities": "yetenek",
+  "stat.tconstruct.slot.lower.souls": "ruh",
+  "stat.tconstruct.slot.lower.defense": "savunma",
 
 
   "_comment": "Araç İpucuları",

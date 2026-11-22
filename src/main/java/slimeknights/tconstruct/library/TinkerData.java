@@ -1,6 +1,9 @@
 package slimeknights.tconstruct.library;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -14,9 +17,11 @@ import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableString;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
@@ -47,10 +52,12 @@ public class TinkerData {
   public static final DeferredDataComponent<MaterialVariant> MATERIAL = DATA_COMPONENTS.registerPersistent("material", MaterialVariant.CODEC, MaterialVariant.STREAM_CODEC);
   /** Holds a single slot type on an item. Used for the creative slot item */
   public static final DeferredDataComponent<SlotType> SLOT = DATA_COMPONENTS.registerPersistent("modifier_slot", SlotType.CODEC, SlotType.STREAM_CODEC);
+  /** Holds a string variant. Used by {@link slimeknights.tconstruct.tools.item.CrystalshotItem} for the texture variants. */
+  public static final DeferredDataComponent<String> VARIANT = DATA_COMPONENTS.registerPersistent("variant", ExtraCodecs.NON_EMPTY_STRING, ByteBufCodecs.STRING_UTF8);
 
   /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
   public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Unit.CODEC, TinkerStreamCodecs.UNIT);
-  
+
   /* Tool */
   /** If true, the tool is currently broken and should not perform any actions that require durability. */
   public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Unit.CODEC, TinkerStreamCodecs.UNIT);
@@ -74,6 +81,17 @@ public class TinkerData {
 
 
   /* Modifiers */
+  /** Map of modifier ID to variant string. Used for crystalshot variants. */
+  public static final DeferredDataComponent<ResourceMap<String>> MODIFIER_STRING = DATA_COMPONENTS.registerPersistent("modifier_string", ResourceMap.codec(SwappableString.VALID_CODEC), ResourceMap.streamCodec(ByteBufCodecs.STRING_UTF8));
+  /** Map of modifier ID to {@link MaterialVariant}. Used for embellishments. */
+  public static final DeferredDataComponent<ResourceMap<MaterialVariant>> MODIFIER_MATERIAL = DATA_COMPONENTS.registerPersistent("modifier_material", ResourceMap.codec(MaterialVariant.CODEC), ResourceMap.streamCodec(MaterialVariant.STREAM_CODEC));
+  /** Map of modifier ID to slot type. Used for rebalanced. */
+  public static final DeferredDataComponent<ResourceMap<SlotType>> MODIFIER_SLOT_TYPE = DATA_COMPONENTS.registerPersistent("modifier_slot_type", ResourceMap.codec(SlotType.CODEC), ResourceMap.streamCodec(SlotType.STREAM_CODEC));
+  /** Map of modifier ID to variant integer. Used for headlight levels. */
+  public static final DeferredDataComponent<ResourceMap<Integer>> MODIFIER_INTEGER = DATA_COMPONENTS.registerPersistent("modifier_integer", ResourceMap.codec(Codec.INT), ResourceMap.streamCodec(ByteBufCodecs.VAR_INT));
+
   /** Modifier slots added through the creative modifier. */
   public static final DeferredDataComponent<ModifierSlots> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
+  /** Marker used by {@link slimeknights.tconstruct.library.modifiers.modules.behavior.InfinityModule} to inform bows that the ammo stack is infinite. */
+  public static final DeferredDataComponent<Unit> INFINITY = DATA_COMPONENTS.registerVolatile("infinity", TinkerStreamCodecs.UNIT);
 }

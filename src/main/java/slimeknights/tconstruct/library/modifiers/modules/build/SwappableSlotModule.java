@@ -6,8 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
@@ -20,6 +21,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -37,7 +39,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   /** Format key for swappable variant */
   public static final String FORMAT = TConstruct.makeTranslationKey("modifier", "extra_modifier.type_format");
   public static final RecordLoadable<SwappableSlotModule> LOADER = RecordLoadable.create(
-    ModuleWithKey.FIELD,
+    ModuleWithKey.KEY_FIELD,
     IntLoadable.ANY_SHORT.requiredField("slots", SwappableSlotModule::slotCount),
     ModifierCondition.CONTEXT_FIELD,
     SwappableSlotModule::new);
@@ -52,12 +54,9 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
 
   @Override
   public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
-    String slotName = tool.getPersistentData().getString(getKey(entry.getModifier()));
-    if (!slotName.isEmpty()) {
-      SlotType type = SlotType.getIfPresent(slotName);
-      if (type != null) {
-        return Component.translatable(FORMAT, name.plainCopy(), type.getDisplayName()).withStyle(style -> style.withColor(type.getColor()));
-      }
+    SlotType slotType = ResourceMap.get(tool, TinkerData.MODIFIER_SLOT_TYPE).get(getKey(entry));
+    if (slotType != null) {
+      return Component.translatable(FORMAT, name.plainCopy(), slotType.getUppercaseName()).withStyle(style -> style.withColor(slotType.getColor()));
     }
     return name;
   }
@@ -71,20 +70,17 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   @Override
   public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
     if (condition.matches(context, modifier)) {
-      String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
-      if (!slotName.isEmpty()) {
-        SlotType type = SlotType.getIfPresent(slotName);
-        if (type != null) {
-          slots.add(type, slotCount);
-        }
+      SlotType slotType = ResourceMap.get(context, TinkerData.MODIFIER_SLOT_TYPE).get(getKey(modifier));
+      if (slotType != null) {
+        slots.add(slotType, slotCount);
       }
     }
   }
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
-    tool.getPersistentData().remove(getKey(modifier));
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
+    ResourceMap.remove(tool, TinkerData.MODIFIER_SLOT_TYPE, getKey(modifier));
     return null;
   }
 
@@ -102,7 +98,7 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
     private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.ADD_SLOTS);
     public static final RecordLoadable<BonusSlot> LOADER = RecordLoadable.create(
-      ModuleWithKey.FIELD,
+      ModuleWithKey.KEY_FIELD,
       SlotType.LOADABLE.requiredField("match", BonusSlot::match),
       SlotType.LOADABLE.requiredField("bonus", BonusSlot::bonus),
       IntLoadable.ANY_SHORT.requiredField("slots", BonusSlot::slotCount),
@@ -113,15 +109,15 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
       this(key, match, bonus, slotCount, ModifierCondition.ANY_CONTEXT);
     }
 
-    public BonusSlot(SlotType match, SlotType penalty, int slotCount) {
-      this(null, match, penalty, slotCount);
+    public BonusSlot(SlotType match, SlotType bonus, int slotCount) {
+      this(null, match, bonus, slotCount);
     }
 
     @Override
     public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
       if (condition.matches(context, modifier)) {
-        String slotName = context.getPersistentData().getString(getKey(modifier.getModifier()));
-        if (!slotName.isEmpty() && match.getName().equals(slotName)) {
+        SlotType slotType = ResourceMap.get(context, TinkerData.MODIFIER_SLOT_TYPE).get(getKey(modifier));
+        if (match == slotType) {
           slots.add(bonus, slotCount);
         }
       }

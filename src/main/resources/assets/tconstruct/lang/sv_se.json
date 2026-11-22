@@ -2147,10 +2147,10 @@
   "stat.tconstruct.slot.prefix.souls": "Själplatser: ",
   "stat.tconstruct.slot.prefix.defense": "Försvarsplatser: ",
   
-  "stat.tconstruct.slot.display.upgrades": "uppgraderings",
-  "stat.tconstruct.slot.display.abilities": "förmåga",
-  "stat.tconstruct.slot.display.souls": "själ",
-  "stat.tconstruct.slot.display.defense": "försvars",
+  "stat.tconstruct.slot.lower.upgrades": "uppgraderings",
+  "stat.tconstruct.slot.lower.abilities": "förmåga",
+  "stat.tconstruct.slot.lower.souls": "själ",
+  "stat.tconstruct.slot.lower.defense": "försvars",
   
   
   "_comment": "Tooltips",

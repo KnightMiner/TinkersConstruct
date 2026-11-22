@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
@@ -86,7 +86,7 @@ public enum TrickQuiverModule implements ModifierModule, BowAmmoModifierHook, Ge
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     tool.getPersistentData().remove(SELECTED_SLOT);
     return null;
   }

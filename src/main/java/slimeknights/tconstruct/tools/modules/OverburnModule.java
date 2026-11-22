@@ -12,6 +12,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InventoryTickModifierHook;
@@ -22,8 +23,8 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuel;
 import slimeknights.tconstruct.library.recipe.fuel.MeltingFuelLookup;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,7 +48,7 @@ public enum OverburnModule implements ModifierModule, InventoryTickModifierHook,
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     tool.getPersistentData().remove(modifier.id());
     return null;
   }

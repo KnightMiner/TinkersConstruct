@@ -2,24 +2,26 @@ package slimeknights.tconstruct.tools.modules.cosmetic;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialTooltipCache;
-import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialId;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.RawDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,7 +45,7 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
 
   @Override
   public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
-    MaterialVariantId materialVariant = MaterialVariantId.tryParse(tool.getPersistentData().getString(entry.id()));
+    MaterialVariantId materialVariant = MaterialVariantId.tryParse(ResourceMap.get(tool, TinkerData.MODIFIER_STRING).getOrDefault(entry.id(), ""));
     if (materialVariant != null) {
       return Component.translatable(entry.getModifier().getTranslationKey() + ".formatted", MaterialTooltipCache.getDisplayName(materialVariant)).withStyle(style -> style.withColor(MaterialTooltipCache.getColor(materialVariant)));
     }
@@ -53,15 +55,15 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
   @Override
   public void addRawData(ToolStackView tool, ModifierEntry modifier) {
     // on build, migrate material redirects
-    ModDataNBT data = tool.getPersistentData();
-    ResourceLocation key = modifier.id();
-    MaterialVariantId materialVariant = MaterialVariantId.tryParse(data.getString(key));
+    ResourceMap<String> variants = ResourceMap.get(tool, TinkerData.MODIFIER_STRING);
+    ModifierId id = modifier.id();
+    MaterialVariantId materialVariant = MaterialVariantId.tryParse(variants.getOrDefault(id, ""));
     if (materialVariant != null) {
       MaterialId original = materialVariant.material();
       MaterialId resolved = MaterialRegistry.getInstance().resolve(original);
       // instance check is safe here as resolve returns same instance if no redirect
       if (resolved != original) {
-        data.putString(key, MaterialVariantId.create(resolved, materialVariant.variant()).toString());
+        tool.set(TinkerData.MODIFIER_STRING, variants.with(id, MaterialVariantId.create(resolved, materialVariant.variant()).toString()));
       }
     }
   }
@@ -71,8 +73,8 @@ public enum EmbellishmentModule implements ModifierModule, DisplayNameModifierHo
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
-    tool.getPersistentData().remove(modifier.id());
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
+    ResourceMap.remove(tool, TinkerData.MODIFIER_STRING, modifier.id());
     return null;
   }
 }

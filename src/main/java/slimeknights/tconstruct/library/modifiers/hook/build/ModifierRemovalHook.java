@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.modifiers.hook.build;
 import net.minecraft.network.chat.Component;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -27,12 +28,13 @@ public interface ModifierRemovalHook {
    * @return  null if the modifier can be removed, text component with error message if there was an error
    */
   @Nullable
-  Component onRemoved(ToolStackView tool, Modifier modifier);
+  Component onRemoved(ToolStackView tool, ModifierHolder modifier);
 
   /** Merger that runs all hooks */
   record FirstMerger(Collection<ModifierRemovalHook> modules) implements ModifierRemovalHook {
+    @Nullable
     @Override
-    public Component onRemoved(ToolStackView tool, Modifier modifier) {
+    public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
       for (ModifierRemovalHook module : modules) {
         Component error = module.onRemoved(tool, modifier);
         if (error != null) {
@@ -55,7 +57,7 @@ public interface ModifierRemovalHook {
     for (ModifierEntry entry : original.getModifierList()) {
       ModifierRemovalHook hook = entry.getModifier().getHooks().getOrNull(ModifierHooks.REMOVE);
       if (hook != null && updated.getModifierLevel(entry.id()) == 0) {
-        Component error = hook.onRemoved(updated, entry.getModifier());
+        Component error = hook.onRemoved(updated, entry.getHolder());
         if (error != null) {
           return error;
         }

@@ -2447,10 +2447,10 @@
   "stat.tconstruct.slot.prefix.souls": "靈魂槽：",
   "stat.tconstruct.slot.prefix.defense": "防禦槽：",
 
-  "stat.tconstruct.slot.display.upgrades": "升級",
-  "stat.tconstruct.slot.display.abilities": "能力",
-  "stat.tconstruct.slot.display.souls": "靈魂",
-  "stat.tconstruct.slot.display.defense": "防禦",
+  "stat.tconstruct.slot.lower.upgrades": "升級",
+  "stat.tconstruct.slot.lower.abilities": "能力",
+  "stat.tconstruct.slot.lower.souls": "靈魂",
+  "stat.tconstruct.slot.lower.defense": "防禦",
 
 
   "_comment": "Tooltips",

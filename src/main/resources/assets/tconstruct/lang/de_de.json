@@ -2112,10 +2112,10 @@
   "stat.tconstruct.slot.prefix.souls": "Seelenplätze: ",
   "stat.tconstruct.slot.prefix.defense": "Verteidigungsplätze: ",
 
-  "stat.tconstruct.slot.display.upgrades": "aktualisieren",
-  "stat.tconstruct.slot.display.abilities": "Fähigkeit",
-  "stat.tconstruct.slot.display.souls": "Seele",
-  "stat.tconstruct.slot.display.defense": "Verteidigung",
+  "stat.tconstruct.slot.lower.upgrades": "aktualisieren",
+  "stat.tconstruct.slot.lower.abilities": "Fähigkeit",
+  "stat.tconstruct.slot.lower.souls": "Seele",
+  "stat.tconstruct.slot.lower.defense": "Verteidigung",
 
 
   "_comment": "Tooltips",

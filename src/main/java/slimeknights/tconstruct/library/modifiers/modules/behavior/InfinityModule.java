@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.modifiers.modules.behavior;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.AbstractArrow.Pickup;
@@ -12,8 +12,9 @@ import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
@@ -21,9 +22,10 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModi
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -41,7 +43,7 @@ public record InfinityModule(ItemStack ammo, String variantTag, int durabilityUs
   private static final String INFINITY = "tic_infinity";
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<InfinityModule>defaultHooks(ModifierHooks.BOW_AMMO, ModifierHooks.PROJECTILE_LAUNCH, ModifierHooks.PROJECTILE_SHOT, ModifierHooks.REMOVE);
   public static final RecordLoadable<InfinityModule> LOADER = RecordLoadable.create(
-    ItemStackLoadable.REQUIRED_ITEM_NBT.requiredField("ammo", InfinityModule::ammo),
+    ItemStackLoadable.REQUIRED_ITEM_DATA.requiredField("ammo", InfinityModule::ammo),
     StringLoadable.DEFAULT.defaultField("variant_tag", "", InfinityModule::variantTag),
     IntLoadable.FROM_ZERO.requiredField("durability_usage", InfinityModule::durabilityUsage),
     BooleanLoadable.INSTANCE.defaultField("check_standard_arrows", true, InfinityModule::checkStandardArrows),
@@ -66,14 +68,13 @@ public record InfinityModule(ItemStack ammo, String variantTag, int durabilityUs
     // our available count is based on how many arrows we can create from the remaining durability, though round up to be nice
     int count = durabilityUsage <= 0 ? 64 : Math.min(64, (tool.getCurrentDurability() + durabilityUsage - 1) / durabilityUsage);
     ItemStack ammo = this.ammo.copyWithCount(count);
-    CompoundTag tag = ammo.getOrCreateTag();
     // mark the arrow as infinity for the projectile launch hook
-    tag.putBoolean(INFINITY, true);
+    ammo.set(TinkerData.INFINITY, Unit.INSTANCE);
     // if a variant is requested, set that on the stack
     if (!variantTag.isEmpty()) {
-      String variant = tool.getPersistentData().getString(modifier.id());
+      String variant = ResourceMap.get(tool, TinkerData.MODIFIER_STRING).getOrDefault(modifier.id(), "");
       if (!variant.isEmpty()) {
-        tag.putString(variantTag, variant);
+        ammo.set(TinkerData.VARIANT, variant);
       }
     }
     return ammo;
@@ -83,11 +84,8 @@ public record InfinityModule(ItemStack ammo, String variantTag, int durabilityUs
   public void onProjectileShoot(ToolStackView tool, ModifierEntry modifier, @Nullable LivingEntity shooter, ItemStack ammo, Projectile projectile, @Nullable AbstractArrow arrow, ModDataNBT persistentData, boolean primary) {
     // for arrows fired by this module, set them to creative only pickup
     // not an issue if you have multiple types of infinity, they all agree on the goal here
-    if (arrow != null && arrow.pickup != Pickup.CREATIVE_ONLY) {
-      CompoundTag tag = ammo.getTag();
-      if (tag != null && tag.getBoolean(INFINITY)) {
-        arrow.pickup = Pickup.CREATIVE_ONLY;
-      }
+    if (arrow != null && arrow.pickup != Pickup.CREATIVE_ONLY && ammo.has(TinkerData.INFINITY)) {
+      arrow.pickup = Pickup.CREATIVE_ONLY;
     }
   }
 
@@ -100,9 +98,9 @@ public record InfinityModule(ItemStack ammo, String variantTag, int durabilityUs
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     if (!variantTag.isEmpty()) {
-      tool.getPersistentData().remove(modifier.id());
+      ResourceMap.remove(tool, TinkerData.MODIFIER_STRING, modifier.id());
     }
     return null;
   }

@@ -3,6 +3,8 @@ package slimeknights.tconstruct.library.recipe.modifiers.adding;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +21,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableVariant;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
@@ -27,10 +30,9 @@ import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 
@@ -152,8 +154,8 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
     if (displayInputs == null) {
       int min = level.min() - 1;
       ModifierEntry existing = min > 0 ? new ModifierEntry(result, min) : null;
-      ModifierEntry displayResult = getDisplayResult();
-      displayInputs = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiersForResult(displayResult, existing))).collect(Collectors.toList());
+      ModifierEntries modifiers = modifiersForResult(getDisplayResult(), existing);
+      displayInputs = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiers)).collect(Collectors.toList());
     }
     return displayInputs;
   }
@@ -162,7 +164,8 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
   public List<ItemStack> getToolWithModifier() {
     if (toolWithModifier == null) {
       ModifierEntry result = getDisplayResult();
-      toolWithModifier = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiersForResult(result, result))).collect(Collectors.toList());
+      ModifierEntries modifiers = modifiersForResult(result, result);
+      toolWithModifier = getToolInputs().stream().map(stack -> withModifiers(stack, maxToolSize, modifiers)).collect(Collectors.toList());
     }
     return toolWithModifier;
   }
@@ -171,18 +174,18 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
    * Helper to get the result slots for a given modifier recipe by querying volatile data.
    * Does not handle modifier traits for simplicity.
    * @param result  Modifier crafted by this recipe.
-   * @param tool    Representative tool for this recipe
+   * @param item    Representative tool for this recipe
    * @param variant Swappable variant, for recipes like rebalanced.
    */
-  public static List<SlotCount> getResultSlots(ModifierEntry result, Item tool, String variant) {
+  public static List<SlotCount> getResultSlots(ModifierEntry result, Item item, @Nullable SwappableVariant variant) {
     // add variant info for the sake of rebalanced
-    ModDataNBT persistentData = new ModDataNBT();
-    if (!variant.isEmpty()) {
-      persistentData.putString(result.id().id(), variant);
+    ToolStackView tool = new DummyToolStack(item, ModifierEntries.EMPTY, new PatchedDataComponentMap(DataComponentMap.EMPTY));
+    if (variant != null) {
+      variant.applyToTool(tool, result.getHolder());
     }
     // build slot data
     ModifierSlots.Builder slots = ModifierSlots.builder();
-    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(new DummyToolStack(tool, ModifierEntries.EMPTY, persistentData), result, slots);
+    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(tool, result, slots);
     return slots.buildCounts();
   }
 
@@ -192,7 +195,7 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
       // we need to decide a tool for the dummy stack. Could just use air, but might as well use a tool that shows up
       // on the odd chance the behavior differs per tool this might be wrong, but practically that just affects ancient tools on input right now
       ItemStack[] tools = toolRequirement.getItems();
-      resultSlots = getResultSlots(getDisplayResult(), tools.length > 0 ? tools[0].getItem() : Items.AIR, "");
+      resultSlots = getResultSlots(getDisplayResult(), tools.length > 0 ? tools[0].getItem() : Items.AIR, null);
     }
     return resultSlots;
   }

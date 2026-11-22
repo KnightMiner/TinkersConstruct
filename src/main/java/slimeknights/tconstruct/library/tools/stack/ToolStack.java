@@ -555,7 +555,7 @@ public class ToolStack implements ToolStackView {
     // first check slot counts
     for (SlotType slotType : SlotType.getAllSlotTypes()) {
       if (getFreeSlots(slotType) < 0) {
-        return Component.translatable(KEY_VALIDATE_SLOTS, slotType.getDisplayName());
+        return Component.translatable(KEY_VALIDATE_SLOTS, slotType.getLowercaseName());
       }
     }
     // next, ensure modifiers validate

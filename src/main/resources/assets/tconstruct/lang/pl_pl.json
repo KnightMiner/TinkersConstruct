@@ -1574,10 +1574,10 @@
   "stat.tconstruct.slot.prefix.abilities": "Umiejętności:",
   "stat.tconstruct.slot.prefix.defense": "Sloty na zbroję:",
 
-  "stat.tconstruct.slot.display.upgrades": "ulepszenie",
-  "stat.tconstruct.slot.display.abilities": "umiejętność",
-  "stat.tconstruct.slot.display.souls": "dusza",
-  "stat.tconstruct.slot.display.defense": "zbroja",
+  "stat.tconstruct.slot.lower.upgrades": "ulepszenie",
+  "stat.tconstruct.slot.lower.abilities": "umiejętność",
+  "stat.tconstruct.slot.lower.souls": "dusza",
+  "stat.tconstruct.slot.lower.defense": "zbroja",
 
 
   "_comment": "Tooltips",

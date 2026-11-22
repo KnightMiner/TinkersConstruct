@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.mutable.MutableObject;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
@@ -61,7 +61,7 @@ public class StatOverrideModifier extends NoLevelsModifier implements ToolStatsM
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     tool.getPersistentData().remove(KEY_BONUS);
     tool.getPersistentData().remove(KEY_MULTIPLY);
     return null;

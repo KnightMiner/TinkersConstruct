@@ -24,8 +24,8 @@ import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.json.LevelingInt;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
@@ -64,7 +64,6 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   /** NBT key to store the slot for a stack */
   public static final String TAG_SLOT = "Slot";
   // fields
-  protected static final LoadableField<ResourceLocation,? super InventoryModule> KEY_FIELD = ModuleWithKey.FIELD;
   protected static final LoadableField<LevelingInt, InventoryModule> SLOTS_FIELD = LevelingInt.LOADABLE.requiredField("slots", InventoryModule::slots);
   protected static final LoadableField<LevelingInt, InventoryModule> LIMIT_FIELD = LevelingInt.LOADABLE.defaultField("limit", LevelingInt.flat(64), InventoryModule::slotLimit);
   protected static final LoadableField<IJsonPredicate<Item>, InventoryModule> FILTER_FIELD = ItemPredicate.LOADER.defaultField("filter", InventoryModule::filter);
@@ -244,7 +243,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     // if we currently have item data, then return an error
     ModDataNBT persistentData = tool.getPersistentData();
     ResourceLocation key = getKey(modifier);

@@ -29,8 +29,8 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.util.TranslationHelper;
 import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectManager;
@@ -288,7 +288,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     // delete fluid on swap, such a waste
     clearFluid(tool.getPersistentData());
     return null;

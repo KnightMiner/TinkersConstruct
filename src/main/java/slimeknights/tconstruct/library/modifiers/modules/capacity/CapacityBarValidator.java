@@ -3,8 +3,8 @@ package slimeknights.tconstruct.library.modifiers.modules.capacity;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import slimeknights.tconstruct.library.modifiers.IncrementalModifierEntry;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
@@ -44,7 +44,7 @@ public record CapacityBarValidator(CapacityBarHook bar) implements HookProvider,
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     bar.setAmount(tool, ModifierEntry.EMPTY, 0);
     return null;
   }

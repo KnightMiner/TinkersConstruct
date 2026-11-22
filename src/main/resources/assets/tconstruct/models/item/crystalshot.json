@@ -1,5 +1,5 @@
 {
-  "loader": "mantle:nbt_key",
+  "loader": "mantle:item_key",
   "parent": "forge:item/default",
   "textures": {
     "default":    "tconstruct:item/arrow/crystalshot_random",
@@ -10,6 +10,6 @@
     "quartz":     "tconstruct:item/arrow/quartz",
     "skyslime":   "tconstruct:item/arrow/skyslime"
   },
-  "nbt_key": "variant",
+  "item_key": "tconstruct:variant",
   "extra_textures_key": "tconstruct:crystalshot"
 }

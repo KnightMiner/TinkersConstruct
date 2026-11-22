@@ -34,7 +34,7 @@ public enum SlotIngredientRenderer implements IIngredientRenderer<SlotCount> {
     @Override
     public List<Component> getTooltip(SlotCount slots, TooltipFlag tooltipFlag) {
       SlotType type = slots.type();
-      return appendId(type, Component.translatable(KEY_INGREDIENT, type.getDisplayName()), tooltipFlag);
+      return appendId(type, Component.translatable(KEY_INGREDIENT, type.getUppercaseName()), tooltipFlag);
     }
   },
   /** Shows a slot as an input. Tooltip will discuss required slots. */
@@ -47,9 +47,9 @@ public enum SlotIngredientRenderer implements IIngredientRenderer<SlotCount> {
           Component text;
           SlotType type = slots.type();
           if (count == 1) {
-            text = Component.translatable(KEY_SLOT, type.getDisplayName());
+            text = Component.translatable(KEY_SLOT, type.getLowercaseName());
           } else {
-            text = Component.translatable(KEY_SLOTS, count, type.getDisplayName());
+            text = Component.translatable(KEY_SLOTS, count, type.getLowercaseName());
           }
           return appendId(type, text, tooltipFlag);
         }

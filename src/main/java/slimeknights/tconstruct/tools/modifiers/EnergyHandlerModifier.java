@@ -3,8 +3,8 @@ package slimeknights.tconstruct.tools.modifiers;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
@@ -49,7 +49,7 @@ public final class EnergyHandlerModifier extends NoLevelsModifier implements Val
 
   @Nullable
   @Override
-  public Component onRemoved(ToolStackView tool, Modifier modifier) {
+  public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
     // we could just remove the energy, but this is less prone to risk of another modifier using energy
     // this will remove the energy if the capacity became 0 which should happen when your last energy modifier is removed
     ToolEnergyCapability.checkEnergy(tool);

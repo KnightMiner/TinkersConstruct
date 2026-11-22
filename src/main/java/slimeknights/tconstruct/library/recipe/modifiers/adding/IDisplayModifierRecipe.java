@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.library.recipe.modifiers.adding;
 
 import com.google.common.collect.Streams;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,9 +24,9 @@ import slimeknights.tconstruct.library.tools.context.ToolRebuildContext;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.RestrictedComponentMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -181,54 +180,59 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
    * @param self    Current modifier to display, will typically be result or a lower level of result
    * @return  List of modifiers
    */
-  static List<ModifierEntry> modifiersForResult(ModifierEntry result, @Nullable ModifierEntry self) {
+  static ModifierEntries modifiersForResult(ModifierEntry result, @Nullable ModifierEntry self) {
     List<ModifierEntry> requirements = result.getHook(ModifierHooks.REQUIREMENTS).displayModifiers(result);
     if (self != null) {
-      return Streams.concat(requirements.stream(), Stream.of(self)).toList();
+      return ModifierEntries.create(Streams.concat(requirements.stream(), Stream.of(self)).toList());
     }
-    return requirements;
+    return ModifierEntries.create(requirements);
   }
 
   /* Gets a copy of the stack with the given modifiers */
-  static ItemStack withModifiers(ItemStack stack, List<ModifierEntry> modifiers) {
-    return withModifiers(stack, modifiers, data -> {});
+  static ItemStack withModifiers(ItemStack stack, ModifierEntries modifiers) {
+    return withModifiers(stack, 1, modifiers);
   }
 
   /* Gets a copy of the stack with the given modifiers */
-  static ItemStack withModifiers(ItemStack stack, int maxSize, List<ModifierEntry> modifiers) {
+  static ItemStack withModifiers(ItemStack stack, int maxSize, ModifierEntries modifiers) {
     return withModifiers(stack, maxSize, modifiers, data -> {});
   }
 
   /* Gets a copy of the stack with the given modifiers */
+  static ItemStack withModifiers(ItemStack stack, ModifierEntries modifiers, Consumer<ItemStack> dataConsumer) {
+    return withModifiers(stack, 1, modifiers, dataConsumer);
+  }
+
+  /* Gets a copy of the stack with the given modifiers */
+  static ItemStack withModifiers(ItemStack stack, int maxSize, ModifierEntries modifiers, Consumer<ItemStack> dataConsumer) {
+    ItemStack output = stack.copyWithCount(Math.min(stack.getMaxStackSize(), maxSize));
+
+    // build modifiers list
+    // go through the builder to ensure they are merged properly
+    stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
+    stack.set(TinkerData.ALL_MODIFIERS, modifiers);
+
+    // build persistent and volatile NBT
+    MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
+    dataConsumer.accept(output);
+    ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, ToolMaterials.EMPTY, modifiers, modifiers);
+    for (ModifierEntry entry : modifiers.modifiers()) {
+      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
+    }
+
+    return output;
+  }
+
+  /* Gets a copy of the stack with the given modifiers */
+  @Deprecated(forRemoval = true)
   static ItemStack withModifiers(ItemStack stack, List<ModifierEntry> modifierList, Consumer<ModDataNBT> persistentDataConsumer) {
     return withModifiers(stack, 1, modifierList, persistentDataConsumer);
   }
 
   /* Gets a copy of the stack with the given modifiers */
+  @Deprecated(forRemoval = true)
   static ItemStack withModifiers(ItemStack stack, int maxSize, List<ModifierEntry> modifierList, Consumer<ModDataNBT> persistentDataConsumer) {
-    ItemStack output = stack.copyWithCount(Math.min(stack.getMaxStackSize(), maxSize));
-    CompoundTag nbt = output.getOrCreateTag();
-
-    // build modifiers list
-    // go through the builder to ensure they are merged properly
-    // TODO 1.21: this should maybe just take a modifier NBT argument?
-    ModifierEntries modifiers = ModifierEntries.builder().add(modifierList).build();
-    stack.set(TinkerData.CRAFTED_MODIFIERS, modifiers);
-    stack.set(TinkerData.ALL_MODIFIERS, modifiers);
-
-    // build persistent and volatile NBT
-    CompoundTag persistentNBT = new CompoundTag();
-    ModDataNBT persistentData = ModDataNBT.readFromNBT(persistentNBT);
-    CompoundTag volatileNBT = new CompoundTag();
-    MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
-    persistentDataConsumer.accept(persistentData);
-    ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, ToolMaterials.EMPTY, modifiers, modifiers, persistentData);
-    for (ModifierEntry entry : modifiers.modifiers()) {
-      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
-    }
-    nbt.put(ToolStack.TAG_PERSISTENT_MOD_DATA, persistentNBT);
-
-    return output;
+    return withModifiers(stack, maxSize, ModifierEntries.create(modifierList), s -> persistentDataConsumer.accept(new ModDataNBT()));
   }
 
 
@@ -279,9 +283,9 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
       int count = slots.count();
       if (tool.getFreeSlots(slots.type()) < count) {
         if (count == 1) {
-          return Component.translatable(KEY_NOT_ENOUGH_SLOT, slots.type().getDisplayName());
+          return Component.translatable(KEY_NOT_ENOUGH_SLOT, slots.type().getLowercaseName());
         } else {
-          return Component.translatable(KEY_NOT_ENOUGH_SLOTS, count, slots.type().getDisplayName());
+          return Component.translatable(KEY_NOT_ENOUGH_SLOTS, count, slots.type().getLowercaseName());
         }
       }
     }

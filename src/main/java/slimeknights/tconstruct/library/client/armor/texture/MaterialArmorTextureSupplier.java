@@ -9,10 +9,14 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader;
+import slimeknights.tconstruct.library.materials.MaterialHolder;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
+import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import java.util.Optional;
@@ -100,24 +104,23 @@ public abstract class MaterialArmorTextureSupplier implements ArmorTextureSuppli
   public static class PersistentData extends MaterialArmorTextureSupplier {
     public static final RecordLoadable<PersistentData> LOADER = RecordLoadable.create(
       PREFIX_FIELD,
-      Loadables.RESOURCE_LOCATION.requiredField("material_key", d -> d.key),
+      ModifierId.LOADABLE.requiredField("material_key", d -> d.key),
       PersistentData::new);
 
-    private final ResourceLocation key;
+    private final ModifierId key;
 
-    public PersistentData(ResourceLocation prefix, ResourceLocation key) {
+    public PersistentData(ResourceLocation prefix, ModifierId key) {
       super(prefix);
       this.key = key;
     }
 
-    public PersistentData(ResourceLocation base, String suffix, ResourceLocation key) {
+    public PersistentData(ResourceLocation base, String suffix, ModifierId key) {
       this(base.withSuffix(suffix), key);
     }
 
     @Override
     protected MaterialVariantId getMaterial(ItemStack stack) {
-      // TODO: update embellishments via swappable data
-      return MaterialId.UNKNOWN;
+      return ResourceMap.get(stack, TinkerData.MODIFIER_MATERIAL).getOrDefault(key, MaterialHolder.UNKNOWN).id();
     }
 
     @Override

@@ -40,7 +40,7 @@ public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
 
   /** Adds the modifier to the given stack */
   public ItemStack addModifier(ItemStack stack) {
-    return IDisplayModifierRecipe.withModifiers(IModifiableDisplay.getDisplayStack(stack), List.of(new ModifierEntry(modifier, 1)));
+    return IDisplayModifierRecipe.withModifiers(IModifiableDisplay.getDisplayStack(stack), ModifierEntries.create(new ModifierEntry(modifier, 1)));
   }
 
   /** Gets a list of all potion IDs ready for usage in building NBT */

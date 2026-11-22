@@ -79,6 +79,7 @@ import slimeknights.tconstruct.tools.data.sprite.TinkerMaterialSpriteProvider;
 import slimeknights.tconstruct.tools.data.sprite.TinkerPartSpriteProvider;
 import slimeknights.tconstruct.tools.data.sprite.TinkerTrimMaterialPaletteGenerator;
 import slimeknights.tconstruct.tools.item.CreativeSlotItem;
+import slimeknights.tconstruct.tools.item.CrystalshotItem;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 import slimeknights.tconstruct.tools.logic.DoubleJumpHandler;
 import slimeknights.tconstruct.tools.logic.InteractionHandler;
@@ -120,6 +121,7 @@ public class ToolClientEvents extends ClientEventBase {
     event.register(TConstruct.getResource("tool"), ToolModel.LOADER);
     event.register(TConstruct.getResource("material_block"), MaterialBlockModel.LOADER);
     ItemKey.LOADER.register(TConstruct.getResource("slot"), CreativeSlotItem.SLOT_KEY.getLoader());
+    ItemKey.LOADER.register(TConstruct.getResource("variant"), CrystalshotItem.ITEM_KEY.getLoader());
   }
 
   @SubscribeEvent

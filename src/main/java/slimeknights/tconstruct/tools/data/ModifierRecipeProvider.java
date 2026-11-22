@@ -53,8 +53,11 @@ import slimeknights.tconstruct.library.recipe.modifiers.adding.ModifierRecipeBui
 import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelIncrementalModifierRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.MultilevelModifierRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.OverslimeModifierRecipeBuilder;
-import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipe.VariantFormatter;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.SwappableModifierRecipeBuilder;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableInteger;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableMaterial;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableSlotType;
+import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableString;
 import slimeknights.tconstruct.library.recipe.modifiers.severing.SeveringRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.tinkerstation.repairing.ModifierRepairRecipeBuilder;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipeBuilder;
@@ -643,7 +646,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .saveSalvage(consumer, prefix(ModifierIds.ballista, abilitySalvage))
       .save(consumer, prefix(ModifierIds.ballista, abilityFolder));
     BiConsumer<ItemLike,String> crystalshotRecipe = (item, variant) ->
-      SwappableModifierRecipeBuilder.modifier(ModifierIds.crystalshot, variant)
+      SwappableModifierRecipeBuilder.modifier(ModifierIds.crystalshot, new SwappableString(variant))
                                     .input(item)
                                     .input(Items.BLAZE_ROD)
                                     .input(item)
@@ -658,7 +661,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     crystalshotRecipe.accept(TinkerWorld.ichorGeode.getBud(BudSize.CLUSTER), "ichor");
     crystalshotRecipe.accept(TinkerWorld.enderGeode.getBud(BudSize.CLUSTER), "enderslime");
     crystalshotRecipe.accept(Items.NETHER_QUARTZ_ORE, "quartz");
-    SwappableModifierRecipeBuilder.modifier(ModifierIds.crystalshot, "random")
+    SwappableModifierRecipeBuilder.modifier(ModifierIds.crystalshot, new SwappableString("random"))
                                   .input(Ingredient.of(TinkerWorld.earthGeode.getBud(BudSize.CLUSTER), TinkerWorld.skyGeode.getBud(BudSize.CLUSTER)))
                                   .input(Ingredient.of(Items.AMETHYST_CLUSTER, Items.NETHER_QUARTZ_ORE))
                                   .input(Ingredient.of(TinkerWorld.ichorGeode.getBud(BudSize.CLUSTER), TinkerWorld.enderGeode.getBud(BudSize.CLUSTER)))
@@ -1665,7 +1668,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
                          .disallowCrystal()
                          .save(consumer, wrap(ModifierIds.draconic, slotlessFolder, "_from_scales"));
     // rebalanced
-    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, SlotType.UPGRADE.getName())
+    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, new SwappableSlotType(SlotType.UPGRADE))
       .setTools(TinkerTags.Items.BONUS_SLOTS)
       .input(TinkerMaterials.roseGold.getNuggetTag())
       .input(Items.END_CRYSTAL)
@@ -1674,7 +1677,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .input(TinkerWorld.skyGeode.getBlock())
       .disallowCrystal()
       .save(consumer, wrap(ModifierIds.rebalanced, slotlessFolder, "_" + SlotType.UPGRADE.getName()));
-    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, SlotType.DEFENSE.getName())
+    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, new SwappableSlotType(SlotType.DEFENSE))
       .setTools(IntersectionIngredient.of(ingredientFromTags(TinkerTags.Items.ARMOR, TinkerTags.Items.HELD), Ingredient.of(TinkerTags.Items.BONUS_SLOTS)))
       .input(TinkerMaterials.cobalt.getNuggetTag())
       .input(Items.END_CRYSTAL)
@@ -1683,7 +1686,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .input(TinkerWorld.earthGeode.getBlock())
       .disallowCrystal()
       .save(consumer, wrap(ModifierIds.rebalanced, slotlessFolder, "_" + SlotType.DEFENSE.getName()));
-    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, SlotType.ABILITY.getName())
+    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, new SwappableSlotType(SlotType.ABILITY))
       .setTools(TinkerTags.Items.BONUS_SLOTS)
       .input(TinkerMaterials.queensSlime.getNuggetTag())
       .input(Items.END_CRYSTAL)
@@ -1692,7 +1695,9 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .input(TinkerWorld.ichorGeode.getBlock())
       .disallowCrystal()
       .save(consumer, wrap(ModifierIds.rebalanced, slotlessFolder, "_" + SlotType.ABILITY.getName()));
-    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, "traits")
+    // use a dummy slot type for traits, it's only going to show in the data map
+    // technically it will exist for slot iteration but thats fine as long as a tool never returns nonzero for its count
+    SwappableModifierRecipeBuilder.modifier(ModifierIds.rebalanced, new SwappableSlotType(SlotType.getOrCreate("traits")))
       .setTools(ToolHookIngredient.of(TinkerTags.Items.BONUS_SLOTS, ToolHooks.REBALANCED_TRAIT))
       .input(TinkerMaterials.manyullyn.getNuggetTag())
       .input(Items.END_CRYSTAL)
@@ -1853,25 +1858,24 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
                          .saveSalvage(topConsumer, prefix(ModifierIds.theOneProbe, compatSalvage))
                          .save(topConsumer, prefix(ModifierIds.theOneProbe, compatFolder));
     Consumer<FinishedRecipe> headlightConsumer = withCondition(consumer, modLoaded("headlight"));
-    BiConsumer<Ingredient,String> headlight = (ingredient, light) -> {
-      SwappableModifierRecipeBuilder builder = SwappableModifierRecipeBuilder.modifier(ModifierIds.headlight, light);
-      builder.variantFormatter(VariantFormatter.PARAMETER)
-             .setTools(TinkerTags.Items.HELMETS)
-             .input(Items.LEATHER)
-             .input(ingredient)
-             .input(Items.LEATHER)
-             .setSlots(SlotType.UPGRADE, 1)
-             .disallowCrystal();
-      if ("10".equals(light)) {
+    BiConsumer<Ingredient,Integer> headlight = (ingredient, light) -> {
+      SwappableModifierRecipeBuilder builder = SwappableModifierRecipeBuilder.modifier(ModifierIds.headlight, new SwappableInteger(light));
+      builder.setTools(TinkerTags.Items.HELMETS)
+        .input(Items.LEATHER)
+        .input(ingredient)
+        .input(Items.LEATHER)
+        .setSlots(SlotType.UPGRADE, 1)
+        .disallowCrystal();
+      if (light == 10) {
         builder.saveSalvage(headlightConsumer, prefix(ModifierIds.headlight, compatSalvage));
       } else {
         builder.disallowCrystal();
       }
       builder.save(headlightConsumer, wrap(ModifierIds.headlight, compatFolder, "_" + light));
     };
-    headlight.accept(Ingredient.of(Blocks.LANTERN), "15");
-    headlight.accept(Ingredient.of(Blocks.SOUL_LANTERN), "10");
-    headlight.accept(Ingredient.of(ItemTags.CANDLES), "5");
+    headlight.accept(Ingredient.of(Blocks.LANTERN), 15);
+    headlight.accept(Ingredient.of(Blocks.SOUL_LANTERN), 10);
+    headlight.accept(Ingredient.of(ItemTags.CANDLES), 5);
   }
 
   private void addTextureRecipes(Consumer<FinishedRecipe> consumer) {
@@ -1894,14 +1898,12 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
     woodTexture(consumer, MaterialIds.cactus, Blocks.CACTUS, folder);
     // compat
     TagKey<Item> treatedWood = getItemTag(COMMON, "treated_wood");
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, MaterialIds.treatedWood.toString())
-      .variantFormatter(VariantFormatter.MATERIAL)
+    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, new SwappableMaterial(MaterialIds.treatedWood))
       .setTools(TinkerTags.Items.EMBELLISHMENT_WOOD)
       .input(treatedWood).input(TinkerTables.pattern).input(treatedWood)
       .save(withCondition(consumer, new TagFilledCondition<>(treatedWood)), wrap(TinkerModifiers.embellishment, folder, "/wood/treated"));
     TagKey<Item> ironwood = getItemTag(COMMON, "ingots/ironwood");
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, MaterialIds.ironwood.toString())
-      .variantFormatter(VariantFormatter.MATERIAL)
+    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, new SwappableMaterial(MaterialIds.ironwood))
       .setTools(TinkerTags.Items.EMBELLISHMENT_WOOD)
       .input(ironwood).input(TinkerTables.pattern).input(ironwood)
       .save(withCondition(consumer, new TagFilledCondition<>(ironwood)), wrap(TinkerModifiers.embellishment, folder, "/wood/ironwood"));
@@ -1997,8 +1999,7 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
 
   /** Adds recipes for a plate armor texture with a custom tag */
   private void woodTexture(Consumer<FinishedRecipe> consumer, MaterialVariantId material, ItemLike planks, String folder) {
-    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, material.toString())
-                                  .variantFormatter(VariantFormatter.MATERIAL)
+    SwappableModifierRecipeBuilder.modifier(TinkerModifiers.embellishment, new SwappableMaterial(material))
                                   .setTools(TinkerTags.Items.EMBELLISHMENT_WOOD)
                                   .input(planks).input(TinkerTables.pattern).input(planks)
                                   .save(consumer, wrap(TinkerModifiers.embellishment, folder, "/wood/" + material.getLocation('_').getPath()));

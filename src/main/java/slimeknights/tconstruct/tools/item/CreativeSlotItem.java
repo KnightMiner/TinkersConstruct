@@ -74,7 +74,7 @@ public class CreativeSlotItem extends Item {
   public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     SlotType slot = getSlot(stack);
     if (slot != null) {
-      tooltip.add(Component.translatable(TOOLTIP, slot.getDisplayName()).withStyle(ChatFormatting.GRAY));
+      tooltip.add(Component.translatable(TOOLTIP, slot.getLowercaseName()).withStyle(ChatFormatting.GRAY));
     } else {
       tooltip.add(TOOLTIP_MISSING);
     }
