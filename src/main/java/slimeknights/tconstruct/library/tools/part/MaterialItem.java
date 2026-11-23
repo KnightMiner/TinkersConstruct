@@ -1,12 +1,12 @@
 package slimeknights.tconstruct.library.tools.part;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -82,11 +82,6 @@ public class MaterialItem extends Item implements IMaterialItem {
   }
 
   @Override
-  public Rarity getRarity(ItemStack stack) {
-    return getMaterial(stack).get().getRarity();
-  }
-
-  @Override
   public boolean isFoil(ItemStack stack) {
     return MaterialRegistry.getInstance().isInTag(getMaterial(stack).material(), TinkerTags.Materials.SHINY);
   }
@@ -123,5 +118,22 @@ public class MaterialItem extends Item implements IMaterialItem {
   @Override
   public String getCreatorModId(ItemStack stack) {
     return getCreatorModId(this, stack);
+  }
+
+  /** Adds the rarity to the stack from the material */
+  public static void verifyComponents(IMaterialItem self, ItemStack stack) {
+    if (MaterialRegistry.isFullyLoaded()) {
+      MaterialVariant material = self.getMaterial(stack);
+      if (material.isPresent()) {
+        stack.set(DataComponents.RARITY, material.get().getRarity());
+      } else {
+        stack.remove(DataComponents.RARITY);
+      }
+    }
+  }
+
+  @Override
+  public void verifyComponentsAfterLoad(ItemStack stack) {
+    verifyComponents(this, stack);
   }
 }

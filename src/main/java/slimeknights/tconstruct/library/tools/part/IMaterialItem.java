@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.tools.part;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,6 +36,7 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
       return setMaterialForced(stack, material);
     } else {
       stack.remove(TinkerData.MATERIAL);
+      stack.remove(DataComponents.RARITY);
     }
     return stack;
   }
@@ -43,8 +45,13 @@ public interface IMaterialItem extends ItemLike, IMaterialUser {
   default ItemStack setMaterialForced(ItemStack stack, MaterialVariant material) {
     if (material.isPresent()) {
       stack.set(TinkerData.MATERIAL, material);
+      // set rarity upon setting the material as we can't dynamically fetch it
+      if (MaterialRegistry.isFullyLoaded()) {
+        stack.set(DataComponents.RARITY, material.get().getRarity());
+      }
     } else {
       stack.remove(TinkerData.MATERIAL);
+      stack.remove(DataComponents.RARITY);
     }
     return stack;
   }

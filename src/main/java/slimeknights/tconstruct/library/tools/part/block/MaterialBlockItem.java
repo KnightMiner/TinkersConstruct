@@ -3,7 +3,6 @@ package slimeknights.tconstruct.library.tools.part.block;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -26,11 +25,6 @@ public class MaterialBlockItem extends BlockItem implements IMaterialItem {
   }
 
   @Override
-  public Rarity getRarity(ItemStack stack) {
-    return MaterialRegistry.getMaterial(getMaterial(stack).material()).getRarity();
-  }
-
-  @Override
   public boolean isFoil(ItemStack stack) {
     return MaterialRegistry.getInstance().isInTag(getMaterial(stack).material(), TinkerTags.Materials.SHINY);
   }
@@ -45,5 +39,10 @@ public class MaterialBlockItem extends BlockItem implements IMaterialItem {
   @Override
   public String getCreatorModId(ItemStack stack) {
     return MaterialItem.getCreatorModId(this, stack);
+  }
+
+  @Override
+  public void verifyComponentsAfterLoad(ItemStack stack) {
+    MaterialItem.verifyComponents(this, stack);
   }
 }
