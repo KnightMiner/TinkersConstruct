@@ -37,6 +37,7 @@ import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHo
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
@@ -97,7 +98,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
       max = RarityModule.max(max, rarity);
     }
     if (shiny) {
-      volatileData.putBoolean(VolatileFlags.SHINY, true);
+      builder.get(BuilderKeys.FLAGS).add(VolatileFlags.SHINY);
     }
     if (max != null) {
       RarityModule.setRarity(volatileData, max);

@@ -288,6 +288,8 @@ public final class TinkerTools extends TinkerModule {
     );
     // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
     ToolStack.registerVolatile(TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS, TinkerData.ALL_MODIFIERS);
+    // vanilla components - this only affects tool stacks so no harm marking it with our system
+    ToolStack.registerVolatile(DataComponents.RARITY);
   }
 
   @SubscribeEvent
