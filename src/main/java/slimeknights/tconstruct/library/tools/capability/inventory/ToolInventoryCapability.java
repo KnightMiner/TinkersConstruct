@@ -29,11 +29,12 @@ import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.capability.ToolCapabilityProvider.IToolCapabilityProvider;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.menu.ToolContainerMenu;
 
 import javax.annotation.Nonnull;
@@ -50,12 +51,6 @@ import java.util.stream.IntStream;
 public class ToolInventoryCapability extends InventoryModifierHookIterator<ModifierEntry> implements IItemHandlerModifiable {
   /** Boolean key to set in volatile mod data for the total slot count across all modifiers */
   public static final ResourceLocation TOTAL_SLOTS = TConstruct.getResource("total_item_slots");
-  /** Boolean key to set in volatile mod data to show the offand in the inventory menu */
-  public static final ResourceLocation INCLUDE_OFFHAND = TConstruct.getResource("inventory_show_offhand");
-  /** Boolean key to set to enable the 3x3 crafting table in the tool inventory */
-  public static final ResourceLocation CRAFTING_TABLE = TConstruct.getResource("crafting_table");
-  /** Boolean key to set to enable the 2x2 crafting table in the tool inventory */
-  public static final ResourceLocation INVENTORY_CRAFTING = TConstruct.getResource("inventory_crafting");
 
   /** Modifier hook instance to make an inventory modifier */
   public static final ModuleHook<InventoryModifierHook> HOOK = ModifierHooks.register(TConstruct.getResource("inventory"), InventoryModifierHook.class, InventoryModifierHookMerger::new, new InventoryModifierHook() {
@@ -542,7 +537,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
   public static InteractionResult tryOpenContainer(ItemStack stack, @Nullable ToolStackView tool, ToolDefinition definition, Player player, int slotIndex) {
     IItemHandler handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER).filter(cap -> cap instanceof IItemHandlerModifiable).orElse(EmptyItemHandler.INSTANCE);
     // open if we have any slots or we have a crafting table
-    if (handler.getSlots() > 0 || ModifierUtil.checkVolatileFlag(stack, CRAFTING_TABLE) || ModifierUtil.checkVolatileFlag(stack, INVENTORY_CRAFTING)) {
+    if (handler.getSlots() > 0 || VolatileFlags.hasFlag(stack, VolatileFlags.CRAFTING_TABLE) || VolatileFlags.hasFlag(stack, VolatileFlags.INVENTORY_CRAFTING)) {
       if (player instanceof ServerPlayer serverPlayer) {
         NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
           (id, inventory, p) -> new ToolContainerMenu(id, inventory, stack, handler, slotIndex),
@@ -556,7 +551,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
           } else if (syncType == ToolSyncType.MINIMAL) {
             buf.writeVarInt(ModifierUtil.getVolatileInt(stack, TOTAL_SLOTS));
             buf.writeEnum(CraftingType.fromStack(stack));
-            buf.writeBoolean(ModifierUtil.checkVolatileFlag(stack, INCLUDE_OFFHAND));
+            buf.writeBoolean(VolatileFlags.hasFlag(stack, VolatileFlags.INCLUDE_OFFHAND));
           }
         });
       }
@@ -607,10 +602,10 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
 
     /** Gets the crafting type for the given stack */
     public static CraftingType fromStack(ItemStack stack) {
-      if (ModifierUtil.checkVolatileFlag(stack, CRAFTING_TABLE)) {
+      if (VolatileFlags.hasFlag(stack, VolatileFlags.CRAFTING_TABLE)) {
         return FULL;
       }
-      if (ModifierUtil.checkVolatileFlag(stack, INVENTORY_CRAFTING)) {
+      if (VolatileFlags.hasFlag(stack, VolatileFlags.INVENTORY_CRAFTING)) {
         return INVENTORY;
       }
       return NONE;

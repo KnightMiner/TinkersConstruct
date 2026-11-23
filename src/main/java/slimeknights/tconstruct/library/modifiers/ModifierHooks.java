@@ -36,6 +36,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.RawDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.build.VolatileFlagModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.DamageDealtModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
@@ -76,9 +77,9 @@ import slimeknights.tconstruct.library.modifiers.hook.special.sling.SlingLaunchM
 import slimeknights.tconstruct.library.modifiers.modules.interaction.edible.EdibleModule;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.BlockItemProviderModifierHook;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Schedule.Scheduler;
 
 import javax.annotation.Nullable;
@@ -218,6 +219,8 @@ public class ModifierHooks {
 
   /** Hook to add data that resets every time stats rebuild */
   public static final ModuleHook<VolatileDataModifierHook> VOLATILE_DATA = register("volatile_data", VolatileDataModifierHook.class, VolatileDataModifierHook.AllMerger::new, (context, modifier, volatileData) -> {});
+  /** Hook to add flags that reset every time stats rebuild */
+  public static final ModuleHook<VolatileFlagModifierHook> VOLATILE_FLAGS = register("volatile_flags", VolatileFlagModifierHook.class, VolatileFlagModifierHook.AllMerger::new, (context, modifier, builder) -> {});
   /** Hook to add modifier slots to a tool */
   public static final ModuleHook<AddSlotsModifierHook> ADD_SLOTS = register("add_slots", AddSlotsModifierHook.class, AddSlotsModifierHook.AllMerger::new, (context, modifier, builder) -> {});
 

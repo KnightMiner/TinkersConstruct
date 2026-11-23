@@ -19,6 +19,7 @@ public interface VolatileDataModifierHook {
    * Alternatives:
    * <ul>
    *   <li>Persistent mod data (accessed via {@link ToolStackView}): Can be written to freely, but will not automatically remove if the modifier is removed.</li>
+   *   <li>{@link VolatileFlagModifierHook}: Allows adding flags to {@link slimeknights.tconstruct.library.TinkerData#VOLATILE_FLAGS}</li>
    *   <li>{@link RawDataModifierHook}: Allows modifying a restricted view of the tools main data, might help with other mod compat, but not modifier compat</li>
    * </ul>
    * @param context         Context about the tool being built. Partial view of {@link ToolStackView} as the tool is not fully built

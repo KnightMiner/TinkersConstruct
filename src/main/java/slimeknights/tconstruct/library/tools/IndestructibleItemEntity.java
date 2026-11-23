@@ -2,7 +2,6 @@ package slimeknights.tconstruct.library.tools;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -11,17 +10,13 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.NetworkHooks;
-import slimeknights.tconstruct.TConstruct;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.tools.TinkerTools;
 
 import javax.annotation.Nullable;
 
 /** Item entity that will never die */
 public class IndestructibleItemEntity extends ItemEntity {
-  /** Modifier key to make a tool spawn an indestructable entity */
-  public static final ResourceLocation INDESTRUCTIBLE_ENTITY = TConstruct.getResource("indestructible");
-
   public IndestructibleItemEntity(EntityType<? extends IndestructibleItemEntity> entityType, Level world) {
     super(entityType, world);
     // using setUnlimitedLifetime() makes the item no longer spin, dumb design
@@ -63,7 +58,7 @@ public class IndestructibleItemEntity extends ItemEntity {
 
   /** Checks if the given stack has a custom entity */
   public static boolean hasCustomEntity(ItemStack stack) {
-    return ModifierUtil.checkVolatileFlag(stack, INDESTRUCTIBLE_ENTITY);
+    return VolatileFlags.hasFlag(stack, VolatileFlags.INDESTRUCTIBLE_ENTITY);
   }
 
   /**
@@ -75,7 +70,7 @@ public class IndestructibleItemEntity extends ItemEntity {
    */
   @Nullable
   public static Entity createFrom(Level world, Entity original, ItemStack stack) {
-    if (ModifierUtil.checkVolatileFlag(stack, INDESTRUCTIBLE_ENTITY)) {
+    if (VolatileFlags.hasFlag(stack, VolatileFlags.INDESTRUCTIBLE_ENTITY)) {
       IndestructibleItemEntity entity = new IndestructibleItemEntity(world, original.getX(), original.getY(), original.getZ(), stack);
       entity.setPickupDelayFrom(original);
       return entity;

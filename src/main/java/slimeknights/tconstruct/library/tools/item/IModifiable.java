@@ -8,14 +8,8 @@ import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 
 /** Base interface for all tools that can receive modifiers */
 public interface IModifiable extends ItemLike {
-  /** Volatile boolean key to make a tool spawn an indestructable entity */
-  ResourceLocation SHINY = TConstruct.getResource("shiny");
   /** Volatile int key to increase a tool's range */
   ResourceLocation EXPANDED = TConstruct.getResource("expanded");
-  /** Modifier key to defer tool interaction to the offhand if present */
-  ResourceLocation DEFER_OFFHAND = TConstruct.getResource("defer_offhand");
-  /** Modifier key to entirely disable tool interaction */
-  ResourceLocation NO_INTERACTION = TConstruct.getResource("no_interaction");
 
   /** Gets the definition of this tool for building and applying modifiers */
   ToolDefinition getToolDefinition();

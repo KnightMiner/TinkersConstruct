@@ -168,18 +168,15 @@ import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip.ShowInTool
 import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableSlotType;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.VariantFormatter;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
-import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryMenuModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventorySlotMenuModule;
-import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
@@ -357,7 +354,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.netherite)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new RarityModule(Rarity.RARE))
-      .addModule(new VolatileFlagModule(IndestructibleItemEntity.INDESTRUCTIBLE_ENTITY))
+      .addModule(new VolatileFlagModule(VolatileFlags.INDESTRUCTIBLE_ENTITY))
       .addModule(StatBoostModule.multiplyBase(ToolStats.DURABILITY).flat(0.2f))
       // armor
       .addModule(StatBoostModule.add(ToolStats.ARMOR_TOUGHNESS).flat(1))
@@ -372,11 +369,11 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new VolatileFlagModule(AdvancementIds.NETHERITE));
 
     // general
-    buildModifier(ModifierIds.worldbound).addModule(new VolatileFlagModule(IndestructibleItemEntity.INDESTRUCTIBLE_ENTITY)).addModule(new RarityModule(Rarity.RARE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
-    buildModifier(ModifierIds.shiny).addModule(new VolatileFlagModule(IModifiable.SHINY)).addModule(new RarityModule(Rarity.EPIC)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.worldbound).addModule(new VolatileFlagModule(VolatileFlags.INDESTRUCTIBLE_ENTITY)).addModule(new RarityModule(Rarity.RARE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.shiny).addModule(new VolatileFlagModule(VolatileFlags.SHINY)).addModule(new RarityModule(Rarity.EPIC)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.offhanded)
-      .addModule(new VolatileFlagModule(IModifiable.DEFER_OFFHAND))
-      .addModule(new VolatileFlagModule(IModifiable.NO_INTERACTION, new ModifierCondition<>(ToolContextPredicate.ANY, ModifierEntry.VALID_LEVEL.min(2))))
+      .addModule(new VolatileFlagModule(VolatileFlags.DEFER_OFFHAND))
+      .addModule(new VolatileFlagModule(VolatileFlags.NO_INTERACTION, new ModifierCondition<>(ToolContextPredicate.ANY, ModifierEntry.VALID_LEVEL.min(2))))
       .levelDisplay(new UniqueForLevels(2));
     buildModifier(ModifierIds.blunted).addModule(new VolatileFlagModule(EntityInteractionModifierHook.NO_MELEE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.magnetic)
@@ -442,7 +439,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(ReduceToolDamageModule.builder().cause(allowReinforced).flat(1.0f));
     buildModifier(ModifierIds.tank).addModules(StatBoostModule.add(ToolTankHelper.CAPACITY_STAT).eachLevel(FluidType.BUCKET_VOLUME), ToolTankHelper.TANK_HANDLER);
     buildModifier(ModifierIds.overforced).addModule(StatBoostModule.add(OverslimeModule.OVERSLIME_STAT).eachLevel(75));
-    buildModifier(ModifierIds.soulbound).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(ModifierEvents.SOULBOUND));
+    buildModifier(ModifierIds.soulbound).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(VolatileFlags.SOULBOUND));
     // zooming
     buildModifier(ModifierIds.scope).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(ZoomModule.SCOPE);
     buildModifier(ModifierIds.zoom).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(ZoomModule.SPYGLASS);
@@ -619,7 +616,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .variable(LEVEL).multiply()
       .variable(MULTIPLIER).multiply()
       .variable(VALUE).add().build());
-    buildModifier(ModifierIds.reclaim).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(IndestructibleItemEntity.INDESTRUCTIBLE_ENTITY));
+    buildModifier(ModifierIds.reclaim).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(VolatileFlags.INDESTRUCTIBLE_ENTITY));
     buildModifier(ModifierIds.attractive).priority(125).addModule(new ProjectileAttractMobsModule(LevelingValue.eachLevel(3), LevelingValue.flat(0.5f)));
     buildModifier(ModifierIds.hover).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ProjectileGravityModule(LevelingInt.flat(20)));
     buildModifier(ModifierIds.fuse).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ProjectileFuseModule(ParticleTypes.FLAME, LevelingInt.flat(10)));
@@ -704,8 +701,8 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
 
 
     // armor
-    buildModifier(TinkerModifiers.golden).addModule(new VolatileFlagModule(ModifiableArmorItem.PIGLIN_NEUTRAL)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
-    buildModifier(ModifierIds.wings).addModule(new VolatileFlagModule(ModifiableArmorItem.ELYTRA)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(TinkerModifiers.golden).addModule(new VolatileFlagModule(VolatileFlags.PIGLIN_NEUTRAL)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.wings).addModule(new VolatileFlagModule(VolatileFlags.ELYTRA)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.knockbackResistance).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(StatBoostModule.add(ToolStats.KNOCKBACK_RESISTANCE).eachLevel(0.1f))
       .addModule(new MaterialVariantColorModule(MaterialIds.wool));
@@ -787,7 +784,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(InventoryModule.builder().pattern(pattern("shield_plus")).slotsPerLevel(1))
       .addModule(new ShieldStrapModule(TooltipKey.NORMAL))
       .addModule(InventoryMenuModule.SHIFT)
-      .addModule(new VolatileFlagModule(ToolInventoryCapability.INCLUDE_OFFHAND));
+      .addModule(new VolatileFlagModule(VolatileFlags.INCLUDE_OFFHAND));
     buildModifier(ModifierIds.stepUp).addModule(AttributeModule.builder(Attributes.STEP_HEIGHT, Operation.ADD_VALUE).slots(armorSlots).eachLevel(0.5f));
     buildModifier(ModifierIds.speedy).addModule(AttributeModule.builder(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_TOTAL).slots(armorMainHand).eachLevel(0.1f));
     buildModifier(ModifierIds.leaping)
@@ -800,12 +797,12 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(InventoryMenuModule.ANY)
       .addModule(InventorySlotMenuModule.INSTANCE)
-      .addModule(new VolatileFlagModule(ToolInventoryCapability.INVENTORY_CRAFTING));
+      .addModule(new VolatileFlagModule(VolatileFlags.INVENTORY_CRAFTING));
     buildModifier(ModifierIds.craftingTable)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(InventoryMenuModule.ANY)
       .addModule(InventorySlotMenuModule.INSTANCE)
-      .addModule(new VolatileFlagModule(ToolInventoryCapability.CRAFTING_TABLE));
+      .addModule(new VolatileFlagModule(VolatileFlags.CRAFTING_TABLE));
     // boots
     buildModifier(ModifierIds.depthStrider).addModule(AttributeModule.builder(Attributes.WATER_MOVEMENT_EFFICIENCY, Operation.ADD_VALUE).eachLevel(1/3f));
     buildModifier(ModifierIds.soulspeed).addModule(new SoulSpeedModule(LevelingInt.flat(1), ModifierCondition.ANY_TOOL));
@@ -865,7 +862,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.throwing).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(ThrowingModule.INSTANCE);
     buildModifier(ModifierIds.returning).addModule(new VolatileIntModule(ThrownTool.LOYALTY, LevelingInt.eachLevel(1)));
     buildModifier(ModifierIds.channeling).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ChannelingModule(0.15f, 0.65f, 1.0f, false));
-    buildModifier(ModifierIds.ballista).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(ModifiableBowItem.KEY_BALLISTA));
+    buildModifier(ModifierIds.ballista).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(VolatileFlags.KEY_BALLISTA));
     buildModifier(ModifierIds.fins)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(StatBoostModule.add(ToolStats.WATER_INERTIA).flat(0.5f))
@@ -932,7 +929,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
 
     // internal
     buildModifier(ModifierIds.overslimeFriend).showInTooltips(ShowInTooltips.ADVANCED).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
-    buildModifier(ModifierIds.snowBoots).addModule(new VolatileFlagModule(ModifiableArmorItem.SNOW_BOOTS)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.snowBoots).addModule(new VolatileFlagModule(VolatileFlags.SNOW_BOOTS)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(TinkerModifiers.edible).priority(40).showInTooltips(ShowInTooltips.NEVER)
       .addModule(EdibleModule.INSTANCE)
       .addModule(new ModifierTraitModule(ModifierIds.edibleTooltip, 1, true));
@@ -1567,10 +1564,10 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .build(), ModifierHooks.MODIFY_DAMAGE);
     buildModifier(ModifierIds.chrysophilite).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(GoldenAttributeModule.builder(TinkerAttributes.CHRYSOPHILITE, Operation.ADD_VALUE).amount(1, 1))
-      .addModule(new VolatileFlagModule(ModifiableArmorItem.PIGLIN_NEUTRAL, ModifierCondition.ANY_CONTEXT.minLevel(2)));
+      .addModule(new VolatileFlagModule(VolatileFlags.PIGLIN_NEUTRAL, ModifierCondition.ANY_CONTEXT.minLevel(2)));
     buildModifier(ModifierIds.goldGuard).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(GoldenAttributeModule.builder(Attributes.MAX_HEALTH, Operation.ADD_VALUE).amount(4, 4))
-      .addModule(new VolatileFlagModule(ModifiableArmorItem.PIGLIN_NEUTRAL, ModifierCondition.ANY_CONTEXT.minLevel(2)));
+      .addModule(new VolatileFlagModule(VolatileFlags.PIGLIN_NEUTRAL, ModifierCondition.ANY_CONTEXT.minLevel(2)));
     // effects
     buildModifier(ModifierIds.slowBones).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(new EffectImmunityModule(MobEffects.MOVEMENT_SLOWDOWN, LevelingInt.LEVEL))
@@ -1651,7 +1648,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.rugged).levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(BlockDamageSourceModule.source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.RUGGED_TERRAIN)).build(), ModifierHooks.DAMAGE_BLOCK)
       .addModule(BlockDamageSourceModule.source(DamageSourcePredicate.tag(TinkerTags.DamageTypes.RUGGED_ATTACKS)).minLevel(2).build(), ModifierHooks.DAMAGE_BLOCK)
-      .addModule(new VolatileFlagModule(ModifiableArmorItem.SNOW_BOOTS)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+      .addModule(new VolatileFlagModule(VolatileFlags.SNOW_BOOTS)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
 
 
     // internal modifier to restore older slots to slimesuit
@@ -1684,7 +1681,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.endermanDisguise)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(new MobDisguiseModule(EntityType.ENDERMAN))
-      .addModule(new VolatileFlagModule(ModifiableArmorItem.ENDERMASK));
+      .addModule(new VolatileFlagModule(VolatileFlags.ENDERMASK));
 
     // cosmetic
     buildModifier(TinkerModifiers.dyed.id()).showInTooltips(ModifierTooltip.TINKER_STATION).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(DyeModule.INSTANCE);

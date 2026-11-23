@@ -8,6 +8,7 @@ import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.build.AddSlotsToolHook;
@@ -15,6 +16,7 @@ import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbility
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolStatsHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
+import slimeknights.tconstruct.library.tools.definition.module.build.VolatileFlagToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.display.MaterialToolName;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
 import slimeknights.tconstruct.library.tools.definition.module.interaction.InteractionToolModule;
@@ -28,7 +30,6 @@ import slimeknights.tconstruct.library.tools.definition.module.mining.MiningSpee
 import slimeknights.tconstruct.library.tools.definition.module.mining.MiningTierToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.weapon.MeleeHitToolHook;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
-import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -93,6 +94,8 @@ public class ToolHooks {
   public static final ModuleHook<ToolStatsHook> TOOL_STATS = register("tool_stats", ToolStatsHook.class, ToolStatsHook.AllMerger::new, (context, builder) -> {});
   /** Hook for checking if a tool can perform a given action. */
   public static final ModuleHook<VolatileDataToolHook> VOLATILE_DATA = register("volatile_data", VolatileDataToolHook.class, VolatileDataToolHook.AllMerger::new, (context, data) -> {});
+  /** Hook for checking if a tool can perform a given action. */
+  public static final ModuleHook<VolatileFlagToolHook> VOLATILE_FLAGS = register("volatile_flags", VolatileFlagToolHook.class, VolatileFlagToolHook.AllMerger::new, (context, data) -> {});
   /** Hook to add modifier slots to a tool */
   public static final ModuleHook<AddSlotsToolHook> ADD_SLOTS = register("add_slots", AddSlotsToolHook.class, AddSlotsToolHook.AllMerger::new, (context, data) -> {});
   /** Hook for fetching tool traits */

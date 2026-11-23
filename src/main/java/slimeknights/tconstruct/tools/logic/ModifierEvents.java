@@ -80,6 +80,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.helper.ModifierLootingHandler;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -101,8 +102,6 @@ public class ModifierEvents {
   // TODO: move following to TinkerDataKeys?
   /** Volatile data float for amount of experience granted per level. Used by both projectiles and held tools. */
   public static final ResourceLocation EXPERIENCE = TConstruct.getResource("experience");
-  /** Volatile data flag making a modifier grant the tool soulbound */
-  public static final ResourceLocation SOULBOUND = TConstruct.getResource("soulbound");
   /** Volatile data int for making a modifier on a shield grant reflecting */
   public static final ResourceLocation REFLECTING = TConstruct.getResource("reflecting");
 
@@ -199,7 +198,7 @@ public class ModifierEvents {
       int hotbarSize = Inventory.getSelectionSize();
       for (int i = 0; i < hotbarSize; i++) {
         ItemStack stack = inventory.getItem(i);
-        if (!stack.isEmpty() && (soulBelt || ModifierUtil.checkVolatileFlag(stack, SOULBOUND))) {
+        if (!stack.isEmpty() && (soulBelt || VolatileFlags.hasFlag(stack, VolatileFlags.SOULBOUND))) {
           stack.set(MantleData.SOULBOUND_SLOT, i);
         }
       }
@@ -208,7 +207,7 @@ public class ModifierEvents {
       int totalSize = inventory.getContainerSize();
       for (int i = hotbarSize; i < totalSize; i++) {
         ItemStack stack = inventory.getItem(i);
-        if (!stack.isEmpty() && ModifierUtil.checkVolatileFlag(stack, SOULBOUND)) {
+        if (!stack.isEmpty() && VolatileFlags.hasFlag(stack, VolatileFlags.SOULBOUND)) {
           stack.set(MantleData.SOULBOUND_SLOT, i);
         }
       }
@@ -342,9 +341,9 @@ public class ModifierEvents {
     ItemStack ammo = event.getProjectileItemStack();
     // if the bow supports it, and we currently have arrows or nothing, we have a chance to swap the ammo
     // skip if the b
-    if (bow.is(TinkerTags.Items.BALLISTAS) && ModifierUtil.checkVolatileFlag(bow, ModifiableBowItem.KEY_BALLISTA) && (ammo.isEmpty() || ammo.is(ItemTags.ARROWS))) {
+    if (bow.is(TinkerTags.Items.BALLISTAS) && VolatileFlags.hasFlag(bow, VolatileFlags.KEY_BALLISTA) && (ammo.isEmpty() || ammo.is(ItemTags.ARROWS))) {
       // check active flag
-      int flag = ModifierUtil.getPersistentInt(bow, ModifiableBowItem.KEY_BALLISTA, 0);
+      int flag = ModifierUtil.getPersistentInt(bow, VolatileFlags.KEY_BALLISTA, 0);
 
       // if requesting a held ballista or haven't decided, find it in either hand
       if (flag <= ModifiableBowItem.FLAG_BALLISTA_HELD) {
@@ -358,7 +357,7 @@ public class ModifierEvents {
         if (check != bow && check.is(TinkerTags.Items.BALLISTA_AMMO)) {
           event.setProjectileItemStack(check);
         }
-      // if requesting a ballista from the quiver, cancel whatever stack we got from inventory
+        // if requesting a ballista from the quiver, cancel whatever stack we got from inventory
       } else if (flag == ModifiableBowItem.FLAG_BALLISTA_QUIVER) {
         event.setProjectileItemStack(ItemStack.EMPTY);
       }

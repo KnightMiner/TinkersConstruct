@@ -53,6 +53,7 @@ import slimeknights.tconstruct.library.modifiers.modules.build.RarityModule;
 import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.capability.ToolCapabilityProvider;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
@@ -63,8 +64,8 @@ import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
 
 import javax.annotation.Nullable;
@@ -172,7 +173,7 @@ public class ModifiableItem extends TieredItem implements IModifiableDisplay {
   public boolean isFoil(ItemStack stack) {
     // we use enchantments to handle some modifiers, so don't glow from them
     // however, if a modifier wants to glow let them
-    return ModifierUtil.checkVolatileFlag(stack, SHINY);
+    return VolatileFlags.hasFlag(stack, VolatileFlags.SHINY);
   }
 
   @Override
@@ -337,7 +338,7 @@ public class ModifiableItem extends TieredItem implements IModifiableDisplay {
   /** If true, this interaction hook should defer to the offhand */
   protected static boolean shouldInteract(@Nullable LivingEntity player, ToolStack toolStack, InteractionHand hand) {
     IModDataView volatileData = toolStack.getVolatileData();
-    if (volatileData.getBoolean(NO_INTERACTION)) {
+    if (volatileData.getBoolean(VolatileFlags.NO_INTERACTION)) {
       return false;
     }
     // off hand always can interact
@@ -345,7 +346,7 @@ public class ModifiableItem extends TieredItem implements IModifiableDisplay {
       return true;
     }
     // main hand may wish to defer to the offhand if it has a tool
-    return player == null || !volatileData.getBoolean(DEFER_OFFHAND) || player.getOffhandItem().isEmpty();
+    return player == null || !volatileData.getBoolean(VolatileFlags.DEFER_OFFHAND) || player.getOffhandItem().isEmpty();
   }
   
   @Override

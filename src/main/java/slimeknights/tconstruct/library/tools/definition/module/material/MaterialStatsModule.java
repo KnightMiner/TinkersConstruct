@@ -28,6 +28,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
@@ -36,7 +37,6 @@ import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHo
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierBuilder;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
@@ -96,7 +96,7 @@ public class MaterialStatsModule implements ToolStatsHook, ToolTraitHook, ToolMa
       max = RarityModule.max(max, rarity);
     }
     if (shiny) {
-      volatileData.putBoolean(IModifiable.SHINY, true);
+      volatileData.putBoolean(VolatileFlags.SHINY, true);
     }
     if (max != null) {
       RarityModule.setRarity(volatileData, max);

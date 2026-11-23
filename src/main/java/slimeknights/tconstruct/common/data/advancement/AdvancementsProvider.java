@@ -64,12 +64,12 @@ import slimeknights.tconstruct.library.json.predicate.tool.StatInRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.StatInSetPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
-import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate;
+import slimeknights.tconstruct.library.json.predicate.tool.VolatileFlagPredicate;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
-import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -495,23 +495,23 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     grantAdvancement(resource("internal/netherite_hoe"), AdvancementIds.NETHERITE_HOE, builder -> builder.addCriterion("iron_pick", hasToolStack(
       ToolStackPredicate.tag(TinkerTags.Items.INTERACTABLE_RIGHT),
       new ItemAbilityPredicate(ItemAbilities.HOE_TILL),
-      new VolatileDataPredicate(AdvancementIds.NETHERITE)
+      new VolatileFlagPredicate(AdvancementIds.NETHERITE)
     )));
     // boots with the snow boots flag can walk on powder snow
     grantAdvancement(resource("internal/walk_on_powder_snow"), AdvancementIds.WALK_ON_POWDER_SNOW, builder ->
       builder.addCriterion("has_boots", PlayerTrigger.TriggerInstance.located(EntityPredicate.Builder.entity()
-        .equipment(EntityEquipmentPredicate.Builder.equipment().feet(toolPredicate(new VolatileDataPredicate(ModifiableArmorItem.SNOW_BOOTS))))
+        .equipment(EntityEquipmentPredicate.Builder.equipment().feet(toolPredicate(new VolatileFlagPredicate(VolatileFlags.SNOW_BOOTS))))
         .steppingOn(LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(Blocks.POWDER_SNOW)))))
     );
     // despite having multiple criteria, these use an any condition so easier to just bypass criteria
     // iron armor expects iron from armor plating's trait
     IJsonPredicate<ToolStackView> hasTag = ToolStackPredicate.tag(TinkerTags.Items.WORN_ARMOR);
-    grantAdvancement(resource("internal/iron_armor"), AdvancementIds.OBTAIN_ARMOR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileDataPredicate(AdvancementIds.IRON_ARMOR))));
+    grantAdvancement(resource("internal/iron_armor"), AdvancementIds.OBTAIN_ARMOR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileFlagPredicate(AdvancementIds.IRON_ARMOR))));
     // diamond armor wants the diamond modifier
-    grantAdvancement(resource("internal/diamond_armor"), AdvancementIds.SHINY_GEAR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileDataPredicate(AdvancementIds.DIAMOND_ARMOR))));
+    grantAdvancement(resource("internal/diamond_armor"), AdvancementIds.SHINY_GEAR, builder -> builder.addCriterion("has_armor", hasToolStack(hasTag, new VolatileFlagPredicate(AdvancementIds.DIAMOND_ARMOR))));
     // netherite armor wants a whole set of netherite armor in the inventory at once
     grantAdvancement(resource("internal/netherite_armor"), AdvancementIds.NETHERITE_ARMOR, builder -> {
-      ToolStackPredicate hasNetherite = new VolatileDataPredicate(AdvancementIds.NETHERITE);
+      ToolStackPredicate hasNetherite = new VolatileFlagPredicate(AdvancementIds.NETHERITE);
       Function<TagKey<Item>,ItemPredicate.Builder> predicate = tag -> toolPredicate(hasNetherite).of(tag);
       builder.addCriterion("has_armor", InventoryChangeTrigger.TriggerInstance.hasItems(
         predicate.apply(TinkerTags.Items.HELMETS),

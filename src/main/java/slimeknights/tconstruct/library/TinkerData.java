@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +23,7 @@ import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.component.ResourceMap;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
@@ -81,6 +83,8 @@ public class TinkerData {
 
 
   /* Modifiers */
+  /** Map of resource location to unit (present or absent) used for various behavior flags. */
+  public static final DeferredDataComponent<SetComponent<ResourceLocation>> VOLATILE_FLAGS = DATA_COMPONENTS.registerPersistent("modifier_string", SetComponent.codec(ResourceLocation.CODEC), SetComponent.streamCodec(ResourceLocation.STREAM_CODEC));
   /** Map of modifier ID to variant string. Used for crystalshot variants. */
   public static final DeferredDataComponent<ResourceMap<String>> MODIFIER_STRING = DATA_COMPONENTS.registerPersistent("modifier_string", ResourceMap.codec(SwappableString.VALID_CODEC), ResourceMap.streamCodec(ByteBufCodecs.STRING_UTF8));
   /** Map of modifier ID to {@link MaterialVariant}. Used for embellishments. */

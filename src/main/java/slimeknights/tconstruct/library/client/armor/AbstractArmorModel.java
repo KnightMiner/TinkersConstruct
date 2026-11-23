@@ -18,8 +18,7 @@ import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.eventbus.api.EventPriority;
 import slimeknights.tconstruct.library.client.armor.texture.ArmorTextureSupplier.ArmorTexture;
 import slimeknights.tconstruct.library.client.armor.texture.ArmorTextureSupplier.TextureType;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 
 import javax.annotation.Nullable;
 
@@ -45,7 +44,7 @@ public abstract class AbstractArmorModel extends Model {
     this.hasGlint = stack.hasFoil();
     this.textureType = TextureType.fromSlot(slot);
     if (slot == EquipmentSlot.CHEST) {
-      this.hasWings = ModifierUtil.checkVolatileFlag(stack, ModifiableArmorItem.ELYTRA);
+      this.hasWings = VolatileFlags.hasFlag(stack, VolatileFlags.ELYTRA);
       if (hasWings) {
         ElytraModel<LivingEntity> wings = getWings();
         wings.setupAnim(living, 0, 0, 0, 0, 0);

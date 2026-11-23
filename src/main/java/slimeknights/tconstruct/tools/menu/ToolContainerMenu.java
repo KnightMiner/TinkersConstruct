@@ -31,9 +31,10 @@ import slimeknights.tconstruct.library.fluid.SimpleFluidTank;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.CraftingType;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.network.ToolContainerFluidUpdatePacket;
 
@@ -86,7 +87,7 @@ public class ToolContainerMenu extends AbstractContainerMenu {
 
   // TODO 1.21: probably ditch this constructor
   protected ToolContainerMenu(@Nullable MenuType<?> type, int id, Inventory playerInventory, ItemStack stack, IItemHandler handler, int slotIndex) {
-    this(type, id, playerInventory, stack, handler, slotIndex, CraftingType.fromStack(stack), ModifierUtil.checkVolatileFlag(stack, ToolInventoryCapability.INCLUDE_OFFHAND));
+    this(type, id, playerInventory, stack, handler, slotIndex, CraftingType.fromStack(stack), VolatileFlags.hasFlag(stack, VolatileFlags.INCLUDE_OFFHAND));
   }
 
   /** Creates a new instance of this container on the client side */
@@ -113,7 +114,7 @@ public class ToolContainerMenu extends AbstractContainerMenu {
     } else {
       size = ModifierUtil.getVolatileInt(stack, ToolInventoryCapability.TOTAL_SLOTS);
       craftingType = CraftingType.fromStack(stack);
-      includeOffhand = ModifierUtil.checkVolatileFlag(stack, ToolInventoryCapability.INCLUDE_OFFHAND);
+      includeOffhand = VolatileFlags.hasFlag(stack, VolatileFlags.INCLUDE_OFFHAND);
     }
     // if the stack looks like it could be our tool, fetch the handler from it
     IItemHandler handler;

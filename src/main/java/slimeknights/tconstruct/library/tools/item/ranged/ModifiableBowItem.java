@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.library.tools.item.ranged;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +19,6 @@ import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.ForgeEventFactory;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -30,12 +28,13 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInterac
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
 
@@ -47,13 +46,11 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
   /** Predicate for checking for ballisa ammo in the bow */
   private static final Predicate<ItemStack> ARROWS_OR_BALLISTA = stack -> stack.is(ItemTags.ARROWS) || stack.is(TinkerTags.Items.BALLISTA_AMMO);
 
-  /** Volatile flag activating the ballista functionality, and persistent int for bow actively firing a ballista */
-  public static final ResourceLocation KEY_BALLISTA = TConstruct.getResource("ballista");
-  /** Value for {@link #KEY_BALLISTA} when the ballista was found in the mainhand or offhand. Used to ensure inventory minimally messes with firing stack */
+  /** Value for {@link VolatileFlags#KEY_BALLISTA} when the ballista was found in the mainhand or offhand. Used to ensure inventory minimally messes with firing stack */
   public static final int FLAG_BALLISTA_HELD = 1;
-  /** Value for {@link #KEY_BALLISTA} when the ballista was found in a modifier hook, such as quiver. Important this value is larger than {@link #FLAG_BALLISTA_HELD}. */
+  /** Value for {@link VolatileFlags#KEY_BALLISTA} when the ballista was found in a modifier hook, such as quiver. Important this value is larger than {@link #FLAG_BALLISTA_HELD}. */
   public static final int FLAG_BALLISTA_QUIVER = 2;
-  /** Value for {@link #KEY_BALLISTA} when we support ballistas, but are not actively firing one.  Important this value is larger than {@link #FLAG_BALLISTA_HELD}. */
+  /** Value for {@link VolatileFlags#KEY_BALLISTA} when we support ballistas, but are not actively firing one.  Important this value is larger than {@link #FLAG_BALLISTA_HELD}. */
   public static final int FLAG_NO_BALLISTA = 3;
 
   /** If true, adds the item data to the drawback model. It's a bit less efficient but produces better models. False will just set a boolean. */
@@ -96,7 +93,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
 
   /** Checks if the given tool is a ballista */
   public static boolean isBallista(ToolStackView tool) {
-    return tool.hasTag(TinkerTags.Items.BALLISTAS) && tool.getVolatileData().getBoolean(KEY_BALLISTA);
+    return tool.hasTag(TinkerTags.Items.BALLISTAS) && tool.getVolatileData().getBoolean(VolatileFlags.KEY_BALLISTA);
   }
 
   @Override
@@ -143,7 +140,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
         } else {
           flag = FLAG_NO_BALLISTA;
         }
-        tool.getPersistentData().putInt(KEY_BALLISTA, flag);
+        tool.getPersistentData().putInt(VolatileFlags.KEY_BALLISTA, flag);
       }
     }
     player.startUsingItem(hand);
@@ -172,7 +169,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
     boolean creative = player != null && player.getAbilities().instabuild;
     // its a little redundant to search for ammo twice, but otherwise we risk shrinking the stack before we know if we can fire
     // also helps blocking, as you can block without ammo
-    Predicate<ItemStack> ammoPredicate = switch (tool.getPersistentData().getInt(KEY_BALLISTA)) {
+    Predicate<ItemStack> ammoPredicate = switch (tool.getPersistentData().getInt(VolatileFlags.KEY_BALLISTA)) {
       case FLAG_BALLISTA_HELD -> null; // main hand comes via an event, we just call the hook for merging
       case FLAG_BALLISTA_QUIVER -> BALLISTA_ONLY;
       case FLAG_NO_BALLISTA -> getSupportedHeldProjectiles();
@@ -313,6 +310,6 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
   @Override
   protected void onStopUsing(ToolStackView tool, LivingEntity entity, int timeLeft) {
     super.onStopUsing(tool, entity, timeLeft);
-    tool.getPersistentData().remove(KEY_BALLISTA);
+    tool.getPersistentData().remove(VolatileFlags.KEY_BALLISTA);
   }
 }

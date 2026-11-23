@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.library.tools.stack;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +37,7 @@ import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.component.CollectionComponent;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
@@ -659,6 +662,14 @@ public class ToolStack implements ToolStackView {
       entry.getHook(ModifierHooks.ADD_SLOTS).addSlots(context, entry, slots);
     }
     setVolatileSlots(slots.build());
+
+    // build volatile flags
+    ImmutableSet.Builder<ResourceLocation> flags = ImmutableSet.builder();
+    toolData.getHook(ToolHooks.VOLATILE_FLAGS).addVolatileFlags(context, flags);
+    for (ModifierEntry entry : modifierList) {
+      entry.getHook(ModifierHooks.VOLATILE_FLAGS).addVolatileFlags(context, entry, flags);
+    }
+    CollectionComponent.set(stack, TinkerData.VOLATILE_FLAGS, SetComponent.create(flags.build()));
 
     // regular stats last so we can include volatile data
     ModifierStatsBuilder statBuilder = ModifierStatsBuilder.builder();

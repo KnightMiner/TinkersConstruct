@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -32,7 +31,6 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.EnchantmentModifierHook;
@@ -43,6 +41,7 @@ import slimeknights.tconstruct.library.tools.IndestructibleItemEntity;
 import slimeknights.tconstruct.library.tools.capability.ToolCapabilityProvider;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
@@ -51,8 +50,8 @@ import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -67,14 +66,6 @@ import java.util.function.Consumer;
 public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay {
   /** Gets all armor types worn by players. */
   public static final Type[] STANDARD_ARMOR = {Type.HELMET, Type.CHESTPLATE, Type.LEGGINGS, Type.BOOTS};
-  /** Volatile modifier tag to make piglins neutal when worn */
-  public static final ResourceLocation PIGLIN_NEUTRAL = TConstruct.getResource("piglin_neutral");
-  /** Volatile modifier tag to make this item an elytra */
-  public static final ResourceLocation ELYTRA = TConstruct.getResource("elyta");
-  /** Volatile flag for a boot item to walk on powdered snow. Cold immunity is handled through a tag */
-  public static final ResourceLocation SNOW_BOOTS = TConstruct.getResource("snow_boots");
-  /** Volatile flag for an item to act as an enderman mask, stopping them from getting angry. */
-  public static final ResourceLocation ENDERMASK = TConstruct.getResource("endermask");
 
   @Getter
   private final ToolDefinition toolDefinition;
@@ -98,17 +89,19 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
 
   @Override
   public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-    return ModifierUtil.checkVolatileFlag(stack, PIGLIN_NEUTRAL);
+    return VolatileFlags.hasFlag(stack, VolatileFlags.PIGLIN_NEUTRAL);
   }
 
   @Override
   public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
-    return type == Type.BOOTS && ModifierUtil.checkVolatileFlag(stack, SNOW_BOOTS);
+    if (type != Type.BOOTS) return false;
+    return VolatileFlags.hasFlag(stack, VolatileFlags.SNOW_BOOTS);
   }
 
   @Override
   public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
-    return type == Type.HELMET && ModifierUtil.checkVolatileFlag(stack, ENDERMASK);
+    if (type != Type.HELMET) return false;
+    return VolatileFlags.hasFlag(stack, VolatileFlags.ENDERMASK);
   }
 
   @Override
@@ -187,7 +180,7 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
   public boolean isFoil(ItemStack stack) {
     // we use enchantments to handle some modifiers, so don't glow from them
     // however, if a modifier wants to glow let them
-    return ModifierUtil.checkVolatileFlag(stack, SHINY);
+    return VolatileFlags.hasFlag(stack, VolatileFlags.SHINY);
   }
 
   @Override
@@ -334,14 +327,15 @@ public class ModifiableArmorItem extends ArmorItem implements IModifiableDisplay
 
   @Override
   public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-    return type == Type.CHESTPLATE && !ToolDamageUtil.isBroken(stack) && ModifierUtil.checkVolatileFlag(stack, ELYTRA);
+    if (type != Type.CHESTPLATE || ToolDamageUtil.isBroken(stack)) return false;
+    return VolatileFlags.hasFlag(stack, VolatileFlags.ELYTRA);
   }
 
   @Override
   public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
     if (type == Type.CHESTPLATE) {
       ToolStack tool = ToolStack.from(stack);
-      if (!tool.isBroken() && tool.getVolatileData().getBoolean(ELYTRA)) {
+      if (!tool.isBroken() && tool.getVolatileData().getBoolean(VolatileFlags.ELYTRA)) {
         // if any modifier says stop flying, stop flying
         for (ModifierEntry entry : tool.getModifierList()) {
           if (entry.getHook(ModifierHooks.ELYTRA_FLIGHT).elytraFlightTick(tool, entry, entity, flightTicks)) {

@@ -38,9 +38,9 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability;
 import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.TinkerDataKey;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.context.EquipmentChangeContext;
 import slimeknights.tconstruct.library.tools.definition.ModifiableArmorMaterial;
-import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
@@ -110,7 +110,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
           gold.initialize(context);
           data.put(dataKey, gold);
           updateAttribute(context.getEntity(), gold.getTotalGold());
-        } else if (gold.setGold(slot, tool.getVolatileData().getBoolean(ModifiableArmorItem.PIGLIN_NEUTRAL))) {
+        } else if (gold.setGold(slot, tool.getVolatileData().getBoolean(VolatileFlags.PIGLIN_NEUTRAL))) {
           updateAttribute(context.getEntity(), gold.getTotalGold());
         }
       }
@@ -154,7 +154,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
 
   @Override
   public void addTooltip(ToolStackView tool, ModifierEntry entry, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
-    double amount = this.amount.compute(tool.getVolatileData().getBoolean(ModifiableArmorItem.PIGLIN_NEUTRAL) ? 1 : 0);
+    double amount = this.amount.compute(tool.getVolatileData().getBoolean(VolatileFlags.PIGLIN_NEUTRAL) ? 1 : 0);
     if (player != null && tooltipKey == TooltipKey.SHIFT) {
       AttributeInstance instance = player.getAttribute(attribute);
       if (instance != null) {
@@ -176,7 +176,7 @@ public record GoldenAttributeModule(ResourceLocation unique, TinkerDataKey<Total
   public static boolean hasGold(EquipmentChangeContext context, EquipmentSlot slotType) {
     ToolStackView tool = context.getToolInSlot(slotType);
     if (tool != null) {
-      return tool.getVolatileData().getBoolean(ModifiableArmorItem.PIGLIN_NEUTRAL);
+      return tool.getVolatileData().getBoolean(VolatileFlags.PIGLIN_NEUTRAL);
     } else {
       LivingEntity living = context.getEntity();
       return living.getItemBySlot(slotType).makesPiglinsNeutral(living);

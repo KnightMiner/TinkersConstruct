@@ -46,7 +46,7 @@ import slimeknights.tconstruct.library.json.predicate.tool.StatInSetPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolVariableRangePredicate;
-import slimeknights.tconstruct.library.json.predicate.tool.VolatileDataPredicate;
+import slimeknights.tconstruct.library.json.predicate.tool.VolatileFlagPredicate;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.materials.RandomMaterial;
@@ -63,6 +63,7 @@ import slimeknights.tconstruct.library.tools.capability.ToolEnergyCapability;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
+import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
@@ -116,7 +117,6 @@ import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.item.armor.MultilayerArmorItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
-import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.library.utils.BlockSideHitListener;
@@ -283,11 +283,11 @@ public final class TinkerTools extends TinkerModule {
     ToolStack.registerRestricted(
       TinkerData.BROKEN, TinkerData.MATERIALS,
       TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS,
-      TinkerData.PERSISTENT_SLOTS, TinkerData.VOLATILE_SLOTS,
+      TinkerData.PERSISTENT_SLOTS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS,
       TinkerData.CRAFTED_MODIFIERS, TinkerData.ALL_MODIFIERS
     );
     // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
-    ToolStack.registerVolatile(TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS, TinkerData.VOLATILE_SLOTS, TinkerData.ALL_MODIFIERS);
+    ToolStack.registerVolatile(TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS, TinkerData.ALL_MODIFIERS);
   }
 
   @SubscribeEvent
@@ -365,7 +365,7 @@ public final class TinkerTools extends TinkerModule {
       ToolStackPredicate.LOADER.register(getResource("not_broken"), ToolStackPredicate.NOT_BROKEN.getLoader());
       ToolStackPredicate.LOADER.register(getResource("stat_in_range"), StatInRangePredicate.LOADER);
       ToolStackPredicate.LOADER.register(getResource("stat_in_set"), StatInSetPredicate.LOADER);
-      ToolStackPredicate.LOADER.register(getResource("has_volatile_key"), VolatileDataPredicate.LOADER);
+      ToolStackPredicate.LOADER.register(getResource("volatile_flag"), VolatileFlagPredicate.LOADER);
       ToolStackPredicate.LOADER.register(getResource("variable_range"), ToolVariableRangePredicate.LOADER);
       ToolStackPredicate.LOADER.register(getResource("item_ability"), ItemAbilityPredicate.LOADER);
     }

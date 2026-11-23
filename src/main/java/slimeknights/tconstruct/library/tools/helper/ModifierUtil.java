@@ -28,8 +28,8 @@ import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModif
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -112,15 +112,6 @@ public final class ModifierUtil {
   /** Checks if the given slot may contain armor */
   public static boolean validArmorSlot(ToolStackView tool, EquipmentSlot slot) {
     return slot.isArmor() || tool.hasTag(TinkerTags.Items.HELD);
-  }
-
-  /** Shortcut to get a volatile flag when the tool stack is not needed otherwise */
-  public static boolean checkVolatileFlag(ItemStack stack, ResourceLocation flag) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null && nbt.contains(ToolStack.TAG_VOLATILE_MOD_DATA, Tag.TAG_COMPOUND)) {
-      return nbt.getCompound(ToolStack.TAG_VOLATILE_MOD_DATA).getBoolean(flag.toString());
-    }
-    return false;
   }
 
   /** Shortcut to get a persistent flag when the tool stack is not needed otherwise */

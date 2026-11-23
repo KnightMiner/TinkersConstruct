@@ -1,7 +1,7 @@
 package slimeknights.tconstruct.library.tools.definition.module.build;
 
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.module.HookProvider;
@@ -17,8 +17,8 @@ import java.util.List;
  * @see VolatileIntModule
  * @see slimeknights.tconstruct.library.modifiers.modules.build.VolatileFlagModule
  */
-public record VolatileFlagModule(ResourceLocation flag) implements ToolModule, VolatileDataToolHook {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFlagModule>defaultHooks(ToolHooks.VOLATILE_DATA);
+public record VolatileFlagModule(ResourceLocation flag) implements ToolModule, VolatileFlagToolHook {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFlagModule>defaultHooks(ToolHooks.VOLATILE_FLAGS);
   public static final RecordLoadable<VolatileFlagModule> LOADER = RecordLoadable.create(Loadables.RESOURCE_LOCATION.requiredField("flag", VolatileFlagModule::flag), VolatileFlagModule::new);
 
   @Override
@@ -32,7 +32,7 @@ public record VolatileFlagModule(ResourceLocation flag) implements ToolModule, V
   }
 
   @Override
-  public void addVolatileData(ToolContext context, MutableDataComponentHolder volatileData) {
-    volatileData.putBoolean(flag, true);
+  public void addVolatileFlags(ToolContext context, ImmutableSet.Builder<ResourceLocation> builder) {
+    builder.add(flag);
   }
 }
