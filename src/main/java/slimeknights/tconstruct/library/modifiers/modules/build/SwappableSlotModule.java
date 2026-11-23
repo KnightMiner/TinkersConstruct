@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.modifiers.modules.build;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
@@ -10,8 +11,8 @@ import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
+import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
@@ -20,10 +21,11 @@ import slimeknights.tconstruct.library.modifiers.util.ModuleWithKey;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.SlotType;
-import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.component.ResourceMap;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -34,8 +36,8 @@ import java.util.List;
  *                        Presently, changing this makes it incompatible with the swappable modifier recipe, this is added for future proofing.
  * @param slotCount       Number of slots to grant
  */
-public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SwappableSlotModule>defaultHooks(ModifierHooks.ADD_SLOTS, ModifierHooks.DISPLAY_NAME, ModifierHooks.REMOVE);
+public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, DisplayNameModifierHook, ModifierRemovalHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<SwappableSlotModule>defaultHooks(ModifierHooks.VOLATILE_DATA, ModifierHooks.DISPLAY_NAME, ModifierHooks.REMOVE);
   /** Format key for swappable variant */
   public static final String FORMAT = TConstruct.makeTranslationKey("modifier", "extra_modifier.type_format");
   public static final RecordLoadable<SwappableSlotModule> LOADER = RecordLoadable.create(
@@ -68,11 +70,11 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   @Override
-  public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
       SlotType slotType = ResourceMap.get(context, TinkerData.MODIFIER_SLOT_TYPE).get(getKey(modifier));
       if (slotType != null) {
-        slots.add(slotType, slotCount);
+        builder.get(BuilderKeys.SLOTS).add(slotType, slotCount);
       }
     }
   }
@@ -95,8 +97,8 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
   }
 
   /** Module to add (or remove) additional slots based on the given swappable slot type */
-  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<ToolContext> condition) implements AddSlotsModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
-    private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.ADD_SLOTS);
+  public record BonusSlot(@Nullable ResourceLocation key, SlotType match, SlotType bonus, int slotCount, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ModifierModule, ModuleWithKey, ConditionalModule<ToolContext> {
+    private static final List<ModuleHook<?>> DEFAULT_HOOKS = List.of(ModifierHooks.VOLATILE_DATA);
     public static final RecordLoadable<BonusSlot> LOADER = RecordLoadable.create(
       ModuleWithKey.KEY_FIELD,
       SlotType.LOADABLE.requiredField("match", BonusSlot::match),
@@ -114,11 +116,11 @@ public record SwappableSlotModule(@Nullable ResourceLocation key, int slotCount,
     }
 
     @Override
-    public void addSlots(ToolContext context, ModifierEntry modifier, ModifierSlots.Builder slots) {
+    public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
       if (condition.matches(context, modifier)) {
         SlotType slotType = ResourceMap.get(context, TinkerData.MODIFIER_SLOT_TYPE).get(getKey(modifier));
         if (match == slotType) {
-          slots.add(bonus, slotCount);
+          builder.get(BuilderKeys.SLOTS).add(bonus, slotCount);
         }
       }
     }

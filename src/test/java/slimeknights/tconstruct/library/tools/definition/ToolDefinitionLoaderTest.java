@@ -22,13 +22,13 @@ import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
-import slimeknights.tconstruct.library.tools.definition.module.build.AddSlotsToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilitiesModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ItemAbilityToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.build.MultiplyStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitsModule;
+import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook;
 import slimeknights.tconstruct.library.tools.definition.module.material.PartStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.material.ToolPartsHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveModule;
@@ -43,6 +43,8 @@ import slimeknights.tconstruct.test.JsonFileLoader;
 import slimeknights.tconstruct.test.TestHelper;
 import slimeknights.tconstruct.test.TestHelper.ToolDefinitionStats;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -90,9 +92,17 @@ class ToolDefinitionLoaderTest extends BaseMcTest {
     assertThat(stats.multipliers().get(ToolStats.ATTACK_DAMAGE)).isEqualTo(2f);
     assertThat(stats.multipliers().get(ToolStats.MINING_SPEED)).isEqualTo(0.5f);
     // slots
-    AddSlotsToolHook addSlotsHook = data.getHook(ToolHooks.ADD_SLOTS);
-    assertThat(addSlotsHook).isInstanceOf(ToolSlotsModule.class);
-    Map<SlotType,Integer> slots = ((ToolSlotsModule) addSlotsHook).slots();
+    VolatileDataToolHook volatileHook = data.getHook(ToolHooks.VOLATILE_DATA);
+    if (hasMaterials) {
+      assertThat(volatileHook).isInstanceOf(VolatileDataToolHook.AllMerger.class);
+      Collection<VolatileDataToolHook> collection = ((VolatileDataToolHook.AllMerger) volatileHook).modules();
+      assertThat(collection).hasSize(2);
+      Iterator<VolatileDataToolHook> iterator = collection.iterator();
+      assertThat(iterator.next()).isInstanceOf(PartStatsModule.class);
+      volatileHook = iterator.next();
+    }
+    assertThat(volatileHook).isInstanceOf(ToolSlotsModule.class);
+    Map<SlotType,Integer> slots = ((ToolSlotsModule) volatileHook).slots();
     assertThat(slots).hasSize(3);
     assertThat(slots).containsEntry(SlotType.UPGRADE, 3);
     assertThat(slots).containsEntry(SlotType.DEFENSE, 2);

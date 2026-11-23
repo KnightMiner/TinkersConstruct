@@ -27,6 +27,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolFluidCapability.FluidModifierHook;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 import slimeknights.tconstruct.smeltery.item.TankItem;
 
 import javax.annotation.Nullable;
@@ -55,7 +56,7 @@ public class TankModule implements HookProvider, FluidModifierHook, VolatileData
   }
 
   @Override
-  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     ToolFluidCapability.addTanks(modifier, volatileData, this);
   }
 

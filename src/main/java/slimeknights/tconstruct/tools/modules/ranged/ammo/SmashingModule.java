@@ -55,6 +55,7 @@ import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -266,7 +267,7 @@ public enum SmashingModule implements ModifierModule, FluidModifierHook, Project
   /* Tool data */
 
   @Override
-  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     ToolFluidCapability.addTanks(modifier, volatileData, this);
   }
 

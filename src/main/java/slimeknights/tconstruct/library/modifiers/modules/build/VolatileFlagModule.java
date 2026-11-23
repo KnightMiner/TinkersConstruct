@@ -1,16 +1,16 @@
 package slimeknights.tconstruct.library.modifiers.modules.build;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
-import slimeknights.tconstruct.library.modifiers.hook.build.VolatileFlagModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileShootModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
@@ -18,8 +18,10 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,8 +32,8 @@ import java.util.List;
  * @see VolatileIntModule
  * @see VolatileFloatModule
  */
-public record VolatileFlagModule(ResourceLocation flag, ModifierCondition<ToolContext> condition) implements VolatileFlagModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
-  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFlagModule>defaultHooks(ModifierHooks.VOLATILE_FLAGS);
+public record VolatileFlagModule(ResourceLocation flag, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
+  private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFlagModule>defaultHooks(ModifierHooks.VOLATILE_DATA);
   public static final RecordLoadable<VolatileFlagModule> LOADER = RecordLoadable.create(Loadables.RESOURCE_LOCATION.requiredField("flag", VolatileFlagModule::flag), ModifierCondition.CONTEXT_FIELD, VolatileFlagModule::new);
 
   public VolatileFlagModule(ResourceLocation flag) {
@@ -39,9 +41,9 @@ public record VolatileFlagModule(ResourceLocation flag, ModifierCondition<ToolCo
   }
 
   @Override
-  public void addVolatileFlags(ToolContext context, ModifierEntry modifier, ImmutableSet.Builder<ResourceLocation> builder) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
-      builder.add(flag);
+      builder.get(BuilderKeys.FLAGS).add(flag);
     }
   }
 

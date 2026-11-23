@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.library.tools.stack;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +35,6 @@ import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.component.CollectionComponent;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
-import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
@@ -540,11 +537,6 @@ public class ToolStack implements ToolStackView {
     return stack.getOrDefault(TinkerData.PERSISTENT_SLOTS, ModifierSlots.EMPTY);
   }
 
-  /** Sets the volatile slot data */
-  protected void setVolatileSlots(ModifierSlots slots) {
-    CollectionComponent.set(stack, TinkerData.VOLATILE_SLOTS, slots);
-  }
-
   @Override
   public ModifierSlots getVolatileSlots() {
     return stack.getOrDefault(TinkerData.VOLATILE_SLOTS, ModifierSlots.EMPTY);
@@ -649,27 +641,16 @@ public class ToolStack implements ToolStackView {
     }
 
     // build volatile data first, it's a parameter to the other hooks
+    VolatileBuilder volatileBuilder = new VolatileBuilder();
+    // TODO: is the restricted component map necessary?
     MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
-    toolData.getHook(ToolHooks.VOLATILE_DATA).addVolatileData(context, volatileData);
+    toolData.getHook(ToolHooks.VOLATILE_DATA).addVolatileData(context, volatileBuilder, volatileData);
     for (ModifierEntry entry : modifierList) {
-      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
+      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileBuilder, volatileData);
     }
-
-    // build volatile slots
-    ModifierSlots.Builder slots = ModifierSlots.builder();
-    toolData.getHook(ToolHooks.ADD_SLOTS).addSlots(context, slots);
-    for (ModifierEntry entry : modifierList) {
-      entry.getHook(ModifierHooks.ADD_SLOTS).addSlots(context, entry, slots);
-    }
-    setVolatileSlots(slots.build());
-
-    // build volatile flags
-    ImmutableSet.Builder<ResourceLocation> flags = ImmutableSet.builder();
-    toolData.getHook(ToolHooks.VOLATILE_FLAGS).addVolatileFlags(context, flags);
-    for (ModifierEntry entry : modifierList) {
-      entry.getHook(ModifierHooks.VOLATILE_FLAGS).addVolatileFlags(context, entry, flags);
-    }
-    CollectionComponent.set(stack, TinkerData.VOLATILE_FLAGS, SetComponent.create(flags.build()));
+    // adding to the stack directly as volatile is forbidden from the tool
+    // it will error internally if a non-volatile flag is modified
+    volatileBuilder.addToTool(stack);
 
     // regular stats last so we can include volatile data
     ModifierStatsBuilder statBuilder = ModifierStatsBuilder.builder();

@@ -6,6 +6,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import java.util.Collection;
 
@@ -19,21 +20,22 @@ public interface VolatileDataModifierHook {
    * Alternatives:
    * <ul>
    *   <li>Persistent mod data (accessed via {@link ToolStackView}): Can be written to freely, but will not automatically remove if the modifier is removed.</li>
-   *   <li>{@link VolatileFlagModifierHook}: Allows adding flags to {@link slimeknights.tconstruct.library.TinkerData#VOLATILE_FLAGS}</li>
    *   <li>{@link RawDataModifierHook}: Allows modifying a restricted view of the tools main data, might help with other mod compat, but not modifier compat</li>
    * </ul>
-   * @param context         Context about the tool being built. Partial view of {@link ToolStackView} as the tool is not fully built
-   * @param modifier        Modifier level
-   * @param volatileData    Component holder that only accepts components from {@link ToolStack#isVolatile(DataComponentType)}.
+   *
+   * @param context      Context about the tool being built. Partial view of {@link ToolStackView} as the tool is not fully built
+   * @param modifier     Modifier level
+   * @param builder      Volatile data builder. See {@link slimeknights.tconstruct.library.tools.stack.BuilderKeys} for arguments.
+   * @param volatileData Component holder that only accepts components from {@link ToolStack#isVolatile(DataComponentType)}.
    */
-  void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData);
+  void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<VolatileDataModifierHook> modules) implements VolatileDataModifierHook {
     @Override
-    public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+    public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
       for (VolatileDataModifierHook module : modules) {
-        module.addVolatileData(context, modifier, volatileData);
+        module.addVolatileData(context, modifier, builder, volatileData);
       }
     }
   }

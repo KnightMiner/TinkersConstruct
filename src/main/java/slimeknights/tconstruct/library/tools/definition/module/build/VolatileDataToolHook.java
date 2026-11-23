@@ -6,6 +6,7 @@ import slimeknights.tconstruct.library.modifiers.hook.build.RawDataModifierHook;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import java.util.Collection;
 
@@ -19,20 +20,20 @@ public interface VolatileDataToolHook {
    * Alternatives:
    * <ul>
    *   <li>Persistent mod data (accessed via {@link ToolStackView#set(DataComponentType, Object)}): Can be written to freely, but will not automatically remove if the modifier is removed.</li>
-   *   <li>{@link VolatileFlagToolHook}: Allows adding flags to {@link slimeknights.tconstruct.library.TinkerData#VOLATILE_FLAGS}</li>
    *   <li>{@link RawDataModifierHook}: Runs on tool rebuild to modify non-volatile components.</li>
    * </ul>
-   * @param context         Context about the tool being built. Will not yet contain
-   * @param volatileData    Component holder that only accepts components from {@link ToolStack#isVolatile(DataComponentType)}.
+   * @param context      Context about the tool being built. Will not yet contain
+   * @param builder      Volatile data builder. See {@link slimeknights.tconstruct.library.tools.stack.BuilderKeys} for builders.
+   * @param volatileData Component holder that only accepts components from {@link ToolStack#isVolatile(DataComponentType)}.
    */
-  void addVolatileData(ToolContext context, MutableDataComponentHolder volatileData);
+  void addVolatileData(ToolContext context, VolatileBuilder builder, MutableDataComponentHolder volatileData);
 
   /** Merger that runs all hooks */
   record AllMerger(Collection<VolatileDataToolHook> modules) implements VolatileDataToolHook {
     @Override
-    public void addVolatileData(ToolContext context, MutableDataComponentHolder volatileData) {
+    public void addVolatileData(ToolContext context, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
       for (VolatileDataToolHook module : modules) {
-        module.addVolatileData(context, volatileData);
+        module.addVolatileData(context, builder, volatileData);
       }
     }
   }

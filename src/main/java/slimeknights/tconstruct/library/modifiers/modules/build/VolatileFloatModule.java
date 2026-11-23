@@ -21,6 +21,7 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -42,7 +43,7 @@ public record VolatileFloatModule(ResourceLocation flag, LevelingValue value, Mo
   }
 
   @Override
-  public void addVolatileData(ToolContext context, ModifierEntry modifier, MutableDataComponentHolder volatileData) {
+  public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
       volatileData.putFloat(flag, volatileData.getFloat(flag) + value.compute(modifier.getEffectiveLevel()));
     }

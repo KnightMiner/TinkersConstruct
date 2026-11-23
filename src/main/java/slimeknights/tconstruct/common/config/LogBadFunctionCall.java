@@ -57,6 +57,11 @@ public enum LogBadFunctionCall {
       return new ConfigValue(name, builder.defineEnum(name, WARNING));
     }
 
+    /** Checks if any logging is enabled. */
+    public boolean doesLog() {
+      return config.get().doesLog();
+    }
+
     /** Logs a message with no arguments */
     public void log(String message) {
       config.get().log(name, message);

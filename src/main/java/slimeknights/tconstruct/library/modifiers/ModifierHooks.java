@@ -27,7 +27,6 @@ import slimeknights.tconstruct.library.modifiers.hook.behavior.ProcessLootModifi
 import slimeknights.tconstruct.library.modifiers.hook.behavior.RepairFactorModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolDamageModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.behavior.ToolDurabilityChangedHook;
-import slimeknights.tconstruct.library.modifiers.hook.build.AddSlotsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.CraftCountModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ModifierRemovalHook;
@@ -36,7 +35,6 @@ import slimeknights.tconstruct.library.modifiers.hook.build.RawDataModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.ValidateModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.build.VolatileFlagModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.ArmorLootingModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.DamageDealtModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.combat.LootingModifierHook;
@@ -218,11 +216,7 @@ public class ModifierHooks {
   });
 
   /** Hook to add data that resets every time stats rebuild */
-  public static final ModuleHook<VolatileDataModifierHook> VOLATILE_DATA = register("volatile_data", VolatileDataModifierHook.class, VolatileDataModifierHook.AllMerger::new, (context, modifier, volatileData) -> {});
-  /** Hook to add flags that reset every time stats rebuild */
-  public static final ModuleHook<VolatileFlagModifierHook> VOLATILE_FLAGS = register("volatile_flags", VolatileFlagModifierHook.class, VolatileFlagModifierHook.AllMerger::new, (context, modifier, builder) -> {});
-  /** Hook to add modifier slots to a tool */
-  public static final ModuleHook<AddSlotsModifierHook> ADD_SLOTS = register("add_slots", AddSlotsModifierHook.class, AddSlotsModifierHook.AllMerger::new, (context, modifier, builder) -> {});
+  public static final ModuleHook<VolatileDataModifierHook> VOLATILE_DATA = register("volatile_data", VolatileDataModifierHook.class, VolatileDataModifierHook.AllMerger::new, (context, modifier, builder, volatileData) -> {});
 
   /** Hook to add and remove data directly to the tools NBT. It is generally better to use persistent data or volatile data when possible. */
   public static final ModuleHook<RawDataModifierHook> RAW_DATA = register("raw_data", RawDataModifierHook.class, RawDataModifierHook.AllMerger::new, new RawDataModifierHook() {

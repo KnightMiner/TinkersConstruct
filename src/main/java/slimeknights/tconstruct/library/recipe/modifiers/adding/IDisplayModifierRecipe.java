@@ -27,6 +27,7 @@ import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.RestrictedComponentMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -213,12 +214,14 @@ public interface IDisplayModifierRecipe extends IModifierRecipe, IDisplayTinkerS
     stack.set(TinkerData.ALL_MODIFIERS, modifiers);
 
     // build persistent and volatile NBT
+    VolatileBuilder volatileBuilder = new VolatileBuilder();
     MutableDataComponentHolder volatileData = RestrictedComponentMap.volatileData(stack);
     dataConsumer.accept(output);
     ToolRebuildContext context = new ToolRebuildContext(stack, ToolDefinition.EMPTY, ToolMaterials.EMPTY, modifiers, modifiers);
     for (ModifierEntry entry : modifiers.modifiers()) {
-      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileData);
+      entry.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(context, entry, volatileBuilder, volatileData);
     }
+    volatileBuilder.addToTool(stack);
 
     return output;
   }
