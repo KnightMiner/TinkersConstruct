@@ -1,11 +1,12 @@
 package slimeknights.tconstruct.library.tools.definition.module.interaction;
 
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
@@ -29,7 +30,7 @@ public enum DualOptionInteraction implements InteractionToolModule, ToolModule {
   @Override
   public boolean canInteract(ToolStackView tool, ModifierId modifier, InteractionSource source) {
     // TODO: should this be more general?
-    return (source == InteractionSource.RIGHT_CLICK) != ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), InteractionSource.LEFT_CLICK.getKey(), modifier);
+    return (source == InteractionSource.RIGHT_CLICK) != SetComponent.get(tool, TinkerData.ATTACK_MODIFIERS).contains(modifier);
   }
 
   @Override

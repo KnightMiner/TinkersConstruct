@@ -18,7 +18,9 @@ import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
+import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableString;
+import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
@@ -93,6 +95,14 @@ public class TinkerData {
   public static final DeferredDataComponent<ResourceMap<SlotType>> MODIFIER_SLOT_TYPE = DATA_COMPONENTS.registerPersistent("modifier_slot_type", ResourceMap.codec(SlotType.CODEC), ResourceMap.streamCodec(SlotType.STREAM_CODEC));
   /** Map of modifier ID to variant integer. Used for headlight levels. */
   public static final DeferredDataComponent<ResourceMap<Integer>> MODIFIER_INTEGER = DATA_COMPONENTS.registerPersistent("modifier_integer", ResourceMap.codec(Codec.INT), ResourceMap.streamCodec(ByteBufCodecs.VAR_INT));
+
+  // modifier sets
+  /** Modifiers in this set will be hidden from {@link slimeknights.tconstruct.library.client.model.tools.ToolModel} */
+  public static final DeferredDataComponent<SetComponent<ModifierId>> INVISIBLE_MODIFIERS = DATA_COMPONENTS.registerPersistent("invisible_modifiers", ModifierSetWorktableRecipe.MODIFIER_SET_CODEC, ModifierSetWorktableRecipe.MODIFIER_SET_STREAM_CODEC);
+  /** Modifiers in this set will use right click for interactions instead of their default left click. */
+  public static final DeferredDataComponent<SetComponent<ModifierId>> INTERACT_MODIFIERS = DATA_COMPONENTS.registerPersistent("interact_modifiers", ModifierSetWorktableRecipe.MODIFIER_SET_CODEC, ModifierSetWorktableRecipe.MODIFIER_SET_STREAM_CODEC);
+  /** Modifiers in this set will use left click for interactions instead of their default right click. */
+  public static final DeferredDataComponent<SetComponent<ModifierId>> ATTACK_MODIFIERS = DATA_COMPONENTS.registerPersistent("attack_modifiers", ModifierSetWorktableRecipe.MODIFIER_SET_CODEC, ModifierSetWorktableRecipe.MODIFIER_SET_STREAM_CODEC);
 
   /** Modifier slots added through the creative modifier. */
   public static final DeferredDataComponent<ModifierSlots> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);

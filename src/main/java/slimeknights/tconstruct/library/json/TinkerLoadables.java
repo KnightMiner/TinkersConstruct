@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.library.json;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -101,5 +103,16 @@ public class TinkerLoadables {
       }
       throw error.create(errorMsg);
     }, (t, error) -> (B)t);
+  }
+
+  /** Maps {@link DataComponentType} to only match if the type has the passed codec. Works by exact matches. */
+  @SuppressWarnings("unchecked")
+  public static <T> StringLoadable<DataComponentType<T>> componentWithCodec(Codec<T> codec, String codecName) {
+    return Loadables.DATA_COMPONENT_TYPE.mapChecked((type, error) -> {
+      if (type.codec() != codec) {
+        throw error.create("Expected component type " + Loadables.DATA_COMPONENT_TYPE.getKey(type) + " to be registered with " + codecName + " codec: " + codec ", was " + codec);
+      }
+      return (DataComponentType<T>) type;
+    }, (type, error) -> type);
   }
 }

@@ -1,7 +1,5 @@
 package slimeknights.tconstruct.tools.recipe;
 
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -9,6 +7,7 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.ModifierManager;
@@ -19,16 +18,15 @@ import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.worktable.AbstractWorktableRecipe;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
+import slimeknights.tconstruct.library.tools.component.CollectionComponent;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
-
-import static slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe.LIST_GETTER;
 
 /**
  * Recipe handling toggling for modifiers that work on left and right click.
@@ -77,32 +75,22 @@ public class ToggleInteractionWorktableRecipe extends AbstractWorktableRecipe {
   @Override
   public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     ToolStack tool = inv.getTinkerable().copy();
-    ModDataNBT persistentData = tool.getPersistentData();
-    // start by obtaining the two lists
-    ListTag leftList = persistentData.get(InteractionSource.LEFT_CLICK.getKey(), LIST_GETTER);
-    ListTag rightList = persistentData.get(InteractionSource.RIGHT_CLICK.getKey(), LIST_GETTER);
+    // start by obtaining the two set
+    SetComponent<ModifierId> leftSet = SetComponent.get(tool, TinkerData.ATTACK_MODIFIERS);
+    SetComponent<ModifierId> rightSet = SetComponent.get(tool, TinkerData.INTERACT_MODIFIERS);
 
-    // try removing from both lists
+    // if either set contains it, remove from both
     ModifierId id = modifier.id();
-    boolean removed = ModifierSetWorktableRecipe.isInSet(leftList, id, true) | ModifierSetWorktableRecipe.isInSet(rightList, id, true);
-    // if we removed from a list, clear out empty lists
-    if (removed) {
-      if (leftList.isEmpty()) {
-        persistentData.remove(InteractionSource.LEFT_CLICK.getKey());
-      }
-      if (rightList.isEmpty()) {
-        persistentData.remove(InteractionSource.RIGHT_CLICK.getKey());
-      }
+    boolean canRemove = leftSet.contains(id) || rightSet.contains(id);
+    if (canRemove) {
+      CollectionComponent.set(tool, TinkerData.ATTACK_MODIFIERS, leftSet.without(id));
+      CollectionComponent.set(tool, TinkerData.INTERACT_MODIFIERS, rightSet.without(id));
     } else {
-      // did not remove? means we want to add to a list
-      // if it can interact on right, means we want it in the left list
-      StringTag tag = StringTag.valueOf(id.toString());
+      // neither had it? add to the proper set. if it can interact on right, means we want it in the left list
       if (tool.getHook(ToolHooks.INTERACTION).canInteract(tool, id, InteractionSource.RIGHT_CLICK)) {
-        leftList.add(tag);
-        persistentData.put(InteractionSource.LEFT_CLICK.getKey(), leftList);
+        tool.set(TinkerData.ATTACK_MODIFIERS, leftSet.with(id));
       } else {
-        rightList.add(tag);
-        persistentData.put(InteractionSource.RIGHT_CLICK.getKey(), rightList);
+        tool.set(TinkerData.INTERACT_MODIFIERS, rightSet.with(id));
       }
     }
     return LazyToolStack.success(tool);

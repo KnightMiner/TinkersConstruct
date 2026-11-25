@@ -1,12 +1,14 @@
 package slimeknights.tconstruct.library.recipe.worktable;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -15,6 +17,7 @@ import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -22,31 +25,31 @@ import slimeknights.tconstruct.library.recipe.RecipeResult;
 import slimeknights.tconstruct.library.recipe.TinkerRecipes;
 import slimeknights.tconstruct.library.recipe.TinkerableRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /** Recipe to add or remove a modifier from a set in persistent data */
 public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
+  /** Codec instance for a modifier set. Only components that use this specific instance may be used in these recipes */
+  public static final Codec<SetComponent<ModifierId>> MODIFIER_SET_CODEC = SetComponent.codec(ModifierId.CODEC);
+  /** Stream codec instance for a modifier set. */
+  public static final StreamCodec<ByteBuf, SetComponent<ModifierId>> MODIFIER_SET_STREAM_CODEC = SetComponent.streamCodec(ModifierId.STREAM_CODEC);
+
   /** Message to display if there are no matching modifiers on the tool */
   public static final Component NO_MATCHES = TConstruct.makeTranslation("recipe", "modifier_set_worktable.empty");
   /** Logic to fetch a list of strings from the persistent data */
   public static final BiFunction<CompoundTag, String, ListTag> LIST_GETTER = (tag, name) -> tag.getList(name, Tag.TAG_STRING);
   /** Loader instance */
   public static final RecordLoadable<ModifierSetWorktableRecipe> LOADER = RecordLoadable.create(
-    Loadables.RESOURCE_LOCATION.requiredField("data_key", r -> r.dataKey),
+    TinkerLoadables.componentWithCodec(MODIFIER_SET_CODEC, "modifier set").requiredField("component", r -> r.component),
     INPUTS_FIELD, TOOL_FIELD,
     // TODO: move modifier predicate to base recipe
     ModifierPredicate.LOADER.defaultField("modifier_predicate", false, r -> r.modifierPredicate),
@@ -61,7 +64,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   /** Description to display when valid */
   private final Component description;
   /** Key of the set to fill with modifier names */
-  private final ResourceLocation dataKey;
+  private final DataComponentType<SetComponent<ModifierId>> component;
   /** Predicate of modifiers to support in this recipe */
   private final IJsonPredicate<ModifierId> modifierPredicate;
   /** Filter of modifiers to display */
@@ -73,11 +76,11 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   /** Cached list of modifiers shown in JEI */
   private List<ModifierEntry> filteredModifiers = null;
 
-  public ModifierSetWorktableRecipe(ResourceLocation dataKey, List<SizedIngredient> inputs, Ingredient toolRequirement, IJsonPredicate<ModifierId> modifierPredicate, boolean addToSet, boolean allowTraits) {
+  public ModifierSetWorktableRecipe(DataComponentType<SetComponent<ModifierId>> component, List<SizedIngredient> inputs, Ingredient toolRequirement, IJsonPredicate<ModifierId> modifierPredicate, boolean addToSet, boolean allowTraits) {
     super(toolRequirement, inputs);
-    this.dataKey = dataKey;
+    this.component = component;
     this.addToSet = addToSet;
-    String rootKey = Util.makeTranslationKey("recipe", dataKey) + (addToSet ? ".adding" : ".removing");
+    String rootKey = Util.makeTranslationKey("recipe", Loadables.DATA_COMPONENT_TYPE.getKey(component)) + (addToSet ? ".adding" : ".removing");
     this.title = Component.translatable(rootKey + ".title");
     this.description = Component.translatable(rootKey + ".description");
     this.modifierPredicate = modifierPredicate;
@@ -110,7 +113,7 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
       return filteredModifiers;
     }
     ToolStackView tool = inv.getTinkerable();
-    Set<ModifierId> existing = getModifierSet(tool.getPersistentData(), dataKey);
+    SetComponent<ModifierId> existing = SetComponent.get(tool, component);
     Predicate<ModifierEntry> applicable = entry -> existing.contains(entry.id()) != addToSet;
     return getModifiers(inv).stream().filter(this.entryFilter).filter(applicable).toList();
   }
@@ -118,21 +121,12 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   @Override
   public RecipeResult<LazyToolStack> getResult(TinkerableRecipeInput inv, ModifierEntry modifier) {
     ToolStack tool = inv.getTinkerable().copy();
-    ModDataNBT persistentData = tool.getPersistentData();
-    // get or create the tag
-    ListTag tagList = persistentData.get(dataKey, LIST_GETTER);
-    String value = modifier.id().toString();
-    // try to find the selected modifier
-    boolean found = isInSet(tagList, modifier.id(), !addToSet);
-    // if removing and removed the last entry, remove the list
-    if (!addToSet && tagList.isEmpty()) {
-      persistentData.remove(dataKey);
-    }
-    // add to list if not in list
-    if (!found && addToSet) {
-      tagList.add(StringTag.valueOf(value));
-      // this might be the first one added, so ensure the list is there
-      persistentData.put(dataKey, tagList);
+    // update the modifier set
+    ModifierId id = modifier.id();
+    if (addToSet) {
+      SetComponent.add(tool, component, id);
+    } else {
+      SetComponent.remove(tool, component, id);
     }
     return LazyToolStack.success(tool);
   }
@@ -140,33 +134,5 @@ public class ModifierSetWorktableRecipe extends AbstractWorktableRecipe {
   @Override
   public RecipeSerializer<?> getSerializer() {
     return TinkerRecipes.modifierSetWorktable.get();
-  }
-
-  /** Gets the set of modifiers in persistent data at the given key */
-  public static Set<ModifierId> getModifierSet(IModDataView modData, ResourceLocation key) {
-    return modData.get(key, LIST_GETTER).stream().map(tag -> ModifierId.tryParse(tag.getAsString())).filter(Objects::nonNull).collect(Collectors.toSet());
-  }
-
-  /** Checks if the given modifier is in the set. Faster to use {@link #getModifierSet(IModDataView, ResourceLocation)} for multiple consecutive queries */
-  public static boolean isInSet(IModDataView modData, ResourceLocation key, ModifierId modifier) {
-    if (!modData.contains(key, Tag.TAG_LIST)) {
-      return false;
-    }
-    return isInSet(modData.get(key, LIST_GETTER), modifier, false);
-  }
-
-  /** Checks if the given modifier is in the set. Removes the modifier if requested. */
-  public static boolean isInSet(ListTag list, ModifierId modifier, boolean remove) {
-    String modifierStr = modifier.toString();
-    Iterator<Tag> iterator = list.iterator();
-    while (iterator.hasNext()) {
-      if (modifierStr.equals(iterator.next().getAsString())) {
-        if (remove) {
-          iterator.remove();
-        }
-        return true;
-      }
-    }
-    return false;
   }
 }

@@ -29,7 +29,6 @@ import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.data.BaseRecipeProvider;
 import slimeknights.tconstruct.common.recipe.LoadableFinishedRecipe;
@@ -37,6 +36,7 @@ import slimeknights.tconstruct.common.registration.object.GeodeItemObject.BudSiz
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.gadgets.entity.FrameType;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.SlotTypeModifierPredicate;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
@@ -1798,13 +1798,12 @@ public class ModifierRecipeProvider extends BaseRecipeProvider {
       .save(consumer, location(worktableFolder + "modifier_sorting"));
 
     // invisible ink
-    ResourceLocation hiddenModifiers = TConstruct.getResource("invisible_modifiers");
     IJsonPredicate<ModifierId> blacklist = ModifierPredicate.tag(TinkerTags.Modifiers.INVISIBLE_INK_BLACKLIST).inverted();
-    ModifierSetWorktableRecipeBuilder.setAdding(hiddenModifiers)
+    ModifierSetWorktableRecipeBuilder.setAdding(TinkerData.INVISIBLE_MODIFIERS)
                                      .modifierPredicate(blacklist)
                                      .addInput(FluidContainerIngredient.fromIngredient(TinkerFluids.skySlime.ingredient(FluidValues.BOTTLE), Ingredient.of(TinkerFluids.slimeBottle.get(SlimeType.SKY))))
                                      .save(consumer, location(worktableFolder + "invisible_ink_adding"));
-    ModifierSetWorktableRecipeBuilder.setRemoving(hiddenModifiers)
+    ModifierSetWorktableRecipeBuilder.setRemoving(TinkerData.INVISIBLE_MODIFIERS)
                                      .modifierPredicate(blacklist)
                                      .addInput(FluidContainerIngredient.fromIngredient(FluidIngredient.of(Fluids.MILK, FluidType.BUCKET_VOLUME), Ingredient.of(Items.MILK_BUCKET)))
                                      .save(consumer, location(worktableFolder + "invisible_ink_removing"));

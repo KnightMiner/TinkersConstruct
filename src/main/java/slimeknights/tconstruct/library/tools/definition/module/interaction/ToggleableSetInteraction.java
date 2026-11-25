@@ -2,12 +2,14 @@ package slimeknights.tconstruct.library.tools.definition.module.interaction;
 
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
+import slimeknights.mantle.registration.holder.DeferredDataComponent;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
+import slimeknights.tconstruct.library.tools.component.SetComponent;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
@@ -30,10 +32,18 @@ public record ToggleableSetInteraction(IJsonPredicate<ModifierId> interactModifi
       return false;
     }
     // interaction modifiers toggle to left click, otherwise they toggle to right click
-    InteractionSource toggled = interactModifiers.matches(modifier) ? InteractionSource.LEFT_CLICK : InteractionSource.RIGHT_CLICK;
+    InteractionSource toggled;
+    DeferredDataComponent<SetComponent<ModifierId>> component;
+    if (interactModifiers.matches(modifier)) {
+      toggled = InteractionSource.LEFT_CLICK;
+      component = TinkerData.ATTACK_MODIFIERS;
+    } else {
+      toggled = InteractionSource.RIGHT_CLICK;
+      component = TinkerData.INTERACT_MODIFIERS;
+    }
     // if the source is the toggled target, must be in the toggled set
     // if the source is not the toggled target, must not be in the toggled set
-    return (source == toggled) == ModifierSetWorktableRecipe.isInSet(tool.getPersistentData(), toggled.getKey(), modifier);
+    return (source == toggled) == SetComponent.get(tool, component).contains(modifier);
   }
 
   @Override
