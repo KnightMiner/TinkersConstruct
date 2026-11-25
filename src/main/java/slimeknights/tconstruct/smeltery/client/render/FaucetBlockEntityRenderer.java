@@ -7,17 +7,19 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.client.render.FluidCuboid;
+import slimeknights.mantle.client.render.FluidModel;
 import slimeknights.mantle.client.render.FluidRenderer;
-import slimeknights.mantle.client.render.MantleRenderTypes;
 import slimeknights.mantle.client.render.RenderingHelper;
 import slimeknights.tconstruct.smeltery.block.FaucetBlock;
 import slimeknights.tconstruct.smeltery.block.entity.FaucetBlockEntity;
@@ -25,7 +27,9 @@ import slimeknights.tconstruct.smeltery.block.entity.FaucetBlockEntity;
 import java.util.List;
 import java.util.function.Function;
 
+/** Renderer for {@link FaucetBlockEntity} */
 public class FaucetBlockEntityRenderer implements BlockEntityRenderer<FaucetBlockEntity> {
+  @SuppressWarnings("unused")  // functional interface argument
   public FaucetBlockEntityRenderer(Context context) {}
 
   @Override
@@ -43,7 +47,7 @@ public class FaucetBlockEntityRenderer implements BlockEntityRenderer<FaucetBloc
 
     // fetch faucet model to determine where to render fluids
     BlockState state = tileEntity.getBlockState();
-    List<FluidCuboid> fluids = FluidCuboid.REGISTRY.get(state, List.of());
+    List<FluidCuboid> fluids = FluidModel.getFluids(state);
     if (!fluids.isEmpty()) {
       // if side, rotate fluid model
       Direction direction = state.getValue(FaucetBlock.FACING);
@@ -59,18 +63,24 @@ public class FaucetBlockEntityRenderer implements BlockEntityRenderer<FaucetBloc
       combinedLightIn = FluidRenderer.withBlockLight(combinedLightIn, fluidType.getLightLevel(renderFluid));
 
       // render all cubes in the model
-      VertexConsumer buffer = bufferIn.getBuffer(MantleRenderTypes.FLUID);
+      VertexConsumer buffer = bufferIn.getBuffer(FluidRenderer.getRenderType(renderFluid.getFluid()));
       for (FluidCuboid cube : fluids) {
-        FluidRenderer.renderCuboid(matrices, buffer, cube, 0, still, flowing, color, combinedLightIn, false);
+        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, color, combinedLightIn);
       }
 
       // render into the block(s) below
-      RenderingHelper.renderFaucetFluids(world, tileEntity.getBlockPos(), direction, matrices, buffer, still, flowing, color, combinedLightIn);
+      FluidRenderer.renderFaucetFluids(world, tileEntity.getBlockPos(), direction, matrices, buffer, still, flowing, color, combinedLightIn);
 
       // if rotated, pop back rotation
       if(isRotated) {
         matrices.popPose();
       }
     }
+  }
+
+  @Override
+  public AABB getRenderBoundingBox(FaucetBlockEntity faucet) {
+    BlockPos pos = faucet.getBlockPos();
+    return new AABB(pos.getX(), pos.getY() - 1, pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
   }
 }

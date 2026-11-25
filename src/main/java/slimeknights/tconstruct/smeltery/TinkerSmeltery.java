@@ -24,6 +24,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -383,6 +385,13 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final DeferredMenu<HeatingStructureContainerMenu> smelteryContainer = MENUS.register("smeltery", HeatingStructureContainerMenu::new);
   public static final DeferredMenu<SingleItemContainerMenu> singleItemContainer = MENUS.register("single_item", SingleItemContainerMenu::new);
   public static final DeferredMenu<AlloyerContainerMenu> alloyerContainer = MENUS.register("alloyer", AlloyerContainerMenu::new);
+
+
+
+  @SubscribeEvent
+  void registerCapabilities(RegisterCapabilitiesEvent event) {
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, channel.get(), ChannelBlockEntity::getFluidHandler);
+  }
 
   @SubscribeEvent
   void commonSetup(FMLCommonSetupEvent event) {

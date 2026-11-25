@@ -7,7 +7,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -68,16 +67,13 @@ public class FaucetBlock extends Block implements EntityBlock {
     return this.defaultBlockState().setValue(FACING, dir);
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return SHAPES.get(state.getValue(FACING));
   }
 
-  @SuppressWarnings("deprecation")
   @Override
-  public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
+  protected boolean isPathfindable(BlockState state, PathComputationType type) {
     return false;
   }
 
@@ -96,34 +92,31 @@ public class FaucetBlock extends Block implements EntityBlock {
     return BlockEntityHelper.serverTicker(pLevel, type, TinkerSmeltery.faucet.get(), FaucetBlockEntity.SERVER_TICKER);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
-  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+  protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
     if (player.isShiftKeyDown()) {
       return InteractionResult.PASS;
     }
-    if (world.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
+    if (level.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
       faucet.activate();
     }
     return InteractionResult.SUCCESS;
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     if (!world.isClientSide && world.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
-      faucet.neighborChanged(fromPos);
       faucet.handleRedstone(world.hasNeighborSignal(pos));
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
     if (world.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
       faucet.activate();
     }
   }
+
 
   /* Display */
 
