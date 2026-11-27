@@ -178,7 +178,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
       default -> isBallista(tool) ? getSupportedBallistaAmmo() : getSupportedHeldProjectiles();
     };
     ItemStack foundAmmo = BowAmmoModifierHook.getAmmo(tool, bow, living, ammoPredicate);
-    boolean hasAmmo = !foundAmmo.isEmpty() || creative && !tool.getVolatileData().getBoolean(BowAmmoModifierHook.SKIP_INVENTORY_AMMO);
+    boolean hasAmmo = !foundAmmo.isEmpty() || creative && !tool.getVolatileData().getBoolean(VolatileFlags.SKIP_INVENTORY_AMMO);
 
     // ask forge its thoughts on shooting
     int chargeTime = duration - timeLeft;

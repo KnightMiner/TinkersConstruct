@@ -95,9 +95,7 @@ import slimeknights.tconstruct.library.json.variable.tool.ToolVariable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
-import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.modifiers.modules.armor.AdjustDamageModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.BlockDamageSourceModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.CoverGroundWalkerModule;
@@ -374,7 +372,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new VolatileFlagModule(VolatileFlags.DEFER_OFFHAND))
       .addModule(new VolatileFlagModule(VolatileFlags.NO_INTERACTION, new ModifierCondition<>(ToolContextPredicate.ANY, ModifierEntry.VALID_LEVEL.min(2))))
       .levelDisplay(new UniqueForLevels(2));
-    buildModifier(ModifierIds.blunted).addModule(new VolatileFlagModule(EntityInteractionModifierHook.NO_MELEE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.blunted).addModule(new VolatileFlagModule(VolatileFlags.NO_MELEE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.magnetic)
       .addModule(MobEffectModule.builder(TinkerEffects.magnetic).time(RandomLevelingValue.flat(40)).buildToolUsage())
       .addModule(new VolatileIntModule(VolatileIntegers.MAGNET, LevelingInt.eachLevel(1)))
@@ -636,7 +634,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(new InfinityModule(TinkerTools.crystalshotItem.toStack(), CrystalshotItem.TAG_VARIANT,  4, true));
     buildModifier(ModifierIds.barebow)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
-      .addModule(new VolatileFlagModule(BowAmmoModifierHook.SKIP_INVENTORY_AMMO));
+      .addModule(new VolatileFlagModule(VolatileFlags.SKIP_INVENTORY_AMMO));
     buildModifier(ModifierIds.warCharge)
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new CapacityBarModule(LevelingInt.flat(25), null))

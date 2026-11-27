@@ -1,20 +1,19 @@
 package slimeknights.tconstruct.library.modifiers.hook.interaction;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,9 +22,6 @@ import java.util.List;
  * Hooks for standard interaction logic though entities. See {@link GeneralInteractionModifierHook} for general interaction and {@link BlockInteractionModifierHook} for blocks.
  */
 public interface EntityInteractionModifierHook {
-  /** Modifier volatile data key to disable melee attacks against monsters */
-  ResourceLocation NO_MELEE = TConstruct.getResource("no_melee");
-
   /**
 	 * Called when interacting with an entity before standard entity interaction.
    * In general, its better to use {@link #afterEntityUse(ToolStackView, ModifierEntry, Player, LivingEntity, InteractionHand, InteractionSource)} for behavior more consistent with vanilla.
@@ -85,7 +81,7 @@ public interface EntityInteractionModifierHook {
 
   /** Checks if the tool has melee attacks disabled. Note this tells you nothing about it being a melee tool in the first place. */
   static boolean meleeDisabled(ToolStackView tool) {
-    return tool.getVolatileData().getBoolean(NO_MELEE);
+    return VolatileFlags.hasFlag(tool, VolatileFlags.NO_MELEE);
   }
 
   /** Checks if the tool is able to perform melee attacks. */

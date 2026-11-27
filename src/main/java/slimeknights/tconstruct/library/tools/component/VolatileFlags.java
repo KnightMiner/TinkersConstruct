@@ -14,8 +14,10 @@ import static slimeknights.tconstruct.TConstruct.getResource;
 /**
  * Contains resource locations for {@link TinkerData#VOLATILE_FLAGS} used in various tool behaviors.
  * Volatile flags do not need to be registered anywhere to be used; simply check for the flag in relevant code.
- * @see slimeknights.tconstruct.library.modifiers.hook.build.VolatileFlagModifierHook
- * @see slimeknights.tconstruct.library.tools.definition.module.build.VolatileFlagToolHook
+ * TODO: consider replacing with unit components for each flag.
+ * @see slimeknights.tconstruct.library.modifiers.hook.build.VolatileDataModifierHook
+ * @see slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataToolHook
+ * @see slimeknights.tconstruct.library.tools.stack.BuilderKeys#FLAGS
  */
 public interface VolatileFlags {
   /**
@@ -35,9 +37,15 @@ public interface VolatileFlags {
   /** If set, the tool will remain in the inventory after death. */
   ResourceLocation SOULBOUND = getResource("soulbound");
 
+  // melee
+  /** Disables melee attacks against monsters */
+  ResourceLocation NO_MELEE = getResource("no_melee");
+
   // ranged
   /** Volatile flag activating the ballista functionality on {@link slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem}, and persistent int for bow actively firing a ballista */
   ResourceLocation KEY_BALLISTA = getResource("ballista");
+  /** If set, the bow will not use ammo from the inventory. */
+  ResourceLocation SKIP_INVENTORY_AMMO = getResource("skip_inventory_ammo");
 
   // armor
   /**
@@ -68,6 +76,8 @@ public interface VolatileFlags {
   ResourceLocation CRAFTING_TABLE = getResource("crafting_table");
   /** Enables the 2x2 crafting table in the tool inventory. Only shows if {@link #CRAFTING_TABLE} is not enabled. */
   ResourceLocation INVENTORY_CRAFTING = getResource("inventory_crafting");
+  /** Makes a tool always melt items regardless of tank space */
+  ResourceLocation FORCE_MELTING = getResource("force_melting");
 
   /** Checks if the given flag is set on the given tool. */
   static boolean hasFlag(DataComponentHolder holder, ResourceLocation flag) {

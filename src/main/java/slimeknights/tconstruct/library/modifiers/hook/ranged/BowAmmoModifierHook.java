@@ -1,16 +1,15 @@
 package slimeknights.tconstruct.library.modifiers.hook.ranged;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import slimeknights.tconstruct.TConstruct;
 import net.neoforged.neoforge.common.CommonHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -19,8 +18,6 @@ import java.util.function.Predicate;
 
 /** Hook to find ammo on a bow.*/
 public interface BowAmmoModifierHook {
-  /** Volatile data key telling the tool to not fetch ammo from the inventory. */
-  ResourceLocation SKIP_INVENTORY_AMMO = TConstruct.getResource("skip_inventory_ammo");
 
   /** Default instance */
   BowAmmoModifierHook EMPTY = (tool, modifier, shooter, standardAmmo, ammoPredicate) -> ItemStack.EMPTY;
@@ -65,7 +62,7 @@ public interface BowAmmoModifierHook {
     }
     // locate standard ammo
     ItemStack standardAmmo;
-    if (tool.getVolatileData().getBoolean(SKIP_INVENTORY_AMMO)) {
+    if (VolatileFlags.hasFlag(tool, VolatileFlags.SKIP_INVENTORY_AMMO)) {
       standardAmmo = ItemStack.EMPTY;
     } else if (bow.isEmpty()) {
       standardAmmo = findMatchingAmmo(ItemStack.EMPTY, living, predicate);
@@ -145,7 +142,7 @@ public interface BowAmmoModifierHook {
     boolean creative = (player != null && player.getAbilities().instabuild) || level.isClientSide;
 
     // first search, find what ammo type we want
-    boolean skipInventoryAmmo = tool.getVolatileData().getBoolean(SKIP_INVENTORY_AMMO);
+    boolean skipInventoryAmmo = VolatileFlags.hasFlag(tool, VolatileFlags.SKIP_INVENTORY_AMMO);
     ItemStack standardAmmo;
     if (skipInventoryAmmo) {
       standardAmmo = ItemStack.EMPTY;

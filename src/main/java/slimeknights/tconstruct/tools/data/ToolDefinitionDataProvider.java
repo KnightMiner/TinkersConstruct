@@ -16,6 +16,7 @@ import slimeknights.tconstruct.library.materials.RandomMaterial;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.BoxAOEIterator;
@@ -62,7 +63,6 @@ import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.ToolDefinitions;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 import slimeknights.tconstruct.tools.modules.MeltingFluidEffectiveModule;
-import slimeknights.tconstruct.tools.modules.MeltingModule;
 import slimeknights.tconstruct.tools.modules.interaction.FishingModule;
 import slimeknights.tconstruct.tools.stats.GripMaterialStats;
 import slimeknights.tconstruct.tools.stats.HandleMaterialStats;
@@ -819,7 +819,7 @@ public class ToolDefinitionDataProvider extends AbstractToolDefinitionDataProvid
         .slots(SlotType.ABILITY, 2).build())
       // traits
       .module(new MeltingFluidEffectiveModule(BlockPredicate.tag(TinkerTags.Blocks.MINEABLE_MELTING_BLACKLIST).inverted(), 1500, false))
-      .module(new VolatileFlagModule(MeltingModule.FORCE_MELTING))
+      .module(new VolatileFlagModule(VolatileFlags.FORCE_MELTING))
       .module(new VeiningAOEIterator(0))
       .module(ToolTraitsModule.builder()
         .trait(TinkerModifiers.melting, 2)

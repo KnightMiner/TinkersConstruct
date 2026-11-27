@@ -2,7 +2,6 @@ package slimeknights.tconstruct.tools.modules;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -14,7 +13,6 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.LevelingInt;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -34,6 +32,7 @@ import slimeknights.tconstruct.library.recipe.entitymelting.EntityMeltingRecipeC
 import slimeknights.tconstruct.library.recipe.melting.IMeltingRecipe;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput;
 import slimeknights.tconstruct.library.recipe.melting.MeltingRecipeInput.OreRate;
+import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
@@ -54,9 +53,6 @@ import static slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHel
  */
 public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal, LevelingInt shardsPerGem, ModifierCondition<ToolStackView> condition) implements ModifierModule, MeleeHitModifierHook, MonsterMeleeHitModifierHook.RedirectAfter, LauncherHitModifierHook, ProcessLootModifierHook, ConditionalModule<ToolStackView>, MeltingRecipeInput, OreRate {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<MeltingModule>defaultHooks(ModifierHooks.MELEE_HIT, ModifierHooks.MONSTER_MELEE_HIT, ModifierHooks.LAUNCHER_HIT, ModifierHooks.PROCESS_LOOT);
-  /** Volatile data flag which makes a tool always melt regardless of tank space */
-  public static final ResourceLocation FORCE_MELTING = TConstruct.getResource("force_melting");
-
   public static final RecordLoadable<MeltingModule> LOADER = RecordLoadable.create(
     LevelingInt.LOADABLE.requiredField("temperature", MeltingModule::temperature),
     LevelingInt.LOADABLE.requiredField("nuggets_per_metal", MeltingModule::nuggetsPerMetal),
@@ -147,7 +143,7 @@ public record MeltingModule(LevelingInt temperature, LevelingInt nuggetsPerMetal
 
     // allow tools to decide that we *must* melt the drops
     // for harvestable blocks though, ignore that flag if the block was not effective (so we don't delete
-    boolean forceMelt = tool.getVolatileData().getBoolean(FORCE_MELTING);
+    boolean forceMelt = VolatileFlags.hasFlag(tool, VolatileFlags.FORCE_MELTING);
     if (forceMelt && context.hasParam(LootContextParams.BLOCK_STATE)) {
       BlockState state = context.getParam(LootContextParams.BLOCK_STATE);
       forceMelt = tool.getHook(ToolHooks.IS_EFFECTIVE).isToolEffective(tool, state);
