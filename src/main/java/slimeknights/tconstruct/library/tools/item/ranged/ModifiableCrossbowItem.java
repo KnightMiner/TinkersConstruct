@@ -3,11 +3,8 @@ package slimeknights.tconstruct.library.tools.item.ranged;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,8 +30,8 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.item.ModifiableCrossbowClientExtension;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -43,12 +40,13 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInterac
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -61,8 +59,6 @@ import java.util.function.Predicate;
 import static slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook.KEY_DRAWTIME;
 
 public class ModifiableCrossbowItem extends ModifiableLauncherItem {
-  /** Key containing the stored crossbow ammo */
-  public static final ResourceLocation KEY_CROSSBOW_AMMO = TConstruct.getResource("crossbow_ammo");
   private static final String PROJECTILE_KEY = "item.minecraft.crossbow.projectile";
   @Getter
   private final Predicate<ItemStack> supportedHeldProjectiles;
@@ -139,10 +135,9 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
     boolean sinistral = hand == InteractionHand.MAIN_HAND && tool.getModifierLevel(TinkerModifiers.sinistral.id()) > 0;
 
     // no ammo? not charged
-    ModDataNBT persistentData = tool.getPersistentData();
-    CompoundTag heldAmmo = persistentData.getCompound(KEY_CROSSBOW_AMMO);
+    SimpleItemContent heldAmmo = tool.getOrDefault(TinkerData.CROSSBOW_AMMO, SimpleItemContent.EMPTY);
     if (heldAmmo.isEmpty()) {
-      // do not charge if sneaking and we have sinistral, gives you a way to activate the offhand when the crossbow is not charged
+      // do not charge if sneaking, and we have sinistral, gives you a way to activate the offhand when the crossbow is not charged
       if (sinistral && !player.getOffhandItem().isEmpty() && player.isCrouching()) {
         return InteractionResultHolder.pass(bow);
       }
@@ -153,10 +148,10 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
         GeneralInteractionModifierHook.startDrawing(tool, player, 1);
         if (!ammo.isEmpty()) {
           if (storeDrawingItem) {
-            persistentData.put(KEY_DRAWBACK_AMMO, ammo.save(new CompoundTag()));
+            tool.set(TinkerData.DRAWBACK_AMMO, SimpleItemContent.copyOf(ammo));
           } else {
-            // boolean is enough to get detected by the property override, but won't bother the model
-            persistentData.putBoolean(KEY_DRAWBACK_AMMO, true);
+            // empty is enough to get detected by the property override, but won't bother the model
+            tool.set(TinkerData.DRAWBACK_AMMO, SimpleItemContent.EMPTY);
           }
         }
         player.startUsingItem(hand);
@@ -189,30 +184,32 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
     }
 
     // ammo already loaded? time to fire
-    fireCrossbow(tool, player, hand, heldAmmo);
+    fireCrossbow(bow, tool, player, hand, heldAmmo);
     return InteractionResultHolder.consume(bow);
   }
 
   /**
    * Fires the crossbow
+   * @param stack      Item stack for the tool
    * @param tool       Tool instance
    * @param player     Player firing
    * @param hand       Hand fired from
    * @param heldAmmo   Ammo used to fire, should be non-empty
    */
-  public static void fireCrossbow(ToolStackView tool, Player player, InteractionHand hand, CompoundTag heldAmmo) {
-    fireCrossbow(tool, player, player.getAbilities().instabuild, hand, heldAmmo);
+  public static void fireCrossbow(ItemStack stack, ToolStackView tool, Player player, InteractionHand hand, SimpleItemContent heldAmmo) {
+    fireCrossbow(stack, tool, player, player.hasInfiniteMaterials(), hand, heldAmmo);
   }
 
   /**
    * Fires the crossbow
+   * @param stack      Item stack for the tool
    * @param tool       Tool instance
    * @param living     Entity firing
    * @param creative   If true, was fired in creative
    * @param hand       Hand fired from
    * @param heldAmmo   Ammo used to fire, should be non-empty
    */
-  public static void fireCrossbow(ToolStackView tool, LivingEntity living, boolean creative, InteractionHand hand, CompoundTag heldAmmo) {
+  public static void fireCrossbow(ItemStack stack, ToolStackView tool, LivingEntity living, boolean creative, InteractionHand hand, SimpleItemContent heldAmmo) {
     // ammo already loaded? time to fire
     Level level = living.level();
     if (!level.isClientSide) {
@@ -225,7 +222,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
 
       // the ammo has a stack size that may be greater than 1 (meaning multishot)
       // when creating the ammo stacks, we use split, so its getting smaller each time
-      ItemStack ammo = ItemStack.of(heldAmmo);
+      ItemStack ammo = heldAmmo.copy();
       float startAngle = getAngleStart(ammo.getCount());
       int primaryIndex = ammo.getCount() / 2;
       for (int arrowIndex = 0; arrowIndex < ammo.getCount(); arrowIndex++) {
@@ -240,11 +237,12 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
           damage += 3;
         } else {
           ArrowItem arrowItem = ammo.getItem() instanceof ArrowItem a ? a : (ArrowItem)Items.ARROW;
-          arrow = arrowItem.createArrow(level, ammo, living);
+          arrow = arrowItem.createArrow(level, ammo, living, stack);
           projectile = arrow;
           arrow.setCritArrow(true);
           arrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-          arrow.setShotFromCrossbow(true);
+          // TODO: MOJANG!!! stop hardcoding everything!
+          // arrow.setShotFromCrossbow(true);
           speed = 3f;
           damage += 1;
 
@@ -284,7 +282,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
       }
 
       // clear the ammo, damage the bow
-      tool.getPersistentData().remove(KEY_CROSSBOW_AMMO);
+      tool.remove(TinkerData.CROSSBOW_AMMO);
       ToolDamageUtil.damageAnimated(tool, damage, living, hand);
 
       // stats
@@ -307,8 +305,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
 
     // any reason we shouldn't load?
     // specifically: broken, not fully charged, already have ammo
-    ModDataNBT persistentData = tool.getPersistentData();
-    if (tool.isBroken() || getUseDuration(bow) - chargeRemaining < persistentData.getInt(KEY_DRAWTIME) || persistentData.contains(KEY_CROSSBOW_AMMO, Tag.TAG_COMPOUND)) {
+    if (tool.isBroken() || getUseDuration(bow) - chargeRemaining < tool.getPersistentData().getInt(KEY_DRAWTIME) || tool.has(TinkerData.CROSSBOW_AMMO)) {
       return;
     }
 
@@ -318,11 +315,11 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
     if (!ammo.isEmpty()) {
       level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
       if (!level.isClientSide) {
-        CompoundTag ammoNBT = ammo.save(new CompoundTag());
-        persistentData.put(KEY_CROSSBOW_AMMO, ammoNBT);
+        SimpleItemContent ammoComponent = SimpleItemContent.copyOf(ammo);
+        tool.set(TinkerData.CROSSBOW_AMMO, ammoComponent);
         // if the crossbow broke during loading, fire immediately
         if (tool.isBroken()) {
-          fireCrossbow(tool, living, player != null && player.getAbilities().instabuild, living.getUsedItemHand(), ammoNBT);
+          fireCrossbow(bow, tool, living, player != null && player.hasInfiniteMaterials(), living.getUsedItemHand(), ammoComponent);
         }
       }
     }
@@ -333,27 +330,25 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
     tooltips = super.getStatInformation(tool, player, tooltips, key, tooltipFlag);
 
     // if we have ammo, render that in the tooltip
-    CompoundTag heldAmmo = tool.getPersistentData().getCompound(KEY_CROSSBOW_AMMO);
+    SimpleItemContent heldAmmo = tool.getOrDefault(TinkerData.CROSSBOW_AMMO, SimpleItemContent.EMPTY);
     if (!heldAmmo.isEmpty()) {
-      ItemStack heldStack = ItemStack.of(heldAmmo);
-      if (!heldStack.isEmpty()) {
-        // basic info: item and count
-        MutableComponent component = Component.translatable(PROJECTILE_KEY);
-        int count = heldStack.getCount();
-        if (count > 1) {
-          component.append(" " + count + " ");
-        } else {
-          component.append(" ");
-        }
-        tooltips.add(component.append(heldStack.getDisplayName()));
+      // basic info: item and count
+      MutableComponent component = Component.translatable(PROJECTILE_KEY);
+      int count = heldAmmo.getCount();
+      if (count > 1) {
+        component.append(" " + count + " ");
+      } else {
+        component.append(" ");
+      }
+      tooltips.add(component.append(heldAmmo.getDisplayName()));
 
-        // copy the stack's tooltip if advanced
-        if (tooltipFlag.isAdvanced() && player != null) {
-          List<Component> nestedTooltip = new ArrayList<>();
-          heldStack.getItem().appendHoverText(heldStack, player.level(), nestedTooltip, tooltipFlag);
-          for (Component nested : nestedTooltip) {
-            tooltips.add(Component.literal("  ").append(nested).withStyle(ChatFormatting.GRAY));
-          }
+      // copy the stack's tooltip if advanced
+      if (tooltipFlag.isAdvanced() && player != null) {
+        List<Component> nestedTooltip = new ArrayList<>();
+        // making a copy is sadly unavoidable here
+        heldAmmo.getItem().appendHoverText(heldAmmo.copy(), TooltipContext.of(player.level()), nestedTooltip, tooltipFlag);
+        for (Component nested : nestedTooltip) {
+          tooltips.add(Component.literal("  ").append(nested).withStyle(ChatFormatting.GRAY));
         }
       }
     }

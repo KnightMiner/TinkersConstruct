@@ -1,10 +1,10 @@
 package slimeknights.tconstruct.tools.modifiers;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -12,6 +12,7 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.EntityInteract
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -30,9 +31,9 @@ public class SinistralModifier extends Modifier implements GeneralInteractionMod
   @Override
   public InteractionResult onToolUse(ToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source) {
     if (source == InteractionSource.LEFT_CLICK && hand == InteractionHand.MAIN_HAND && !tool.isBroken()) {
-      CompoundTag heldAmmo = tool.getPersistentData().getCompound(ModifiableCrossbowItem.KEY_CROSSBOW_AMMO);
-      if (!heldAmmo.isEmpty()) {
-        ModifiableCrossbowItem.fireCrossbow(tool, player, hand, heldAmmo);
+      SimpleItemContent heldAmmo = tool.get(TinkerData.CROSSBOW_AMMO);
+      if (heldAmmo != null) {
+        ModifiableCrossbowItem.fireCrossbow(player.getItemInHand(hand), tool, player, hand, heldAmmo);
         return InteractionResult.CONSUME;
       }
     }

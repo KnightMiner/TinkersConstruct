@@ -27,8 +27,8 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
@@ -49,6 +49,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
+import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.mantle.util.JsonHelper;
@@ -61,14 +62,15 @@ import slimeknights.tconstruct.library.client.materials.MaterialRenderInfoLoader
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMap;
 import slimeknights.tconstruct.library.client.modifiers.ModifierModelMapManager;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
+import slimeknights.tconstruct.library.json.TinkerLoadables;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.SetComponent;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -93,6 +95,8 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
   public static final IGeometryLoader<ToolModel> LOADER = ToolModel::deserialize;
   /** Set of transform types that make tools render small */
   private static final BitSet SMALL_TOOL_TYPES = new BitSet();
+  /** Helper to fetch the item component from JSON */
+  private static final Loadable<DataComponentType<SimpleItemContent>> COMPONENT_LOADABLE = TinkerLoadables.componentWithCodec(SimpleItemContent.CODEC, "item content");
 
   /** Registers a new small tool transform type */
   public static synchronized void registerSmallTool(ItemDisplayContext type) {
@@ -169,14 +173,14 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       modifierModels = JsonHelper.parseList(json, "modifier_maps", Loadables.RESOURCE_LOCATION);
     }
     // fetch data related to ammo display
-    ResourceLocation ammoKey = null;
+    DataComponentType<SimpleItemContent> ammoComponent = null;
     Vec2 smallAmmoOffset = Vec2.ZERO;
     Vec2 largeAmmoOffset = Vec2.ZERO;
     boolean flipAmmo = false;
     boolean leftAmmo = false;
     if (json.has("ammo")) {
       JsonObject ammo = GsonHelper.getAsJsonObject(json, "ammo");
-      ammoKey = JsonHelper.getResourceLocation(ammo, "key");
+      ammoComponent = COMPONENT_LOADABLE.getIfPresent(json, "component");
       flipAmmo = GsonHelper.getAsBoolean(ammo, "flip");
       leftAmmo = GsonHelper.getAsBoolean(ammo, "left");
       // large has an offset for both models
@@ -193,7 +197,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
     }
 
     // modifiers first
-    return new ToolModel(parts, isLarge, offset, modifierModels, ammoKey, flipAmmo, leftAmmo, smallAmmoOffset, largeAmmoOffset);
+    return new ToolModel(parts, isLarge, offset, modifierModels, ammoComponent, flipAmmo, leftAmmo, smallAmmoOffset, largeAmmoOffset);
   }
 
   /** List of tool parts in this model */
@@ -206,7 +210,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
   private final List<ResourceLocation> modifierModels;
   /** Location in tool NBT to find the ammo */
   @Nullable
-  private final ResourceLocation ammoKey;
+  private final DataComponentType<SimpleItemContent> ammoComponent;
   /** If true, flips the ammo horizontally, as most bows have opposite orientation from ammo */
   private final boolean flipAmmo;
   /** If true, left handed models should have the ammo shifted to the left */
@@ -431,7 +435,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
     Transformation smallAmmoTransforms = null;
     Transformation largeAmmoTransforms = null;
     Transformation leftAmmoTransforms = null;
-    if (ammoKey != null) {
+    if (ammoComponent != null) {
       // flipping rotates it 180 degrees, but because the origin is 0,0 instead of 0.5,0,5 it gets shifted
       // I could do some composition to shift the orgin, but its faster to just correct for it below
       Quaternionf ammoRotation = flipAmmo ? Axis.YP.rotationDegrees(-180) : null;
@@ -459,7 +463,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
         leftAmmoTransforms = new Transformation(translation, ammoRotation, null, null);
       }
     }
-    overrides = new MaterialOverrideHandler(owner, toolParts, largeTransforms, modifierModels, overrides, ammoKey, flipAmmo, smallAmmoTransforms, largeAmmoTransforms, leftAmmoTransforms);
+    overrides = new MaterialOverrideHandler(owner, toolParts, largeTransforms, modifierModels, overrides, ammoComponent, flipAmmo, smallAmmoTransforms, largeAmmoTransforms, leftAmmoTransforms);
     // bake the original with no tool, meaning it will skip modifiers and materials
     return bakeInternal(owner, spriteGetter, largeTransforms, toolParts, modifierModels, ToolMaterials.EMPTY, null, overrides, List.of(), List.of(), List.of());
   }
@@ -550,7 +554,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
     private final Transformation largeTransforms;
     private final ModifierModelMap modifierModels;
     @Nullable
-    private final ResourceLocation ammoKey;
+    private final DataComponentType<SimpleItemContent> ammoComponent;
     private final boolean flipAmmo;
     @Nullable
     private final Transformation smallAmmoTransforms;
@@ -559,13 +563,13 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
     @Nullable
     private final Transformation leftAmmoTransforms;
 
-    private MaterialOverrideHandler(IGeometryBakingContext owner, List<ToolPart> toolParts, @Nullable Transformation largeTransforms, ModifierModelMap modifierModels, ItemOverrides nested, @Nullable ResourceLocation ammoKey, boolean flipAmmo, @Nullable Transformation smallAmmoTransforms, @Nullable Transformation largeAmmoTransforms, @Nullable Transformation leftAmmoTransforms) {
+    private MaterialOverrideHandler(IGeometryBakingContext owner, List<ToolPart> toolParts, @Nullable Transformation largeTransforms, ModifierModelMap modifierModels, ItemOverrides nested, @Nullable DataComponentType<SimpleItemContent> ammoComponent, boolean flipAmmo, @Nullable Transformation smallAmmoTransforms, @Nullable Transformation largeAmmoTransforms, @Nullable Transformation leftAmmoTransforms) {
       super(nested);
       this.owner = owner;
       this.toolParts = toolParts;
       this.largeTransforms = largeTransforms;
       this.modifierModels = modifierModels;
-      this.ammoKey = ammoKey;
+      this.ammoComponent = ammoComponent;
       this.flipAmmo = flipAmmo;
       this.smallAmmoTransforms = smallAmmoTransforms;
       this.largeAmmoTransforms = largeAmmoTransforms;
@@ -577,14 +581,15 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
      * @param materials  New materials for the model
      * @return  Baked model
      */
-    private BakedModel bakeDynamic(ToolMaterials materials, ToolStackView tool, ItemStack ammo, int seed) {
+    private BakedModel bakeDynamic(ToolMaterials materials, ToolStackView tool, SimpleItemContent ammo, int seed) {
       // start by finding ammo quads
       List<BakedQuad> smallAmmoQuads = List.of();
       List<BakedQuad> largeAmmoQuads = List.of();
       List<BakedQuad> leftAmmoQuads = List.of();
       if (!ammo.isEmpty()) {
         // find ammo model, this automatically resolves ammo overrides
-        BakedModel ammoModel = Minecraft.getInstance().getItemRenderer().getModel(ammo, null, null, seed);
+        ItemStack ammoStack = ammo.copy();
+        BakedModel ammoModel = Minecraft.getInstance().getItemRenderer().getModel(ammoStack, null, null, seed);
         if (ammoModel != Minecraft.getInstance().getModelManager().getMissingModel()) {
           // get all the quads for the ammo model
           List<BakedQuad> ammoQuads = new ArrayList<>();
@@ -597,7 +602,7 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
           // bake tints into static colors; saves us having to redirect item colors which is slow
           Int2IntMap tints = new Int2IntArrayMap();
           ItemColors colors = Minecraft.getInstance().getItemColors();
-          Int2IntFunction colorGetter = tint -> ColoredBlockModel.swapColorRedBlue(colors.getColor(ammo, tint));
+          Int2IntFunction colorGetter = tint -> ColoredBlockModel.swapColorRedBlue(colors.getColor(ammoStack, tint));
           ammoQuads = ammoQuads.stream().map(quad -> {
             if (quad.isTinted() || (flipAmmo && quad.getDirection().getAxis() != Direction.Axis.Y)) {
               int[] vertices = quad.getVertices();
@@ -677,17 +682,18 @@ public class ToolModel implements IUnbakedGeometry<ToolModel> {
       }
 
       // fetch ammo info from the stack
-      ItemStack ammo;
-      ModDataNBT persistentData = tool.getPersistentData();
-      if (ammoKey != null && persistentData.contains(ammoKey, Tag.TAG_COMPOUND)) {
-        ammo = ItemStack.of(persistentData.getCompound(ammoKey));
-        builder.add(ammo.getItem());
-        CompoundTag tag = ammo.getTag();
-        if (tag != null) {
-          builder.add(tag);
+      SimpleItemContent ammo;
+      if (ammoComponent != null) {
+        ammo = tool.getOrDefault(ammoComponent, SimpleItemContent.EMPTY);
+        if (!ammo.isEmpty()) {
+          builder.add(ammo.getItem());
+          DataComponentPatch components = ammo.getComponentsPatch();
+          if (!components.isEmpty()) {
+            builder.add(components);
+          }
         }
       } else {
-        ammo = ItemStack.EMPTY;
+        ammo = SimpleItemContent.EMPTY;
       }
 
       // render special model

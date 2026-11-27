@@ -21,13 +21,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -114,16 +114,8 @@ public final class ModifierUtil {
     return slot.isArmor() || tool.hasTag(TinkerTags.Items.HELD);
   }
 
-  /** Shortcut to get a persistent flag when the tool stack is not needed otherwise */
-  public static boolean checkPersistentPresent(ItemStack stack, ResourceLocation key) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null && nbt.contains(ToolStack.TAG_VOLATILE_MOD_DATA, Tag.TAG_COMPOUND)) {
-      return nbt.getCompound(ToolStack.TAG_VOLATILE_MOD_DATA).contains(key.toString());
-    }
-    return false;
-  }
-
   /** Shortcut to get a volatile int value when the tool stack is not needed otherwise */
+  @Deprecated(forRemoval = true)
   public static int getVolatileInt(ItemStack stack, ResourceLocation flag) {
     CompoundTag nbt = stack.getTag();
     if (nbt != null && nbt.contains(ToolStack.TAG_VOLATILE_MOD_DATA, Tag.TAG_COMPOUND)) {
@@ -133,6 +125,7 @@ public final class ModifierUtil {
   }
 
   /** Shortcut to get a volatile int value when the tool stack is not needed otherwise */
+  @Deprecated(forRemoval = true)
   public static int getPersistentInt(ItemStack stack, ResourceLocation flag, int defealtValue) {
     CompoundTag nbt = stack.getTag();
     if (nbt != null && nbt.contains(ToolStack.TAG_PERSISTENT_MOD_DATA, Tag.TAG_COMPOUND)) {
@@ -146,6 +139,7 @@ public final class ModifierUtil {
   }
 
   /** Shortcut to get a persistent string value when the tool stack is not needed otherwise */
+  @Deprecated(forRemoval = true)
   public static String getPersistentString(ItemStack stack, ResourceLocation flag) {
     CompoundTag nbt = stack.getTag();
     if (nbt != null && nbt.contains(ToolStack.TAG_PERSISTENT_MOD_DATA, Tag.TAG_COMPOUND)) {
@@ -186,7 +180,7 @@ public final class ModifierUtil {
   /** Checks if this modifier is the one actively being used. Used for failure sound effects. */
   public static boolean isActiveModifier(ToolStackView tool, ModifierEntry modifier, ModifierEntry activeModifier) {
     // active modifier being us, or a bow is firing and no drawback ammo
-    return modifier == activeModifier || (activeModifier.getLevel() == 0 && !tool.getPersistentData().contains(ModifiableLauncherItem.KEY_DRAWBACK_AMMO));
+    return modifier == activeModifier || (activeModifier.getLevel() == 0 && !tool.has(TinkerData.DRAWBACK_AMMO));
   }
 
   /**

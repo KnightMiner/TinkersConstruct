@@ -26,6 +26,7 @@ import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.component.SetComponent;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
@@ -83,6 +84,10 @@ public class TinkerData {
   /** Modifier slots on the tool due to recipes or cheats. Will typically be negative. */
   public static final DeferredDataComponent<ModifierSlots> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
 
+  /** Current ammo stack in a crossbow. Size determines how many to fire. */
+  public static final DeferredDataComponent<SimpleItemContent> CROSSBOW_AMMO = DATA_COMPONENTS.registerPersistent("crossbow_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
+  /** Ammo stored while drawing back a bow or crossbow. May be set but empty to indicate we are drawing but are not visually displaying the ammo. */
+  public static final DeferredDataComponent<SimpleItemContent> DRAWBACK_AMMO = DATA_COMPONENTS.registerPersistent("drawback_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
 
   /* Modifiers */
   /** Map of resource location to unit (present or absent) used for various behavior flags. */

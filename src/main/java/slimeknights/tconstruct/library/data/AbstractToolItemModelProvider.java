@@ -19,8 +19,7 @@ import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.IdAwareObject;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
+import slimeknights.tconstruct.library.TinkerData;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -62,7 +61,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Creates models for blocking and broken for the given tool */
   protected void tool(IdAwareObject tool, @Nullable JsonObject blocking, String... brokenParts) throws IOException {
-    ResourceLocation id = tool.getId();
+    ResourceLocation id = tool.id();
     String name = id.getPath();
     if (blocking != null) {
       withDisplay("tool/" + name + "/blocking", id, blocking);
@@ -148,7 +147,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
       // add the arrow to pulling 3, ToolModel handles not showing it when it has no ammo
       {
         JsonObject ammo = new JsonObject();
-        ammo.addProperty("key", ModifiableCrossbowItem.KEY_CROSSBOW_AMMO.toString());
+        ammo.addProperty("component", TinkerData.CROSSBOW_AMMO.getId().toString());
         ammo.addProperty("flip", flipAmmo);
         ammo.addProperty("left", leftAmmo);
         ammo.add("offset", serializeVec2(ammoOffset));
@@ -167,7 +166,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
         JsonObject arrow = self.transformTool(pulling, base, "", false, '/', Integer.toString(i), pullingParts);
         {
           JsonObject ammo = new JsonObject();
-          ammo.addProperty("key", ModifiableLauncherItem.KEY_DRAWBACK_AMMO.toString());
+          ammo.addProperty("component", TinkerData.DRAWBACK_AMMO.getId().toString());
           ammo.addProperty("flip", flipAmmo);
           ammo.addProperty("left", leftAmmo);
           ammo.add("small_offset", serializeVec2(smallOffsets[i-1]));
@@ -191,7 +190,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Creates a model in the blocking folder with the given copied display */
   protected void pulling(IdAwareObject bow, JsonObject blocking, AmmoHandler ammo, String brokenPart, int pullingCount, String... pullingParts) throws IOException {
-    ResourceLocation id = bow.getId();
+    ResourceLocation id = bow.id();
     String name = id.getPath();
     JsonObject base = readJson(id);
     base.remove("overrides"); // don't need them anywhere, notably ditching for the sake of ammo models
@@ -204,7 +203,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Creates models for blocking, broken and fully charged for the given tool */
   protected void charged(IdAwareObject bow, JsonObject properties, String... brokenParts) throws IOException {
-    ResourceLocation id = bow.getId();
+    ResourceLocation id = bow.id();
     String name = id.getPath();
     JsonObject base = readJson(id);
     base.remove("overrides");
@@ -220,7 +219,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Creates a model in the blocking folder with the given copied display */
   protected void staff(IdAwareObject staff, JsonObject properties) throws IOException {
-    ResourceLocation id = staff.getId();
+    ResourceLocation id = staff.id();
     String path = id.getPath();
     String name = path.substring(0, path.length() - "_staff".length());
     JsonObject base = readJson(id);
@@ -235,7 +234,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Adds broken and blocking models for the shield */
   protected void shield(String setName, IdAwareObject shield, JsonObject properties, String... parts) throws IOException {
-    ResourceLocation id = shield.getId();
+    ResourceLocation id = shield.id();
     withDisplay("armor/" + setName + "/shield_blocking", id, Objects.requireNonNull(properties));
     transformTool("armor/" + setName + "/shield_broken", readJson(id), "", false, '_', "broken", parts);
   }
@@ -247,7 +246,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
 
   /** Adds broken and blocking models for the armor item */
   protected void armor(String overrideName, IdAwareObject item, String... textures) throws IOException {
-    armor(overrideName, item.getId(), textures);
+    armor(overrideName, item.id(), textures);
   }
 
   /** Adds broken and blocking models for the armor item */
@@ -270,7 +269,7 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
   /** Creates models for fishing rods cast and broken */
   @SuppressWarnings("SameParameterValue") // API
   protected void fishingRod(IdAwareObject tool, @Nullable JsonObject blocking, String[] castParts, String[] brokenParts) throws IOException {
-    ResourceLocation id = tool.getId();
+    ResourceLocation id = tool.id();
     String name = id.getPath();
     JsonObject base = readJson(id);
     String cast = "tool/" + name + "/cast";
@@ -292,9 +291,8 @@ public abstract class AbstractToolItemModelProvider extends GenericDataProvider 
   }
 
   /** Creates a resource location under this mod */
-  @SuppressWarnings("removal")
   protected ResourceLocation resource(String name) {
-    return new ResourceLocation(modId, name);
+    return ResourceLocation.fromNamespaceAndPath(modId, name);
   }
 
   /** Creates a model with display from the given target */

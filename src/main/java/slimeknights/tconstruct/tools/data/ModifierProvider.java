@@ -56,6 +56,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.TinkerTags.Modifiers;
 import slimeknights.tconstruct.common.data.advancement.AdvancementIds;
 import slimeknights.tconstruct.library.TinkerAttributes;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.data.tinkering.AbstractModifierProvider;
 import slimeknights.tconstruct.library.json.LevelingInt;
@@ -64,10 +65,10 @@ import slimeknights.tconstruct.library.json.RandomLevelingValue;
 import slimeknights.tconstruct.library.json.predicate.EntityVariableRangePredicate;
 import slimeknights.tconstruct.library.json.predicate.TinkerPredicate;
 import slimeknights.tconstruct.library.json.predicate.modifier.ModifierPredicate;
+import slimeknights.tconstruct.library.json.predicate.tool.HasComponentPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate.ModifierCheck;
 import slimeknights.tconstruct.library.json.predicate.tool.HasToolHookPredicate;
-import slimeknights.tconstruct.library.json.predicate.tool.PersistentDataPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolStackPredicate;
 import slimeknights.tconstruct.library.json.variable.block.BlockVariable;
@@ -177,7 +178,6 @@ import slimeknights.tconstruct.library.tools.capability.inventory.InventorySlotM
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -642,7 +642,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .levelDisplay(ModifierLevelDisplay.NO_LEVELS)
       .addModule(new CapacityBarModule(LevelingInt.flat(25), null))
       // if we have ammo, charge up while mining blocks
-      .addModule(MiningCapacityModule.builder().toolContext(new PersistentDataPredicate(ModifiableCrossbowItem.KEY_CROSSBOW_AMMO)).flat(1))
+      .addModule(MiningCapacityModule.builder().toolContext(new HasComponentPredicate(TinkerData.CROSSBOW_AMMO)).flat(1))
       // upon launch, reset charge
       .addModule(LaunchCapacityModule.builder().flat(0))
       // boost velocity from charge

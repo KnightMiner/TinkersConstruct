@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.library.tools.item.ranged;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,9 +17,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
@@ -28,6 +28,7 @@ import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInterac
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
@@ -109,7 +110,8 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
     boolean isBallista = isBallista(tool);
     ItemStack ammo = BowAmmoModifierHook.getAmmo(tool, bow, player, isBallista ? getSupportedBallistaAmmo() : getSupportedHeldProjectiles());
     // ask forge if it has any different opinions
-    InteractionResultHolder<ItemStack> override = ForgeEventFactory.onArrowNock(bow, level, player, hand, !ammo.isEmpty());
+    InteractionResultHolder<ItemStack> override = EventHooks.onArrowNock(bow, level, player, hand, !ammo.isEmpty());
+    //noinspection ConstantValue  its badly annotated
     if (override != null) {
       return override;
     }
@@ -127,10 +129,10 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
     // store either ammo or boolean as requested
     if (!ammo.isEmpty()) {
       if (storeDrawingItem) {
-        tool.getPersistentData().put(KEY_DRAWBACK_AMMO, ammo.save(new CompoundTag()));
+        tool.set(TinkerData.DRAWBACK_AMMO, SimpleItemContent.copyOf(ammo));
       } else {
-        // boolean is enough to get detected by the property override, but won't bother the model
-        tool.getPersistentData().putBoolean(KEY_DRAWBACK_AMMO, true);
+        // empty is enough to get detected by the property override, but won't bother the model
+        tool.set(TinkerData.DRAWBACK_AMMO, SimpleItemContent.EMPTY);
       }
       // if its ballista ammo, mark that in NBT
       if (isBallista) {
@@ -181,7 +183,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
     // ask forge its thoughts on shooting
     int chargeTime = duration - timeLeft;
     if (player != null) {
-      chargeTime = ForgeEventFactory.onArrowLoose(bow, level, player, chargeTime, hasAmmo);
+      chargeTime = EventHooks.onArrowLoose(bow, level, player, chargeTime, hasAmmo);
     }
 
     // no ammo? no charge? nothing to do
@@ -235,7 +237,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
       float waterInertia = 0.6f;
       SoundEvent sound = SoundEvents.ARROW_SHOOT;
       if (thrownTool) {
-        sound = SoundEvents.TRIDENT_THROW;
+        sound = SoundEvents.TRIDENT_THROW.value();
         ToolStackView thrown = ToolStack.from(ammo);
         float thrownVelocity = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.VELOCITY);
         power *= thrownVelocity * ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.DRAW_SPEED) / 1.5f;
@@ -255,7 +257,7 @@ public class ModifiableBowItem extends ModifiableLauncherItem {
           thrown.setOriginalSlot(originalSlot);
           arrow = thrown;
         } else {
-          arrow = arrowItem.createArrow(level, ammo, living);
+          arrow = arrowItem.createArrow(level, ammo, living, bow);
         }
         float angle = startAngle + (10 * arrowIndex);
         arrow.shootFromRotation(living, living.getXRot() + angle, living.getYRot(), 0, power * 3.0F, inaccuracy);

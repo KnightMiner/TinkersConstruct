@@ -2,21 +2,20 @@ package slimeknights.tconstruct.library.client.model;
 
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.ItemAbilities;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.TinkerData;
+import slimeknights.tconstruct.library.tools.component.SimpleItemContent;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 /** Properties for tinker tools */
 @SuppressWarnings("deprecation")
@@ -24,9 +23,7 @@ public class TinkerItemProperties {
   /** ID for broken property */
   private static final ResourceLocation BROKEN_ID = TConstruct.getResource("broken");
   /** Property declaring broken */
-  private static final ItemPropertyFunction BROKEN = (stack, level, entity, seed) -> {
-    return ToolDamageUtil.isBroken(stack) ? 1 : 0;
-  };
+  private static final ItemPropertyFunction BROKEN = (stack, level, entity, seed) -> ToolDamageUtil.isBroken(stack) ? 1 : 0;
 
   /** ID for ammo property */
   private static final ResourceLocation AMMO_ID = TConstruct.getResource("ammo");
@@ -34,16 +31,10 @@ public class TinkerItemProperties {
   private static final String FIREWORKS_ID = "minecraft:firework_rocket";
   /** Int declaring ammo type */
   private static final ItemPropertyFunction AMMO = (stack, level, entity, seed) -> {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null) {
-      CompoundTag persistentData = nbt.getCompound(ToolStack.TAG_PERSISTENT_MOD_DATA);
-      if (!persistentData.isEmpty()) {
-        CompoundTag ammo = persistentData.getCompound(ModifiableCrossbowItem.KEY_CROSSBOW_AMMO.toString());
-        if (!ammo.isEmpty()) {
-          // no sense having two keys for ammo, just set 1 for arrow, 2 for fireworks
-          return FIREWORKS_ID.equals(ammo.getString("id")) ? 2 : 1;
-        }
-      }
+    SimpleItemContent ammo = stack.getOrDefault(TinkerData.CROSSBOW_AMMO, SimpleItemContent.EMPTY);
+    if (!ammo.isEmpty()) {
+      // no sense having two keys for ammo, just set 1 for arrow, 2 for fireworks
+      return ammo.is(Items.FIREWORK_ROCKET) ? 2 : 1;
     }
     return 0;
   };
@@ -55,7 +46,7 @@ public class TinkerItemProperties {
     if (holder != null && holder.isUsingItem() && holder.getUseItem() == stack) {
       UseAnim anim = stack.getUseAnimation();
       if (anim == UseAnim.BLOCK) {
-        return ModifierUtil.checkPersistentPresent(stack, ModifiableLauncherItem.KEY_DRAWBACK_AMMO) ? 2.5f : 2;
+        return stack.has(TinkerData.DRAWBACK_AMMO) ? 2.5f : 2;
       }
       // TODO 1.21: space this out a bit more
       if (anim == UseAnim.SPEAR) {
@@ -63,7 +54,7 @@ public class TinkerItemProperties {
         return 1.75f;
       }
       if (anim != UseAnim.EAT && anim != UseAnim.DRINK) {
-        return ModifierUtil.checkPersistentPresent(stack, ModifiableLauncherItem.KEY_DRAWBACK_AMMO) ? 1.5f : 1;
+        return stack.has(TinkerData.DRAWBACK_AMMO) ? 1.5f : 1;
       }
     }
     return 0;

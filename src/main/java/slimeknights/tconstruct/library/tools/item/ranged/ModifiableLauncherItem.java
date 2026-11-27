@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -31,7 +30,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import slimeknights.mantle.client.SafeClientAccess;
-import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.item.ModifiableItemClientExtension;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -71,9 +70,6 @@ import static slimeknights.tconstruct.library.modifiers.hook.interaction.General
 
 /** Base class for any items that launch projectiles */
 public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implements IModifiableDisplay {
-  /** Persistent data key for the ammo being used on drawing back the bow. */
-  public static final ResourceLocation KEY_DRAWBACK_AMMO = TConstruct.getResource("drawback_ammo");
-
   /** Tool definition for the given tool */
   @Getter
   private final ToolDefinition toolDefinition;
@@ -320,7 +316,7 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
     UsingToolModifierHook.afterStopUsing(tool, entity, timeLeft);
     ModDataNBT data = tool.getPersistentData();
     data.remove(KEY_DRAWTIME);
-    data.remove(KEY_DRAWBACK_AMMO);
+    tool.remove(TinkerData.DRAWBACK_AMMO);
   }
 
   @Override
@@ -347,8 +343,8 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-    TooltipUtil.addInformation(this, stack, level, tooltip, SafeClientAccess.getTooltipKey(), flag);
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    TooltipUtil.addInformation(this, stack, context.level(), tooltip, SafeClientAccess.getTooltipKey(), flag);
   }
 
   @Override
