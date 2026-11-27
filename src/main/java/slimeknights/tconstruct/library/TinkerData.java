@@ -9,13 +9,13 @@ import net.minecraft.util.Unit;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.registration.deferred.AttachmentTypeDeferredRegister;
 import slimeknights.mantle.registration.deferred.DataComponentTypeDeferredRegister;
 import slimeknights.mantle.registration.holder.DeferredAttachment;
 import slimeknights.mantle.registration.holder.DeferredDataComponent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
-import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -62,11 +62,11 @@ public class TinkerData {
   public static final DeferredDataComponent<String> VARIANT = DATA_COMPONENTS.registerPersistent("variant", ExtraCodecs.NON_EMPTY_STRING, ByteBufCodecs.STRING_UTF8);
 
   /** Marker for tools and tool parts to indicate they are for display. Reduces the amount of data in the tooltip related to materials, which are likely render materials. */
-  public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerPersistent("display", Unit.CODEC, TinkerStreamCodecs.UNIT);
+  public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerUnit("display");
 
   /* Tool */
   /** If true, the tool is currently broken and should not perform any actions that require durability. */
-  public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerPersistent("broken", Unit.CODEC, TinkerStreamCodecs.UNIT);
+  public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerUnit("broken");
   /** Holds a single material on an item. Used for tool parts and other material items */
   public static final DeferredDataComponent<ToolMaterials> MATERIALS = DATA_COMPONENTS.registerPersistent("materials", ToolMaterials.CODEC, ToolMaterials.STREAM_CODEC);
 
@@ -117,5 +117,7 @@ public class TinkerData {
   /** Modifier slots added through the creative modifier. */
   public static final DeferredDataComponent<ModifierSlots> CREATIVE_SLOTS = DATA_COMPONENTS.registerPersistent("creative_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
   /** Marker used by {@link slimeknights.tconstruct.library.modifiers.modules.behavior.InfinityModule} to inform bows that the ammo stack is infinite. */
-  public static final DeferredDataComponent<Unit> INFINITY = DATA_COMPONENTS.registerVolatile("infinity", TinkerStreamCodecs.UNIT);
+  public static final DeferredDataComponent<Unit> INFINITY = DATA_COMPONENTS.registerTransient("infinity", MantleStreamCodecs.UNIT);
+  /** Marker used by {@link slimeknights.tconstruct.tools.modules.interaction.sling.SlingKnockbackModule} to mark that the melee attack is from the module */
+  public static final DeferredDataComponent<Unit> SLING_KNOCKBACK = DATA_COMPONENTS.registerTransient("sling_knockback", MantleStreamCodecs.UNIT);
 }

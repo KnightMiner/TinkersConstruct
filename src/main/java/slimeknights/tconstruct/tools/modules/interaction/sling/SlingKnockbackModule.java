@@ -1,9 +1,9 @@
 package slimeknights.tconstruct.tools.modules.interaction.sling;
 
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +19,6 @@ import net.minecraft.world.phys.Vec3;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.TinkerData;
@@ -43,7 +42,6 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
@@ -64,8 +62,6 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
     FloatLoadable.FROM_ZERO.requiredField("damage_multiplier", SlingKnockbackModule::damageMultiplier),
     TARGET_FIELD, ModifierCondition.TOOL_FIELD,
     SlingKnockbackModule::new);
-  /** Temporary boolean in persistent data. Means bonking is in progress, suppresses knockback and boosts damage. */
-  public static final ResourceLocation IS_BONKING = TConstruct.getResource("is_bonking");
 
   @Override
   public RecordLoadable<SlingKnockbackModule> getLoader() {
@@ -79,7 +75,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
 
   @Override
   public float beforeMeleeHit(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damage, float baseKnockback, float knockback) {
-    if (tool.getPersistentData().getBoolean(IS_BONKING)) {
+    if (tool.has(TinkerData.SLING_KNOCKBACK)) {
       return 0;
     }
     return knockback;
@@ -87,7 +83,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
 
   @Override
   public float getMeleeDamage(ToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float baseDamage, float damage) {
-    if (damageMultiplier != 1 && tool.getPersistentData().getBoolean(IS_BONKING)) {
+    if (damageMultiplier != 1 && tool.has(TinkerData.SLING_KNOCKBACK)) {
       damage *= damageMultiplier;
     }
     return damage;
@@ -134,8 +130,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
               boolean didBonk = false;
               if (damageMultiplier > 0 && ToolAttackUtil.isAttackable(entity, target) && EntityInteractionModifierHook.isMelee(tool)) {
                 didBonk = true;
-                ModDataNBT data = tool.getPersistentData();
-                data.putBoolean(IS_BONKING, true);
+                tool.set(TinkerData.SLING_KNOCKBACK, Unit.INSTANCE);
                 InteractionHand hand = player.getUsedItemHand();
                 ToolAttackContext.Builder builder = ToolAttackContext.attacker(entity).target(target).hand(hand).cooldown(Math.min(1, charge));
                 if (hand == InteractionHand.MAIN_HAND) {
@@ -144,7 +139,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
                   builder.toolAttributes(tool);
                 }
                 ToolAttackUtil.performAttack(tool, builder.build());
-                data.remove(IS_BONKING);
+                tool.remove(TinkerData.SLING_KNOCKBACK);
               }
 
               // send it flying
