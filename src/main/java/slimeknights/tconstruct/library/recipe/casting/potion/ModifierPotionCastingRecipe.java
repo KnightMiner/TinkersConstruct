@@ -1,7 +1,9 @@
 package slimeknights.tconstruct.library.recipe.casting.potion;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -15,7 +17,6 @@ import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.List;
 
@@ -43,22 +44,17 @@ public abstract class ModifierPotionCastingRecipe extends PotionCastingRecipe {
     return IDisplayModifierRecipe.withModifiers(IModifiableDisplay.getDisplayStack(stack), ModifierEntries.create(new ModifierEntry(modifier, 1)));
   }
 
-  /** Gets a list of all potion IDs ready for usage in building NBT */
-  public static List<String> getPotionIds() {
-    return getPotions().map(holder -> holder.key().location().toString()).toList();
-  }
-
   /**
-   * Adds the potion to the given stacks.
+   * Adds the potion contents to the given stacks.
    * @param stack    Stack with the modifier.
-   * @param potions  List of potions from {@link #getPotionIds()}
+   * @param contents  List of potions from {@link #getPotions()}
    * @return  Stacks with potions set.
    */
-  public List<ItemStack> addPotion(ItemStack stack, List<String> potions) {
-    return potions.stream().map(id -> {
-      ToolStack tool = ToolStack.copyFrom(stack);
-      tool.getPersistentData().putString(modifier.id(), id);
-      return tool.getStack();
+  public List<ItemStack> addPotions(ItemStack stack, List<PotionContents> contents) {
+    return contents.stream().map(content -> {
+      ItemStack copy = stack.copy();
+      copy.set(DataComponents.POTION_CONTENTS, content);
+      return copy;
     }).toList();
   }
 }

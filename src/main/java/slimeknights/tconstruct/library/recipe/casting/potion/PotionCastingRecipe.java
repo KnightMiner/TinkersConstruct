@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.library.recipe.casting.potion;
 
 import lombok.Getter;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -9,7 +8,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -116,9 +114,9 @@ public class PotionCastingRecipe implements ICastingRecipe, MultiNamedRecipe<IDi
   public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       // first, make all the potion items
-      List<ItemStack> results = getPotions().map(potion -> {
+      List<ItemStack> results = streamPotions().map(contents -> {
         ItemStack stack = new ItemStack(this.result);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
+        stack.set(DataComponents.POTION_CONTENTS, contents);
         return stack;
       }).filter(stack -> !stack.isEmpty()).toList();
       // next, it's time to do the fluids
@@ -164,8 +162,13 @@ public class PotionCastingRecipe implements ICastingRecipe, MultiNamedRecipe<IDi
 
   /* JEI helpers */
 
-  /** Gets a list of all potion IDs ready for usage in building NBT */
-  public static Stream<Holder.Reference<Potion>> getPotions() {
-    return BuiltInRegistries.POTION.holders().filter(holder -> !holder.equals(Potions.WATER));
+  /** Gets a stream of all potion IDs as {@link PotionContents} ready for usage in building display stacks */
+  public static Stream<PotionContents> streamPotions() {
+    return BuiltInRegistries.POTION.holders().filter(holder -> !holder.equals(Potions.WATER)).map(PotionContents::new);
+  }
+
+  /** Gets a list of all potion IDs as {@link PotionContents} ready for usage in building display stacks */
+  public static List<PotionContents> getPotions() {
+    return streamPotions().toList();
   }
 }

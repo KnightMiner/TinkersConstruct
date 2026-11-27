@@ -7,6 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -54,6 +55,8 @@ public class TinkerData {
   public static final DeferredAttachment<ModDataNBT> PERSISTENT_DATA = ATTACHMENTS.registerType("persistent_data", () -> AttachmentType.builder(ModDataNBT::new).serialize(ModDataNBT.CODEC).sync(ModDataNBT.STREAM_CODEC).copyOnDeath());
   /** Handles syncing the entity list for piggybackpacks */
   public static final DeferredAttachment<PiggybackHandler> PIGGYBACK_HANDLER = ATTACHMENTS.registerType("piggyback_handler", () -> AttachmentType.builder(PiggybackHandler::new));
+  /** Stores the current potion on a projectile, typically from arrows. Mirrors {@link DataComponents#POTION_CONTENTS} */
+  public static final DeferredAttachment<PotionContents> PROJECTILE_POTION = ATTACHMENTS.registerType("projectile_potion", () -> AttachmentType.builder(() -> PotionContents.EMPTY).serialize(PotionContents.CODEC).sync(PotionContents.STREAM_CODEC));
 
   /* Parts and modifiers */
   /** Holds a single modifier on an item. Used for modifier crystals */

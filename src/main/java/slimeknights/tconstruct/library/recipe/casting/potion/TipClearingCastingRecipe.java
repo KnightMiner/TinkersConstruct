@@ -1,9 +1,11 @@
 package slimeknights.tconstruct.library.recipe.casting.potion;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -18,8 +20,6 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,13 +37,13 @@ public class TipClearingCastingRecipe extends ModifierPotionCastingRecipe {
   @Override
   public boolean matches(CastingRecipeInput inv, Level level) {
     // must have the modifier, and the potion set
-    return super.matches(inv, level) && !ModifierUtil.getPersistentString(inv.getItem(), modifier).isEmpty();
+    return super.matches(inv, level) && inv.getItem().has(DataComponents.POTION_CONTENTS);
   }
 
   @Override
   public ItemStack assemble(CastingRecipeInput inv, HolderLookup.Provider registries) {
     ItemStack result = inv.getItem().copy();
-    ToolStack.from(result).getPersistentData().remove(modifier);
+    result.remove(DataComponents.POTION_CONTENTS);
     return result;
   }
 
@@ -53,7 +53,7 @@ public class TipClearingCastingRecipe extends ModifierPotionCastingRecipe {
   public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       List<FluidStack> fluids = List.of(fluid.getFluids());
-      List<String> potions = getPotionIds();
+      List<PotionContents> potions = getPotions();
 
       // create a recipe per tool
       List<ResourceLocation> parent = List.of(id);
@@ -61,7 +61,7 @@ public class TipClearingCastingRecipe extends ModifierPotionCastingRecipe {
         // start with just the tool with the modifier
         ItemStack withModifier = addModifier(stack);
         return DisplayCastingRecipe.id(id.withSuffix('/' + Loadables.ITEM.getKey(stack.getItem()).toDebugFileName()), parent)
-          .casts(addPotion(withModifier, potions)).consumed()
+          .casts(addPotions(withModifier, potions)).consumed()
           .result(withModifier).unlinkOutput()
           .fluids(fluids).coolingTime(coolingTime).build();
       }).toList();

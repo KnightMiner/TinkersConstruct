@@ -1,12 +1,10 @@
 package slimeknights.tconstruct.library.recipe.casting.potion;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -23,10 +21,7 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.recipe.casting.CastingRecipeInput;
 import slimeknights.tconstruct.library.recipe.casting.DisplayCastingRecipe;
 import slimeknights.tconstruct.library.recipe.casting.IDisplayableCastingRecipe;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,20 +38,18 @@ public class TippingCastingRecipe extends ModifierPotionCastingRecipe {
     super(type, serializer, group, tool, fluid, Items.AIR, coolingTime, modifier);
   }
 
-  @Nullable
-  private Holder<Potion> getPotion(CastingRecipeInput input) {
-    return input.getFluid().getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().orElse(null);
+  /** Gets the potion contents for the given input */
+  private PotionContents getPotion(CastingRecipeInput input) {
+    return input.getFluid().getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
   }
 
   @Override
   public boolean matches(CastingRecipeInput input, Level level) {
     // must have the modifier to cast
     if (super.matches(input, level)) {
-      // must also have a specific potion, it's what we are going to copy
-      // but it can't match what is already on the stack
-      Holder<Potion> potion = getPotion(input);
-      return potion != null
-        && !ModifierUtil.getPersistentString(input.getItem(), modifier).equals(Objects.requireNonNull(potion.getKey()).location().toString());
+      // must have a potion, it's what we are going to copy, but it can't match what is already on the stack
+      PotionContents potion = getPotion(input);
+      return potion != PotionContents.EMPTY && !Objects.equals(potion, input.getItem().get(DataComponents.POTION_CONTENTS));
     }
     return false;
   }
@@ -64,9 +57,9 @@ public class TippingCastingRecipe extends ModifierPotionCastingRecipe {
   @Override
   public ItemStack assemble(CastingRecipeInput input, HolderLookup.Provider registries) {
     ItemStack result = input.getItem().copy();
-    Holder<Potion> potion = getPotion(input);
-    if (potion != null) {
-      ToolStack.from(result).getPersistentData().putString(modifier, Objects.requireNonNull(potion.getKey()).location().toString());
+    PotionContents potion = getPotion(input);
+    if (potion != PotionContents.EMPTY) {
+      result.set(DataComponents.POTION_CONTENTS, potion);
     }
     return result;
   }
@@ -78,7 +71,7 @@ public class TippingCastingRecipe extends ModifierPotionCastingRecipe {
   public List<NamedRecipe<IDisplayableCastingRecipe>> getRecipes(ResourceLocation id, HolderLookup.Provider registries) {
     if (displayRecipes == null) {
       // first, get a list of potion IDs
-      List<PotionContents> potionContents = getPotions().map(PotionContents::new).toList();
+      List<PotionContents> potionContents = getPotions();
 
       // next, make 1 copy of the potion fluid with NBT list per potion fluid
       List<FluidStack> basePotions = List.of(this.fluid.getFluids());
@@ -92,12 +85,11 @@ public class TippingCastingRecipe extends ModifierPotionCastingRecipe {
       // finally, create 1 recipe per input tool
       int basePotionCount = basePotions.size();
       List<ResourceLocation> parent = List.of(id);
-      List<String> potions = getPotionIds();
       displayRecipes = Arrays.stream(bottle.getItems()).map(stack -> {
         // start with just the tool with the modifier
         ItemStack withModifier = addModifier(stack);
         // next, add the potion to the tools
-        List<ItemStack> withPotion = addPotion(withModifier, potions);
+        List<ItemStack> withPotion = addPotions(withModifier, potionContents);
         // duplicate the list if we have multiple potion fluids
         if (basePotionCount > 1) {
           List<ItemStack> list = new ArrayList<>(withPotion.size() * basePotionCount);
