@@ -115,7 +115,7 @@ public class TinkerData {
   public static final DeferredDataComponent<ResourceMap<MaterialVariant>> MODIFIER_MATERIAL = DATA_COMPONENTS.registerPersistent("modifier_material", ResourceMap.codec(MaterialVariant.CODEC), ResourceMap.streamCodec(MaterialVariant.STREAM_CODEC));
   /** Map of modifier ID to slot type. Used for rebalanced. */
   public static final DeferredDataComponent<ResourceMap<SlotType>> MODIFIER_SLOT_TYPE = DATA_COMPONENTS.registerPersistent("modifier_slot_type", ResourceMap.codec(SlotType.CODEC), ResourceMap.streamCodec(SlotType.STREAM_CODEC));
-  /** Map of modifier ID to variant integer. Used for headlight levels. */
+  /** Map of modifier ID to variant integer. Used for headlight levels and dyed colors. */
   public static final DeferredDataComponent<ResourceMap<Integer>> MODIFIER_INTEGER = DATA_COMPONENTS.registerPersistent("modifier_integer", ResourceMap.codec(Codec.INT), ResourceMap.streamCodec(ByteBufCodecs.VAR_INT));
 
   // modifier sets

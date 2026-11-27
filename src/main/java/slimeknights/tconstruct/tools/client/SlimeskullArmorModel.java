@@ -20,6 +20,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.armor.ArmorModelManager.ArmorModel;
 import slimeknights.tconstruct.library.client.armor.MultilayerArmorModel;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo;
@@ -30,8 +31,8 @@ import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.utils.SimpleCache;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.world.client.BlockModelSkullRenderer;
@@ -85,7 +86,7 @@ public class SlimeskullArmorModel extends MultilayerArmorModel {
         // if dyed, color is the dye
         ModifierId dyed = TinkerModifiers.dyed.id();
         if (ModifierEntries.getLevel(stack, dyed) > 0) {
-          headColor = 0xFF000000 | ModifierUtil.getPersistentInt(stack, dyed.id(), -1);
+          headColor = 0xFF000000 | ResourceMap.get(stack, TinkerData.MODIFIER_INTEGER).getOrDefault(dyed.id(), -1);
         } else {
           // if not dyed, color is the material, fallback to no tint if missing
           MaterialVariant slime = ToolMaterials.get(stack, 1);

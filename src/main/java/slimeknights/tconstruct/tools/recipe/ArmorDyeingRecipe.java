@@ -3,7 +3,6 @@ package slimeknights.tconstruct.tools.recipe;
 import lombok.Getter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor.ARGB32;
@@ -16,6 +15,7 @@ import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.IntRange;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -25,11 +25,12 @@ import slimeknights.tconstruct.library.recipe.modifiers.ModifierRecipeLookup;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.IDisplayModifierRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe;
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
+import slimeknights.tconstruct.library.tools.component.ModifierEntries;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -70,15 +71,16 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
   public RecipeResult<LazyToolStack> getValidatedResult(TinkerStationRecipeInput inv, HolderLookup.Provider registries) {
     ToolStack tool = inv.getTinkerable().copyMaxCount(shrinkToolSlotBy());
 
-    ModDataNBT persistentData = tool.getPersistentData();
     ModifierId key = TinkerModifiers.dyed.id();
     int nr = 0, nb = 0, ng = 0;
     int brightness = 0;
     int count = 0;
 
     // copy existing color
-    if (persistentData.contains(key, Tag.TAG_INT)) {
-      int color = persistentData.getInt(key);
+    ResourceMap<Integer> integers = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER);
+    Integer current = integers.get(key);
+    if (current != null) {
+      int color = current;
       int r = color >> 16 & 255;
       int g = color >>  8 & 255;
       int b = color       & 255;
@@ -121,7 +123,7 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
     nr = (int)(nr * scaledBrightness);
     ng = (int)(ng * scaledBrightness);
     nb = (int)(nb * scaledBrightness);
-    persistentData.putInt(key, (nr << 16) | (ng << 8) | nb);
+    tool.set(TinkerData.MODIFIER_INTEGER, integers.with(key, (nr << 16) | (ng << 8) | nb));
 
     // add the modifier if missing
     if (tool.getModifierLevel(key) == 0) {
@@ -183,10 +185,10 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
       this.dyes = RegistryHelper.getTagValueStream(BuiltInRegistries.ITEM, color.getTag()).map(ItemStack::new).toList();
       this.variant = Component.translatable("color.minecraft." + color.getSerializedName());
 
-      ResourceLocation modID = RESULT.id();
+      ModifierId modID = RESULT.id();
       this.tintColor = Util.getColor(color);
-      List<ModifierEntry> results = List.of(RESULT);
-      toolWithModifier = tools.stream().map(stack -> IDisplayModifierRecipe.withModifiers(stack, DEFAULT_TOOL_STACK_SIZE, results, data -> data.putInt(modID, tintColor))).toList();
+      ModifierEntries results = ModifierEntries.create(RESULT);
+      toolWithModifier = tools.stream().map(stack -> IDisplayModifierRecipe.withModifiers(stack, DEFAULT_TOOL_STACK_SIZE, results, data -> ResourceMap.put(data, TinkerData.MODIFIER_INTEGER, modID, tintColor))).toList();
 
       // cache some color properties for later
       this.r = tintColor >> 16 & 255;
@@ -233,9 +235,10 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
     public void applyModifier(ToolStack tool) {
       // store into tool NBT
       ModifierId modifier = TinkerModifiers.dyed.id();
-      ModDataNBT persistentData = tool.getPersistentData();
-      if (persistentData.contains(modifier, Tag.TAG_INT)) {
-        int color = persistentData.getInt(modifier);
+      ResourceMap<Integer> integers = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER);
+      Integer current = integers.get(modifier);
+      if (current != null) {
+        int color = current;
         int r = color >> 16 & 255;
         int g = color >>  8 & 255;
         int b = color       & 255;
@@ -248,10 +251,11 @@ public class ArmorDyeingRecipe implements ITinkerStationRecipe, MultiNamedRecipe
         nr = (int)(nr * brightness);
         ng = (int)(ng * brightness);
         nb = (int)(nb * brightness);
-        persistentData.putInt(modifier, (nr << 16) | (ng << 8) | nb);
+        integers = integers.with(modifier, (nr << 16) | (ng << 8) | nb);
       } else {
-        persistentData.putInt(modifier, tintColor);
+        integers = integers.with(modifier, tintColor);
       }
+      tool.set(TinkerData.MODIFIER_INTEGER, integers);
       // add the modifier if missing
       if (tool.getModifierLevel(modifier) == 0) {
         tool.addModifier(modifier, 1);

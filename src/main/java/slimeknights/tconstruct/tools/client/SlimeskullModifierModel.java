@@ -1,17 +1,16 @@
 package slimeknights.tconstruct.tools.client;
 
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.materials.MaterialRenderInfo.TintedSprite;
 import slimeknights.tconstruct.library.client.modifiers.model.ModifierModel;
 import slimeknights.tconstruct.library.client.modifiers.model.SimpleModifierModel;
 import slimeknights.tconstruct.library.client.modifiers.model.material.MaterialModifierModel;
 import slimeknights.tconstruct.library.materials.MaterialVariantId;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
@@ -45,10 +44,9 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
 
   @Override
   public int getColor(ToolStackView tool, ModifierEntry entry, TintedSprite sprite) {
-    IModDataView data = tool.getPersistentData();
-    ResourceLocation dyed = TinkerModifiers.dyed.id().id();
-    if (data.contains(dyed, Tag.TAG_INT)) {
-      return 0xFF000000 | data.getInt(dyed);
+    Integer dyed = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).get(TinkerModifiers.dyed.id());
+    if (dyed != null) {
+      return 0xFF000000 | dyed;
     } else {
       return SlimeskullArmorModel.MATERIAL_COLOR_CACHE.apply(tool.getMaterial(slimeIndex).id());
     }
@@ -57,12 +55,7 @@ public record SlimeskullModifierModel(Material small, int skullIndex, int slimeI
   @Nullable
   @Override
   public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
-    IModDataView data = tool.getPersistentData();
     // only need to cache colors from dyed, if its from the slime we will get it from the material in cache
-    ResourceLocation dyed = TinkerModifiers.dyed.id().id();
-    if (data.contains(dyed, Tag.TAG_INT)) {
-      return data.getInt(dyed);
-    }
-    return null;
+    return ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).get(TinkerModifiers.dyed.id());
   }
 }

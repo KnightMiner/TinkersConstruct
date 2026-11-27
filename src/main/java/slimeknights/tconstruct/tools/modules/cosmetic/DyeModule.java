@@ -1,12 +1,11 @@
 package slimeknights.tconstruct.tools.modules.cosmetic;
 
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
@@ -16,7 +15,7 @@ import slimeknights.tconstruct.library.modifiers.hook.display.DisplayNameModifie
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
@@ -41,10 +40,8 @@ public enum DyeModule implements ModifierModule, DisplayNameModifierHook, Modifi
 
   @Override
   public Component getDisplayName(ToolStackView tool, ModifierEntry entry, Component name, @Nullable RegistryAccess access) {
-    IModDataView persistentData = tool.getPersistentData();
-    ResourceLocation key = entry.id();
-    if (persistentData.contains(key, Tag.TAG_INT)) {
-      int color = persistentData.getInt(key);
+    Integer color = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).get(entry.id());
+    if (color != null) {
       Modifier modifier = entry.getModifier();
       return modifier.applyStyle(Component.translatable(modifier.getTranslationKey() + ".formatted",
         Component.literal(String.format("#%06X", color)).withStyle(Style.EMPTY.withColor(color))
@@ -56,7 +53,7 @@ public enum DyeModule implements ModifierModule, DisplayNameModifierHook, Modifi
   @Nullable
   @Override
   public Component onRemoved(ToolStackView tool, ModifierHolder modifier) {
-    tool.getPersistentData().remove(modifier.id());
+    ResourceMap.remove(tool, TinkerData.MODIFIER_INTEGER, modifier.id());
     return null;
   }
 }

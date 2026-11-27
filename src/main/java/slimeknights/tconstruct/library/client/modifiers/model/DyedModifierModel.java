@@ -7,14 +7,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
+import slimeknights.tconstruct.library.tools.component.ResourceMap;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
@@ -44,11 +43,7 @@ public class DyedModifierModel implements SimpleModifierModel {
   @Override
   public Object getCacheKey(ToolStackView tool, ModifierEntry entry) {
     ModifierId modifier = entry.id();
-    IModDataView data = tool.getPersistentData();
-    int color = -1;
-    if (data.contains(modifier, Tag.TAG_INT)) {
-      color = data.getInt(modifier);
-    }
+    int color = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).getOrDefault(entry.id(), -1);
     return new CacheKey(modifier, color);
   }
 
@@ -56,10 +51,9 @@ public class DyedModifierModel implements SimpleModifierModel {
   public void addQuads(ToolStackView tool, ModifierEntry modifier, Function<Material,TextureAtlasSprite> spriteGetter, Transformation transforms, boolean isLarge, int startTintIndex, Consumer<Collection<BakedQuad>> quadConsumer, @Nullable ItemLayerPixels pixels) {
     Material texture = isLarge ? large : small;
     if (texture != null) {
-      IModDataView data = tool.getPersistentData();
-      ResourceLocation key = modifier.id();
-      if (data.contains(key, Tag.TAG_INT)) {
-        quadConsumer.accept(MantleItemLayerModel.getQuadsForSprite(0xFF000000 | data.getInt(key), -1, spriteGetter.apply(texture), transforms, 0, pixels));
+      Integer color = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).get(modifier.id());
+      if (color != null) {
+        quadConsumer.accept(MantleItemLayerModel.getQuadsForSprite(0xFF000000 | color, -1, spriteGetter.apply(texture), transforms, 0, pixels));
       }
     }
   }

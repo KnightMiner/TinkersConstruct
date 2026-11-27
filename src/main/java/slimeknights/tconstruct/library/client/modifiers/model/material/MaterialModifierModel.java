@@ -4,7 +4,6 @@ import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
@@ -27,7 +26,6 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.ModuleWithKey;
 import slimeknights.tconstruct.library.tools.component.ResourceMap;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nullable;
@@ -151,11 +149,10 @@ public interface MaterialModifierModel extends SimpleModifierModel {
     public int getColor(ToolStackView tool, ModifierEntry modifier, TintedSprite sprite) {
       int color = useMaterialColor ? sprite.color() : -1;
       // fetch the dye color
-      IModDataView data = tool.getPersistentData();
-      ResourceLocation key = getKey(modifier);
-      if (data.contains(key, Tag.TAG_INT)) {
+      Integer integerValue = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).get(modifier.id());
+      if (integerValue != null) {
         // if we have a dye color, need to mix the two
-        int dyed = 0xFF000000 | data.getInt(key);
+        int dyed = 0xFF000000 | integerValue;
         // no material color makes mixing easy
         if (color == -1) {
           color = dyed;
@@ -169,12 +166,7 @@ public interface MaterialModifierModel extends SimpleModifierModel {
 
     @Override
     public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
-      ResourceLocation key = getKey(modifier);
-      IModDataView data = tool.getPersistentData();
-      int color = -1;
-      if (data.contains(key, Tag.TAG_INT)) {
-        color = data.getInt(key);
-      }
+      int color = ResourceMap.get(tool, TinkerData.MODIFIER_INTEGER).getOrDefault(getKey(modifier), -1);
       if (modifier == ModifierEntry.EMPTY) {
         return color;
       }
