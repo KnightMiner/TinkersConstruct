@@ -19,6 +19,7 @@ import slimeknights.tconstruct.library.codec.TinkerStreamCodecs;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
 import slimeknights.tconstruct.library.recipe.modifiers.adding.variant.SwappableString;
 import slimeknights.tconstruct.library.recipe.worktable.ModifierSetWorktableRecipe;
 import slimeknights.tconstruct.library.tools.SlotType;
@@ -84,6 +85,10 @@ public class TinkerData {
   /** Modifier slots on the tool due to recipes or cheats. Will typically be negative. */
   public static final DeferredDataComponent<ModifierSlots> PERSISTENT_SLOTS = DATA_COMPONENTS.registerPersistent("persistent_slots", ModifierSlots.CODEC, ModifierSlots.STREAM_CODEC);
 
+  /** Modifier actively being used on the tool, as set in {@link GeneralInteractionModifierHook}. */
+  public static final DeferredDataComponent<ModifierId> ACTIVE_MODIFIER = DATA_COMPONENTS.registerPersistent("active_modifier", ModifierId.CODEC, ModifierId.STREAM_CODEC);
+  /** Cached draw time for an item actively being used in ticks. Used by {@link slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem} and {@link GeneralInteractionModifierHook} */
+  public static final DeferredDataComponent<Integer> DRAWTIME = DATA_COMPONENTS.registerPersistent("drawtime", ExtraCodecs.POSITIVE_INT, ByteBufCodecs.VAR_INT);
   /** Current ammo stack in a crossbow. Size determines how many to fire. */
   public static final DeferredDataComponent<SimpleItemContent> CROSSBOW_AMMO = DATA_COMPONENTS.registerPersistent("crossbow_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
   /** Ammo stored while drawing back a bow or crossbow. May be set but empty to indicate we are drawing but are not visually displaying the ammo. */

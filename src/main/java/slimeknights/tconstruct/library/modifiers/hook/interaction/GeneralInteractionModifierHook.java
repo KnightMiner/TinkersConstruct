@@ -1,20 +1,16 @@
 package slimeknights.tconstruct.library.modifiers.hook.interaction;
 
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
-import slimeknights.tconstruct.library.tools.nbt.IModDataView;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.Collection;
@@ -96,11 +92,6 @@ public interface GeneralInteractionModifierHook {
 
   /* Helpers */
 
-  /** Persistent key storing the actively running modifier for use in several hooks */
-  ResourceLocation KEY_ACTIVE_MODIFIER = TConstruct.getResource("active_modifier");
-  /** Persistent data key storing the drawtime needed for using the tool. Generally is set when tool usage starts */
-  ResourceLocation KEY_DRAWTIME = TConstruct.getResource("drawtime");
-
   /**
    * Use in {@link #onToolUse(ToolStackView, ModifierEntry, Player, InteractionHand, InteractionSource)} to start using an item, ensuring later hooks are properly called.
    * @param tool      Tool being used
@@ -109,7 +100,7 @@ public interface GeneralInteractionModifierHook {
    * @param hand      Hand using the tool
    */
   static void startUsing(ToolStackView tool, ModifierId modifier, LivingEntity living, InteractionHand hand) {
-    tool.getPersistentData().putString(KEY_ACTIVE_MODIFIER, modifier.toString());
+    tool.set(TinkerData.ACTIVE_MODIFIER, modifier);
     living.startUsingItem(hand);
   }
 
@@ -131,7 +122,7 @@ public interface GeneralInteractionModifierHook {
    */
   static int startDrawing(ToolStackView tool, LivingEntity living, float speedFactor) {
     int drawtime = getDrawtime(tool, living, speedFactor);
-    tool.getPersistentData().putInt(KEY_DRAWTIME, drawtime);
+    tool.set(TinkerData.DRAWTIME, drawtime);
     return drawtime;
   }
 
@@ -157,7 +148,7 @@ public interface GeneralInteractionModifierHook {
     if (chargeTime < 0) {
       return 0;
     }
-    float charge = chargeTime / tool.getPersistentData().getInt(KEY_DRAWTIME);
+    float charge = chargeTime / tool.getOrDefault(TinkerData.DRAWTIME, 20);
     charge = (charge * charge + charge * 2) / 3;
     if (charge > 1) {
       charge = 1;
@@ -167,21 +158,17 @@ public interface GeneralInteractionModifierHook {
 
   /** Gets the currently active modifier, or {@link ModifierEntry#EMPTY} if none is active. Generally does not need to be called in modifiers as we call it in internal logic. */
   static ModifierEntry getActiveModifier(ToolStackView tool) {
-    IModDataView persistentData = tool.getPersistentData();
-    if (persistentData.contains(KEY_ACTIVE_MODIFIER, Tag.TAG_STRING)) {
-      ModifierId modifier = ModifierId.tryParse(persistentData.getString(KEY_ACTIVE_MODIFIER));
-      if (modifier != null) {
-        return tool.getModifiers().getEntry(modifier);
-      }
+    ModifierId modifier = tool.get(TinkerData.ACTIVE_MODIFIER);
+    if (modifier != null) {
+      return tool.getModifiers().getEntry(modifier);
     }
     return ModifierEntry.EMPTY;
   }
 
   /** Called to clear any data modifiers set when usage starts. Generally does not need to be called in modifiers as we call it in internal logic. */
   static void finishUsing(ToolStackView tool) {
-    ModDataNBT persistentData = tool.getPersistentData();
-    persistentData.remove(KEY_ACTIVE_MODIFIER);
-    persistentData.remove(KEY_DRAWTIME);
+    tool.remove(TinkerData.ACTIVE_MODIFIER);
+    tool.remove(TinkerData.DRAWTIME);
   }
 
 

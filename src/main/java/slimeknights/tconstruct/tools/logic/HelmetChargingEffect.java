@@ -13,9 +13,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.TinkerEffects;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.shared.effect.NoMilkEffect;
 
@@ -51,7 +51,7 @@ public class HelmetChargingEffect extends NoMilkEffect {
           if (!helmet.isEmpty()) {
             // if we have a drawtime, draw the bar overlaying the icon
             int duration = instance.getDuration();
-            int drawtime = ModifierUtil.getPersistentInt(helmet, GeneralInteractionModifierHook.KEY_DRAWTIME, 0);
+            int drawtime = helmet.getOrDefault(TinkerData.DRAWTIME, 0);
             int dd = drawtime + 20;
             if (drawtime > 0 && duration < dd) {
               sprite = textures.getSprite(BAR_KEY);

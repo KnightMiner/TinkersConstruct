@@ -22,7 +22,7 @@ import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
@@ -43,8 +43,8 @@ import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -103,7 +103,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
       if (tool.hasTag(TinkerTags.Items.MELEE_WEAPON)) {
         speed *= tool.getStats().get(ToolStats.ATTACK_SPEED);
       }
-      tool.getPersistentData().putInt(GeneralInteractionModifierHook.KEY_DRAWTIME, (int)Math.ceil(20f * drawtimeMultiplier / speed));
+      tool.set(TinkerData.DRAWTIME, (int)Math.ceil(20f * drawtimeMultiplier / speed));
       GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.SUCCESS;
     }
@@ -162,7 +162,7 @@ public record SlingKnockbackModule(LevelingValue forceMultiplier, float drawtime
                 ));
                 target.knockback(force, angle.x, angle.z);
                 if (target instanceof ServerPlayer playerMP) {
-                  TinkerNetwork.getInstance().sendVanillaPacket(new ClientboundSetEntityMotionPacket(target), playerMP);
+                  playerMP.connection.send(new ClientboundSetEntityMotionPacket(target));
                 }
                 didBonk = true;
               }

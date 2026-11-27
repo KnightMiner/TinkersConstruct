@@ -13,6 +13,7 @@ import slimeknights.mantle.client.TooltipKey;
 import slimeknights.mantle.data.loadable.mapping.SimpleRecordLoadable;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.armor.EquipmentChangeModifierHook;
@@ -53,11 +54,7 @@ public enum ZoomModule implements ModifierModule, GeneralInteractionModifierHook
       if (entity.level().isClientSide) {
         int useTime = useDuration - timeLeft;
         if (useTime > 0) {
-          float drawTime = tool.getPersistentData().getInt(GeneralInteractionModifierHook.KEY_DRAWTIME);
-          if (drawTime <= 0) {
-            drawTime = 20;
-          }
-          float fov = 1 - (0.6f * Math.min(useTime / drawTime, 1));
+          float fov = 1 - (0.6f * Math.min(useTime / tool.getOrDefault(TinkerData.DRAWTIME, 20), 1));
           setZoom(modifier, entity, fov);
         }
       }

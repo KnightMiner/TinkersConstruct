@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
@@ -25,9 +26,8 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
-import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
 
@@ -74,7 +74,7 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
         speed *= tool.getStats().get(ToolStats.ATTACK_SPEED);
       }
       // use attack speed together with drawspeed to ensure you are not making insanely slow weapons and throwing to bypass
-      tool.getPersistentData().putInt(KEY_DRAWTIME, (int)Math.ceil(20f / speed));
+      tool.set(TinkerData.DRAWTIME, (int)Math.ceil(20f / speed));
       GeneralInteractionModifierHook.startUsing(tool, modifier.id(), player, hand);
       return InteractionResult.CONSUME;
     }
@@ -120,7 +120,7 @@ public enum ThrowingModule implements ModifierModule, GeneralInteractionModifier
   @Override
   public void beforeReleaseUsing(ToolStackView tool, ModifierEntry modifier, LivingEntity entity, int useDuration, int timeLeft, ModifierEntry activeModifier) {
     // when using a tool that doesn't fire right click hooks, allow throwing here provided its out of ammo
-    if (activeModifier == ModifierEntry.EMPTY && !tool.getPersistentData().contains(ModifiableLauncherItem.KEY_DRAWBACK_AMMO)) {
+    if (activeModifier == ModifierEntry.EMPTY && !tool.has(TinkerData.DRAWBACK_AMMO)) {
       onStoppedUsing(tool, modifier, entity, timeLeft);
     }
   }

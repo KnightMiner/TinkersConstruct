@@ -56,7 +56,6 @@ import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
 import slimeknights.tconstruct.library.tools.helper.TooltipUtil;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
@@ -65,8 +64,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import static slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook.KEY_DRAWTIME;
 
 /** Base class for any items that launch projectiles */
 public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implements IModifiableDisplay {
@@ -314,8 +311,7 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
   /** Same as {@link #onStopUsing(ItemStack, LivingEntity, int)} but uses a tool. */
   protected void onStopUsing(ToolStackView tool, LivingEntity entity, int timeLeft) {
     UsingToolModifierHook.afterStopUsing(tool, entity, timeLeft);
-    ModDataNBT data = tool.getPersistentData();
-    data.remove(KEY_DRAWTIME);
+    tool.remove(TinkerData.DRAWTIME);
     tool.remove(TinkerData.DRAWBACK_AMMO);
   }
 
@@ -324,7 +320,7 @@ public abstract class ModifiableLauncherItem extends ProjectileWeaponItem implem
     // play the sound at the end of loading as an indicator its loaded, texture is another indicator
     int duration = getUseDuration(bow);
     if (!level.isClientSide) {
-      if (duration - chargeRemaining == ModifierUtil.getPersistentInt(bow, KEY_DRAWTIME, -1)) {
+      if (duration - chargeRemaining == bow.getOrDefault(TinkerData.DRAWTIME, -1)) {
         level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, SoundSource.PLAYERS, 0.75F, 1.0F);
       }
     }

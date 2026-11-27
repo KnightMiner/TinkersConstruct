@@ -56,8 +56,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static slimeknights.tconstruct.library.modifiers.hook.interaction.GeneralInteractionModifierHook.KEY_DRAWTIME;
-
 public class ModifiableCrossbowItem extends ModifiableLauncherItem {
   private static final String PROJECTILE_KEY = "item.minecraft.crossbow.projectile";
   @Getter
@@ -305,7 +303,7 @@ public class ModifiableCrossbowItem extends ModifiableLauncherItem {
 
     // any reason we shouldn't load?
     // specifically: broken, not fully charged, already have ammo
-    if (tool.isBroken() || getUseDuration(bow) - chargeRemaining < tool.getPersistentData().getInt(KEY_DRAWTIME) || tool.has(TinkerData.CROSSBOW_AMMO)) {
+    if (tool.isBroken() || getUseDuration(bow) - chargeRemaining < tool.getOrDefault(TinkerData.DRAWTIME, 20) || tool.has(TinkerData.CROSSBOW_AMMO)) {
       return;
     }
 
