@@ -26,13 +26,14 @@ import slimeknights.tconstruct.library.recipe.tinkerstation.ITinkerStationRecipe
 import slimeknights.tconstruct.library.recipe.tinkerstation.TinkerStationRecipeInput;
 import slimeknights.tconstruct.library.tools.SlotType.SlotCount;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
-import slimeknights.tconstruct.library.tools.component.ModifierSlots;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitHook;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.DummyToolStack;
 import slimeknights.tconstruct.library.tools.stack.LazyToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.item.ModifierCrystalItem;
 
@@ -184,9 +185,9 @@ public abstract class AbstractModifierRecipe implements ITinkerStationRecipe, ID
       variant.applyToTool(tool, result.getHolder());
     }
     // build slot data
-    ModifierSlots.Builder slots = ModifierSlots.builder();
-    result.getHook(ModifierHooks.ADD_SLOTS).addSlots(tool, result, slots);
-    return slots.buildCounts();
+    VolatileBuilder builder = new VolatileBuilder();
+    result.getHook(ModifierHooks.VOLATILE_DATA).addVolatileData(tool, result, builder, tool);
+    return builder.get(BuilderKeys.SLOTS).buildCounts();
   }
 
   @Override

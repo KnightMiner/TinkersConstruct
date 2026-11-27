@@ -2,6 +2,7 @@ package slimeknights.tconstruct.library.tools.definition;
 
 import com.google.common.collect.ImmutableMap;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import org.junit.jupiter.api.Test;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.component.ModifierSlots;
@@ -13,8 +14,10 @@ import slimeknights.tconstruct.library.tools.definition.module.build.MultiplySta
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.part.IToolPart;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 import slimeknights.tconstruct.library.tools.stat.ModifierStatsBuilder;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.test.BaseMcTest;
@@ -131,13 +134,13 @@ class ToolDefinitionDataTest extends BaseMcTest {
 
   @Test
   void data_buildSlots_withData() {
-    ModifierSlots.Builder builder = ModifierSlots.builder();
+    VolatileBuilder builder = new VolatileBuilder();
     ToolDefinitionData data = ToolDefinitionDataBuilder
       .builder()
       .module(new ToolSlotsModule(ImmutableMap.of(SlotType.UPGRADE, 5, SlotType.ABILITY, 2)))
       .build();
-    data.getHook(ToolHooks.ADD_SLOTS).addSlots(mock(ToolContext.class), builder);
-    ModifierSlots slots = builder.build();
+    data.getHook(ToolHooks.VOLATILE_DATA).addVolatileData(mock(ToolContext.class), builder, mock(MutableDataComponentHolder.class));
+    ModifierSlots slots = builder.get(BuilderKeys.SLOTS).build();
     assertThat(slots.get(SlotType.UPGRADE)).isEqualTo(5);
     assertThat(slots.get(SlotType.ABILITY)).isEqualTo(2);
     for (SlotType type : SlotType.getAllSlotTypes()) {
