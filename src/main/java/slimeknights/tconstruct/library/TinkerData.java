@@ -100,6 +100,8 @@ public class TinkerData {
   public static final DeferredDataComponent<SimpleItemContent> CROSSBOW_AMMO = DATA_COMPONENTS.registerPersistent("crossbow_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
   /** Ammo stored while drawing back a bow or crossbow. May be set but empty to indicate we are drawing but are not visually displaying the ammo. */
   public static final DeferredDataComponent<SimpleItemContent> DRAWBACK_AMMO = DATA_COMPONENTS.registerPersistent("drawback_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
+  /** Index on the tool that stores the material for the fishing hook. Used by {@link slimeknights.tconstruct.tools.modules.interaction.FishingModule} to set the material for the renderer. */
+  public static final DeferredDataComponent<Integer> HOOK_MATERIAL = DATA_COMPONENTS.registerPersistent("hook_material", ExtraCodecs.NON_NEGATIVE_INT, ByteBufCodecs.VAR_INT);
 
   /* Modifiers */
   /** Set of resource locations used for various behavior flags. See {@link slimeknights.tconstruct.library.tools.component.VolatileFlags} */
@@ -143,7 +145,7 @@ public class TinkerData {
       CRAFTED_MODIFIERS, ALL_MODIFIERS
     );
     // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
-    ToolStack.registerVolatile(TOOL_STATS, STAT_MULTIPLIERS, VOLATILE_SLOTS, VOLATILE_FLAGS, VOLATILE_INTEGER, ALL_MODIFIERS);
+    ToolStack.registerVolatile(TOOL_STATS, STAT_MULTIPLIERS, VOLATILE_SLOTS, VOLATILE_FLAGS, VOLATILE_INTEGER, ALL_MODIFIERS, HOOK_MATERIAL);
     // vanilla components - this only affects tool stacks so no harm marking it with our system
     ToolStack.registerVolatile(DataComponents.RARITY);
   }

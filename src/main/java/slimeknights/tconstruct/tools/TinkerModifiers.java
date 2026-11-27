@@ -120,6 +120,7 @@ import slimeknights.tconstruct.library.modifiers.modules.build.StatBoostModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.StatCopyModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.SwappableSlotModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.SwappableToolTraitsModule;
+import slimeknights.tconstruct.library.modifiers.modules.build.VolatileDataModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.VolatileFlagModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.VolatileFloatModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.VolatileIntModule;
@@ -490,6 +491,7 @@ public final class TinkerModifiers extends TinkerModule {
       ModifierModule.LOADER.register(getResource("stat_copy"), StatCopyModule.LOADER);
       ModifierModule.LOADER.register(getResource("set_stat"), SetStatModule.LOADER);
       ModifierModule.LOADER.register(getResource("trait"), ModifierTraitModule.LOADER);
+      ModifierModule.LOADER.register(getResource("volatile_data"), VolatileDataModule.LOADER);
       ModifierModule.LOADER.register(getResource("volatile_flag"), VolatileFlagModule.LOADER);
       ModifierModule.LOADER.register(getResource("volatile_int"), VolatileIntModule.LOADER);
       ModifierModule.LOADER.register(getResource("volatile_float"), VolatileFloatModule.LOADER);

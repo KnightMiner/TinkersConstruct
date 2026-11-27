@@ -77,6 +77,7 @@ import slimeknights.tconstruct.library.tools.definition.module.build.MultiplySta
 import slimeknights.tconstruct.library.tools.definition.module.build.SetStatsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolSlotsModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.ToolTraitsModule;
+import slimeknights.tconstruct.library.tools.definition.module.build.VolatileDataModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileFlagModule;
 import slimeknights.tconstruct.library.tools.definition.module.build.VolatileIntModule;
 import slimeknights.tconstruct.library.tools.definition.module.display.CustomMaterialName;
@@ -302,6 +303,7 @@ public final class TinkerTools extends TinkerModule {
       ToolModule.LOADER.register(getResource("item_abilities"), ItemAbilitiesModule.LOADER);
       ToolModule.LOADER.register(getResource("traits"), ToolTraitsModule.LOADER);
       ToolModule.LOADER.register(getResource("modifier_slots"), ToolSlotsModule.LOADER);
+      ToolModule.LOADER.register(getResource("volatile_data"), VolatileDataModule.LOADER);
       ToolModule.LOADER.register(getResource("volatile_flag"), VolatileFlagModule.LOADER);
       ToolModule.LOADER.register(getResource("volatile_int"), VolatileIntModule.LOADER);
       // harvest

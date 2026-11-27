@@ -31,6 +31,7 @@ import java.util.List;
  * @see slimeknights.tconstruct.library.tools.definition.module.build.VolatileFlagModule
  * @see VolatileIntModule
  * @see VolatileFloatModule
+ * @see VolatileDataModule
  */
 public record VolatileFlagModule(ResourceLocation flag, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFlagModule>defaultHooks(ModifierHooks.VOLATILE_DATA);

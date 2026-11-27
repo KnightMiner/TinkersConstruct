@@ -18,6 +18,7 @@ import java.util.List;
 /**
  * Module that just sets a boolean flag to true on a tool.
  * @see VolatileFlagModule
+ * @see VolatileDataModule
  * @see slimeknights.tconstruct.library.modifiers.modules.build.VolatileIntModule
  */
 public record VolatileIntModule(ResourceLocation flag, int value) implements ToolModule, VolatileDataToolHook {

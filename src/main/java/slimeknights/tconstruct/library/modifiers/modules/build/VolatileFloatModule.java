@@ -27,9 +27,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Module that just sets a float on a tool to the given value
+ * Module that just sets a float on a tool to the given value.
+ * TODO: just use tool stats I think, though need to figure out how projectiles do it - maybe just copy specific values?
  * @see VolatileFlagModule
  * @see VolatileIntModule
+ * @see VolatileDataModule
  */
 public record VolatileFloatModule(ResourceLocation flag, LevelingValue value, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileFloatModule>defaultHooks(ModifierHooks.VOLATILE_DATA);

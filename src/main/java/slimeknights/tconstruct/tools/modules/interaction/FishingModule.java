@@ -1,6 +1,5 @@
 package slimeknights.tconstruct.tools.modules.interaction;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -16,7 +15,7 @@ import net.neoforged.neoforge.common.ItemAbility;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.util.OffhandCooldownTracker;
-import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.armor.EquipmentChangeModifierHook;
@@ -48,7 +47,6 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
   INSTANCE;
 
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<FishingModule>defaultHooks(ModifierHooks.GENERAL_INTERACT, ModifierHooks.ITEM_ABILITY, ModifierHooks.EQUIPMENT_CHANGE);
-  public static final ResourceLocation HOOK_MATERIAL = TConstruct.getResource("hook_material");
   public static final RecordLoadable<FishingModule> LOADER = new SingletonLoader<>(INSTANCE);
 
   @Override
@@ -95,7 +93,7 @@ public enum FishingModule implements ModifierModule, GeneralInteractionModifierH
           CombatFishingHook hook = new CombatFishingHook(player, level, (int) luck, (int) lure, velocity, inaccuracy);
           hook.setPower(ConditionalStatModifierHook.getModifiedStat(tool, player, ToolStats.PROJECTILE_DAMAGE));
           // apply material for the renderer
-          hook.setMaterial(tool.getMaterial(tool.getVolatileData().getInt(HOOK_MATERIAL)).id());
+          hook.setMaterial(tool.getMaterial(tool.getOrDefault(TinkerData.HOOK_MATERIAL, 0)).id());
 
           // copy tool data to the bobber for modifier hooks
           ModifierEntries modifiers = tool.getModifiers();

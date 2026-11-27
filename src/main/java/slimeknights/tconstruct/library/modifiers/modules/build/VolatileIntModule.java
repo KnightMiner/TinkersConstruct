@@ -31,6 +31,7 @@ import java.util.List;
  * Module that just sets a integer on a tool to the given value
  * @see slimeknights.tconstruct.library.tools.definition.module.build.VolatileIntModule
  * @see VolatileFloatModule
+ * @see VolatileDataModule
  */
 public record VolatileIntModule(ResourceLocation flag, LevelingInt value, ModifierCondition<ToolContext> condition) implements VolatileDataModifierHook, ProjectileShootModifierHook, ModifierModule, ConditionalModule<ToolContext> {
   private static final List<ModuleHook<?>> DEFAULT_HOOKS = HookProvider.<VolatileIntModule>defaultHooks(ModifierHooks.VOLATILE_DATA);
