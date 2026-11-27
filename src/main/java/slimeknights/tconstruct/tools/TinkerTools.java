@@ -281,7 +281,7 @@ public final class TinkerTools extends TinkerModule {
     // tool stack restrictions
     ToolStack.registerRestricted(DataComponents.DAMAGE);
     ToolStack.registerRestricted(
-      TinkerData.BROKEN, TinkerData.MATERIALS,
+      TinkerData.TOOL_REBUILDING, TinkerData.BROKEN, TinkerData.MATERIALS,
       TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS,
       TinkerData.PERSISTENT_SLOTS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS,
       TinkerData.CRAFTED_MODIFIERS, TinkerData.ALL_MODIFIERS

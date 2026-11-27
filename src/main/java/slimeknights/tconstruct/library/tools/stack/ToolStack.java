@@ -603,6 +603,9 @@ public class ToolStack implements ToolStackView {
       return;
     }
 
+    // mark the stack as rebuilding
+    stack.set(TinkerData.TOOL_REBUILDING, Unit.INSTANCE);
+
     // clear out volatile data
     for (DataComponentType<?> type : VOLATILE_COMPONENTS) {
       stack.remove(type);
@@ -665,6 +668,9 @@ public class ToolStack implements ToolStackView {
     for (ModifierEntry entry : modifierList) {
       entry.getHook(ModifierHooks.RAW_DATA).addRawData(this, entry);
     }
+
+    // rebuilding complete
+    stack.remove(TinkerData.TOOL_REBUILDING);
   }
 
 
@@ -700,7 +706,8 @@ public class ToolStack implements ToolStackView {
    */
   public static void verifyComponents(ItemStack stack, ToolDefinition definition) {
     // only rebuild stats if we either have materials, or we don't need materials
-    if (definition.isDataLoaded() && !TooltipUtil.isDisplay(stack) && (!definition.hasMaterials() || MaterialRegistry.isFullyLoaded() && stack.has(TinkerData.MATERIALS))) {
+    // ensure we do not rebuild if already rebuilding, some of the patch set methods send us that way
+    if (!stack.has(TinkerData.TOOL_REBUILDING) && definition.isDataLoaded() && !TooltipUtil.isDisplay(stack) && (!definition.hasMaterials() || MaterialRegistry.isFullyLoaded() && stack.has(TinkerData.MATERIALS))) {
       new ToolStack(stack, definition).rebuildStats();
     }
   }

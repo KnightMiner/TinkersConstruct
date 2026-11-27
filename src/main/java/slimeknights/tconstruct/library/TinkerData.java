@@ -65,6 +65,9 @@ public class TinkerData {
   public static final DeferredDataComponent<Unit> DISPLAY = DATA_COMPONENTS.registerUnit("display");
 
   /* Tool */
+  /** Marker used by {@link slimeknights.tconstruct.library.tools.stack.ToolStack} to indicate the tool is actively rebuilding. Suppresses some behaviors such as component verification. */
+  public static final DeferredDataComponent<Unit> TOOL_REBUILDING = DATA_COMPONENTS.registerTransient("tool_rebuilding", MantleStreamCodecs.UNIT);
+
   /** If true, the tool is currently broken and should not perform any actions that require durability. */
   public static final DeferredDataComponent<Unit> BROKEN = DATA_COMPONENTS.registerUnit("broken");
   /** Holds a single material on an item. Used for tool parts and other material items */
