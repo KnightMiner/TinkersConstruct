@@ -34,7 +34,6 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.data.tags.MaterialTagProvider;
 import slimeknights.tconstruct.common.registration.object.EnumItem;
-import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.json.predicate.tool.HasComponentPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasMaterialPredicate;
 import slimeknights.tconstruct.library.json.predicate.tool.HasModifierPredicate;
@@ -277,19 +276,6 @@ public final class TinkerTools extends TinkerModule {
     });
     ModifierHooks.init();
     ToolHooks.init();
-
-    // tool stack restrictions
-    ToolStack.registerRestricted(DataComponents.DAMAGE);
-    ToolStack.registerRestricted(
-      TinkerData.TOOL_REBUILDING, TinkerData.BROKEN, TinkerData.MATERIALS,
-      TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS,
-      TinkerData.PERSISTENT_SLOTS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS, TinkerData.VOLATILE_INTEGER,
-      TinkerData.CRAFTED_MODIFIERS, TinkerData.ALL_MODIFIERS
-    );
-    // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
-    ToolStack.registerVolatile(TinkerData.TOOL_STATS, TinkerData.STAT_MULTIPLIERS, TinkerData.VOLATILE_SLOTS, TinkerData.VOLATILE_FLAGS, TinkerData.VOLATILE_INTEGER, TinkerData.ALL_MODIFIERS);
-    // vanilla components - this only affects tool stacks so no harm marking it with our system
-    ToolStack.registerVolatile(DataComponents.RARITY);
   }
 
   @SubscribeEvent

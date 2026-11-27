@@ -1,12 +1,14 @@
 package slimeknights.tconstruct.library;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
@@ -32,6 +34,7 @@ import slimeknights.tconstruct.library.tools.component.StatMultipliers;
 import slimeknights.tconstruct.library.tools.component.StatValues;
 import slimeknights.tconstruct.library.tools.component.ToolMaterials;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.ToolStack;
 
 /** Handles registration of data components and data attachments added by Tinkers. */
 public class TinkerData {
@@ -44,6 +47,7 @@ public class TinkerData {
   public static void register(IEventBus bus) {
     DATA_COMPONENTS.register(bus);
     ATTACHMENTS.register(bus);
+    bus.addListener(FMLCommonSetupEvent.class, TinkerData::commonSetup);
   }
 
   /** Handles modifiers storing extra tool data on entities. */
@@ -126,4 +130,21 @@ public class TinkerData {
   public static final DeferredDataComponent<Unit> INFINITY = DATA_COMPONENTS.registerTransient("infinity", MantleStreamCodecs.UNIT);
   /** Marker used by {@link slimeknights.tconstruct.tools.modules.interaction.sling.SlingKnockbackModule} to mark that the melee attack is from the module */
   public static final DeferredDataComponent<Unit> SLING_KNOCKBACK = DATA_COMPONENTS.registerTransient("sling_knockback", MantleStreamCodecs.UNIT);
+
+
+  /** Handle any extra setup with data */
+  private static void commonSetup(FMLCommonSetupEvent event) {
+    // tool stack restrictions
+    ToolStack.registerRestricted(DataComponents.DAMAGE);
+    ToolStack.registerRestricted(
+      TOOL_REBUILDING, BROKEN, MATERIALS,
+      TOOL_STATS, STAT_MULTIPLIERS,
+      PERSISTENT_SLOTS, VOLATILE_SLOTS, VOLATILE_FLAGS, TinkerData.VOLATILE_INTEGER,
+      CRAFTED_MODIFIERS, ALL_MODIFIERS
+    );
+    // volatile data - these will be rebuilt, but we clear them anyway to prevent them being accessed during rebuild
+    ToolStack.registerVolatile(TOOL_STATS, STAT_MULTIPLIERS, VOLATILE_SLOTS, VOLATILE_FLAGS, VOLATILE_INTEGER, ALL_MODIFIERS);
+    // vanilla components - this only affects tool stacks so no harm marking it with our system
+    ToolStack.registerVolatile(DataComponents.RARITY);
+  }
 }
