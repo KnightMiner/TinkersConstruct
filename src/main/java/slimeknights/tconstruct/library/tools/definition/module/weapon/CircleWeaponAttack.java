@@ -11,11 +11,11 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public record CircleWeaponAttack(LevelingValue diameters) implements MeleeHitToo
     // no need for fully charged for scythe sweep, easier than sword sweep
     // basically sword sweep logic, just deals full damage to all entities (and full effects)
     // but also takes more durability loss
-    double range = diameters.compute(tool.getVolatileData().getInt(IModifiable.EXPANDED));
+    double range = diameters.compute(VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
     // allow having no range until modified with range
     if (range > 0) {
       double rangeSq = range * range;

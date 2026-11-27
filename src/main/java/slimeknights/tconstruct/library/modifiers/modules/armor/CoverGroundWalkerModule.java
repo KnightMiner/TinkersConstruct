@@ -17,7 +17,7 @@ import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /**
@@ -39,7 +39,7 @@ public record CoverGroundWalkerModule(BlockState state, LevelingValue radius, Mo
 
   @Override
   public float getRadius(ToolStackView tool, ModifierEntry modifier) {
-    return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
+    return radius.compute(modifier.getEffectiveLevel() + VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
   }
 
   @Override

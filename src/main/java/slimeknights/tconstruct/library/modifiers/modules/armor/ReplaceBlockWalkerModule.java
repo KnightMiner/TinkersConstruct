@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.common.BlockStateLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -23,7 +23,7 @@ import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.json.predicate.tool.ToolContextPredicate;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
@@ -50,7 +50,7 @@ public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, Leve
 
   @Override
   public float getRadius(ToolStackView tool, ModifierEntry modifier) {
-    return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
+    return radius.compute(modifier.getEffectiveLevel() + VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
   }
 
   @Override
@@ -71,7 +71,7 @@ public record ReplaceBlockWalkerModule(List<BlockReplacement> replacements, Leve
           BlockState state = replacement.state;
           if (replacement.target.matches(world.getBlockState(mutable))
               && state.canSurvive(world, mutable) && world.isUnobstructed(state, mutable, CollisionContext.empty())
-              && !ForgeEventFactory.onBlockPlace(living, BlockSnapshot.create(world.dimension(), world, mutable), Direction.UP)) {
+              && !EventHooks.onBlockPlace(living, BlockSnapshot.create(world.dimension(), world, mutable), Direction.UP)) {
             world.setBlockAndUpdate(mutable, state);
             world.scheduleTick(mutable, state.getBlock(), Mth.nextInt(living.getRandom(), 60, 120));
 

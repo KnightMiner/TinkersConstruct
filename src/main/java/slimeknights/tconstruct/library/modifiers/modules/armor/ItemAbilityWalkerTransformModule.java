@@ -28,8 +28,8 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.modifiers.modules.util.ModuleBuilder;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.MutableUseOnContext;
 import slimeknights.tconstruct.library.utils.Util;
@@ -63,7 +63,7 @@ public record ItemAbilityWalkerTransformModule(ItemAbility ability, SoundEvent s
 
   @Override
   public float getRadius(ToolStackView tool, ModifierEntry modifier) {
-    return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
+    return radius.compute(modifier.getEffectiveLevel() + VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
   }
 
   @Override

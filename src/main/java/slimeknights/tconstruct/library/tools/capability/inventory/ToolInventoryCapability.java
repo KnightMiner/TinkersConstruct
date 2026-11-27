@@ -2,7 +2,6 @@ package slimeknights.tconstruct.library.tools.capability.inventory;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -30,11 +29,12 @@ import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.recipe.partbuilder.Pattern;
 import slimeknights.tconstruct.library.tools.capability.ToolCapabilityProvider.IToolCapabilityProvider;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
-import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
+import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 import slimeknights.tconstruct.tools.menu.ToolContainerMenu;
 
 import javax.annotation.Nonnull;
@@ -49,9 +49,6 @@ import java.util.stream.IntStream;
 /** Capability for a tool with an inventory */
 @RequiredArgsConstructor
 public class ToolInventoryCapability extends InventoryModifierHookIterator<ModifierEntry> implements IItemHandlerModifiable {
-  /** Boolean key to set in volatile mod data for the total slot count across all modifiers */
-  public static final ResourceLocation TOTAL_SLOTS = TConstruct.getResource("total_item_slots");
-
   /** Modifier hook instance to make an inventory modifier */
   public static final ModuleHook<InventoryModifierHook> HOOK = ModifierHooks.register(TConstruct.getResource("inventory"), InventoryModifierHook.class, InventoryModifierHookMerger::new, new InventoryModifierHook() {
     @Override
@@ -99,7 +96,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
   @Override
   public int getSlots() {
     if (slots == -1) {
-      slots = tool.get().getVolatileData().getInt(TOTAL_SLOTS);
+      slots = VolatileIntegers.get(tool.get(), VolatileIntegers.TOTAL_SLOTS);
     }
     return slots;
   }
@@ -324,7 +321,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
   /** Interface for an inventory modifier to use */
   @SuppressWarnings("unused")
   public interface InventoryModifierHook {
-    /** Gets the number of item slots used by the given tool. The number returned here must also be added into volatile data under {@link #TOTAL_SLOTS} */
+    /** Gets the number of item slots used by the given tool. The number returned here must also be added into volatile data under {@link VolatileIntegers#TOTAL_SLOTS} */
     int getSlots(ToolStackView tool, ModifierEntry modifier);
 
     /** Sets the stack in the given slot */
@@ -495,7 +492,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
 
     @Override
     public <T> LazyOptional<T> getCapability(ToolStackView tool, Capability<T> cap) {
-      if (cap == ForgeCapabilities.ITEM_HANDLER && tool.getVolatileData().getInt(TOTAL_SLOTS) > 0) {
+      if (cap == ForgeCapabilities.ITEM_HANDLER && VolatileIntegers.get(tool, VolatileIntegers.TOTAL_SLOTS) > 0) {
         return handler.cast();
       }
       return LazyOptional.empty();
@@ -511,8 +508,8 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
   /* Helpers */
 
   /** Adds the given number of slots to the data */
-  public static void addSlots(ModDataNBT volatileData, int count) {
-    volatileData.putInt(TOTAL_SLOTS, volatileData.getInt(TOTAL_SLOTS) + count);
+  public static void addSlots(VolatileBuilder builder, int count) {
+    builder.get(BuilderKeys.INTEGERS).add(VolatileIntegers.TOTAL_SLOTS, count);
   }
 
 
@@ -549,7 +546,7 @@ public class ToolInventoryCapability extends InventoryModifierHookIterator<Modif
           if (syncType == ToolSyncType.FULL_STACK) {
             buf.writeItem(stack);
           } else if (syncType == ToolSyncType.MINIMAL) {
-            buf.writeVarInt(ModifierUtil.getVolatileInt(stack, TOTAL_SLOTS));
+            buf.writeVarInt(VolatileIntegers.get(stack, VolatileIntegers.TOTAL_SLOTS));
             buf.writeEnum(CraftingType.fromStack(stack));
             buf.writeBoolean(VolatileFlags.hasFlag(stack, VolatileFlags.INCLUDE_OFFHAND));
           }

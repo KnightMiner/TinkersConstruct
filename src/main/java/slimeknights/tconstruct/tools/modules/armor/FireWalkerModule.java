@@ -14,8 +14,8 @@ import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.armor.ArmorWalkRadiusModule;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 /** Module that places fire as you walk */
@@ -29,7 +29,7 @@ public record FireWalkerModule(LevelingValue radius) implements ModifierModule, 
 
   @Override
   public float getRadius(ToolStackView tool, ModifierEntry modifier) {
-    return radius.compute(modifier.getEffectiveLevel() + tool.getVolatileData().getInt(IModifiable.EXPANDED));
+    return radius.compute(modifier.getEffectiveLevel() + VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
   }
 
   @Override

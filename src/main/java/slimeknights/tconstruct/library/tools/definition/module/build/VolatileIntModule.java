@@ -9,6 +9,7 @@ import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
 
@@ -38,6 +39,6 @@ public record VolatileIntModule(ResourceLocation flag, int value) implements Too
 
   @Override
   public void addVolatileData(ToolContext context, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
-    volatileData.putInt(flag, volatileData.getInt(flag) + value);
+    builder.get(BuilderKeys.INTEGERS).add(flag, value);
   }
 }

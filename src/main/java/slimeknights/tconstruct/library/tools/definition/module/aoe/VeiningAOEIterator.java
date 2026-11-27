@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.ArrayDeque;
@@ -31,7 +31,7 @@ public record VeiningAOEIterator(int maxDistance) implements AreaOfEffectIterato
 
   @Override
   public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
-    int expanded = tool.getVolatileData().getInt(IModifiable.EXPANDED);
+    int expanded = VolatileIntegers.get(tool, VolatileIntegers.EXPANDED);
     return calculate(state, context.getLevel(), context.getClickedPos(), maxDistance + expanded);
   }
 

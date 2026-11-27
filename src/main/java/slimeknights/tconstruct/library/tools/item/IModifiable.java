@@ -1,16 +1,11 @@
 package slimeknights.tconstruct.library.tools.item;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 
 /** Base interface for all tools that can receive modifiers */
 public interface IModifiable extends ItemLike {
-  /** Volatile int key to increase a tool's range */
-  ResourceLocation EXPANDED = TConstruct.getResource("expanded");
-
   /** Gets the definition of this tool for building and applying modifiers */
   ToolDefinition getToolDefinition();
 

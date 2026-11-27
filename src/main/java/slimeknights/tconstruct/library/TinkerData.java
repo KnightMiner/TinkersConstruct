@@ -98,8 +98,11 @@ public class TinkerData {
   public static final DeferredDataComponent<SimpleItemContent> DRAWBACK_AMMO = DATA_COMPONENTS.registerPersistent("drawback_ammo", SimpleItemContent.CODEC, SimpleItemContent.STREAM_CODEC);
 
   /* Modifiers */
-  /** Map of resource location to unit (present or absent) used for various behavior flags. */
-  public static final DeferredDataComponent<SetComponent<ResourceLocation>> VOLATILE_FLAGS = DATA_COMPONENTS.registerPersistent("modifier_string", SetComponent.codec(ResourceLocation.CODEC), SetComponent.streamCodec(ResourceLocation.STREAM_CODEC));
+  /** Set of resource locations used for various behavior flags. See {@link slimeknights.tconstruct.library.tools.component.VolatileFlags} */
+  public static final DeferredDataComponent<SetComponent<ResourceLocation>> VOLATILE_FLAGS = DATA_COMPONENTS.registerPersistent("volatile_flags", SetComponent.codec(ResourceLocation.CODEC), SetComponent.streamCodec(ResourceLocation.STREAM_CODEC));
+  /** Map of resource location to volatile integer. Used in place of modifier levels for some hardcoded interactions. See {@link slimeknights.tconstruct.library.tools.component.VolatileIntegers} */
+  public static final DeferredDataComponent<ResourceMap<Integer>> VOLATILE_INTEGER = DATA_COMPONENTS.registerPersistent("volatile_integer", ResourceMap.codec(Codec.INT), ResourceMap.streamCodec(ByteBufCodecs.VAR_INT));
+
   /** Map of modifier ID to variant string. Used for crystalshot variants. */
   public static final DeferredDataComponent<ResourceMap<String>> MODIFIER_STRING = DATA_COMPONENTS.registerPersistent("modifier_string", ResourceMap.codec(SwappableString.VALID_CODEC), ResourceMap.streamCodec(ByteBufCodecs.STRING_UTF8));
   /** Map of modifier ID to {@link MaterialVariant}. Used for embellishments. */

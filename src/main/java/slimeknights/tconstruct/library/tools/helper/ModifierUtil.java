@@ -116,16 +116,6 @@ public final class ModifierUtil {
 
   /** Shortcut to get a volatile int value when the tool stack is not needed otherwise */
   @Deprecated(forRemoval = true)
-  public static int getVolatileInt(ItemStack stack, ResourceLocation flag) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null && nbt.contains(ToolStack.TAG_VOLATILE_MOD_DATA, Tag.TAG_COMPOUND)) {
-      return nbt.getCompound(ToolStack.TAG_VOLATILE_MOD_DATA).getInt(flag.toString());
-    }
-    return 0;
-  }
-
-  /** Shortcut to get a volatile int value when the tool stack is not needed otherwise */
-  @Deprecated(forRemoval = true)
   public static int getPersistentInt(ItemStack stack, ResourceLocation flag, int defealtValue) {
     CompoundTag nbt = stack.getTag();
     if (nbt != null && nbt.contains(ToolStack.TAG_PERSISTENT_MOD_DATA, Tag.TAG_COMPOUND)) {

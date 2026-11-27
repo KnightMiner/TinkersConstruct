@@ -29,10 +29,9 @@ import slimeknights.tconstruct.common.config.Config.ToolSyncType;
 import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.library.fluid.SimpleFluidTank;
 import slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper;
-import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability;
 import slimeknights.tconstruct.library.tools.capability.inventory.ToolInventoryCapability.CraftingType;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.stack.ToolStack;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.tools.TinkerTools;
@@ -112,7 +111,7 @@ public class ToolContainerMenu extends AbstractContainerMenu {
       craftingType = buffer.readEnum(CraftingType.class);
       includeOffhand = buffer.readBoolean();
     } else {
-      size = ModifierUtil.getVolatileInt(stack, ToolInventoryCapability.TOTAL_SLOTS);
+      size = VolatileIntegers.get(stack, VolatileIntegers.TOTAL_SLOTS);
       craftingType = CraftingType.fromStack(stack);
       includeOffhand = VolatileFlags.hasFlag(stack, VolatileFlags.INCLUDE_OFFHAND);
     }

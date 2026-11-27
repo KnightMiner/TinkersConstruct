@@ -176,8 +176,8 @@ import slimeknights.tconstruct.library.tools.capability.inventory.InventoryMenuM
 import slimeknights.tconstruct.library.tools.capability.inventory.InventoryModule;
 import slimeknights.tconstruct.library.tools.capability.inventory.InventorySlotMenuModule;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
@@ -187,7 +187,6 @@ import slimeknights.tconstruct.tools.TinkerItemAbilities;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
-import slimeknights.tconstruct.tools.entity.ThrownTool;
 import slimeknights.tconstruct.tools.item.CrystalshotItem;
 import slimeknights.tconstruct.tools.logic.ModifierEvents;
 import slimeknights.tconstruct.tools.modules.AutosmeltModule;
@@ -378,16 +377,16 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.blunted).addModule(new VolatileFlagModule(EntityInteractionModifierHook.NO_MELEE)).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.magnetic)
       .addModule(MobEffectModule.builder(TinkerEffects.magnetic).time(RandomLevelingValue.flat(40)).buildToolUsage())
-      .addModule(new VolatileIntModule(ThrownTool.MAGNET, LevelingInt.eachLevel(1)))
+      .addModule(new VolatileIntModule(VolatileIntegers.MAGNET, LevelingInt.eachLevel(1)))
       .addModule(new ArmorLevelModule(TinkerDataKeys.MAGNET, false, null));
 
     // general abilities
     buildModifier(ModifierIds.reach)
       .addModule(AttributeModule.builder(Attributes.BLOCK_INTERACTION_RANGE, Operation.ADD_VALUE).eachLevel(1))
       .addModule(AttributeModule.builder(Attributes.ENTITY_INTERACTION_RANGE, Operation.ADD_VALUE).eachLevel(1));
-    buildModifier(ModifierIds.expanded).addModule(new VolatileIntModule(IModifiable.EXPANDED, LevelingInt.eachLevel(1)));
+    buildModifier(ModifierIds.expanded).addModule(new VolatileIntModule(VolatileIntegers.EXPANDED, LevelingInt.eachLevel(1)));
     // fire primer is just expanded now, isn't that neat? this might have a hidden application
-    buildModifier(ModifierIds.fireprimer).addModule(new VolatileIntModule(IModifiable.EXPANDED, LevelingInt.flat(1))).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
+    buildModifier(ModifierIds.fireprimer).addModule(new VolatileIntModule(VolatileIntegers.EXPANDED, LevelingInt.flat(1))).levelDisplay(ModifierLevelDisplay.NO_LEVELS);
     buildModifier(ModifierIds.glowing)
       .levelDisplay(ModifierLevelDisplay.SINGLE_LEVEL)
       .addModule(new PlaceGlowModule(5))
@@ -622,7 +621,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
     buildModifier(ModifierIds.fuse).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ProjectileFuseModule(ParticleTypes.FLAME, LevelingInt.flat(10)));
 
     // ammo
-    buildModifier(ModifierIds.multishot).addModule(new VolatileIntModule(BowAmmoModifierHook.MULTISHOT, LevelingInt.eachLevel(2)));
+    buildModifier(ModifierIds.multishot).addModule(new VolatileIntModule(VolatileIntegers.MULTISHOT, LevelingInt.eachLevel(2)));
     buildModifier(ModifierIds.trickQuiver).priority(70) // before bulk quiver
       .addModule(QuiverInventoryModule.builder().pattern(pattern("tipped_arrow")).flatLimit(32).slotsPerLevel(3))
       .addModule(TrickQuiverModule.INSTANCE)
@@ -835,7 +834,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
         .modifierKey(ModifierIds.blockade).build());
     buildModifier(ModifierIds.boundless)
       .addModule(AttributeModule.builder(TinkerAttributes.PROTECTION_CAP, Operation.ADD_VALUE).tooltipStyle(TooltipStyle.PERCENT).toolTag(ARMOR).amount(0.05f, 0.05f));
-    buildModifier(ModifierIds.reflecting).addModule(new VolatileIntModule(ModifierEvents.REFLECTING, LevelingInt.eachLevel(40)));
+    buildModifier(ModifierIds.reflecting).addModule(new VolatileIntModule(VolatileIntegers.REFLECTING, LevelingInt.eachLevel(40)));
 
     // interaction
     buildModifier(ModifierIds.pathing)
@@ -860,7 +859,7 @@ public class ModifierProvider extends AbstractModifierProvider implements ICondi
       .addModule(HarvestModule.INSTANCE)
       .addModule(ShowOffhandModule.DISALLOW_BROKEN).addModule(ShowInteractionSourceModule.INSTANCE);
     buildModifier(ModifierIds.throwing).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(ThrowingModule.INSTANCE);
-    buildModifier(ModifierIds.returning).addModule(new VolatileIntModule(ThrownTool.LOYALTY, LevelingInt.eachLevel(1)));
+    buildModifier(ModifierIds.returning).addModule(new VolatileIntModule(VolatileIntegers.LOYALTY, LevelingInt.eachLevel(1)));
     buildModifier(ModifierIds.channeling).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new ChannelingModule(0.15f, 0.65f, 1.0f, false));
     buildModifier(ModifierIds.ballista).levelDisplay(ModifierLevelDisplay.NO_LEVELS).addModule(new VolatileFlagModule(VolatileFlags.KEY_BALLISTA));
     buildModifier(ModifierIds.fins)

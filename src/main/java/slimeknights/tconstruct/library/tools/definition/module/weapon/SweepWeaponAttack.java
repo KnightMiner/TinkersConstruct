@@ -14,10 +14,10 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.json.LevelingValue;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.ToolModule;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public record SweepWeaponAttack(LevelingValue ranges) implements MeleeHitToolHoo
     LivingEntity attacker = context.getAttacker();
     if (context.isFullyCharged() && !attacker.isSprinting() && !context.isCritical() && !context.isProjectile() && attacker.onGround() && (attacker.walkDist - attacker.walkDistO) < attacker.getSpeed()) {
       // loop through all nearby entities
-      double range = this.ranges.compute(tool.getVolatileData().getInt(IModifiable.EXPANDED));
+      double range = this.ranges.compute(VolatileIntegers.get(tool, VolatileIntegers.EXPANDED));
       double rangeSq = (2 + range); // TODO: why do we add 2 here? should that not be defined in the datagen?
       rangeSq *= rangeSq;
       // if the modifier is missing, sweeping damage will be 0, so easiest to let it fully control this

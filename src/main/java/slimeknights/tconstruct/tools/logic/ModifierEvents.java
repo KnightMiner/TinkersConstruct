@@ -37,6 +37,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.ForgeMod;
@@ -55,7 +56,6 @@ import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.eventbus.api.Event.Result;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
 import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.util.CombatHelper;
 import slimeknights.mantle.util.RegistryHelper;
@@ -81,6 +81,7 @@ import slimeknights.tconstruct.library.tools.capability.TinkerDataCapability.Tin
 import slimeknights.tconstruct.library.tools.capability.TinkerDataKeys;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.helper.ModifierLootingHandler;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
@@ -102,8 +103,6 @@ public class ModifierEvents {
   // TODO: move following to TinkerDataKeys?
   /** Volatile data float for amount of experience granted per level. Used by both projectiles and held tools. */
   public static final ResourceLocation EXPERIENCE = TConstruct.getResource("experience");
-  /** Volatile data int for making a modifier on a shield grant reflecting */
-  public static final ResourceLocation REFLECTING = TConstruct.getResource("reflecting");
 
   @SubscribeEvent
   static void onKnockback(LivingKnockBackEvent event) {
@@ -364,7 +363,6 @@ public class ModifierEvents {
     }
   }
 
-  @SuppressWarnings("removal") // lets us work with Neo 1.20 for now
   @SubscribeEvent(priority = EventPriority.LOW) // lower priority so general modifier hook runs first
   static void projectileImpact(ProjectileImpactEvent event) {
     Entity entity = event.getEntity();
@@ -380,7 +378,7 @@ public class ModifierEvents {
         if (stack.is(TinkerTags.Items.SHIELDS)) {
           ToolStack tool = ToolStack.from(stack);
           // make sure we actually have the modifier
-          int reflectingTime = tool.getVolatileData().getInt(REFLECTING);
+          int reflectingTime = VolatileIntegers.get(tool, VolatileIntegers.REFLECTING);
           if (reflectingTime > 0) {
             ModifierEntry activeModifier = GeneralInteractionModifierHook.getActiveModifier(tool);
             if (activeModifier != ModifierEntry.EMPTY) {

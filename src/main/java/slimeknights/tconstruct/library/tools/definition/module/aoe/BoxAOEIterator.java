@@ -14,8 +14,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.IBoxExpansion.ExpansionDirections;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import javax.annotation.Nonnull;
@@ -82,7 +82,7 @@ public record BoxAOEIterator(BoxSize base, List<BoxSize> expansions, IBoxExpansi
   @Override
   public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
     // expanded gives an extra width every odd level, and an extra height every even level
-    return calculate(tool, context, sizeFor(tool.getVolatileData().getInt(IModifiable.EXPANDED)), direction, matchType);
+    return calculate(tool, context, sizeFor(VolatileIntegers.get(tool, VolatileIntegers.EXPANDED)), direction, matchType);
   }
 
   /**

@@ -37,12 +37,12 @@ import slimeknights.tconstruct.library.modifiers.hook.mining.RemoveBlockModifier
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.AreaOfEffectIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.CircleAOEIterator;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.tools.TinkerItemAbilities;
@@ -146,7 +146,7 @@ public enum PlaceFireModule implements ModifierModule, EntityInteractionModifier
     }
 
     // AOE selection logic, get boosted from both fireprimer (unique modifer) and expanded
-    int range = tool.getVolatileData().getInt(IModifiable.EXPANDED);
+    int range = VolatileIntegers.get(tool, VolatileIntegers.EXPANDED);
     Iterable<BlockPos> targets = Collections.emptyList();
     if (range > 0) {
       targets = CircleAOEIterator.calculate(tool, targetContext, 1 + range, true, AreaOfEffectIterator.AOEMatchType.TRANSFORM);

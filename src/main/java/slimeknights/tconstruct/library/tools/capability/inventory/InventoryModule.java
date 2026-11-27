@@ -114,7 +114,7 @@ public class InventoryModule implements ModifierModule, InventoryModifierHook, V
   @Override
   public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
-      ToolInventoryCapability.addSlots(volatileData, getPotentialSlots(modifier.getEffectiveLevel()));
+      ToolInventoryCapability.addSlots(builder, getPotentialSlots(modifier.getEffectiveLevel()));
     }
   }
 

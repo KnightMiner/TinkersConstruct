@@ -29,11 +29,11 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition;
 import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.ConditionalModule;
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.context.LootingContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.utils.Util;
 
@@ -129,7 +129,7 @@ public record ShearsModule(float flatBonus, float perLevelBonus, float expandedB
       // AOE shearing
       if (!broken) {
         // includes a flat bonus (legacy AOE), a level bonus (subtract 1 so it starts at level 2), and expanded
-        float expanded = flatBonus + perLevelBonus * (modifier.getEffectiveLevel() - 1) + expandedBonus * tool.getVolatileData().getInt(IModifiable.EXPANDED);
+        float expanded = flatBonus + perLevelBonus * (modifier.getEffectiveLevel() - 1) + expandedBonus * VolatileIntegers.get(tool, VolatileIntegers.EXPANDED);
         if (expanded > 0) {
           for (LivingEntity aoeTarget : player.getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(expanded, 0.25D, expanded))) {
             if (aoeTarget != player && aoeTarget != target && (!(aoeTarget instanceof ArmorStand) || !((ArmorStand)aoeTarget).isMarker())) {

@@ -7,9 +7,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.BoxAOEIterator.RectangleIterator;
 import slimeknights.tconstruct.library.tools.definition.module.aoe.IBoxExpansion.ExpansionDirections;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 
 import java.util.Collections;
@@ -34,7 +34,7 @@ public record CircleAOEIterator(int diameter, boolean is3D) implements AreaOfEff
   @Override
   public Iterable<BlockPos> getBlocks(ToolStackView tool, UseOnContext context, BlockState state, AOEMatchType matchType) {
     // expanded gives an extra width every odd level, and an extra height every even level
-    return calculate(tool, context, diameter + tool.getVolatileData().getInt(IModifiable.EXPANDED), is3D, matchType);
+    return calculate(tool, context, diameter + VolatileIntegers.get(tool, VolatileIntegers.EXPANDED), is3D, matchType);
   }
 
   /**

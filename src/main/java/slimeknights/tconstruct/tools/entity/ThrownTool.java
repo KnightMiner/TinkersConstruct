@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.Sounds;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.TinkerEffects;
@@ -37,11 +35,11 @@ import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedContext;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ScheduledProjectileTaskModifierHook;
 import slimeknights.tconstruct.library.tools.component.ModifierEntries;
 import slimeknights.tconstruct.library.tools.component.VolatileFlags;
+import slimeknights.tconstruct.library.tools.component.VolatileIntegers;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.definition.module.display.ToolNameHook;
 import slimeknights.tconstruct.library.tools.definition.module.mining.IsEffectiveToolHook;
-import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
@@ -62,10 +60,6 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
   protected static final EntityDataAccessor<ItemStack> STACK = SynchedEntityData.defineId(ThrownTool.class, EntityDataSerializers.ITEM_STACK);
   /** Movement speed in water */
   protected static final EntityDataAccessor<Float> WATER_INERTIA = SynchedEntityData.defineId(ThrownTool.class, EntityDataSerializers.FLOAT);
-  /** Volatile integer key for the loyalty level */
-  public static final ResourceLocation LOYALTY = TConstruct.getResource("loyalty");
-  /** Volatile integer key for the magnet level */
-  public static final ResourceLocation MAGNET = TConstruct.getResource("magnet");
 
   @Nullable
   private ToolStackView tool = null;
@@ -93,21 +87,28 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
       this.pickup = AbstractArrow.Pickup.ALLOWED;
     }
     // trident - stack constructor
-    this.tridentItem = stack.copyWithCount(1);
     this.charge = charge;
     this.multiplier = multiplier;
     this.entityData.set(WATER_INERTIA, waterInertia);
+    setPickupItemStack(stack.copyWithCount(1));
+  }
+
+  @Override
+  public void setPickupItemStack(ItemStack stack) {
+    super.setPickupItemStack(stack);
+    tool = null;
     updateFromStack();
   }
 
   /** Sets any relevant properties from the stack */
   private void updateFromStack() {
-    this.entityData.set(STACK, tridentItem);
-    this.entityData.set(ID_LOYALTY, (byte) ModifierUtil.getVolatileInt(tridentItem, LOYALTY));
-    this.entityData.set(ID_FOIL, VolatileFlags.hasFlag(tridentItem, VolatileFlags.SHINY));
-    this.noDespawn = VolatileFlags.hasFlag(tridentItem, VolatileFlags.INDESTRUCTIBLE_ENTITY);
+    ItemStack pickupItem = getPickupItem();
+    this.entityData.set(STACK, pickupItem);
+    this.entityData.set(ID_LOYALTY, (byte) VolatileIntegers.get(pickupItem, VolatileIntegers.LOYALTY));
+    this.entityData.set(ID_FOIL, VolatileFlags.hasFlag(pickupItem, VolatileFlags.SHINY));
+    this.noDespawn = VolatileFlags.hasFlag(pickupItem, VolatileFlags.INDESTRUCTIBLE_ENTITY);
     if (!level().isClientSide) {
-      this.magnet = ModifierUtil.getVolatileInt(tridentItem, MAGNET);
+      this.magnet = VolatileIntegers.get(pickupItem, VolatileIntegers.MAGNET);
     }
   }
 
@@ -414,7 +415,7 @@ public class ThrownTool extends ThrownTrident implements ToolProjectile {
   public void readAdditionalSaveData(CompoundTag tag) {
     super.readAdditionalSaveData(tag);
     // update the tool to sync to client, if its set
-    if (tag.contains("Trident", CompoundTag.TAG_COMPOUND)) {
+    if (tag.contains("item", CompoundTag.TAG_COMPOUND)) {
       updateFromStack();
     }
     this.charge = tag.getFloat(KEY_CHARGE);

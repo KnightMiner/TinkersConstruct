@@ -19,6 +19,7 @@ import slimeknights.tconstruct.library.modifiers.modules.util.ModifierCondition.
 import slimeknights.tconstruct.library.module.HookProvider;
 import slimeknights.tconstruct.library.module.ModuleHook;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.stack.BuilderKeys;
 import slimeknights.tconstruct.library.tools.stack.ToolContext;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
 import slimeknights.tconstruct.library.tools.stack.VolatileBuilder;
@@ -45,7 +46,7 @@ public record VolatileIntModule(ResourceLocation flag, LevelingInt value, Modifi
   @Override
   public void addVolatileData(ToolContext context, ModifierEntry modifier, VolatileBuilder builder, MutableDataComponentHolder volatileData) {
     if (condition.matches(context, modifier)) {
-      volatileData.putInt(flag, volatileData.getInt(flag) + value.compute(modifier.getEffectiveLevel()));
+      builder.get(BuilderKeys.INTEGERS).add(flag, value.compute(modifier.getEffectiveLevel()));
     }
   }
 
