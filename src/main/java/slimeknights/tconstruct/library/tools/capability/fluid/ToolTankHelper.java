@@ -1,13 +1,12 @@
 package slimeknights.tconstruct.library.tools.capability.fluid;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.registry.NamedComponentRegistry;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.TinkerData;
+import slimeknights.tconstruct.library.fluid.item.SimpleFluidContent;
 import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 import slimeknights.tconstruct.library.modifiers.modules.build.ModifierTraitModule;
 import slimeknights.tconstruct.library.tools.stack.ToolStackView;
@@ -15,59 +14,68 @@ import slimeknights.tconstruct.library.tools.stat.CapacityStat;
 import slimeknights.tconstruct.library.tools.stat.INumericToolStat;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 
-import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /** Helper methods for handling fluids in tools */
-@SuppressWarnings("ClassCanBeRecord")  // want to leave extendable
-@Getter
-@RequiredArgsConstructor
-public class ToolTankHelper {
-  /** Helper function to parse a fluid from NBT */
-  public static final BiFunction<CompoundTag, String, FluidStack> PARSE_FLUID = (nbt, key) -> FluidStack.loadFluidStackFromNBT(nbt.getCompound(key));
-
+public interface ToolTankHelper {
   /** Format key for the stat */
-  public static final String MB_FORMAT = Mantle.makeDescriptionId("gui", "fluid.millibucket");
+  String MB_FORMAT = Mantle.makeDescriptionId("gui", "fluid.millibucket");
   /** Stat controlling the max for the default helper */
-  public static final CapacityStat CAPACITY_STAT = new CapacityStat(TConstruct.resourceId("tank_capacity"), 0xA0A0A0, MB_FORMAT);
+  CapacityStat CAPACITY_STAT = new CapacityStat(TConstruct.resourceId("tank_capacity"), 0xA0A0A0, MB_FORMAT);
   /** Default tank helper for setting fluids */
-  public static final ToolTankHelper TANK_HELPER = new ToolTankHelper(CAPACITY_STAT, TConstruct.getResource("tank_fluid"));
+  ToolTankHelper TANK_HELPER = new ToolTankHelper.Component(CAPACITY_STAT, TinkerData.TANK);
   /** Module ensuring the tool has the tank */
-  public static final ModifierModule TANK_HANDLER = new ModifierTraitModule(TinkerModifiers.tankHandler.id(), 1, true);
+  ModifierModule TANK_HANDLER = new ModifierTraitModule(TinkerModifiers.tankHandler.id(), 1, true);
 
   /** Loadable instance for JSON */
-  public static final NamedComponentRegistry<ToolTankHelper> LOADABLE = new NamedComponentRegistry<>("Unknown Tool Tank Helper");
-
-  /** Tool stat handling max tank capacity */
-  private final INumericToolStat<?> capacityStat;
-  /** Key in persistent data storing the fluid */
-  private final ResourceLocation fluidKey;
+  NamedComponentRegistry<ToolTankHelper> LOADABLE = new NamedComponentRegistry<>("Unknown Tool Tank Helper");
 
   /** Gets the capacity for the tool */
-  public int getCapacity(ToolStackView tool) {
-    return tool.getStats().getInt(capacityStat);
-  }
+  int getCapacity(ToolStackView tool);
 
 
   /* Fluid */
 
-  /** Gets the fluid in the tank */
-  public FluidStack getFluid(ToolStackView tool) {
-    return tool.getPersistentData().get(getFluidKey(), PARSE_FLUID);
-  }
+  /** Gets the fluid stack in the tank. May be less efficient than other methods such as  */
+  FluidStack getFluid(ToolStackView tool);
 
-  /** Sets the fluid in the tank */
-  public FluidStack setFluid(ToolStackView tool, FluidStack fluid) {
-    if (fluid.isEmpty()) {
-      tool.getPersistentData().remove(fluidKey);
-      return FluidStack.EMPTY;
+  /**
+   * Sets the fluid in the tank
+   * @return Updated fluid instance after setting.
+   */
+  FluidStack setFluid(ToolStackView tool, FluidStack fluid);
+
+  /** Default implementation using a capacity stat and a component for contents */
+  record Component(INumericToolStat<?> capacityStat, Supplier<DataComponentType<SimpleFluidContent>> component) implements ToolTankHelper {
+
+    @Override
+    public int getCapacity(ToolStackView tool) {
+      return tool.getStats().getInt(capacityStat);
     }
-    int capacity = getCapacity(tool);
-    // we always copy before saving to ensure the NBT on the fluid gets copied, since those being the same compound is possible
-    fluid = fluid.copy();
-    if (fluid.getAmount() > capacity) {
-      fluid.setAmount(capacity);
+
+    /** Gets the contents instance for the given tool */
+    private SimpleFluidContent getContents(ToolStackView tool) {
+      return tool.getOrDefault(component, SimpleFluidContent.EMPTY);
     }
-    tool.getPersistentData().put(fluidKey, fluid.writeToNBT(new CompoundTag()));
-    return fluid;
+
+    @Override
+    public FluidStack getFluid(ToolStackView tool) {
+      return getContents(tool).copy();
+    }
+
+    @Override
+    public FluidStack setFluid(ToolStackView tool, FluidStack fluid) {
+      if (fluid.isEmpty()) {
+        tool.remove(component);
+        return FluidStack.EMPTY;
+      }
+      int capacity = getCapacity(tool);
+      // fluid will be copied again as we set the component, so only copy if needed
+      if (fluid.getAmount() > capacity) {
+        fluid = fluid.copyWithAmount(capacity);
+      }
+      tool.set(component, SimpleFluidContent.copyOf(fluid));
+      return fluid;
+    }
   }
 }

@@ -37,6 +37,8 @@ public interface VolatileIntegers {
   // inventory
   /** Stores the total inventory slot count across all modifiers. TODO: replace with a custom volatile object with more slot info? */
   ResourceLocation TOTAL_SLOTS = getResource("total_item_slots");
+  /** Stores the total number of fluid tanks across all modifiers. TODO: replace with a custom volatile object with more slot info? */
+  ResourceLocation TOTAL_TANKS = getResource("total_fluid_tanks");
 
 
   /** Gets the value of an integer on the given tool. */

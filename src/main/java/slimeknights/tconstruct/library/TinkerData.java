@@ -11,6 +11,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.registration.deferred.AttachmentTypeDeferredRegister;
@@ -59,6 +60,8 @@ public class TinkerData {
   public static final DeferredAttachment<PiggybackHandler> PIGGYBACK_HANDLER = ATTACHMENTS.registerType("piggyback_handler", () -> AttachmentType.builder(PiggybackHandler::new));
   /** Stores the current potion on a projectile, typically from arrows. Mirrors {@link DataComponents#POTION_CONTENTS} */
   public static final DeferredAttachment<PotionContents> PROJECTILE_POTION = ATTACHMENTS.registerType("projectile_potion", () -> AttachmentType.builder(() -> PotionContents.EMPTY).serialize(PotionContents.CODEC).sync(PotionContents.STREAM_CODEC));
+  /** Stores the current fluid on a projectile as added by modifiers, used in {@link slimeknights.tconstruct.tools.modules.ranged.ammo.SmashingModule}. Note {@link slimeknights.tconstruct.fluids.entity.FluidEffectProjectile} uses its own internal field instead */
+  public static final DeferredAttachment<FluidStack> PROJECTILE_FLUID = ATTACHMENTS.registerType("projectile_potion", () -> AttachmentType.builder(() -> FluidStack.EMPTY).serialize(FluidStack.OPTIONAL_CODEC).sync(FluidStack.OPTIONAL_STREAM_CODEC));
 
 
   /* Tank */
@@ -146,6 +149,8 @@ public class TinkerData {
   public static final DeferredDataComponent<Unit> INFINITY = DATA_COMPONENTS.registerTransient("infinity", MantleStreamCodecs.UNIT);
   /** Marker used by {@link slimeknights.tconstruct.tools.modules.interaction.sling.SlingKnockbackModule} to mark that the melee attack is from the module */
   public static final DeferredDataComponent<Unit> SLING_KNOCKBACK = DATA_COMPONENTS.registerTransient("sling_knockback", MantleStreamCodecs.UNIT);
+  /** Last fluid level for {@link slimeknights.tconstruct.tools.modules.ranged.ammo.SmashingModule} to prevent fluid dupes. */
+  public static final DeferredDataComponent<Float> SMASHING_VALIDATION = DATA_COMPONENTS.registerPersistent("smashing_validation", ExtraCodecs.POSITIVE_FLOAT, ByteBufCodecs.FLOAT);
 
 
   /** Handle any extra setup with data */

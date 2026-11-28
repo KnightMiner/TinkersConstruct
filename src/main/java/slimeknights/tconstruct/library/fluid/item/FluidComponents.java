@@ -3,6 +3,7 @@ package slimeknights.tconstruct.library.fluid.item;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
@@ -93,28 +95,28 @@ public record FluidComponents(Fluid fluid, DataComponentPatch components) implem
   /* Static helpers */
 
   /** Gets the fluid from the given stack */
-  public static FluidComponents get(ItemStack stack) {
+  public static FluidComponents get(DataComponentHolder stack) {
     return stack.getOrDefault(TinkerData.FLUID, EMPTY);
   }
 
   /** Updates a stack with the given fluid components */
-  public static ItemStack set(ItemStack stack, FluidComponents fluid) {
+  public static <T extends MutableDataComponentHolder> T set(T stack, FluidComponents fluid) {
     CollectionComponent.set(stack, TinkerData.FLUID, fluid);
     return stack;
   }
 
   /** Updates a stack with the given fluid */
-  public static ItemStack set(ItemStack stack, FluidStack fluid) {
+  public static <T extends MutableDataComponentHolder> T set(T stack, FluidStack fluid) {
     return set(stack, of(fluid));
   }
 
   /** Updates a stack with the given fluid */
-  public static ItemStack set(ItemStack stack, Fluid fluid) {
+  public static <T extends MutableDataComponentHolder> T set(T stack, Fluid fluid) {
     return set(stack, of(fluid));
   }
 
   /** Updates a stack with the given fluid and components */
-  public static ItemStack set(ItemStack stack, Fluid fluid, DataComponentPatch components) {
+  public static <T extends MutableDataComponentHolder> T set(T stack, Fluid fluid, DataComponentPatch components) {
     return set(stack, of(fluid, components));
   }
 

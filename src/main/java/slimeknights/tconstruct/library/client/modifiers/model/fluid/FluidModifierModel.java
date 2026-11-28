@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
@@ -54,14 +54,14 @@ public record FluidModifierModel(@Nullable Material small, @Nullable Material la
   }
 
   /** Cache key for {@link #getCacheKey(ToolStackView, ModifierEntry)} */
-  private record CacheKey(Fluid fluid, @Nullable CompoundTag tag) {}
+  private record CacheKey(Fluid fluid, DataComponentPatch components) {}
 
   @Nullable
   @Override
   public Object getCacheKey(ToolStackView tool, ModifierEntry modifier) {
     FluidStack fluid = tankHelper().getFluid(tool);
     if (!fluid.isEmpty()) {
-      return new CacheKey(fluid.getFluid(), fluid.getTag());
+      return new CacheKey(fluid.getFluid(), fluid.getComponentsPatch());
     }
     return null;
   }
@@ -92,7 +92,7 @@ public record FluidModifierModel(@Nullable Material small, @Nullable Material la
     TextureAtlasSprite fluidSprite = spriteGetter.apply(new Material(InventoryMenu.BLOCK_ATLAS, attributes.getStillTexture(fluid)));
 
     // build fluid like the forge dynamic container model
-    List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(-1, spriteGetter.apply(template).contents()); // Use template as mask
+    List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(-1, spriteGetter.apply(template)); // Use template as mask
     // TODO: is there anything that can be done about the fluid? to prevent weird offsets?
     List<BakedQuad> fluidQuads = UnbakedGeometryHelper.bakeElements(unbaked, mat -> fluidSprite, new SimpleModelState(transforms.applyOrigin(ORIGIN).compose(FluidContainerModel.FLUID_TRANSFORM), false), BAKE_LOCATION); // Bake with fluid texture
 
