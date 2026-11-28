@@ -2,31 +2,26 @@ package slimeknights.tconstruct.smeltery.block;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.phys.HitResult;
-import slimeknights.tconstruct.library.utils.NBTTags;
+import slimeknights.tconstruct.smeltery.block.component.ITankBlock;
 import slimeknights.tconstruct.smeltery.block.component.SearedTankBlock;
 import slimeknights.tconstruct.smeltery.block.entity.ITankBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.LanternBlockEntity;
-import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity;
-import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity.ITankBlock;
 
 import javax.annotation.Nullable;
 
 import static slimeknights.tconstruct.smeltery.block.component.SearedTankBlock.LIGHT;
 
+/** Light giving block that holds fluid */
 public class SearedLanternBlock extends LanternBlock implements ITankBlock, EntityBlock {
   @Getter
   private final int capacity;
@@ -59,29 +54,17 @@ public class SearedLanternBlock extends LanternBlock implements ITankBlock, Enti
   }
 
   @Override
-  public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null && world.getBlockEntity(pos) instanceof TankBlockEntity tank) {
-      tank.updateTank(nbt.getCompound(NBTTags.TANK));
-    }
-  }
-
-  @SuppressWarnings("deprecation")
-  @Deprecated
-  @Override
-  public boolean hasAnalogOutputSignal(BlockState state) {
+  protected boolean hasAnalogOutputSignal(BlockState state) {
     return true;
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
-  public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos) {
-    return ITankBlockEntity.getComparatorInputOverride(worldIn, pos);
+  protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+    return ITankBlockEntity.getComparatorInputOverride(level, pos);
   }
 
   @Override
-  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-    return ITankBlockEntity.getCloneItemStack(new ItemStack(this), world, pos);
+  public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    return ITankBlockEntity.getCloneItemStack(new ItemStack(this), level, pos);
   }
 }

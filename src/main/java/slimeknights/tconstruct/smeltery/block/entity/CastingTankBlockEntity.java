@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -12,20 +14,15 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import slimeknights.mantle.fluid.FluidTransferHelper;
@@ -40,12 +37,13 @@ import slimeknights.tconstruct.library.utils.NBTTags;
 import slimeknights.tconstruct.shared.block.entity.TableBlockEntity;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.CastingTankBlock;
+import slimeknights.tconstruct.smeltery.block.component.ITankBlock;
 import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity;
-import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity.ITankBlock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** Tank that can insert fluid into and extract fluid out of container items */
 public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlockEntity.ITankInventoryBlockEntity, WorldlyContainer {
   /** Max capacity for the tank */
   public static final int DEFAULT_CAPACITY = FluidType.BUCKET_VOLUME * 4;
@@ -57,57 +55,39 @@ public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlo
   /** Internal fluid tank instance */
   @Getter
   protected final FluidTankAnimated tank;
-  /** Capability holder for the tank */
-  private final LazyOptional<IFluidHandler> fluidHolder;
   /** Last redstone state of the block */
   private boolean lastRedstone = false;
   /** Last comparator strength to reduce block updates */
   @Getter @Setter
   private int lastStrength = -1;
 
-  /**
-   * Gets the capacity for the given block
-   * @param block  block
-   * @return  Capacity
-   */
-  public static int getCapacity(Block block) {
-    return DEFAULT_CAPACITY;
-  }
-
-  /**
-   * Gets the capacity for the given item
-   * @param item  item
-   * @return  Capacity
-   */
-  public static int getCapacity(Item item) {
-    return DEFAULT_CAPACITY;
-  }
-
   public CastingTankBlockEntity(BlockPos pos, BlockState state) {
-    this(pos, state, state.getBlock() instanceof ITankBlock tankBlock
-                     ? tankBlock
-                     : TinkerSmeltery.searedCastingTank.get());
+    this(pos, state, ITankBlock.getCapacity(state.getBlock()));
   }
 
   /** Main constructor */
   public CastingTankBlockEntity(BlockPos pos, BlockState state, ITankBlock block) {
-    this(TinkerSmeltery.castingTank.get(), pos, state, block);
+    this(pos, state, block.getCapacity());
+  }
+
+  /** Main constructor */
+  private CastingTankBlockEntity(BlockPos pos, BlockState state, int capacity) {
+    this(TinkerSmeltery.castingTank.get(), pos, state, capacity);
   }
 
   /** Extendable constructor */
   @SuppressWarnings("WeakerAccess")
-  protected CastingTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ITankBlock block) {
+  protected CastingTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int capacity) {
     super(type, pos, state, NAME, 2, 1);
-    tank = new FluidTankAnimated(block.getCapacity(), this);
-    fluidHolder = LazyOptional.of(() -> tank);
+    tank = new FluidTankAnimated(capacity, this);
     itemHandler = new SidedInvWrapper(this, Direction.DOWN);
   }
 
   /**
-   * Called from {@link slimeknights.tconstruct.smeltery.block.CastingTankBlock#use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)}
+   * Called from {@link slimeknights.tconstruct.smeltery.block.CastingTankBlock#useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)}
    * @param player Player activating the block.
    */
-  public void interact(Player player, InteractionHand hand, boolean clickedTank) {
+  public void interact(Player player, ItemStack held, InteractionHand hand, boolean clickedTank) {
     // skip client side
     if (level == null || level.isClientSide) {
       return;
@@ -122,7 +102,6 @@ public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlo
       // did not click tank? swap items around
       ItemStack input = getItem(INPUT);
       ItemStack output = getItem(OUTPUT);
-      ItemStack held = player.getItemInHand(hand);
       // if there is an item in the output slot, take it
       if (!output.isEmpty()) {
         setItem(OUTPUT, ItemStack.EMPTY);
@@ -153,12 +132,11 @@ public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlo
   }
 
   @Override
-  public boolean canPlaceItem(int pIndex, ItemStack pStack) {
+  public boolean canPlaceItem(int pIndex, ItemStack stack) {
     if (pIndex == INPUT) {
-      return getItem(INPUT).isEmpty() && getItem(OUTPUT).isEmpty() && !pStack.isEmpty() && (
+      return getItem(INPUT).isEmpty() && getItem(OUTPUT).isEmpty() && !stack.isEmpty() && (
         // check the various options for some sort of fluid-containing stack
-        FluidContainerTransferManager.INSTANCE.mayHaveTransfer(pStack)
-          || pStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()
+        FluidContainerTransferManager.INSTANCE.mayHaveTransfer(stack) || stack.getCapability(Capabilities.FluidHandler.ITEM) != null
       );
     }
     return false;
@@ -230,31 +208,18 @@ public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlo
     return index == OUTPUT;
   }
 
+
   /*
    * Tank methods
    */
-
-  @Override
-  @Nonnull
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-    if (capability == ForgeCapabilities.FLUID_HANDLER) {
-      return fluidHolder.cast();
-    }
-    return super.getCapability(capability, facing);
-  }
-
-  @Override
-  public void invalidateCaps() {
-    super.invalidateCaps();
-    fluidHolder.invalidate();
-  }
 
   @Nonnull
   @Override
   public ModelData getModelData() {
     return ModelData.builder()
       .with(ModelProperties.FLUID_STACK, tank.getFluid())
-      .with(ModelProperties.TANK_CAPACITY, tank.getCapacity()).build();
+      .with(ModelProperties.TANK_CAPACITY, tank.getCapacity())
+      .build();
   }
 
   @Override
@@ -268,44 +233,50 @@ public class CastingTankBlockEntity extends TableBlockEntity implements ITankBlo
   }
 
 
+  /* Components */
+
+  @Override
+  protected void applyImplicitComponents(DataComponentInput components) {
+    ITankBlockEntity.applyImplicitComponents(tank, components);
+  }
+
+  @Override
+  protected void collectImplicitComponents(DataComponentMap.Builder components) {
+    ITankBlockEntity.collectImplicitComponents(tank, components);
+  }
+
+
   /*
    * NBT
    */
   private static final String TAG_REDSTONE = "redstone";
 
-  /**
-   * Updates the tank from an NBT tag, used in the block
-   * @param nbt  tank NBT
-   */
-  public void updateTank(CompoundTag nbt) {
-    if (nbt.isEmpty()) {
+  @Override
+  public void loadAdditional(CompoundTag tags, HolderLookup.Provider registries) {
+    super.loadAdditional(tags, registries);
+    tank.setCapacity(ITankBlock.getCapacity(getBlockState().getBlock()));
+    CompoundTag tankNBT = tags.getCompound(NBTTags.TANK);
+    if (tankNBT.isEmpty()) {
       tank.setFluid(FluidStack.EMPTY);
     } else {
-      tank.readFromNBT(nbt);
+      tank.readFromNBT(registries, tankNBT);
       TankBlockEntity.updateLight(this, tank);
     }
+    lastRedstone = tags.getBoolean(TAG_REDSTONE);
   }
 
   @Override
-  public void load(CompoundTag tag) {
-    tank.setCapacity(getCapacity(getBlockState().getBlock()));
-    updateTank(tag.getCompound(NBTTags.TANK));
-    lastRedstone = tag.getBoolean(TAG_REDSTONE);
-    super.load(tag);
-  }
-
-  @Override
-  public void saveAdditional(CompoundTag tags) {
-    super.saveAdditional(tags);
+  public void saveAdditional(CompoundTag tags, HolderLookup.Provider registries) {
+    super.saveAdditional(tags, registries);
     tags.putBoolean(TAG_REDSTONE, lastRedstone);
   }
 
   @Override
-  public void saveSynced(CompoundTag tag) {
-    super.saveSynced(tag);
+  public void saveSynced(CompoundTag tag, HolderLookup.Provider registries) {
+    super.saveSynced(tag, registries);
     // want tank on the client on world load
     if (!tank.isEmpty()) {
-      tag.put(NBTTags.TANK, tank.writeToNBT(new CompoundTag()));
+      tag.put(NBTTags.TANK, tank.writeToNBT(registries, new CompoundTag()));
     }
   }
 

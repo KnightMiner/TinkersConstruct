@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.mantle.client.render.FluidCuboid;
+import slimeknights.mantle.client.render.FluidModel;
 import slimeknights.mantle.client.render.FluidRenderer;
 import slimeknights.mantle.client.render.RenderItem;
 import slimeknights.mantle.client.render.RenderingHelper;
@@ -26,8 +26,8 @@ public class ProxyTankBlockEntityRenderer implements BlockEntityRenderer<ProxyTa
   @Override
   public void render(ProxyTankBlockEntity proxyTank, float partialTicks, PoseStack matrices, MultiBufferSource buffer, int light, int combinedOverlayIn) {
     BlockState state = proxyTank.getBlockState();
-    List<FluidCuboid> fluids = Config.CLIENT.tankFluidModel.get() ? List.of() : FluidCuboid.REGISTRY.get(state, List.of());
-    List<RenderItem> renderItems = RenderItem.STATE_REGISTRY.get(state, List.of());
+    FluidModel fluids = Config.CLIENT.tankFluidModel.get() ? FluidModel.EMPTY : FluidModel.getModel(state);
+    List<RenderItem> renderItems = RenderItem.REGISTRY.get(state, List.of());
     if (!fluids.isEmpty() || !renderItems.isEmpty()) {
       // rotate the matrix
       boolean isRotated = RenderingHelper.applyRotation(matrices, state.getValue(HORIZONTAL_FACING));
@@ -36,10 +36,7 @@ public class ProxyTankBlockEntityRenderer implements BlockEntityRenderer<ProxyTa
       ProxyItemTank<?> itemTank = proxyTank.getItemTank();
       FluidStack fluid = itemTank.getFluidInTank(0);
       if (!fluids.isEmpty()) {
-        int capacity = itemTank.getTankCapacity(0);
-        for (FluidCuboid cube : fluids) {
-          FluidRenderer.renderScaledCuboid(matrices, buffer, cube, fluid, 0, capacity, light, true);
-        }
+        FluidRenderer.renderScaledModel(matrices, buffer, true, fluids, fluid, 0, itemTank.getTankCapacity(0), light, true);
       }
 
       // render items

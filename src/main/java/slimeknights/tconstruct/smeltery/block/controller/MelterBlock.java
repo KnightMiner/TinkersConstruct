@@ -36,17 +36,15 @@ public class MelterBlock extends TinyMultiblockControllerBlock {
    * Display
    */
 
-  @Deprecated
   @Override
-  public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
+  protected float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
     return 1.0F;
   }
 
   @Override
-  public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+  protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
     return true;
   }
-
 
   @Override
   public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource rand) {

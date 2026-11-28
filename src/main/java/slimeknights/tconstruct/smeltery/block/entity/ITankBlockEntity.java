@@ -1,25 +1,27 @@
 package slimeknights.tconstruct.smeltery.block.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
 import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.library.TinkerData;
 import slimeknights.tconstruct.library.client.SafeClient;
 import slimeknights.tconstruct.library.fluid.FluidTankAnimated;
 import slimeknights.tconstruct.library.fluid.IFluidTankUpdater;
-import slimeknights.tconstruct.smeltery.item.TankItem;
+import slimeknights.tconstruct.library.fluid.item.SimpleFluidContent;
 import slimeknights.tconstruct.smeltery.network.FluidUpdatePacket;
 
 /**
- * Common logic between the tank and the melter
+ * Common logic between various tanks and the melter and alloyer
  */
 public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.IFluidPacketReceiver {
   /**
@@ -33,9 +35,10 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
    * @param stack  Stack
    */
   default void setTankTag(ItemStack stack) {
-    TankItem.setTank(stack, getTank());
+    SimpleFluidContent.set(stack, getTank().getFluid());
   }
 
+  
   /*
    * Comparator
    */
@@ -67,7 +70,7 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
   @Override
   default void onTankContentsChanged() {
     int newStrength = this.comparatorStrength();
-    BlockEntity te = getTE();
+    BlockEntity te = self();
     Level world = te.getLevel();
     if (newStrength != getLastStrength() && world != null) {
       world.updateNeighborsAt(te.getBlockPos(), te.getBlockState().getBlock());
@@ -97,7 +100,7 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
 
     // update the block model
     if (isFluidInModel()) {
-      SafeClient.updateFluidModel(getTE(), tank, oldAmount, newAmount);
+      SafeClient.updateFluidModel(self(), tank, oldAmount, newAmount);
     }
   }
 
@@ -106,9 +109,29 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
    * Tile entity methods
    */
 
-  /** @return tile entity world */
-  default BlockEntity getTE() {
+  /** @return block entity instance */
+  default BlockEntity self() {
     return (BlockEntity) this;
+  }
+
+
+  /* Component copying helpers */
+
+  /**
+   * Implementation of {@link BlockEntity#applyImplicitComponents(BlockEntity.DataComponentInput)} using {@link #getTank()}.
+   */
+  static void applyImplicitComponents(FluidTank tank, BlockEntity.DataComponentInput input) {
+    SimpleFluidContent content = input.getOrDefault(TinkerData.TANK, SimpleFluidContent.EMPTY);
+    if (!content.isEmpty()) {
+      tank.setFluid(content.copy());
+    }
+  }
+
+  /** Implementation of {@link BlockEntity#collectImplicitComponents(DataComponentMap.Builder)} using {@link #getTank()}. */
+  static void collectImplicitComponents(FluidTank tank, DataComponentMap.Builder builder) {
+    if (!tank.isEmpty()) {
+      builder.set(TinkerData.TANK, SimpleFluidContent.copyOf(tank.getFluid()));
+    }
   }
 
 
@@ -129,7 +152,7 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
     return 0;
   }
 
-  /** Helper to implement {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockState, HitResult, BlockGetter, BlockPos, Player)} */
+  /** Helper to implement {@link net.minecraft.world.level.block.Block#getCloneItemStack(LevelReader, BlockPos, BlockState)} */
   static ItemStack getCloneItemStack(ItemStack stack, BlockGetter world, BlockPos pos) {
     if (world.getBlockEntity(pos) instanceof ITankBlockEntity tank) {
       tank.setTankTag(stack);
@@ -137,7 +160,7 @@ public interface ITankBlockEntity extends IFluidTankUpdater, FluidUpdatePacket.I
     return stack;
   }
 
-  /** Represents a  tank block entity with an inventory */
+  /** Represents a tank block entity with an inventory */
   interface ITankInventoryBlockEntity extends ITankBlockEntity {
     /** Gets the associated item handler for this tank with an inventory */
     IItemHandler getItemHandler();

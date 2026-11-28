@@ -20,6 +20,7 @@ import slimeknights.mantle.registration.holder.DeferredDataComponent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
 import slimeknights.tconstruct.library.fluid.item.FluidComponents;
+import slimeknights.tconstruct.library.fluid.item.SimpleFluidContent;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -64,6 +65,8 @@ public class TinkerData {
 
   /** Stores a fluid and its components without amount. Used in {@link slimeknights.tconstruct.smeltery.item.CopperCanItem} */
   public static final DeferredDataComponent<FluidComponents> FLUID = DATA_COMPONENTS.registerPersistent("fluid", FluidComponents.CODEC, FluidComponents.STREAM_CODEC);
+  /** Data component for standard fluid on an item with amount. Stored directly as a fluid stack. See {@link slimeknights.tconstruct.library.tools.capability.fluid.ToolTankHelper} for some utilities. */
+  public static final DeferredDataComponent<SimpleFluidContent> TANK = DATA_COMPONENTS.registerPersistent("tank", SimpleFluidContent.CODEC, SimpleFluidContent.STREAM_CODEC);
 
 
   /* Parts and modifiers */

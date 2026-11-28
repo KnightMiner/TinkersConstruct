@@ -43,7 +43,6 @@ import slimeknights.tconstruct.common.registration.object.GeodeItemObject;
 import slimeknights.tconstruct.common.registration.object.GeodeItemObject.BudSize;
 import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.TinkerData;
-import slimeknights.tconstruct.library.utils.NBTTags;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.TinkerMaterials;
 import slimeknights.tconstruct.shared.block.ClearStainedGlassBlock;
@@ -65,7 +64,6 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
     super(Set.of(), FeatureFlags.REGISTRY.allFlags());
   }
 
-  @SuppressWarnings("deprecation")  // the vanilla registry is perfectly fine for our uses, will make migration away from forge registries easier
   @Override
   protected Iterable<Block> getKnownBlocks() {
     return BuiltInRegistries.BLOCK.stream()
@@ -237,8 +235,8 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
   private void addSmeltery() {
     this.dropSelf(TinkerSmeltery.grout.get());
     // controller
-    this.dropSelf(TinkerSmeltery.searedMelter.get());
-    this.dropSelf(TinkerSmeltery.searedHeater.get());
+    this.dropNameable(TinkerSmeltery.searedMelter.get());
+    this.dropNameable(TinkerSmeltery.searedHeater.get());
     this.dropTable(TinkerSmeltery.smelteryController.get());
 
     // smeltery component
@@ -260,14 +258,10 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
     this.dropTable(TinkerSmeltery.searedChute.get());
     this.dropTable(TinkerSmeltery.searedDuct.get());
 
-    Function<Block, LootTable.Builder> dropTank = block -> droppingWithFunctions(block, builder ->
-      builder.apply(COPY_NAME).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(NBTTags.TANK, NBTTags.TANK)));
-    TinkerSmeltery.searedTank.forEach(block -> this.add(block, dropTank));
-    this.add(TinkerSmeltery.searedFluidCannon.get(), dropTank);
-    this.add(TinkerSmeltery.scorchedFluidCannon.get(), dropTank);
-    this.add(TinkerSmeltery.endFluidCannon.get(), dropTank);
-    this.add(TinkerSmeltery.searedLantern.get(), dropTank);
-    this.add(TinkerSmeltery.searedCastingTank.get(), dropTank);
+    TinkerSmeltery.searedTank.forEach(this::dropTank);
+    this.dropTank(TinkerSmeltery.searedFluidCannon.get());
+    this.dropTank(TinkerSmeltery.endFluidCannon.get());
+    this.dropTank(TinkerSmeltery.searedLantern.get());
 
     // fluid
     this.dropSelf(TinkerSmeltery.searedFaucet.get());
@@ -276,6 +270,7 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
     // casting
     this.dropSelf(TinkerSmeltery.searedBasin.get());
     this.dropSelf(TinkerSmeltery.searedTable.get());
+    this.dropTank(TinkerSmeltery.searedCastingTank.get());
 
     // gauge
     this.dropSelf(TinkerSmeltery.copperGauge.get());
@@ -285,7 +280,7 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
   private void addFoundry() {
     this.dropSelf(TinkerSmeltery.netherGrout.get());
     // controller
-    this.dropSelf(TinkerSmeltery.scorchedAlloyer.get());
+    this.dropNameable(TinkerSmeltery.scorchedAlloyer.get());
     this.dropTable(TinkerSmeltery.foundryController.get());
 
     // smeltery component
@@ -305,11 +300,9 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
     this.dropTable(TinkerSmeltery.scorchedChute.get());
     this.dropTable(TinkerSmeltery.scorchedDuct.get());
 
-    Function<Block, LootTable.Builder> dropTank = block -> droppingWithFunctions(block, builder ->
-      builder.apply(COPY_NAME)
-             .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(NBTTags.TANK, NBTTags.TANK)));
-    TinkerSmeltery.scorchedTank.forEach(block -> this.add(block, dropTank));
-    this.add(TinkerSmeltery.scorchedLantern.get(), dropTank);
+    TinkerSmeltery.scorchedTank.forEach(this::dropTank);
+    this.dropTank(TinkerSmeltery.scorchedFluidCannon.get());
+    this.dropTank(TinkerSmeltery.scorchedLantern.get());
 
     // fluid
     this.dropSelf(TinkerSmeltery.scorchedFaucet.get());
@@ -420,15 +413,30 @@ public class BlockLootTableProvider extends BlockLootSubProvider {
   /** Properties for a tinkers anvil table */
   private final Function<Block, LootTable.Builder> ADD_ANVIL = block -> droppingWithFunctions(block, (builder) ->
     builder.apply(COPY_NAME).apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(MantleData.BLOCK_TEXTURE.get()).include(TinkerData.MATERIAL.get())));
+  /** Properties for a generic nameable */
+  private final Function<Block, LootTable.Builder> DROP_NAMEABLE = block -> droppingWithFunctions(block, builder -> builder.apply(COPY_NAME));
+  /** Properties for a tank dropping its fluid */
+  private final Function<Block, LootTable.Builder> DROP_TANK = block -> droppingWithFunctions(block, builder ->
+    builder.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(TinkerData.TANK.get())));
 
   /** Registers a block that drops with its own texture stored in NBT */
   private void dropTable(Block table) {
     this.add(table, ADD_TABLE);
   }
 
-  /** Registers a block that drops with its own texture stored in NBT */
+  /** Registers a block that drops with its own texture stored in NBT, possibly as a material */
   private void dropAnvil(Block table) {
     this.add(table, ADD_ANVIL);
+  }
+
+  /** Registers a block that drops with its name */
+  private void dropNameable(Block table) {
+    this.add(table, DROP_NAMEABLE);
+  }
+
+  /** Registers a block that drops with its fluid */
+  private void dropTank(Block table) {
+    this.add(table, DROP_TANK);
   }
 
   /** Registers drops for a cluster */

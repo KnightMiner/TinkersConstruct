@@ -34,11 +34,8 @@ public class HeaterBlock extends ControllerBlock {
 
   @Override
   public BlockState getStateForPlacement(BlockPlaceContext context) {
-    BlockState state = super.getStateForPlacement(context);
-    if (state != null) {
-      return state.setValue(IN_STRUCTURE, context.getLevel().getBlockState(context.getClickedPos().above()).is(TinkerTags.Blocks.HEATER_CONTROLLERS));
-    }
-    return null;
+    return super.getStateForPlacement(context)
+      .setValue(IN_STRUCTURE, context.getLevel().getBlockState(context.getClickedPos().above()).is(TinkerTags.Blocks.HEATER_CONTROLLERS));
   }
 
   @Override

@@ -3,6 +3,7 @@ package slimeknights.tconstruct.smeltery.block.entity;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -19,16 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
 import slimeknights.mantle.fluid.FluidTransferHelper;
 import slimeknights.mantle.inventory.SingleItemHandler;
+import slimeknights.mantle.network.PacketHelper;
 import slimeknights.tconstruct.common.network.InventorySlotSyncPacket;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.fluids.entity.FluidEffectProjectile;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectContext;
 import slimeknights.tconstruct.library.modifiers.fluid.FluidEffectManager;
@@ -38,11 +35,9 @@ import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.TinkerCommons;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
+import slimeknights.tconstruct.smeltery.block.component.ITankBlock;
 import slimeknights.tconstruct.smeltery.block.entity.ITankBlockEntity.ITankInventoryBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.component.TankBlockEntity;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.DirectionalBlock.FACING;
 
@@ -51,12 +46,9 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
   private final IFluidCannon block;
   @Getter
   private final FluidCannonItemHandler itemHandler = new FluidCannonItemHandler();
-  private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> itemHandler);
 
   public FluidCannonBlockEntity(BlockPos pos, BlockState state) {
-    this(pos, state, state.getBlock() instanceof IFluidCannon tank
-                     ? tank
-                     : TinkerSmeltery.searedFluidCannon.get());
+    this(pos, state, state.getBlock() instanceof IFluidCannon cannon ? cannon : TinkerSmeltery.searedFluidCannon.get());
   }
 
   /** Main constructor */
@@ -65,12 +57,12 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
   }
 
   protected FluidCannonBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, IFluidCannon block) {
-    super(type, pos, state, block);
+    super(type, pos, state, block.getCapacity());
     this.block = block;
   }
 
   /** Called when a player interacts with the fluid cannon */
-  public void interact(Player player, InteractionHand hand, boolean clickedTank) {
+  public void interact(Player player, ItemStack held, InteractionHand hand, boolean clickedTank) {
     // skip client side, and skip if the recipe already started
     if (level == null || level.isClientSide) {
       return;
@@ -82,7 +74,6 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
       }
     } else {
       // no fluid transfer? swap items around
-      ItemStack held = player.getItemInHand(hand);
       ItemStack inventory = itemHandler.getStack();
       // inventory is empty means place item inside
       if (inventory.isEmpty()) {
@@ -129,7 +120,7 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
             tank.setFluid(fluid);
             tank.onContentsChanged();
             itemHandler.setStack(stack);
-            level.levelEvent(LevelEvent.PARTICLES_SHOOT, worldPosition, facing.get3DDataValue());
+            level.levelEvent(LevelEvent.PARTICLES_SHOOT_SMOKE, worldPosition, facing.get3DDataValue());
             return;
           }
         }
@@ -139,7 +130,7 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
         if (!targetState.isFaceSturdy(level, target, facing.getOpposite())) {
           // setup projectile
           int amount = Math.min(fluid.getAmount(), (int)(recipe.amount() * power));
-          FluidEffectProjectile projectile = new FluidEffectProjectile(level, worldPosition, facing, new FluidStack(fluid, amount), power);
+          FluidEffectProjectile projectile = new FluidEffectProjectile(level, worldPosition, facing, fluid.copyWithAmount(amount), power);
 
           // setup projectile target - numbers based on arrow dispenser behavior
           projectile.shoot(facing.getStepX(), facing.getStepY() + 0.1f, facing.getStepZ(), block.getVelocity(), block.getInaccuracy());
@@ -151,7 +142,7 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
           fluid.shrink(amount);
           tank.setFluid(fluid);
           tank.onContentsChanged();
-          level.levelEvent(LevelEvent.PARTICLES_SHOOT, worldPosition, facing.get3DDataValue());
+          level.levelEvent(LevelEvent.PARTICLES_SHOOT_SMOKE, worldPosition, facing.get3DDataValue());
           return;
         }
       }
@@ -166,34 +157,19 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
   /* Inventory */
   private static final String TAG_ITEM = "item";
 
-  @Nonnull
   @Override
-  public <C> LazyOptional<C> getCapability(Capability<C> capability, @Nullable Direction facing) {
-    if (capability == ForgeCapabilities.ITEM_HANDLER) {
-      return itemCapability.cast();
-    }
-    return super.getCapability(capability, facing);
-  }
-
-  @Override
-  public void invalidateCaps() {
-    super.invalidateCaps();
-    itemCapability.invalidate();
-  }
-
-  @Override
-  public void load(CompoundTag tag) {
-    super.load(tag);
-    tank.readFromNBT(tag.getCompound(NBTTags.TANK));
-    if (tag.contains(TAG_ITEM, Tag.TAG_COMPOUND)) {
-      itemHandler.readFromNBT(tag.getCompound(TAG_ITEM));
+  protected void loadAdditional(CompoundTag tags, HolderLookup.Provider registries) {
+    super.loadAdditional(tags, registries);
+    tank.readFromNBT(registries, tags.getCompound(NBTTags.TANK));
+    if (tags.contains(TAG_ITEM, Tag.TAG_COMPOUND)) {
+      itemHandler.readFromNBT(registries, tags.getCompound(TAG_ITEM));
     }
   }
 
   @Override
-  public void saveSynced(CompoundTag tag) {
-    super.saveSynced(tag);
-    tag.put(TAG_ITEM, itemHandler.writeToNBT());
+  public void saveSynced(CompoundTag tag, HolderLookup.Provider registries) {
+    super.saveSynced(tag, registries);
+    tag.put(TAG_ITEM, itemHandler.writeToNBT(registries));
   }
 
 
@@ -226,7 +202,7 @@ public class FluidCannonBlockEntity extends TankBlockEntity implements ITankInve
       super.setStack(newStack);
       if (hasChange) {
         BlockPos pos = parent.getBlockPos();
-        TinkerNetwork.getInstance().sendToClientsAround(new InventorySlotSyncPacket(newStack, 0, pos), world, pos);
+        PacketHelper.sendToPlayersTrackingPosition(world, pos, new InventorySlotSyncPacket(newStack, 0, pos));
       }
     }
   }

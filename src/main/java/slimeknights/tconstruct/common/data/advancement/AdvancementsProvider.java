@@ -386,7 +386,7 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     });
     AdvancementHolder foundry = builder(TinkerSmeltery.foundryController, resource("foundry/structure"), alloyer, AdvancementType.TASK, builder ->
       builder.addCriterion("open_foundry", BlockContainerOpenedTrigger.Instance.container(TinkerSmeltery.foundry.get())));
-    AdvancementHolder blazingBlood = builder(TankItem.setTank(new ItemStack(TinkerSmeltery.scorchedTank.get(TankType.FUEL_GAUGE)), getTankWith(TinkerFluids.blazingBlood.get(), TankType.FUEL_GAUGE.getCapacity())),
+    AdvancementHolder blazingBlood = builder(TankItem.fillTank(TinkerSmeltery.scorchedTank, TankType.FUEL_GAUGE, TinkerFluids.blazingBlood.get()),
             resource("foundry/blaze"), foundry, AdvancementType.GOAL, builder -> {
       Consumer<Block> with = block -> {
         builder.addCriterion(Loadables.BLOCK.getKey(block).getPath(),
@@ -399,7 +399,7 @@ public class AdvancementsProvider extends GenericRegistryDataProvider {
     });
     builder(TinkerTools.plateArmor.get(ArmorItem.Type.CHESTPLATE).getRenderTool(), resource("foundry/plate_armor"), blazingBlood, AdvancementType.GOAL, builder ->
       TinkerTools.plateArmor.forEach((type, armor) -> builder.addCriterion("crafted_" + type.getName(), hasItem(armor))));
-    builder(TankItem.setTank(new ItemStack(TinkerSmeltery.scorchedLantern), getTankWith(TinkerFluids.moltenManyullyn.get(), TinkerSmeltery.scorchedLantern.get().getCapacity())),
+    builder(TankItem.fillTank(TinkerSmeltery.scorchedLantern, TinkerFluids.moltenManyullyn.get()),
             resource("foundry/manyullyn_lanterns"), foundry, AdvancementType.CHALLENGE, builder -> {
       Consumer<SearedLanternBlock> with = block -> {
         builder.addCriterion(Loadables.BLOCK.getKey(block).getPath(),

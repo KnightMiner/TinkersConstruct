@@ -101,7 +101,7 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
   }
 
   /** Common logic between both drain methods */
-  private FluidStack drain(FluidStack fluid, int maxDrain, FluidAction action) {
+  default FluidStack drain(FluidStack fluid, int maxDrain, FluidAction action) {
     // preconditions: fluid is not empty, maxDrain > 0
     // limit max drain to current fluid
     int drained = maxDrain;
@@ -117,7 +117,6 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
     return result;
   }
 
-  @Nonnull
   @Override
   default FluidStack drain(FluidStack resource, FluidAction action) {
     if (resource.isEmpty()) {
@@ -130,7 +129,6 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
     return drain(fluid, resource.getAmount(), action);
   }
 
-  @Nonnull
   @Override
   default FluidStack drain(int maxDrain, FluidAction action) {
     if (maxDrain <= 0) {

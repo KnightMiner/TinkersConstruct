@@ -1,14 +1,15 @@
 package slimeknights.tconstruct.library.fluid;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.network.PacketDistributor;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
-import slimeknights.tconstruct.common.network.TinkerNetwork;
 import slimeknights.tconstruct.smeltery.network.FluidUpdatePacket;
 
 public class FluidTankBase<T extends MantleBlockEntity> extends FluidTank {
-
   protected T parent;
 
   public FluidTankBase(int capacity, T parent) {
@@ -26,7 +27,7 @@ public class FluidTankBase<T extends MantleBlockEntity> extends FluidTank {
       if (fluid.isEmpty()) {
         return Math.min(capacity, resource.getAmount());
       }
-      if (!fluid.isFluidEqual(resource)) {
+      if (!FluidStack.isSameFluidSameComponents(fluid, resource)) {
         return 0;
       }
       return Math.min(capacity - fluid.getAmount(), resource.getAmount());
@@ -35,11 +36,11 @@ public class FluidTankBase<T extends MantleBlockEntity> extends FluidTank {
       // FIX: the Forge implementation returns fluid.getAmount() here, which may be wrong if the fluid gets changed during onContentsChanged()
       // we instead use a local variable for the amount filled to guarantee its accurate
       int filled = Math.min(capacity, resource.getAmount());
-      fluid = new FluidStack(resource, filled);
+      fluid = resource.copyWithAmount(filled);
       onContentsChanged();
       return filled;
     }
-    if (!fluid.isFluidEqual(resource)) {
+    if (!FluidStack.isSameFluidSameComponents(fluid, resource)) {
       return 0;
     }
     int filled = capacity - fluid.getAmount();
@@ -58,14 +59,14 @@ public class FluidTankBase<T extends MantleBlockEntity> extends FluidTank {
 
   @Override
   public void onContentsChanged() {
-    if (parent instanceof IFluidTankUpdater) {
-      ((IFluidTankUpdater) parent).onTankContentsChanged();
+    if (parent instanceof IFluidTankUpdater updater) {
+      updater.onTankContentsChanged();
     }
 
     parent.setChanged();
     Level level = parent.getLevel();
-    if(level != null && !level.isClientSide) {
-      TinkerNetwork.getInstance().sendToClientsAround(new FluidUpdatePacket(parent.getBlockPos(), this.getFluid()), level, parent.getBlockPos());
+    if (level != null && !level.isClientSide && level instanceof ServerLevel sLevel) {
+      PacketDistributor.sendToPlayersTrackingChunk(sLevel, new ChunkPos(parent.getBlockPos()), new FluidUpdatePacket(parent.getBlockPos(), this.getFluid()));
     }
   }
 }

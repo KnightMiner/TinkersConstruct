@@ -36,7 +36,7 @@ public class AlloyerBlock extends TinyMultiblockControllerBlock {
   }
 
   @Override
-  public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+  protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     Direction direction = Util.directionFromOffset(pos, fromPos);
     if (direction != Direction.DOWN && world.getBlockEntity(pos) instanceof AlloyerBlockEntity te) {
       te.neighborChanged(direction);
@@ -47,14 +47,13 @@ public class AlloyerBlock extends TinyMultiblockControllerBlock {
    * Display
    */
 
-  @Deprecated
   @Override
-  public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
+  protected float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
     return 1.0F;
   }
 
   @Override
-  public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+  protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
     return true;
   }
 

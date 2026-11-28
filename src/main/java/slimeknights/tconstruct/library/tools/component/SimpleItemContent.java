@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/** Same as {@link net.neoforged.neoforge.fluids.SimpleFluidContent} but holds an item. */
+/** Same as {@link slimeknights.tconstruct.library.fluid.item.SimpleFluidContent} but holds an item. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class SimpleItemContent implements DataComponentHolder {
   /** Instance holding an empty stack */

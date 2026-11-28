@@ -57,6 +57,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.fluid.item.FluidComponents;
+import slimeknights.tconstruct.library.fluid.item.SimpleFluidContent;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -521,7 +522,17 @@ public class JEIPlugin implements IModPlugin {
         return Loadables.FLUID.getString(getSubtypeData(stack, context));
       }
     });
-    IIngredientSubtypeInterpreter<ItemStack> tankInterpreter = (stack, context) -> TankItem.getSubtype(stack);
+    ISubtypeInterpreter<ItemStack> tankInterpreter = new ISubtypeInterpreter<>() {
+      @Override
+      public Fluid getSubtypeData(ItemStack stack, UidContext context) {
+        return SimpleFluidContent.get(stack).getFluid();
+      }
+
+      @Override
+      public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
+        return Loadables.FLUID.getString(getSubtypeData(stack, context));
+      }
+    };
     for (TankType type : TankType.values()) {
       registry.registerSubtypeInterpreter(TinkerSmeltery.searedTank.get(type).asItem(), tankInterpreter);
       registry.registerSubtypeInterpreter(TinkerSmeltery.scorchedTank.get(type).asItem(), tankInterpreter);

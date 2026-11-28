@@ -1,5 +1,6 @@
 package slimeknights.tconstruct.smeltery;
 
+import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
@@ -25,9 +26,13 @@ import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -44,6 +49,7 @@ import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.object.CastItemObject;
 import slimeknights.tconstruct.fluids.TinkerFluids;
 import slimeknights.tconstruct.library.fluid.item.FixedItemFluidHandler;
+import slimeknights.tconstruct.library.fluid.item.StackedItemFluidTank;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
@@ -61,6 +67,7 @@ import slimeknights.tconstruct.smeltery.block.KnightMetalFluidCannonBlock;
 import slimeknights.tconstruct.smeltery.block.ProxyTankBlock;
 import slimeknights.tconstruct.smeltery.block.RenderingGaugeBlock;
 import slimeknights.tconstruct.smeltery.block.SearedLanternBlock;
+import slimeknights.tconstruct.smeltery.block.component.ITankBlock;
 import slimeknights.tconstruct.smeltery.block.component.RetexturedOrientableSmelteryBlock;
 import slimeknights.tconstruct.smeltery.block.component.SearedBlock;
 import slimeknights.tconstruct.smeltery.block.component.SearedDrainBlock;
@@ -85,6 +92,7 @@ import slimeknights.tconstruct.smeltery.block.entity.FaucetBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.FluidCannonBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.GaugeBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.HeaterBlockEntity;
+import slimeknights.tconstruct.smeltery.block.entity.ITankBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.LanternBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.ProxyTankBlockEntity;
 import slimeknights.tconstruct.smeltery.block.entity.component.DrainBlockEntity;
@@ -248,7 +256,7 @@ public final class TinkerSmeltery extends TinkerModule {
     // seared
     Properties seared = searedNonSolidProps(SoundType.METAL).lightLevel(SearedTankBlock.LIGHT_GETTER);
     searedTank = BLOCKS.registerEnum("seared", SearedTankBlock.TankType.values(), type -> new SearedTankBlock(seared, type.getCapacity(), PushReaction.DESTROY), tankItem);
-    searedCastingTank = BLOCKS.register("seared_casting_tank", () -> new CastingTankBlock(seared), b -> new TankItem(b, ITEM_PROPS, true));
+    searedCastingTank = BLOCKS.register("seared_casting_tank", () -> new CastingTankBlock(seared), tankItem);
     searedFluidCannon = BLOCKS.register("seared_fluid_cannon", () -> new FluidCannonBlock(seared, FluidType.BUCKET_VOLUME * 2, 1.0f, 1.1f, 4.5f), tankItem);
     searedLantern = BLOCKS.register("seared_lantern", () -> new SearedLanternBlock(searedNonSolidProps(SoundType.LANTERN).lightLevel(SearedTankBlock.LIGHT_GETTER), FluidValues.LANTERN_CAPACITY), lanternItem);
     // scorched
@@ -388,10 +396,47 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final DeferredMenu<AlloyerContainerMenu> alloyerContainer = MENUS.register("alloyer", AlloyerContainerMenu::new);
 
 
+  /** Creates a tank handler for the given capacity */
+  private static ICapabilityProvider<ItemStack, Void, IFluidHandlerItem> tankItemFluidHandler(int capacity) {
+    return (stack, context) -> new StackedItemFluidTank(stack, capacity, 16);
+  }
+
+  /** Creates a tank handler for the given capacity */
+  private static void registerTankItemCapability(RegisterCapabilitiesEvent event, DeferredBlock<? extends ITankBlock> tank) {
+    event.registerItem(Capabilities.FluidHandler.ITEM, tankItemFluidHandler(tank.get().getCapacity()), tank);
+  }
+
   @SubscribeEvent
   void registerCapabilities(RegisterCapabilitiesEvent event) {
     event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, channel.get(), ChannelBlockEntity::getFluidHandler);
+
+    // tank block entities
+    ICapabilityProvider<ITankBlockEntity, Direction, IFluidHandler> tankFluid = (be, side) -> be.getTank();
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, tank.get(), tankFluid);
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, lantern.get(), tankFluid);
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, fluidCannon.get(), tankFluid);
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, castingTank.get(), tankFluid);
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, melter.get(), tankFluid);
+    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, alloyer.get(), tankFluid);
+    // tank inventories
+    ICapabilityProvider<ITankBlockEntity.ITankInventoryBlockEntity, Direction, IItemHandler> tankInventory = (be, side) -> be.getItemHandler();
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, fluidCannon.get(), tankInventory);
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, castingTank.get(), tankInventory);
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, melter.get(), tankInventory);
+
+    // tank items
     event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new FixedItemFluidHandler(stack, FluidValues.INGOT), copperCan.get());
+    for (TankType type : TankType.values()) {
+      int capacity = type.getCapacity();
+      ICapabilityProvider<ItemStack, Void, IFluidHandlerItem> tankHandler = (stack, context) -> new StackedItemFluidTank(stack, capacity, 16);
+      event.registerItem(Capabilities.FluidHandler.ITEM, tankHandler, searedTank.get(type), scorchedTank.get(type));
+    }
+    event.registerItem(Capabilities.FluidHandler.ITEM, tankItemFluidHandler(FluidValues.LANTERN_CAPACITY), searedLantern, scorchedLantern);
+    // special tanks
+    registerTankItemCapability(event, searedCastingTank);
+    registerTankItemCapability(event, searedFluidCannon);
+    registerTankItemCapability(event, scorchedFluidCannon);
+    registerTankItemCapability(event, endFluidCannon);
   }
 
   @SubscribeEvent
