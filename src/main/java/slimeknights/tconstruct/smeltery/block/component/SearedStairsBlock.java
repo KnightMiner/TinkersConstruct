@@ -11,12 +11,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.tconstruct.smeltery.block.entity.component.SmelteryComponentBlockEntity;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 public class SearedStairsBlock extends StairBlock implements EntityBlock {
-
-  public SearedStairsBlock(Supplier<BlockState> state, Properties properties) {
-    super(state, properties);
+  public SearedStairsBlock(BlockState baseState, Properties properties) {
+    super(baseState, properties);
   }
 
   @Nullable
@@ -26,8 +24,7 @@ public class SearedStairsBlock extends StairBlock implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+  protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (!newState.is(this) && world.getBlockEntity(pos) instanceof SmelteryComponentBlockEntity te) {
       te.notifyMasterOfChange(pos, newState);
     }
@@ -40,8 +37,7 @@ public class SearedStairsBlock extends StairBlock implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
+  protected boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
     super.triggerEvent(state, worldIn, pos, id, param);
 
     BlockEntity tileentity = worldIn.getBlockEntity(pos);

@@ -18,7 +18,6 @@ public class SearedSlabBlock extends SlabBlock implements EntityBlock {
     super(properties);
   }
 
-
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
@@ -26,8 +25,7 @@ public class SearedSlabBlock extends SlabBlock implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+  protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (!newState.is(this) && world.getBlockEntity(pos) instanceof SmelteryComponentBlockEntity te) {
       te.notifyMasterOfChange(pos, newState);
     }
@@ -40,8 +38,7 @@ public class SearedSlabBlock extends SlabBlock implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
+  protected boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
     super.triggerEvent(state, worldIn, pos, id, param);
     BlockEntity tileentity = worldIn.getBlockEntity(pos);
     return tileentity != null && tileentity.triggerEvent(id, param);

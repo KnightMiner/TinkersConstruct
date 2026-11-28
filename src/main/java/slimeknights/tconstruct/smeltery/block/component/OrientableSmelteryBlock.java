@@ -48,15 +48,13 @@ public class OrientableSmelteryBlock extends SearedBlock implements EntityBlock 
     return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
   }
 
-  @Deprecated
   @Override
-  public BlockState rotate(BlockState state, Rotation rotation) {
+  protected BlockState rotate(BlockState state, Rotation rotation) {
     return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
   }
 
-  @Deprecated
   @Override
-  public BlockState mirror(BlockState state, Mirror mirror) {
+  protected BlockState mirror(BlockState state, Mirror mirror) {
     return state.setValue(FACING, mirror.mirror(state.getValue(FACING)));
   }
 }

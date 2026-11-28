@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import slimeknights.tconstruct.smeltery.block.entity.component.SmelteryComponentBlockEntity;
 
 import javax.annotation.Nullable;
@@ -44,8 +44,7 @@ public class SearedBlock extends Block implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public void onRemove(BlockState oldState, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+  protected void onRemove(BlockState oldState, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (requiredBlockEntity || oldState.getValue(IN_STRUCTURE)) {
       // if the block is unchanged, remove the block entity if we no longer have one
       if (newState.is(this)) {
@@ -68,8 +67,7 @@ public class SearedBlock extends Block implements EntityBlock {
   }
 
   @Override
-  @Deprecated
-  public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
+  protected boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
     super.triggerEvent(state, worldIn, pos, id, param);
     BlockEntity be = worldIn.getBlockEntity(pos);
     return be != null && be.triggerEvent(id, param);
@@ -77,7 +75,7 @@ public class SearedBlock extends Block implements EntityBlock {
 
   @Nullable
   @Override
-  public BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
-    return state.getValue(IN_STRUCTURE) ? BlockPathTypes.DAMAGE_FIRE : BlockPathTypes.OPEN;
+  public PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    return state.getValue(IN_STRUCTURE) ? PathType.DAMAGE_FIRE : PathType.OPEN;
   }
 }

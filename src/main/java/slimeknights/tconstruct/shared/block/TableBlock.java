@@ -44,8 +44,7 @@ public abstract class TableBlock extends InventoryBlock implements SimpleWaterlo
   }
 
   @Override
-  @Deprecated
-  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+  protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return TABLE_SHAPE;
   }
 
@@ -56,22 +55,20 @@ public abstract class TableBlock extends InventoryBlock implements SimpleWaterlo
   }
 
   @Override
-  public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+  protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
     if (state.getValue(WATERLOGGED)) {
       level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
     }
     return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
   }
 
-  @Deprecated
   @Override
-  public BlockState rotate(BlockState state, Rotation rot) {
+  protected BlockState rotate(BlockState state, Rotation rot) {
     return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
-  @Deprecated
   @Override
-  public BlockState mirror(BlockState state, Mirror mirrorIn) {
+  protected BlockState mirror(BlockState state, Mirror mirrorIn) {
     return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
   }
 
@@ -80,9 +77,8 @@ public abstract class TableBlock extends InventoryBlock implements SimpleWaterlo
     builder.add(FACING, WATERLOGGED);
   }
 
-  @Deprecated
   @Override
-  public FluidState getFluidState(BlockState state) {
+  protected FluidState getFluidState(BlockState state) {
     return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
   }
 

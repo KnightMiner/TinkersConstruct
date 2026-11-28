@@ -18,7 +18,7 @@ public class SearedPillarBlock extends SearedBlock {
   }
 
   @Override
-  public BlockState rotate(BlockState state, Rotation rot) {
+  protected BlockState rotate(BlockState state, Rotation rot) {
     switch(rot) {
       case COUNTERCLOCKWISE_90: case CLOCKWISE_90:
         switch(state.getValue(AXIS)) {

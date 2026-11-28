@@ -68,7 +68,7 @@ public class FaucetBlock extends Block implements EntityBlock {
   }
 
   @Override
-  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+  protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return SHAPES.get(state.getValue(FACING));
   }
 
@@ -104,14 +104,14 @@ public class FaucetBlock extends Block implements EntityBlock {
   }
 
   @Override
-  public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+  protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     if (!world.isClientSide && world.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
       faucet.handleRedstone(world.hasNeighborSignal(pos));
     }
   }
 
   @Override
-  public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
+  protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
     if (world.getBlockEntity(pos) instanceof FaucetBlockEntity faucet) {
       faucet.activate();
     }

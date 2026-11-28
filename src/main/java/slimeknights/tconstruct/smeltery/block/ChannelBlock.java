@@ -359,7 +359,6 @@ public class ChannelBlock extends Block implements EntityBlock {
   }
 
   @Override
-  @Deprecated
   protected boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
     return side.getAxis().isHorizontal() && adjacentBlockState.is(this) && state.getValue(DIRECTION_MAP.get(side)).canFlow() && adjacentBlockState.getValue(DIRECTION_MAP.get(side.getOpposite())).canFlow();
   }

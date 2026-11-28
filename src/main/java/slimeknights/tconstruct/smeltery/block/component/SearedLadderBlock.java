@@ -106,9 +106,8 @@ public class SearedLadderBlock extends OrientableSmelteryBlock {
                .setValue(FACING, direction);
   }
 
-  @Deprecated
   @Override
-  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+  protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
     if (facing == Direction.DOWN) {
       return state.setValue(BOTTOM, !facingState.is(this) || state.getValue(FACING) != facingState.getValue(FACING));
     }
@@ -118,17 +117,13 @@ public class SearedLadderBlock extends OrientableSmelteryBlock {
 
   /** Bounds */
 
-  @SuppressWarnings("deprecation")
   @Override
-  @Deprecated
-  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+  protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return (state.getValue(BOTTOM) ? BOUNDS_BOTTOM : BOUNDS).get(state.getValue(FACING));
   }
 
-  @SuppressWarnings("deprecation")
   @Override
-  @Deprecated
-  public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+  protected VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return (state.getValue(BOTTOM) ? COLLISION_BOTTOM : COLLISION).get(state.getValue(FACING));
   }
 }
