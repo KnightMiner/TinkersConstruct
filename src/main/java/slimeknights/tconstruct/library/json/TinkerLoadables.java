@@ -110,7 +110,7 @@ public class TinkerLoadables {
   public static <T> StringLoadable<DataComponentType<T>> componentWithCodec(Codec<T> codec, String codecName) {
     return Loadables.DATA_COMPONENT_TYPE.mapChecked((type, error) -> {
       if (type.codec() != codec) {
-        throw error.create("Expected component type " + Loadables.DATA_COMPONENT_TYPE.getKey(type) + " to be registered with " + codecName + " codec: " + codec ", was " + codec);
+        throw error.create("Expected component type " + Loadables.DATA_COMPONENT_TYPE.getKey(type) + " to be registered with " + codecName + " codec: " + codec + ", was " + codec);
       }
       return (DataComponentType<T>) type;
     }, (type, error) -> type);
