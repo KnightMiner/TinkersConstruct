@@ -43,6 +43,7 @@ import slimeknights.tconstruct.common.TinkerModule;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.registration.object.CastItemObject;
 import slimeknights.tconstruct.fluids.TinkerFluids;
+import slimeknights.tconstruct.library.fluid.item.FixedItemFluidHandler;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.library.tools.item.armor.ModifiableArmorItem;
 import slimeknights.tconstruct.library.tools.part.PartCastItem;
@@ -387,10 +388,10 @@ public final class TinkerSmeltery extends TinkerModule {
   public static final DeferredMenu<AlloyerContainerMenu> alloyerContainer = MENUS.register("alloyer", AlloyerContainerMenu::new);
 
 
-
   @SubscribeEvent
   void registerCapabilities(RegisterCapabilitiesEvent event) {
     event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, channel.get(), ChannelBlockEntity::getFluidHandler);
+    event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new FixedItemFluidHandler(stack, FluidValues.INGOT), copperCan.get());
   }
 
   @SubscribeEvent

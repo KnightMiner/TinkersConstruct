@@ -8,8 +8,8 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
+import slimeknights.tconstruct.library.fluid.item.FluidComponents;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
-import slimeknights.tconstruct.smeltery.item.CopperCanItem;
 
 import java.util.List;
 
@@ -37,13 +37,13 @@ public class FluidItemElement extends ItemElement {
 
   /** Creates a list of items for display */
   public static List<ItemStack> createItemList(List<FluidStack> fluids) {
-    return fluids.stream().map(fluidStack -> {
+    return fluids.stream().map(fluid -> {
       // if it has a bucket, use the bucket
-      Item bucket = fluidStack.getFluid().getBucket();
+      Item bucket = fluid.getFluid().getBucket();
       if (bucket != Items.AIR) {
         return bucket.getDefaultInstance();
       }
-      return CopperCanItem.setFluid(new ItemStack(TinkerSmeltery.copperCan), fluidStack.getFluid(), null);
+      return FluidComponents.set(TinkerSmeltery.copperCan.toStack(), fluid);
     }).toList();
   }
 }

@@ -69,11 +69,12 @@ import slimeknights.tconstruct.fluids.util.EmptyBottleIntoWater;
 import slimeknights.tconstruct.fluids.util.FillBottle;
 import slimeknights.tconstruct.fluids.util.FluidDataSerializer;
 import slimeknights.tconstruct.library.TinkerEffects;
+import slimeknights.tconstruct.library.fluid.item.FluidComponents;
 import slimeknights.tconstruct.library.materials.MaterialId;
 import slimeknights.tconstruct.library.recipe.FluidValues;
 import slimeknights.tconstruct.shared.TinkerFood;
 import slimeknights.tconstruct.shared.block.SlimeType;
-import slimeknights.tconstruct.smeltery.item.CopperCanItem;
+import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.item.TankItem;
 import slimeknights.tconstruct.tools.data.material.MaterialIds;
 import slimeknights.tconstruct.world.TinkerWorld;
@@ -496,7 +497,7 @@ public final class TinkerFluids extends TinkerModule {
   @Internal
   public static void addFilledContainers(ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output) {
     // add copper cans, tanks, and lanterns for all the fluids
-    CopperCanItem.addFilledVariants(output::accept);
+    FluidComponents.addFilledVariants(TinkerSmeltery.copperCan, output::accept);
     TankItem.addFilledVariants(output::accept);
   }
 

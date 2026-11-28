@@ -7,6 +7,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -46,6 +47,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.client.SafeClientAccess;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.registration.object.FluidObject;
@@ -54,6 +56,7 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.common.config.Config;
 import slimeknights.tconstruct.fluids.TinkerFluids;
+import slimeknights.tconstruct.library.fluid.item.FluidComponents;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -134,7 +137,6 @@ import slimeknights.tconstruct.smeltery.client.screen.AlloyerScreen;
 import slimeknights.tconstruct.smeltery.client.screen.HeatingStructureScreen;
 import slimeknights.tconstruct.smeltery.client.screen.MelterScreen;
 import slimeknights.tconstruct.smeltery.data.SmelteryCompat;
-import slimeknights.tconstruct.smeltery.item.CopperCanItem;
 import slimeknights.tconstruct.smeltery.item.TankItem;
 import slimeknights.tconstruct.tables.TinkerTables;
 import slimeknights.tconstruct.tables.recipe.CraftingTableRepairKitRecipe;
@@ -508,7 +510,17 @@ public class JEIPlugin implements IModPlugin {
     }
 
     // fluid containers have types based on fluid, don't bother with different sizes
-    registry.registerSubtypeInterpreter(TinkerSmeltery.copperCan.get(), (stack, context) -> CopperCanItem.getSubtype(stack));
+    registry.registerSubtypeInterpreter(TinkerSmeltery.copperCan.get(), new ISubtypeInterpreter<>() {
+      @Override
+      public Fluid getSubtypeData(ItemStack stack, UidContext context) {
+        return FluidComponents.get(stack).fluid();
+      }
+
+      @Override
+      public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
+        return Loadables.FLUID.getString(getSubtypeData(stack, context));
+      }
+    });
     IIngredientSubtypeInterpreter<ItemStack> tankInterpreter = (stack, context) -> TankItem.getSubtype(stack);
     for (TankType type : TankType.values()) {
       registry.registerSubtypeInterpreter(TinkerSmeltery.searedTank.get(type).asItem(), tankInterpreter);
@@ -639,7 +651,7 @@ public class JEIPlugin implements IModPlugin {
 
     // fluid containers tab is hidden by tab, add back in the filled containers if requested
     if (Config.CLIENT.showFilledFluidTanks.get()) {
-      CopperCanItem.addFilledVariants(addItem);
+      FluidComponents.addFilledVariants(TinkerSmeltery.copperCan, addItem);
       TankItem.addFilledVariants(addItem);
     }
 

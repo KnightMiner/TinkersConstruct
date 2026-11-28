@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Simple implementation of {@link IFluidTank} and {@link IFluidHandler} for a single tank.
- *
+ * <p>
  * Similar to {@link net.neoforged.neoforge.fluids.capability.templates.FluidTank} except with more control over the fluid storage.
  */
 public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
@@ -34,6 +34,11 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
 
 
   /* Redirect duplicate methods */
+
+  /** Checks if the fluid is empty */
+  default boolean isEmpty() {
+    return getFluid().isEmpty();
+  }
 
   @Override
   default int getFluidAmount() {
@@ -76,13 +81,13 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
     if (fluid.isEmpty()) {
       int amount = Math.min(getCapacity(), resource.getAmount());
       if (action.execute()) {
-        updateFluid(new FluidStack(resource, amount), amount);
+        updateFluid(resource.copyWithAmount(amount), amount);
       }
       return amount;
     }
 
     // if unable to fill, nothing more to do
-    if (!fluid.isFluidEqual(resource)) {
+    if (!FluidStack.isSameFluidSameComponents(fluid, resource)) {
       return 0;
     }
 
@@ -104,7 +109,7 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
       drained = fluid.getAmount();
     }
     // build the result
-    FluidStack result = new FluidStack(fluid, drained);
+    FluidStack result = fluid.copyWithAmount(drained);
     if (action.execute()) {
       fluid.shrink(drained);
       updateFluid(fluid, -drained);
@@ -119,7 +124,7 @@ public interface SimpleFluidTank extends IFluidTank, IFluidHandler {
       return FluidStack.EMPTY;
     }
     FluidStack fluid = getFluid();
-    if (fluid.isEmpty() || !fluid.isFluidEqual(resource)) {
+    if (fluid.isEmpty() || !FluidStack.isSameFluidSameComponents(fluid, resource)) {
       return FluidStack.EMPTY;
     }
     return drain(fluid, resource.getAmount(), action);

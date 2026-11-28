@@ -19,6 +19,7 @@ import slimeknights.mantle.registration.holder.DeferredAttachment;
 import slimeknights.mantle.registration.holder.DeferredDataComponent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.gadgets.item.PiggybackHandler;
+import slimeknights.tconstruct.library.fluid.item.FluidComponents;
 import slimeknights.tconstruct.library.materials.MaterialVariant;
 import slimeknights.tconstruct.library.modifiers.ModifierHolder;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -57,6 +58,13 @@ public class TinkerData {
   public static final DeferredAttachment<PiggybackHandler> PIGGYBACK_HANDLER = ATTACHMENTS.registerType("piggyback_handler", () -> AttachmentType.builder(PiggybackHandler::new));
   /** Stores the current potion on a projectile, typically from arrows. Mirrors {@link DataComponents#POTION_CONTENTS} */
   public static final DeferredAttachment<PotionContents> PROJECTILE_POTION = ATTACHMENTS.registerType("projectile_potion", () -> AttachmentType.builder(() -> PotionContents.EMPTY).serialize(PotionContents.CODEC).sync(PotionContents.STREAM_CODEC));
+
+
+  /* Tank */
+
+  /** Stores a fluid and its components without amount. Used in {@link slimeknights.tconstruct.smeltery.item.CopperCanItem} */
+  public static final DeferredDataComponent<FluidComponents> FLUID = DATA_COMPONENTS.registerPersistent("fluid", FluidComponents.CODEC, FluidComponents.STREAM_CODEC);
+
 
   /* Parts and modifiers */
   /** Holds a single modifier on an item. Used for modifier crystals */
